@@ -1,0 +1,42 @@
+{
+  "name": "@nuxtjs/robots-txt",
+  "version": "1.0.0",
+  "description": "",
+  "license": "MIT",
+  "contributors": [
+    {
+      "name": "WilliamDASILVA <william.da.silva@outlook.com>"
+    }
+  ],
+  "main": "lib/module.js",
+  "repository": "https://github.com/",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "lint": "eslint lib test",
+    "test": "jest",
+    "release": "standard-version && git push --follow-tags && npm publish"
+  },
+  "eslintIgnore": [
+    "lib/templates/*.*"
+  ],
+  "files": [
+    "lib"
+  ],
+  "jest": {
+    "testEnvironment": "node",
+    "coverageDirectory": "./coverage/",
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "lib",
+      "test"
+    ]
+  },
+  "dependencies": {
+    "express-robots": "^0.1.6"
+  },
+  "devDependencies": {
+    "nuxt-module-builder": "latest"
+  }
+}
