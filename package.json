@@ -1,5 +1,5 @@
 {
-  "name": "@nuxtjs/robots-txt",
+  "name": "nuxt-robots-module",
   "version": "1.0.0",
   "description": "",
   "license": "MIT",
@@ -9,7 +9,7 @@
     }
   ],
   "main": "lib/module.js",
-  "repository": "https://github.com/",
+  "repository": "https://github.com/WilliamDASILVA/nuxt-robots-module",
   "publishConfig": {
     "access": "public"
   },
@@ -34,7 +34,6 @@
     ]
   },
   "dependencies": {
-    "express-robots": "^0.1.6"
   },
   "devDependencies": {
     "nuxt-module-builder": "latest"
