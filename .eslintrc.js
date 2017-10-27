@@ -8,7 +8,7 @@ module.exports = {
     node: true,
     jest: true
   },
-  extends: 'standard',
+  extends: 'airbnb',
   plugins: [
     'jest',
     'vue'
