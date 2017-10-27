@@ -1,41 +1,97 @@
-# nuxt-robots
-[![npm (scoped with tag)](https://img.shields.io/npm/v/nuxt-robots/latest.svg?style=flat-square)](https://npmjs.com/package/nuxt-robots)
-[![npm](https://img.shields.io/npm/dt/nuxt-robots.svg?style=flat-square)](https://npmjs.com/package/nuxt-robots)
-[![CircleCI](https://img.shields.io/circleci/project/github/.svg?style=flat-square)](https://circleci.com/gh/)
-[![Codecov](https://img.shields.io/codecov/c/github/.svg?style=flat-square)](https://codecov.io/gh/)
-[![Dependencies](https://david-dm.org//status.svg?style=flat-square)](https://david-dm.org/)
+# nuxt-robots-module
+
+[![npm (scoped with tag)](https://img.shields.io/npm/v/nuxt-robots-module/latest.svg?style=flat-square)](https://npmjs.com/package/nuxt-robots-module)
+[![npm](https://img.shields.io/npm/dt/nuxt-robots-module.svg?style=flat-square)](https://npmjs.com/package/nuxt-robots-module)
 [![js-standard-style](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](http://standardjs.com)
 
-> 
+> A NuxtJS module thats inject a middleware to generate a robots.txt file
 
-[📖 **Release Notes**](./CHANGELOG.md)
+## Table of Contents ##
 
-## Features
+* [Requirements](#requirements)
+* [Install](#install)
+* [Getting Started](#getting-started)
 
-The module features
+## Requirements
 
-## Setup
-- Add `nuxt-robots` dependency using yarn or npm to your project
-- Add `nuxt-robots` to `modules` section of `nuxt.config.js`
+* npm or yarn
+* NuxtJS
+* NodeJS
 
+## Install
+
+```bash
+$ npm install --save nuxt-robots-module
+// or
+$ yarn add nuxt-robots-module
+```
+
+## Getting Started
+
+Add `nuxt-robots-module` to `modules` section of `nuxt.config.js`.
 ```js
 {
   modules: [
     // Simple usage
-    'nuxt-robots',
+    'nuxt-robots-module',
 
     // With options
-    ['nuxt-robots', { /* module options */ }],
+    ['nuxt-robots-module', {
+      /* module options */
+      UserAgent: 'Googlebot',
+      Disallow: '/',
+    }],
  ]
 }
 ```
+or even
+```js
+{
+  modules: [
+    'nuxt-robots-module',
+  ],
+  'nuxt-robots-module': {
+    /* module options */
+    UserAgent: '*',
+    Disallow: '/',
+  },
+}
+```
 
-## Usage
+## Options
 
-Module Description
+The module option parameter can be an `object` (like above) or an `array of objects`. 
+
+```js
+{
+  modules: [
+    'nuxt-robots-module',
+  ],
+  'nuxt-robots-module': [
+    {
+      UserAgent: 'Googlebot',
+      Disallow: '/users',
+    },
+    {
+      UserAgent: 'Bingbot',
+      Disallow: '/admin',
+    },
+  ],
+}
+```
+
+### Will generate a /robots.txt:
+
+```bash
+UserAgent: Googlebot
+Disallow: /users
+UserAgent: Bingbot
+Disallow: /admin
+```
 
 ## License
 
-[MIT License](./LICENSE)
+Robots.txt generate code from https://github.com/weo-edu/express-robots repository.
+Project generated with Nuxt module builder.
 
-Copyright (c) WilliamDASILVA <william.da.silva@outlook.com>
+[MIT License](./LICENSE)
