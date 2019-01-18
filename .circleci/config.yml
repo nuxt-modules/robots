@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     working_directory: /usr/src/app
-    build:
+    docker:
       - image: circleci/node:10
     steps:
       # Checkout repository
