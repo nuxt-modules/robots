@@ -6,11 +6,14 @@
 
 > A NuxtJS module thats inject a middleware to generate a robots.txt file
 
-## Table of Contents ##
+## Table of Contents
 
 * [Requirements](#requirements)
 * [Install](#install)
 * [Getting Started](#getting-started)
+* [Options](#options)
+* [Development](#development)
+* [License](#license)
 
 ## Requirements
 
@@ -29,6 +32,7 @@ $ yarn add nuxt-robots-module
 ## Getting Started
 
 Add `nuxt-robots-module` to `modules` section of `nuxt.config.js`.
+
 ```js
 {
   modules: [
@@ -44,7 +48,9 @@ Add `nuxt-robots-module` to `modules` section of `nuxt.config.js`.
  ]
 }
 ```
+
 or even
+
 ```js
 {
   modules: [
@@ -60,7 +66,7 @@ or even
 
 ## Options
 
-The module option parameter can be an `object` (like above) or an `array of objects`. 
+The module option parameter can be an `object` (like above) or an `array of objects`.
 
 ```js
 {
@@ -80,7 +86,7 @@ The module option parameter can be an `object` (like above) or an `array of obje
 }
 ```
 
-### Will generate a /robots.txt:
+### Will generate a /robots.txt
 
 ```bash
 UserAgent: Googlebot
@@ -88,6 +94,22 @@ Disallow: /users
 UserAgent: Bingbot
 Disallow: /admin
 ```
+
+## Development
+
+To run the development server, you can either install the dependencies locally by running:
+
+```bash
+npm install
+```
+
+or using `Docker` with `docker-compose`:
+
+```bash
+docker-compose up -d
+```
+
+This will run the a dev example through the `3000` port on localhost. You can then see your generated robots.txt in `localhost:3000/robots.txt`.
 
 ## License
 

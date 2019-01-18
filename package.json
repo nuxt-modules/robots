@@ -16,7 +16,7 @@
   "scripts": {
     "dev": "nuxt example",
     "lint": "eslint lib test",
-    "test": "npm run lint && jest",
+    "test": "jest",
     "release": "standard-version && git push --follow-tags && npm publish"
   },
   "eslintIgnore": [
