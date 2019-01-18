@@ -1,6 +1,7 @@
 # nuxt-robots-module
 
 [![npm (scoped with tag)](https://img.shields.io/npm/v/nuxt-robots-module/latest.svg?style=flat-square)](https://npmjs.com/package/nuxt-robots-module)
+[![CircleCI](https://img.shields.io/circleci/project/github/WilliamDASILVA/nuxt-robots-module.svg?style=flat-square)](https://circleci.com/gh/WilliamDASILVA/nuxt-robots-module)
 [![npm](https://img.shields.io/npm/dt/nuxt-robots-module.svg?style=flat-square)](https://npmjs.com/package/nuxt-robots-module)
 [![js-standard-style](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](http://standardjs.com)
 
