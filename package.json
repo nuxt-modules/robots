@@ -1,11 +1,11 @@
 {
   "name": "nuxt-robots-module",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A NuxtJS module thats inject a middleware to generate a robots.txt file",
   "license": "MIT",
   "contributors": [
     {
-      "name": "WilliamDASILVA <william.da.silva@outlook.com>"
+      "name": "William DA SILVA <william.da.silva@outlook.com>"
     }
   ],
   "main": "lib/module.js",
