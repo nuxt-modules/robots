@@ -29,9 +29,6 @@
     "testEnvironment": "node",
     "collectCoverage": true
   },
-  "dependencies": {
-    "fs-extra": "^7.0.1"
-  },
   "devDependencies": {
     "babel-eslint": "latest",
     "codecov": "latest",
