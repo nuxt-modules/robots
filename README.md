@@ -57,7 +57,7 @@ or even
   modules: [
     'nuxt-robots-module',
   ],
-  'nuxt-robots-module': {
+  robots: {
     /* module options */
     UserAgent: '*',
     Disallow: '/',
@@ -74,7 +74,7 @@ The module option parameter can be an `object` (like above) or an `array of obje
   modules: [
     'nuxt-robots-module',
   ],
-  'nuxt-robots-module': [
+  robots: [
     {
       UserAgent: 'Googlebot',
       Disallow: '/users',
