@@ -1,38 +1,21 @@
 # nuxt-robots-module
 
-[![npm (scoped with tag)](https://img.shields.io/npm/v/nuxt-robots-module/latest.svg?style=flat-square)](https://npmjs.com/package/nuxt-robots-module)
-[![CircleCI](https://img.shields.io/circleci/project/github/WilliamDASILVA/nuxt-robots-module.svg?style=flat-square)](https://circleci.com/gh/WilliamDASILVA/nuxt-robots-module)
-[![npm](https://img.shields.io/npm/dt/nuxt-robots-module.svg?style=flat-square)](https://npmjs.com/package/nuxt-robots-module)
-[![js-standard-style](https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square)](http://standardjs.com)
+[![npm version][npm-version-src]][npm-version-href]
+[![npm downloads][npm-downloads-src]][npm-downloads-href]
+[![Circle CI][circle-ci-src]][circle-ci-href]
+[![Codecov][codecov-src]][codecov-href]
+[![Dependencies][david-dm-src]][david-dm-href]
+[![Standard JS][standard-js-src]][standard-js-href]
 
 > A NuxtJS module thats inject a middleware to generate a robots.txt file
 
-## Table of Contents
+[📖 **Release Notes**](./CHANGELOG.md)
 
-* [Requirements](#requirements)
-* [Install](#install)
-* [Getting Started](#getting-started)
-* [Options](#options)
-* [Development](#development)
-* [License](#license)
+## Setup
 
-## Requirements
-
-* npm or yarn
-* NuxtJS
-* NodeJS
-
-## Install
-
-```bash
-$ npm install --save nuxt-robots-module
-// or
-$ yarn add nuxt-robots-module
-```
-
-## Getting Started
-
-Add `nuxt-robots-module` to `modules` section of `nuxt.config.js`.
+1. Add the `nuxt-robots-module` dependency with `yarn` or `npm` to your project
+2. Add `nuxt-robots-module` to the `modules` section of `nuxt.config.js`
+3. Configure it:
 
 ```js
 {
@@ -42,15 +25,14 @@ Add `nuxt-robots-module` to `modules` section of `nuxt.config.js`.
 
     // With options
     ['nuxt-robots-module', {
-      /* module options */
       UserAgent: 'Googlebot',
-      Disallow: '/',
+      Disallow: '/'
     }],
  ]
 }
 ```
 
-or even
+### Using top level options
 
 ```js
 {
@@ -58,10 +40,9 @@ or even
     'nuxt-robots-module',
   ],
   robots: {
-    /* module options */
     UserAgent: '*',
-    Disallow: '/',
-  },
+    Disallow: '/'
+  }
 }
 ```
 
@@ -72,18 +53,18 @@ The module option parameter can be an `object` (like above) or an `array of obje
 ```js
 {
   modules: [
-    'nuxt-robots-module',
+    'nuxt-robots-module'
   ],
   robots: [
     {
       UserAgent: 'Googlebot',
-      Disallow: '/users',
+      Disallow: '/users'
     },
     {
       UserAgent: 'Bingbot',
-      Disallow: '/admin',
-    },
-  ],
+      Disallow: '/admin'
+    }
+  ]
 }
 ```
 
@@ -98,23 +79,26 @@ Disallow: /admin
 
 ## Development
 
-To run the development server, you can either install the dependencies locally by running:
-
-```bash
-npm install
-```
-
-or using `Docker` with `docker-compose`:
-
-```bash
-docker-compose up -d
-```
-
-This will run the a dev example through the `3000` port on localhost. You can then see your generated robots.txt in `localhost:3000/robots.txt`.
+1. Clone this repository
+2. Install dependencies using `yarn install` or `npm install`
+3. Start development server using `npm run dev`
 
 ## License
 
-Robots.txt generate code from https://github.com/weo-edu/express-robots repository.
-Project generated with Nuxt module builder.
-
 [MIT License](./LICENSE)
+
+Copyright (c) - William DA SILVA <william.da.silva@outlook.com>
+
+<!-- Badges -->
+[npm-version-src]: https://img.shields.io/npm/dt/nuxt-robots-module.svg?style=flat-square
+[npm-version-href]: https://npmjs.com/package/nuxt-robots-module
+[npm-downloads-src]: https://img.shields.io/npm/v/nuxt-robots-module/latest.svg?style=flat-square
+[npm-downloads-href]: https://npmjs.com/package/nuxt-robots-module
+[circle-ci-src]: https://img.shields.io/circleci/project/github/WilliamDASILVA/nuxt-robots-module.svg?style=flat-square
+[circle-ci-href]: https://circleci.com/gh/WilliamDASILVA/nuxt-robots-module
+[codecov-src]: https://img.shields.io/codecov/c/github/WilliamDASILVA/nuxt-robots-module.svg?style=flat-square
+[codecov-href]: https://codecov.io/gh/WilliamDASILVA/nuxt-robots-module
+[david-dm-src]: https://david-dm.org/WilliamDASILVA/nuxt-robots-module/status.svg?style=flat-square
+[david-dm-href]: https://david-dm.org/WilliamDASILVA/nuxt-robots-module
+[standard-js-src]: https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square
+[standard-js-href]: https://standardjs.com
