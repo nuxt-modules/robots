@@ -28,7 +28,7 @@ describe('module', () => {
       await nuxt.close()
     }
   })
-  
+
   test('ssr', async () => {
     nuxt = await setupNuxt(config)
 
