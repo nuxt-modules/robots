@@ -8,6 +8,25 @@ const config = require('../example/nuxt.config')
 const url = path => `http://localhost:3000${path}`
 const get = path => request(url(path))
 
+describe('spa', () => {
+  let nuxt
+
+  beforeAll(async () => {
+    nuxt = new Nuxt(Object.assign({ mode: 'spa' }, config))
+    await new Builder(nuxt).build()
+    await nuxt.listen(3000)
+  }, 60000)
+
+  afterAll(async () => {
+    await nuxt.close()
+  })
+
+  test('robots.txt', async () => {
+    const robots = await get('/robots.txt')
+    expect(robots).toContain('User-agent: *\nDisallow:')
+  })
+})
+
 describe('ssr', () => {
   let nuxt
 

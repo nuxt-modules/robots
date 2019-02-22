@@ -1,9 +1,15 @@
 {
   "name": "nuxt-robots-module",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "A NuxtJS module thats inject a middleware to generate a robots.txt file",
   "license": "MIT",
   "contributors": [
+    {
+      "name": "Ricardo GOBBO DE SOUZA"
+    },
+    {
+      "name": "Robert REINHARD"
+    },
     {
       "name": "William DA SILVA <william.da.silva@outlook.com>"
     }
@@ -28,9 +34,6 @@
   "jest": {
     "testEnvironment": "node",
     "collectCoverage": true
-  },
-  "dependencies": {
-    "fs-extra": "^7.0.1"
   },
   "devDependencies": {
     "babel-eslint": "latest",
