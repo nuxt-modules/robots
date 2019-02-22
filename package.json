@@ -4,15 +4,9 @@
   "description": "A NuxtJS module thats inject a middleware to generate a robots.txt file",
   "license": "MIT",
   "contributors": [
-    {
-      "name": "Ricardo GOBBO DE SOUZA"
-    },
-    {
-      "name": "Robert REINHARD"
-    },
-    {
-      "name": "William DA SILVA <william.da.silva@outlook.com>"
-    }
+    "Ricardo Gobbo de Souza <ricardogobbosouza@yahoo.com.br>",
+    "Robert Reinhard",
+    "William DA SILVA <william.da.silva@outlook.com>"
   ],
   "main": "lib/module.js",
   "repository": "https://github.com/WilliamDASILVA/nuxt-robots-module",
@@ -20,24 +14,22 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "nuxt example",
+    "dev": "nuxt test/fixture",
     "lint": "eslint lib test",
-    "test": "jest",
-    "release": "standard-version && git push --follow-tags && npm publish"
+    "test": "yarn lint && jest",
+    "release": "yarn test && standard-version && git push --follow-tags && npm publish"
   },
-  "eslintIgnore": [
-    "lib/plugin.js"
-  ],
   "files": [
     "lib"
   ],
-  "jest": {
-    "testEnvironment": "node",
-    "collectCoverage": true
-  },
   "devDependencies": {
+    "@babel/core": "latest",
+    "@babel/preset-env": "latest",
+    "@commitlint/cli": "latest",
+    "@commitlint/config-conventional": "latest",
+    "@nuxtjs/eslint-config": "latest",
     "babel-eslint": "latest",
-    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-jest": "latest",
     "codecov": "latest",
     "eslint": "latest",
     "eslint-config-standard": "latest",
@@ -47,9 +39,12 @@
     "eslint-plugin-promise": "latest",
     "eslint-plugin-standard": "latest",
     "eslint-plugin-vue": "latest",
-    "jest": "^24.1.0",
-    "jsdom": "latest",
+    "get-port": "latest",
+    "husky": "latest",
+    "jest": "latest",
     "nuxt-edge": "latest",
+    "request": "latest",
+    "request-promise-native": "latest",
     "standard-version": "latest"
   }
 }

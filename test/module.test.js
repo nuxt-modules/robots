@@ -1,67 +1,98 @@
+jest.setTimeout(60000)
+
 const { readFileSync } = require('fs')
+const { resolve } = require('path')
 const { Nuxt, Builder, Generator } = require('nuxt-edge')
-const path = require('path')
 const request = require('request-promise-native')
+const getPort = require('get-port')
 
-const config = require('../example/nuxt.config')
+const config = require('./fixture/nuxt.config')
 
-const url = path => `http://localhost:3000${path}`
+let nuxt, port
+
+const url = path => `http://localhost:${port}${path}`
 const get = path => request(url(path))
 
-describe('spa', () => {
-  let nuxt
+const setupNuxt = async (config) => {
+  const nuxt = new Nuxt(config)
+  await new Builder(nuxt).build()
+  port = await getPort()
+  await nuxt.listen(port)
 
-  beforeAll(async () => {
-    nuxt = new Nuxt(Object.assign({ mode: 'spa' }, config))
-    await new Builder(nuxt).build()
-    await nuxt.listen(3000)
-  }, 60000)
+  return nuxt
+}
 
-  afterAll(async () => {
-    await nuxt.close()
-  })
+describe('module', () => {
+  test('ssr', async () => {
+    nuxt = await setupNuxt(config)
 
-  test('robots.txt', async () => {
     const robots = await get('/robots.txt')
-    expect(robots).toContain('User-agent: *\nDisallow:')
-  })
-})
-
-describe('ssr', () => {
-  let nuxt
-
-  beforeAll(async () => {
-    nuxt = new Nuxt(config)
-    await new Builder(nuxt).build()
-    await nuxt.listen(3000)
-  }, 60000)
-
-  afterAll(async () => {
-    await nuxt.close()
+    expect(robots).toBe('User-agent: *\nDisallow: ')
   })
 
-  test('robots.txt', async () => {
+  test('spa', async () => {
+    nuxt = await setupNuxt({
+      ...config,
+      mode: 'spa'
+    })
+
     const robots = await get('/robots.txt')
-    expect(robots).toContain('User-agent: *\nDisallow:')
+    expect(robots).toBe('User-agent: *\nDisallow: ')
   })
-})
 
-describe('generate', () => {
-  let nuxt
-
-  beforeAll(async () => {
+  test('generate', async () => {
     nuxt = new Nuxt(config)
     const builder = new Builder(nuxt)
     const generator = new Generator(nuxt, builder)
     await generator.generate()
-  }, 60000)
 
-  afterAll(async () => {
-    await nuxt.close()
+    const robots = readFileSync(resolve(__dirname, '../dist/robots.txt'), 'utf8')
+    expect(robots).toBe('User-agent: *\nDisallow: ')
   })
 
-  test('robots.txt', async () => {
-    const robots = readFileSync(path.resolve(__dirname, '../dist/robots.txt'), 'utf8')
-    expect(robots).toContain('User-agent: *\nDisallow:')
+  test('with object', async () => {
+    nuxt = await setupNuxt({
+      ...config,
+      robots: {
+        UserAgent: 'Googlebot',
+        Disallow: '/'
+      }
+    })
+
+    const robots = await get('/robots.txt')
+    expect(robots).toBe('User-agent: Googlebot\nDisallow: /')
+  })
+
+  test('with array', async () => {
+    nuxt = await setupNuxt({
+      ...config,
+      robots: [
+        {
+          UserAgent: ['Googlebot', 'Bingbot'],
+          Disallow: '/admin'
+        }
+      ]
+    })
+
+    const robots = await get('/robots.txt')
+    expect(robots).toBe('User-agent: Googlebot\nUser-agent: Bingbot\nDisallow: /admin')
+  })
+
+  test('empty', async () => {
+    nuxt = await setupNuxt({
+      ...config,
+      modules: [
+        [require('../'), []]
+      ]
+    })
+
+    const robots = await get('/robots.txt')
+    expect(robots).toBe('')
+  })
+
+  afterEach(async () => {
+    if (nuxt) {
+      await nuxt.close()
+    }
   })
 })
