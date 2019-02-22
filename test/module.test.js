@@ -23,6 +23,12 @@ const setupNuxt = async (config) => {
 }
 
 describe('module', () => {
+  afterEach(async () => {
+    if (nuxt) {
+      await nuxt.close()
+    }
+  })
+  
   test('ssr', async () => {
     nuxt = await setupNuxt(config)
 
@@ -88,11 +94,5 @@ describe('module', () => {
 
     const robots = await get('/robots.txt')
     expect(robots).toBe('')
-  })
-
-  afterEach(async () => {
-    if (nuxt) {
-      await nuxt.close()
-    }
   })
 })
