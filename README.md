@@ -87,6 +87,8 @@ Disallow: /admin
 
 [MIT License](./LICENSE)
 
+Thanks [William DA SILVA](https://github.com/WilliamDASILVA) for making this module
+
 Copyright (c) - Nuxt Community
 
 <!-- Badges -->
