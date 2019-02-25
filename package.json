@@ -1,6 +1,6 @@
 {
-  "name": "nuxt-robots-module",
-  "version": "1.5.1",
+  "name": "@nuxtjs/robots",
+  "version": "1.0.0",
   "description": "A NuxtJS module thats inject a middleware to generate a robots.txt file",
   "license": "MIT",
   "contributors": [
@@ -9,7 +9,7 @@
     "William DA SILVA <william.da.silva@outlook.com>"
   ],
   "main": "lib/module.js",
-  "repository": "https://github.com/WilliamDASILVA/nuxt-robots-module",
+  "repository": "https://github.com/nuxt-community/robots-module",
   "publishConfig": {
     "access": "public"
   },

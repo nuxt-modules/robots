@@ -1,4 +1,4 @@
-# nuxt-robots-module
+# @nuxtjs/robots
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
@@ -13,22 +13,22 @@
 
 ## Setup
 
-1. Add the `nuxt-robots-module` dependency with `yarn` or `npm` to your project
-2. Add `nuxt-robots-module` to the `modules` section of `nuxt.config.js`
+1. Add the `@nuxtjs/robots` dependency with `yarn` or `npm` to your project
+2. Add `@nuxtjs/robots` to the `modules` section of `nuxt.config.js`
 3. Configure it:
 
 ```js
 {
   modules: [
     // Simple usage
-    'nuxt-robots-module',
+    '@nuxtjs/robots',
 
     // With options
-    ['nuxt-robots-module', {
+    ['@nuxtjs/robots', {
       UserAgent: 'Googlebot',
       Disallow: '/'
     }],
- ]
+  ]
 }
 ```
 
@@ -37,7 +37,7 @@
 ```js
 {
   modules: [
-    'nuxt-robots-module',
+    '@nuxtjs/robots',
   ],
   robots: {
     UserAgent: '*',
@@ -53,7 +53,7 @@ The module option parameter can be an `object` (like above) or an `array of obje
 ```js
 {
   modules: [
-    'nuxt-robots-module'
+    '@nuxtjs/robots'
   ],
   robots: [
     {
@@ -87,18 +87,18 @@ Disallow: /admin
 
 [MIT License](./LICENSE)
 
-Copyright (c) - William DA SILVA <william.da.silva@outlook.com>
+Copyright (c) - Nuxt Community
 
 <!-- Badges -->
-[npm-version-src]: https://img.shields.io/npm/dt/nuxt-robots-module.svg?style=flat-square
-[npm-version-href]: https://npmjs.com/package/nuxt-robots-module
-[npm-downloads-src]: https://img.shields.io/npm/v/nuxt-robots-module/latest.svg?style=flat-square
-[npm-downloads-href]: https://npmjs.com/package/nuxt-robots-module
-[circle-ci-src]: https://img.shields.io/circleci/project/github/WilliamDASILVA/nuxt-robots-module.svg?style=flat-square
-[circle-ci-href]: https://circleci.com/gh/WilliamDASILVA/nuxt-robots-module
-[codecov-src]: https://img.shields.io/codecov/c/github/WilliamDASILVA/nuxt-robots-module.svg?style=flat-square
-[codecov-href]: https://codecov.io/gh/WilliamDASILVA/nuxt-robots-module
-[david-dm-src]: https://david-dm.org/WilliamDASILVA/nuxt-robots-module/status.svg?style=flat-square
-[david-dm-href]: https://david-dm.org/WilliamDASILVA/nuxt-robots-module
+[npm-version-src]: https://img.shields.io/npm/dt/@nuxtjs/robots.svg?style=flat-square
+[npm-version-href]: https://npmjs.com/package/@nuxtjs/robots
+[npm-downloads-src]: https://img.shields.io/npm/v/@nuxtjs/robots/latest.svg?style=flat-square
+[npm-downloads-href]: https://npmjs.com/package/@nuxtjs/robots
+[circle-ci-src]: https://img.shields.io/circleci/project/github/nuxt-community/robots-module.svg?style=flat-square
+[circle-ci-href]: https://circleci.com/gh/nuxt-community/robots-module
+[codecov-src]: https://img.shields.io/codecov/c/github/nuxt-community/robots-module.svg?style=flat-square
+[codecov-href]: https://codecov.io/gh/nuxt-community/robots-module
+[david-dm-src]: https://david-dm.org/nuxt-community/robots-module/status.svg?style=flat-square
+[david-dm-href]: https://david-dm.org/nuxt-community/robots-module
 [standard-js-src]: https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square
 [standard-js-href]: https://standardjs.com
