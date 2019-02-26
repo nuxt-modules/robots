@@ -27,7 +27,7 @@
     ['@nuxtjs/robots', {
       UserAgent: 'Googlebot',
       Disallow: '/'
-    }],
+    }]
   ]
 }
 ```
@@ -37,7 +37,7 @@
 ```js
 {
   modules: [
-    '@nuxtjs/robots',
+    '@nuxtjs/robots'
   ],
   robots: {
     UserAgent: '*',
