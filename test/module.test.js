@@ -49,6 +49,7 @@ describe('module', () => {
 
   test('generate', async () => {
     nuxt = new Nuxt(config)
+
     const builder = new Builder(nuxt)
     const generator = new Generator(nuxt, builder)
     await generator.generate()
