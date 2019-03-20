@@ -16,6 +16,7 @@ const get = path => request(url(path))
 
 const setupNuxt = async (config) => {
   const nuxt = new Nuxt(config)
+  await nuxt.ready()
   await new Builder(nuxt).build()
   port = await getPort()
   await nuxt.listen(port)
@@ -49,6 +50,7 @@ describe('module', () => {
 
   test('generate', async () => {
     nuxt = new Nuxt(config)
+    await nuxt.ready()
 
     const builder = new Builder(nuxt)
     const generator = new Generator(nuxt, builder)
