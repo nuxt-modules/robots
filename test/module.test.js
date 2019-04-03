@@ -65,7 +65,7 @@ describe('module', () => {
       ...config,
       robots: {
         UserAgent: 'Googlebot',
-        Disallow: '/'
+        Disallow: () => '/'
       }
     })
 
@@ -78,7 +78,7 @@ describe('module', () => {
       ...config,
       robots: [
         {
-          UserAgent: ['Googlebot', 'Bingbot'],
+          UserAgent: ['Googlebot', () => 'Bingbot'],
           Disallow: '/admin'
         }
       ]
