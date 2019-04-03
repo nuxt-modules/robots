@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.1.0](https://github.com/nuxt-community/robots-module/compare/v2.0.0...v2.1.0) (2019-04-03)
+
+
+### Features
+
+* **module:** accept function with value ([ea68d9f](https://github.com/nuxt-community/robots-module/commit/ea68d9f))
+
+
+
+# Change Log
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
 # 2.0.0 (2019-02-25)
 
 
