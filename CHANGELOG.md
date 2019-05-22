@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [2.2.0](https://github.com/nuxt-community/robots-module/compare/v2.1.1...v2.2.0) (2019-05-22)
+
+
+### Features
+
+* **module:** added CleanParam property ([1894759](https://github.com/nuxt-community/robots-module/commit/1894759))
+
+
+
+# Change Log
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
 ## [2.1.1](https://github.com/nuxt-community/robots-module/compare/v2.1.0...v2.1.1) (2019-05-22)
 
 
