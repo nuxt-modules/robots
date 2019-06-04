@@ -88,7 +88,7 @@ describe('module', () => {
     expect(robots).toBe('User-agent: Googlebot\nUser-agent: Bingbot\nDisallow: /admin')
   })
 
-  test('with array 2', async () => {
+  test('with key as function', async () => {
     nuxt = await setupNuxt({
       ...config,
       robots: [
