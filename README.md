@@ -4,8 +4,7 @@
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
 [![Circle CI][circle-ci-src]][circle-ci-href]
 [![Codecov][codecov-src]][codecov-href]
-[![Dependencies][david-dm-src]][david-dm-href]
-[![Standard JS][standard-js-src]][standard-js-href]
+[![License][license-src]][license-href]
 
 > A NuxtJS module thats inject a middleware to generate a robots.txt file
 
@@ -13,9 +12,13 @@
 
 ## Setup
 
-1. Add the `@nuxtjs/robots` dependency with `yarn` or `npm` to your project
+1. Add `@nuxtjs/robots` dependency to your project
+
+```bash
+yarn add @nuxtjs/robots # or npm install @nuxtjs/robots
+```
+
 2. Add `@nuxtjs/robots` to the `modules` section of `nuxt.config.js`
-3. Configure it:
 
 ```js
 {
@@ -24,10 +27,7 @@
     '@nuxtjs/robots',
 
     // With options
-    ['@nuxtjs/robots', {
-      UserAgent: 'Googlebot',
-      Disallow: '/'
-    }]
+    ['@nuxtjs/robots', { /* module options */ }]
   ]
 }
 ```
@@ -40,21 +40,28 @@
     '@nuxtjs/robots'
   ],
   robots: {
-    UserAgent: '*',
-    Disallow: '/'
+    /* module options */
   }
 }
 ```
 
 ## Options
 
-The module option parameter can be an `object` (like above) or an `array of objects`.
+The module option parameter can be an `object`:
 
 ```js
 {
-  modules: [
-    '@nuxtjs/robots'
-  ],
+  robots: {
+    UserAgent: '*',
+    Disallow: '/'
+  }
+}
+```
+
+or an `array of objects`:
+
+```js
+{
   robots: [
     {
       UserAgent: 'Googlebot',
@@ -92,15 +99,17 @@ Thanks [William DA SILVA](https://github.com/WilliamDASILVA) for making this mod
 Copyright (c) - Nuxt Community
 
 <!-- Badges -->
-[npm-version-src]: https://img.shields.io/npm/dt/@nuxtjs/robots.svg?style=flat-square
+[npm-version-src]: https://img.shields.io/npm/v/@nuxtjs/robots/latest.svg?style=flat-square
 [npm-version-href]: https://npmjs.com/package/@nuxtjs/robots
-[npm-downloads-src]: https://img.shields.io/npm/v/@nuxtjs/robots/latest.svg?style=flat-square
+
+[npm-downloads-src]: https://img.shields.io/npm/dt/@nuxtjs/robots.svg?style=flat-square
 [npm-downloads-href]: https://npmjs.com/package/@nuxtjs/robots
+
 [circle-ci-src]: https://img.shields.io/circleci/project/github/nuxt-community/robots-module.svg?style=flat-square
 [circle-ci-href]: https://circleci.com/gh/nuxt-community/robots-module
+
 [codecov-src]: https://img.shields.io/codecov/c/github/nuxt-community/robots-module.svg?style=flat-square
 [codecov-href]: https://codecov.io/gh/nuxt-community/robots-module
-[david-dm-src]: https://david-dm.org/nuxt-community/robots-module/status.svg?style=flat-square
-[david-dm-href]: https://david-dm.org/nuxt-community/robots-module
-[standard-js-src]: https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square
-[standard-js-href]: https://standardjs.com
+
+[license-src]: https://img.shields.io/npm/l/@nuxtjs/robots.svg?style=flat-square
+[license-href]: https://npmjs.com/package/@nuxtjs/robots
