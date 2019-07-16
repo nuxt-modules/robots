@@ -9,7 +9,7 @@
     "William DA SILVA <william.da.silva@outlook.com>"
   ],
   "main": "lib/module.js",
-  "repository": "https://github.com/nuxt-community/robots-module",
+  "repository": "nuxt-community/robots-module",
   "publishConfig": {
     "access": "public"
   },
@@ -23,22 +23,11 @@
     "lib"
   ],
   "devDependencies": {
-    "@babel/core": "latest",
-    "@babel/preset-env": "latest",
     "@commitlint/cli": "latest",
     "@commitlint/config-conventional": "latest",
     "@nuxtjs/eslint-config": "latest",
-    "babel-eslint": "latest",
-    "babel-jest": "latest",
     "codecov": "latest",
     "eslint": "latest",
-    "eslint-config-standard": "latest",
-    "eslint-plugin-import": "latest",
-    "eslint-plugin-jest": "latest",
-    "eslint-plugin-node": "latest",
-    "eslint-plugin-promise": "latest",
-    "eslint-plugin-standard": "latest",
-    "eslint-plugin-vue": "latest",
     "get-port": "latest",
     "husky": "latest",
     "jest": "latest",
