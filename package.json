@@ -14,7 +14,6 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "nuxt test/fixture",
     "lint": "eslint --ext .js,.vue lib test",
     "test": "yarn lint && jest",
     "release": "yarn test && standard-version && git push --follow-tags && npm publish"
