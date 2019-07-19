@@ -1,6 +1,27 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [2.3.0](https://github.com/nuxt-community/robots-module/compare/v2.2.0...v2.3.0) (2019-07-19)
+
+
+### Bug Fixes
+
+* adding lines when value is a function that returns an array ([adcbc67](https://github.com/nuxt-community/robots-module/commit/adcbc67))
+* test name ([e6d2ae1](https://github.com/nuxt-community/robots-module/commit/e6d2ae1))
+
+
+### Build System
+
+* **deps:** bump js-yaml from 3.12.1 to 3.13.1 ([9b73ec0](https://github.com/nuxt-community/robots-module/commit/9b73ec0))
+* **deps:** bump lodash.template from 4.4.0 to 4.5.0 ([#25](https://github.com/nuxt-community/robots-module/issues/25)) ([d8d3e9c](https://github.com/nuxt-community/robots-module/commit/d8d3e9c))
+
+
+### Features
+
+* read `static/robots.txt` ([#28](https://github.com/nuxt-community/robots-module/issues/28)) ([58592db](https://github.com/nuxt-community/robots-module/commit/58592db))
+
+
 
 # [2.2.0](https://github.com/nuxt-community/robots-module/compare/v2.1.1...v2.2.0) (2019-05-22)
 
