@@ -47,7 +47,9 @@ yarn add @nuxtjs/robots # or npm install @nuxtjs/robots
 
 ## Options
 
-The module option parameter can be an `object`:
+The module option parameter can be:
+
+### `Object`
 
 ```js
 {
@@ -58,20 +60,29 @@ The module option parameter can be an `object`:
 }
 ```
 
-or an `array of objects`:
+### `Array`
 
 ```js
 {
   robots: [
     {
       UserAgent: 'Googlebot',
-      Disallow: '/users'
-    },
-    {
-      UserAgent: 'Bingbot',
-      Disallow: '/admin'
+      Disallow: () => '/users' // accepts function
     }
   ]
+}
+```
+
+### `Function`
+
+```js
+{
+  robots: () => {
+    return {
+      UserAgent: '*',
+      Disallow: '/'
+    }
+  }
 }
 ```
 
