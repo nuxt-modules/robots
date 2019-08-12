@@ -1,6 +1,6 @@
 {
   "name": "@nuxtjs/robots",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "A NuxtJS module thats inject a middleware to generate a robots.txt file",
   "license": "MIT",
   "contributors": [
