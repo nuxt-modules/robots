@@ -1,10 +1,10 @@
-const { setupNuxt, loadFixture, get } = require('../utils')
+const { setup, loadConfig, get } = require('@nuxtjs/module-test-utils')
 
 describe('static', () => {
   let nuxt
 
   beforeAll(async () => {
-    nuxt = await setupNuxt(loadFixture('static'))
+    ({ nuxt } = nuxt = await setup(loadConfig(__dirname, 'static')))
   }, 60000)
 
   afterAll(async () => {

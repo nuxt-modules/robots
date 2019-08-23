@@ -1,12 +1,12 @@
 const { readFileSync } = require('fs')
 const { resolve } = require('path')
-const { generateNuxt, loadFixture } = require('../utils')
+const { generate, loadConfig } = require('@nuxtjs/module-test-utils')
 
 describe('generate', () => {
   let nuxt
 
   beforeAll(async () => {
-    nuxt = await generateNuxt(loadFixture('generate'))
+    ({ nuxt } = await generate(loadConfig(__dirname, 'generate')))
   }, 60000)
 
   afterAll(async () => {
@@ -14,7 +14,7 @@ describe('generate', () => {
   })
 
   test('render', () => {
-    const robots = readFileSync(resolve(__dirname, '../../dist/robots.txt'), 'utf8')
+    const robots = readFileSync(resolve(nuxt.options.rootDir, 'dist/robots.txt'), 'utf8')
     expect(robots).toBe('User-agent: *\nDisallow: ')
   })
 })

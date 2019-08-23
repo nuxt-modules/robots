@@ -1,10 +1,10 @@
-const { setupNuxt, loadFixture, get } = require('../utils')
+const { setup, loadConfig, get } = require('@nuxtjs/module-test-utils')
 
-describe('spa', () => {
+describe('empty', () => {
   let nuxt
 
   beforeAll(async () => {
-    nuxt = await setupNuxt(loadFixture('spa'))
+    ({ nuxt } = await setup(loadConfig(__dirname, 'empty')))
   }, 60000)
 
   afterAll(async () => {
@@ -13,6 +13,6 @@ describe('spa', () => {
 
   test('render', async () => {
     const robots = await get('/robots.txt')
-    expect(robots).toBe('User-agent: *\nDisallow: ')
+    expect(robots).toBe('')
   })
 })

@@ -1,10 +1,10 @@
-const { setupNuxt, loadFixture, get } = require('../utils')
+const { setup, loadConfig, get } = require('@nuxtjs/module-test-utils')
 
 describe('with array', () => {
   let nuxt
 
   beforeAll(async () => {
-    nuxt = await setupNuxt(loadFixture('with-array'))
+    ({ nuxt } = nuxt = await setup(loadConfig(__dirname, 'with-array')))
   }, 60000)
 
   afterAll(async () => {

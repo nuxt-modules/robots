@@ -2,37 +2,35 @@
   "name": "@nuxtjs/robots",
   "version": "2.4.0",
   "description": "A NuxtJS module thats inject a middleware to generate a robots.txt file",
+  "repository": "nuxt-community/robots-module",
   "license": "MIT",
   "contributors": [
     "Ricardo Gobbo de Souza <ricardogobbosouza@yahoo.com.br>",
     "Robert Reinhard",
     "William DA SILVA <william.da.silva@outlook.com>"
   ],
-  "main": "lib/module.js",
-  "repository": "nuxt-community/robots-module",
-  "publishConfig": {
-    "access": "public"
-  },
-  "scripts": {
-    "lint": "eslint --ext .js,.vue lib test",
-    "test": "yarn lint && jest",
-    "release": "yarn test && standard-version && git push --follow-tags && npm publish"
-  },
   "files": [
     "lib"
   ],
+  "main": "lib/module.js",
+  "scripts": {
+    "lint": "eslint --ext .js,.vue .",
+    "release": "yarn test && standard-version && git push --follow-tags && npm publish",
+    "test": "yarn lint && jest"
+  },
   "devDependencies": {
     "@commitlint/cli": "latest",
     "@commitlint/config-conventional": "latest",
     "@nuxtjs/eslint-config": "latest",
+    "@nuxtjs/module-test-utils": "latest",
     "codecov": "latest",
     "eslint": "latest",
-    "get-port": "latest",
     "husky": "latest",
     "jest": "latest",
     "nuxt-edge": "latest",
-    "request": "latest",
-    "request-promise-native": "latest",
     "standard-version": "latest"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

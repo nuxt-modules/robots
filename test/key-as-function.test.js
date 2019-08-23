@@ -1,10 +1,10 @@
-const { setupNuxt, loadFixture, get } = require('../utils')
+const { setup, loadConfig, get } = require('@nuxtjs/module-test-utils')
 
 describe('key as function', () => {
   let nuxt
 
   beforeAll(async () => {
-    nuxt = await setupNuxt(loadFixture('key-as-function'))
+    ({ nuxt } = await setup(loadConfig(__dirname, 'key-as-function')))
   }, 60000)
 
   afterAll(async () => {
