@@ -21,7 +21,7 @@ yarn add @nuxtjs/robots # or npm install @nuxtjs/robots
 2. Add `@nuxtjs/robots` to the `modules` section of `nuxt.config.js`
 
 ```js
-{
+export default {
   modules: [
     // Simple usage
     '@nuxtjs/robots',
@@ -35,7 +35,7 @@ yarn add @nuxtjs/robots # or npm install @nuxtjs/robots
 ### Using top level options
 
 ```js
-{
+export default {
   modules: [
     '@nuxtjs/robots'
   ],
@@ -52,7 +52,7 @@ The module option parameter can be:
 ### `Object`
 
 ```js
-{
+export default {
   robots: {
     UserAgent: '*',
     Disallow: '/'
@@ -63,7 +63,7 @@ The module option parameter can be:
 ### `Array`
 
 ```js
-{
+export default {
   robots: [
     {
       UserAgent: 'Googlebot',
@@ -76,7 +76,7 @@ The module option parameter can be:
 ### `Function`
 
 ```js
-{
+export default {
   robots: () => {
     return {
       UserAgent: '*',
