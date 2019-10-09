@@ -89,11 +89,23 @@ export default {
 ### Will generate a /robots.txt
 
 ```bash
-UserAgent: Googlebot
+User-agent: Googlebot
 Disallow: /users
-UserAgent: Bingbot
+User-agent: Bingbot
 Disallow: /admin
 ```
+
+### The keys and values available:
+
+- UserAgent = `User-agent`
+- CrawlDelay = `Crawl-delay`
+- Disallow = `Disallow`
+- Allow = `Allow`
+- Host = `Host`
+- Sitemap = `Sitemap`
+- CleanParam = `Clean-param`
+
+**Note:** Don't worry keys are parsed with case insensitive and special characters.
 
 ## License
 
