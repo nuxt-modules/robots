@@ -6,7 +6,7 @@
 [![Codecov][codecov-src]][codecov-href]
 [![License][license-src]][license-href]
 
-> A NuxtJS module thats inject a middleware to generate a robots.txt file
+> A Nuxt.js module thats inject a middleware to generate a robots.txt file
 
 [📖 **Release Notes**](./CHANGELOG.md)
 
