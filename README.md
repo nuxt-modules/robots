@@ -115,20 +115,20 @@ Disallow: /admin
 Copyright (c) - Nuxt Community
 
 <!-- Badges -->
-[npm-version-src]: https://img.shields.io/npm/v/@nuxtjs/robots/latest.svg?style=flat-square
+[npm-version-src]: https://img.shields.io/npm/v/@nuxtjs/robots/latest.svg
 [npm-version-href]: https://npmjs.com/package/@nuxtjs/robots
 
-[npm-downloads-src]: https://img.shields.io/npm/dt/@nuxtjs/robots.svg?style=flat-square
+[npm-downloads-src]: https://img.shields.io/npm/dt/@nuxtjs/robots.svg
 [npm-downloads-href]: https://npmjs.com/package/@nuxtjs/robots
 
-[circle-ci-src]: https://img.shields.io/circleci/project/github/nuxt-community/robots-module.svg?style=flat-square
+[circle-ci-src]: https://img.shields.io/circleci/project/github/nuxt-community/robots-module.svg
 [circle-ci-href]: https://circleci.com/gh/nuxt-community/robots-module
 
 [github-actions-ci-src]: https://github.com/nuxt-community/robots-module/workflows/ci/badge.svg
-[github-actions-ci-href]: https://github.com/nuxt-community/robots-module/actions
+[github-actions-ci-href]: https://github.com/nuxt-community/robots-module/actions?query=workflow%3Aci
 
-[codecov-src]: https://img.shields.io/codecov/c/github/nuxt-community/robots-module.svg?style=flat-square
+[codecov-src]: https://img.shields.io/codecov/c/github/nuxt-community/robots-module.svg
 [codecov-href]: https://codecov.io/gh/nuxt-community/robots-module
 
-[license-src]: https://img.shields.io/npm/l/@nuxtjs/robots.svg?style=flat-square
+[license-src]: https://img.shields.io/npm/l/@nuxtjs/robots.svg
 [license-href]: https://npmjs.com/package/@nuxtjs/robots
