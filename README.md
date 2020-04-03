@@ -2,7 +2,7 @@
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
-[![Github Actions][github-actions-src]][github-actions-href]
+[![Github Actions CI][github-actions-ci-src]][github-actions-ci-href]
 [![Codecov][codecov-src]][codecov-href]
 [![License][license-src]][license-href]
 
@@ -120,8 +120,8 @@ Copyright (c) - Nuxt Community
 [npm-downloads-src]: https://img.shields.io/npm/dt/@nuxtjs/robots.svg
 [npm-downloads-href]: https://npmjs.com/package/@nuxtjs/robots
 
-[github-actions-src]: https://github.com/nuxt-community/robots-module/workflows/ci/badge.svg
-[github-actions-href]: https://github.com/nuxt-community/robots-module/actions?query=workflow%3Aci
+[github-actions-ci-src]: https://github.com/nuxt-community/robots-module/workflows/ci/badge.svg
+[github-actions-ci-href]: https://github.com/nuxt-community/robots-module/actions?query=workflow%3Aci
 
 [codecov-src]: https://img.shields.io/codecov/c/github/nuxt-community/robots-module.svg
 [codecov-href]: https://codecov.io/gh/nuxt-community/robots-module
