@@ -9,10 +9,10 @@
     "Robert Reinhard",
     "William DA SILVA <william.da.silva@outlook.com>"
   ],
+  "main": "lib/module.js",
   "files": [
     "lib"
   ],
-  "main": "lib/module.js",
   "scripts": {
     "lint": "eslint --ext .js,.vue .",
     "release": "yarn test && standard-version && git push --follow-tags && npm publish",
