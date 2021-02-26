@@ -1,5 +1,6 @@
 # @nuxtjs/robots
 
+
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
 [![Github Actions CI][github-actions-ci-src]][github-actions-ci-href]
@@ -42,6 +43,19 @@ export default {
   robots: {
     /* module options */
   }
+}
+```
+
+### Sitemap Module
+
+To integrate with the [Sitemap Module](https://github.com/nuxt-community/sitemap-module) just register this module after:
+
+```js
+export default {
+  modules: [
+    '@nuxtjs/sitemap', // <--- before robots
+    '@nuxtjs/robots'
+  ]
 }
 ```
 
