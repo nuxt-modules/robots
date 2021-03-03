@@ -1,14 +1,9 @@
-module.exports = {
+export default {
   rootDir: __dirname,
   modules: [
-    {
-      handler: require('../../../lib/module'),
-      options: () => {
-        return {
-          UserAgent: 'Googlebot',
-          Disallow: () => '/'
-        }
-      }
-    }
+    ['../../../src/module.ts', () => ({
+      UserAgent: 'Googlebot',
+      Disallow: () => '/'
+    })]
   ]
 }

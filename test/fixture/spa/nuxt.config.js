@@ -1,7 +1,7 @@
-module.exports = {
-  mode: 'spa',
+export default {
+  ssr: false,
   rootDir: __dirname,
   modules: [
-    { handler: require('../../../') }
+    '../../../src/module.ts'
   ]
 }

@@ -1,7 +1,7 @@
-module.exports = {
+export default {
   rootDir: __dirname,
   modules: [
-    { handler: require('../../../lib/module') }
+    '../../../src/module.ts'
   ],
   robots: () => {
     return {
