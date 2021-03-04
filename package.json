@@ -9,24 +9,31 @@
     "Robert Reinhard",
     "William DA SILVA <william.da.silva@outlook.com>"
   ],
-  "main": "lib/module.js",
+  "main": "./dist/module.js",
+  "types": "./dist/module.d.ts",
   "files": [
-    "lib"
+    "dist"
   ],
   "scripts": {
-    "lint": "eslint --ext .js,.vue .",
-    "release": "yarn test && standard-version && git push --follow-tags && npm publish",
-    "test": "yarn lint && jest"
+    "build": "siroc build",
+    "prepublishOnly": "yarn build",
+    "dev": "nuxt dev test/fixture/basic",
+    "lint": "eslint --ext .js,.ts,.vue .",
+    "release": "yarn test && yarn build && standard-version && git push --follow-tags && npm publish",
+    "test": "yarn lint && yarn jest"
   },
   "devDependencies": {
-    "@commitlint/cli": "latest",
-    "@commitlint/config-conventional": "latest",
-    "@nuxtjs/eslint-config": "latest",
-    "@nuxtjs/module-test-utils": "latest",
+    "@babel/preset-typescript": "latest",
+    "@nuxt/test-utils": "latest",
+    "@nuxt/types": "latest",
+    "@nuxtjs/eslint-config-typescript": "latest",
+    "@types/jest": "latest",
+    "@types/node": "latest",
+    "del": "latest",
     "eslint": "latest",
-    "husky": "latest",
     "jest": "latest",
-    "nuxt-edge": "latest",
+    "nuxt": "latest",
+    "siroc": "latest",
     "standard-version": "latest"
   },
   "publishConfig": {

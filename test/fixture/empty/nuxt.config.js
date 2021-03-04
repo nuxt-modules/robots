@@ -1,6 +1,6 @@
-module.exports = {
+export default {
   rootDir: __dirname,
   modules: [
-    [require('../../../'), []]
+    ['../../../src/module.ts', []]
   ]
 }

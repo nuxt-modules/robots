@@ -1,6 +1,7 @@
-module.exports = {
+export default {
+  target: 'static',
   rootDir: __dirname,
   modules: [
-    { handler: require('../../../') }
+    '../../../src/module.ts'
   ]
 }
