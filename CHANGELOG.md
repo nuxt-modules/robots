@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.5.0](https://github.com/nuxt-community/robots-module/compare/v2.4.2...v2.5.0) (2021-03-11)
+
+
+### Features
+
+* typescript rewrite ([#43](https://github.com/nuxt-community/robots-module/issues/43)) ([5bde48e](https://github.com/nuxt-community/robots-module/commit/5bde48e9264c479d2c3c3a9a8b89e759a4442c65))
+
 ### [2.4.2](https://github.com/nuxt-community/robots-module/compare/v2.4.1...v2.4.2) (2019-10-09)
 
 
