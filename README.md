@@ -80,7 +80,8 @@ export default {
   robots: () => {
     return {
       UserAgent: '*',
-      Disallow: '/'
+      Disallow: '/',
+      Sitemap: (req) => `https://${req.headers.host}/sitemap.xml`
     }
   }
 }
