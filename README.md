@@ -6,7 +6,7 @@
 [![Codecov][codecov-src]][codecov-href]
 [![License][license-src]][license-href]
 
-> A Nuxt.js module thats inject a middleware to generate a robots.txt file
+> A Nuxt.js module that injects a middleware to generate a robots.txt file
 
 [📖 **Release Notes**](./CHANGELOG.md)
 
@@ -105,7 +105,7 @@ Disallow: /admin
 - Sitemap = `Sitemap`
 - CleanParam = `Clean-param`
 
-**Note:** Don't worry keys are parsed with case insensitive and special characters.
+**Note:** Don't worry, keys are parsed with case insensitivity and special characters.
 
 ## License
 
