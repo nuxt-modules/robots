@@ -114,7 +114,7 @@ Hooks are listeners to Nuxt events. [Learn more](https://nuxtjs.org/docs/configu
 | Hook                   | Arguments             | When                               |
 | ---------------------- | --------------------- | ---------------------------------- |
 | robots:generate:before | (nuxt, robotsOptions) | Hook on before site generation     |
-| robots:generate:done   | (nuxt)                | Hook on robots generation finished |
+| robots:generate:done   | (nuxt, robotsContent) | Hook on robots generation finished |
 
 ## License
 
