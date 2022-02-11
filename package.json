@@ -27,7 +27,7 @@
     "prepack": "yarn build",
     "dev:setup": "nuxt-module-build --stub && nuxi prepare playground",
     "release": "yarn test && yarn build && standard-version && git push --follow-tags && npm publish",
-    "test": "yarn lint && yarn jest"
+    "test": "yarn lint"
   },
   "dependencies": {
     "@nuxt/kit": "npm:@nuxt/kit-edge@latest",
