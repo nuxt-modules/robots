@@ -1,7 +1,5 @@
 import { RuleInterface, Rule } from './types'
 
-export const FILE_NAME = 'robots.txt'
-
 export async function getRules (options: Rule[], req = null) {
   const correspondences = {
     useragent: 'User-agent',

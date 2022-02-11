@@ -1,56 +1,71 @@
-import type { Module } from '@nuxt/types'
+import { existsSync, readFileSync, writeFileSync } from 'fs'
+import { resolve } from 'pathe'
+import { defineNuxtModule, isNuxt2 } from '@nuxt/kit'
 import { name, version } from '../package.json'
-import { build } from './build'
-import { generate } from './generate'
-import { middleware } from './middleware'
-import { Rule } from './types'
-
-const CONFIG_KEY = 'robots'
-
-export type { Rule }
+import { Rule, RuleInterface } from './types'
+import { getRules, parseFile, render } from './utils'
 
 export type ModuleOptions = Rule | Rule[] | (() => Rule | Rule[])
 
-async function getOptions (moduleOptions: ModuleOptions): Promise<Rule[]> {
-  if (typeof moduleOptions === 'function') {
-    moduleOptions = await moduleOptions.call(this)
-  }
-
-  if (Array.isArray(moduleOptions)) {
-    return moduleOptions
-  }
-
-  let { robots } = this.options
-
-  if (typeof robots === 'function') {
-    robots = await robots.call(this)
-  }
-
-  if (Array.isArray(robots)) {
-    return robots
-  }
-
-  return [{
-    UserAgent: '*',
-    Disallow: '',
-    ...robots,
-    ...moduleOptions
-  }]
+export interface ModuleHooks {
+  'robots:generate:before': (moduleOptions: ModuleOptions) => void
+  'robots:generate:done': (content: string) => void
 }
 
-const nuxtModule: Module<ModuleOptions> = async function (moduleOptions) {
-  const options: Rule[] = await getOptions.call(this, moduleOptions)
+export default defineNuxtModule({
+  meta: {
+    name,
+    version,
+    configKey: 'robots'
+  },
 
-  build.bind(this)()
-  generate.bind(this)(options)
-  middleware.bind(this)(options)
-}
+  setup (moduleOptions, nuxt) {
+    if (!Array.isArray(moduleOptions)) {
+      moduleOptions = [{
+        UserAgent: '*',
+        Disallow: '',
+        ...moduleOptions
+      }]
+    }
 
-;(nuxtModule as any).meta = { name, version }
+    let staticRules: RuleInterface[] = []
 
-declare module '@nuxt/types' {
-  interface NuxtConfig { [CONFIG_KEY]?: ModuleOptions } // Nuxt 2.14+
-  interface Configuration { [CONFIG_KEY]?: ModuleOptions } // Nuxt 2.9 - 2.13
-}
+    // Loading existing robots.txt
+    nuxt.hook('build:before', async () => {
+      const staticDir = isNuxt2() ? nuxt.options.dir.static : nuxt.options.dir.public
+      const staticFilePath = resolve(nuxt.options.srcDir, staticDir, 'robots.txt')
 
-export default nuxtModule
+      if (existsSync(staticFilePath)) {
+        const content = readFileSync(staticFilePath).toString()
+
+        staticRules = await getRules.call(nuxt, parseFile(content))
+      }
+    })
+
+    // Generate robots.txt
+    nuxt.hook('generate:done', async () => {
+      // @ts-ignore
+      await nuxt.callHook('robots:generate:before', moduleOptions)
+
+      const generateFilePath = resolve(nuxt.options.rootDir, nuxt.options.generate.dir, 'robots.txt')
+      const rules: RuleInterface[] = await getRules.call(nuxt, moduleOptions)
+      const content = render([...staticRules, ...rules])
+
+      writeFileSync(generateFilePath, content)
+
+      // @ts-ignore
+      await nuxt.callHook('robots:generate:done', content)
+    })
+
+    // Middleware /robots.txt
+    nuxt.options.serverMiddleware.unshift({
+      path: '/robots.txt',
+      async handler (req, res) {
+        const rules: RuleInterface[] = await getRules.call(nuxt, moduleOptions, req)
+
+        res.setHeader('Content-Type', 'text/plain')
+        res.end(render([...staticRules, ...rules]))
+      }
+    })
+  }
+})

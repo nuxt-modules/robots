@@ -3,37 +3,44 @@
   "version": "2.5.0",
   "description": "A Nuxt.js module that injects a middleware to generate a robots.txt file",
   "repository": "nuxt-community/robots-module",
-  "license": "MIT",
   "contributors": [
     "Ricardo Gobbo de Souza <ricardogobbosouza@yahoo.com.br>",
     "Robert Reinhard",
     "William DA SILVA <william.da.silva@outlook.com>"
   ],
-  "main": "./dist/module.js",
-  "types": "./dist/module.d.ts",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "require": "./dist/module.cjs",
+      "import": "./dist/module.mjs"
+    }
+  },
+  "main": "./dist/module.cjs",
+  "types": "./dist/types.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "siroc build",
-    "prepublishOnly": "yarn build",
-    "dev": "nuxt dev test/fixture/basic",
-    "lint": "eslint --ext .js,.ts,.vue .",
+    "build": "nuxt-module-build",
+    "dev": "nuxt dev playground",
+    "lint": "eslint --ext .js,.ts,.vue",
+    "prepack": "yarn build",
+    "dev:setup": "nuxt-module-build --stub && nuxi prepare playground",
     "release": "yarn test && yarn build && standard-version && git push --follow-tags && npm publish",
     "test": "yarn lint && yarn jest"
   },
+  "dependencies": {
+    "@nuxt/kit": "npm:@nuxt/kit-edge@latest",
+    "pathe": "^0.2.0"
+  },
   "devDependencies": {
-    "@babel/preset-typescript": "latest",
+    "@nuxt/module-builder": "latest",
     "@nuxt/test-utils": "latest",
-    "@nuxt/types": "latest",
     "@nuxtjs/eslint-config-typescript": "latest",
-    "@types/jest": "latest",
-    "@types/node": "latest",
-    "del": "latest",
+    "babel-jest": "latest",
     "eslint": "latest",
     "jest": "latest",
-    "nuxt": "latest",
-    "siroc": "latest",
+    "nuxt3": "latest",
     "standard-version": "latest"
   },
   "publishConfig": {

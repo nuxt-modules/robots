@@ -8,7 +8,14 @@
 
 > A Nuxt.js module that injects a middleware to generate a robots.txt file
 
-[📖 **Release Notes**](./CHANGELOG.md)
+- [📖 **Release Notes**](./CHANGELOG.md)
+
+## Features
+
+- Nuxt 3 and Nuxt Bridge support
+- Load and merge existing `robots.txt`
+- Generate `robots.txt` for static mode
+- Add middlware for `robots.txt`
 
 ## Setup
 
@@ -113,8 +120,8 @@ Hooks are listeners to Nuxt events. [Learn more](https://nuxtjs.org/docs/configu
 
 | Hook                   | Arguments             | When                               |
 | ---------------------- | --------------------- | ---------------------------------- |
-| robots:generate:before | (nuxt, robotsOptions) | Hook on before site generation     |
-| robots:generate:done   | (nuxt, robotsContent) | Hook on robots generation finished |
+| robots:generate:before | (robotsOptions)       | Hook on before site generation     |
+| robots:generate:done   | (robotsContent)       | Hook on robots generation finished |
 
 ## License
 
