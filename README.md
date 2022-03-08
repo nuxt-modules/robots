@@ -15,7 +15,7 @@
 - Nuxt 3 and Nuxt Bridge support
 - Load and merge existing `robots.txt`
 - Generate `robots.txt` for static mode
-- Add middlware for `robots.txt`
+- Add middleware for `robots.txt`
 
 ## Setup
 
