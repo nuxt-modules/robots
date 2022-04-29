@@ -1,10 +1,12 @@
-import { existsSync, readFileSync, writeFileSync } from 'fs'
+import { existsSync, writeFileSync } from 'fs'
+import { defineNuxtModule, addTemplate, addServerMiddleware, createResolver } from '@nuxt/kit'
+import { genArrayFromRaw } from 'knitwork'
 import { resolve } from 'pathe'
-import { defineNuxtModule, isNuxt2 } from '@nuxt/kit'
 import { name, version } from '../package.json'
-import { Rule, RuleInterface } from './types'
-import { getRules, parseFile, render } from './utils'
+import { Rule } from './types'
+import { getRules, render } from './utils'
 
+// TODO: Remove function type `(() => Rule | Rule[])` when merged https://github.com/nuxt/framework/pull/4476
 export type ModuleOptions = Rule | Rule[] | (() => Rule | Rule[])
 
 export interface ModuleHooks {
@@ -12,44 +14,36 @@ export interface ModuleHooks {
   'robots:generate:done': (content: string) => void
 }
 
-export default defineNuxtModule({
+export default defineNuxtModule<ModuleOptions>({
   meta: {
     name,
     version,
     configKey: 'robots'
   },
 
-  setup (moduleOptions, nuxt) {
-    if (!Array.isArray(moduleOptions)) {
-      moduleOptions = [{
-        UserAgent: '*',
-        Disallow: '',
-        ...moduleOptions
-      }]
+  // TODO: remove doube quotes when merged https://github.com/unjs/knitwork/pull/9
+  defaults: {
+    UserAgent: '"*"',
+    Disallow: '""'
+  },
+
+  setup (options, nuxt) {
+    // TODO: use robots.txt in public fodler?
+    const staticFilePath = resolve(nuxt.options.srcDir, nuxt.options.dir.public, 'robots.txt')
+
+    if (existsSync(staticFilePath)) {
+      return
     }
 
-    let staticRules: RuleInterface[] = []
-
-    // Loading existing robots.txt
-    nuxt.hook('build:before', async () => {
-      const staticDir = isNuxt2() ? nuxt.options.dir.static : nuxt.options.dir.public
-      const staticFilePath = resolve(nuxt.options.srcDir, staticDir, 'robots.txt')
-
-      if (existsSync(staticFilePath)) {
-        const content = readFileSync(staticFilePath).toString()
-
-        staticRules = await getRules.call(nuxt, parseFile(content))
-      }
-    })
+    const rules = (Array.isArray(options) ? options : [options]) as Rule[]
 
     // Generate robots.txt
     nuxt.hook('generate:done', async () => {
       // @ts-ignore
-      await nuxt.callHook('robots:generate:before', moduleOptions)
+      await nuxt.callHook('robots:generate:before', rules)
 
       const generateFilePath = resolve(nuxt.options.rootDir, nuxt.options.generate.dir, 'robots.txt')
-      const rules: RuleInterface[] = await getRules.call(nuxt, moduleOptions)
-      const content = render([...staticRules, ...rules])
+      const content = render(await getRules(rules))
 
       writeFileSync(generateFilePath, content)
 
@@ -57,15 +51,27 @@ export default defineNuxtModule({
       await nuxt.callHook('robots:generate:done', content)
     })
 
-    // Middleware /robots.txt
-    nuxt.options.serverMiddleware.unshift({
-      path: '/robots.txt',
-      async handler (req, res) {
-        const rules: RuleInterface[] = await getRules.call(nuxt, moduleOptions, req)
+    // Inject options via virtual template
+    nuxt.options.alias['#robots-options'] = addTemplate({
+      filename: 'robots-options.mjs',
+      write: true,
+      getContents: () => [
+        // TODO: use `genObjectFromValues` when merged https://github.com/unjs/knitwork/pull/9
+        `export const options = ${genArrayFromRaw(rules)}`,
+        `export const getRules = ${getRules.toString()}`,
+        `export const render = ${render.toString()}`
+      ].join('\n')
+    }).dst
 
-        res.setHeader('Content-Type', 'text/plain')
-        res.end(render([...staticRules, ...rules]))
-      }
+    // Transpile runtime
+    const resolver = createResolver(import.meta.url)
+    const runtimeDir = resolver.resolve('./runtime')
+    nuxt.options.build.transpile.push(runtimeDir)
+
+    // Middleware /robots.txt
+    addServerMiddleware({
+      route: '/robots.txt',
+      handler: resolve(runtimeDir, 'server/middleware')
     })
   }
 })

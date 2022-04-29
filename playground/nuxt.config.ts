@@ -1,9 +1,8 @@
 
-import { defineNuxtConfig } from 'nuxt3'
-import robotsModule from '..'
+import { defineNuxtConfig } from 'nuxt'
 
 export default defineNuxtConfig({
-  buildModules: [
-    robotsModule
+  modules: [
+    '../src/module.ts'
   ]
 })
