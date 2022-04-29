@@ -1,5 +1,6 @@
-export default {
-  rootDir: __dirname,
+import { defineNuxtConfig } from 'nuxt'
+
+export default defineNuxtConfig({
   modules: [
     '../../../src/module.ts'
   ],
@@ -7,4 +8,4 @@ export default {
     UserAgent: 'Googlebot',
     Disallow: () => '/'
   }
-}
+})

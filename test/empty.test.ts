@@ -1,13 +1,13 @@
-import { setupTest, get } from '@nuxt/test-utils'
+import { describe, test, expect } from 'vitest'
+import { setup, $fetch } from '@nuxt/test-utils'
 
-describe('empty', () => {
-  setupTest({
-    server: true,
+describe('empty', async () => {
+  await setup({
     fixture: 'fixture/empty'
   })
 
   test('render', async () => {
-    const { body } = await get('/robots.txt')
+    const body = await $fetch('/robots.txt')
     expect(body).toBe('')
   })
 })

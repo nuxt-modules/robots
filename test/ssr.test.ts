@@ -1,13 +1,13 @@
-import { setupTest, get } from '@nuxt/test-utils'
+import { describe, test, expect } from 'vitest'
+import { setup, $fetch } from '@nuxt/test-utils'
 
-describe('ssr', () => {
-  setupTest({
-    server: true,
+describe('spa', async () => {
+  await setup({
     fixture: 'fixture/ssr'
   })
 
   test('render', async () => {
-    const { body } = await get('/robots.txt')
+    const body = await $fetch('/robots.txt')
     expect(body).toBe('User-agent: *\nDisallow: ')
   })
 })

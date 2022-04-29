@@ -1,12 +1,11 @@
-export default {
-  rootDir: __dirname,
+import { defineNuxtConfig } from 'nuxt'
+
+export default defineNuxtConfig({
   modules: [
     '../../../src/module.ts'
   ],
-  robots: [
-    {
-      UserAgent: () => ['Googlebot', 'Bingbot'],
-      Disallow: '/admin'
-    }
-  ]
-}
+  robots: {
+    UserAgent: () => ['Googlebot', 'Bingbot'],
+    Disallow: '"/admin"'
+  }
+})

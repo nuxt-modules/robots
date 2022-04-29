@@ -1,7 +1,9 @@
-export default {
+import { defineNuxtConfig } from 'nuxt'
+
+export default defineNuxtConfig({
   ssr: false,
-  rootDir: __dirname,
+  target: 'static',
   modules: [
     '../../../src/module.ts'
   ]
-}
+})
