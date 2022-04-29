@@ -34,8 +34,8 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - name: Build project
-        run: yarn build
+      - name: Prepare TypeScript environment
+        run: yarn dev:prepare
 
       - name: Lint
         run: yarn lint
