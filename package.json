@@ -19,6 +19,7 @@
     "prepublishOnly": "yarn build",
     "dev": "nuxt dev test/fixture/basic",
     "lint": "eslint --ext .js,.ts,.vue .",
+    "format": "eslint --ext .js,.ts,.vue . --fix",
     "release": "yarn test && yarn build && standard-version && git push --follow-tags && npm publish",
     "test": "yarn lint && yarn jest"
   },
