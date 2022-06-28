@@ -1,3 +1,4 @@
 # Comment
+#comment with space
 foo: bar // unrecognized
 Disallow: /foo

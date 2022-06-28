@@ -1,6 +1,6 @@
 import { resolve } from 'path'
 import { writeFileSync } from 'fs'
-import { getStaticRules } from './build'
+import { getStaticFooter, getStaticHeader, getStaticRules } from './build'
 import { RuleInterface, Rule } from './types'
 import { FILE_NAME, getRules, render } from './utils'
 
@@ -11,7 +11,7 @@ export function generate (options: Rule[]) {
     const { rootDir, generate: { dir: generateDir } } = this.options
     const generateFilePath = resolve(rootDir, generateDir, FILE_NAME)
     const rules: RuleInterface[] = await getRules.call(this, options)
-    const content = render('', [...getStaticRules(), ...rules])
+    const content = render(getStaticHeader(), [...getStaticRules(), ...rules], getStaticFooter())
 
     writeFileSync(generateFilePath, content)
 

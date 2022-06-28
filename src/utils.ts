@@ -48,8 +48,8 @@ function parseRule (item: Rule) {
   return parsed
 }
 
-export function render (prefix: string = null, rules: RuleInterface[]) {
-  return [prefix, ...rules.map(rule => `${rule.key}: ${String(rule.value).trim()}`)].filter(Boolean).join('\n')
+export function render (header: string = '', rules: RuleInterface[], footer: string = '') {
+  return [header, ...rules.map(rule => `${rule.key}: ${String(rule.value).trim()}`), footer].filter(Boolean).join('\n')
 }
 
 export function parseFile (content: string) {

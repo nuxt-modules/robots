@@ -1,13 +1,13 @@
 import { setupTest, get } from '@nuxt/test-utils'
 
-describe('static', () => {
+describe('with function', () => {
   setupTest({
     server: true,
-    fixture: 'fixture/static-with-header'
+    fixture: 'fixture/with-object-and-footer'
   })
 
   test('render', async () => {
     const { body } = await get('/robots.txt')
-    expect(body).toBe('# Comment\n#comment with space\nDisallow: /foo\nUser-agent: *\nDisallow: ')
+    expect(body).toBe('User-agent: Googlebot\nDisallow: /\n# Comment')
   })
 })
