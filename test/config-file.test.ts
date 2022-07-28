@@ -1,9 +1,13 @@
 import { describe, test, expect } from 'vitest'
 import { setup, $fetch } from '@nuxt/test-utils'
 
-describe.skip('with array', async () => {
+describe('config file', async () => {
   await setup({
-    fixture: 'fixture/with-array'
+    nuxtConfig: {
+      robots: {
+        configPath: './robots.configfile.ts'
+      }
+    }
   })
 
   test('render', async () => {
