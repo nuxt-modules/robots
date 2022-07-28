@@ -58,9 +58,20 @@ export default {
 - Type: `String`
 - Default: `robots.config`
 
+### rules
+
+- Type: `Object|Array`
+- Default: 
+```js
+{
+  UserAgent: '*',
+  Disallow: ''
+}
+```
+
 ## Robots config
 
-Create a configuration file `robots.config.ts`
+If you need to use function in any rule, you need to create a config file through the `configPath` option
 
 ```js
 export default {

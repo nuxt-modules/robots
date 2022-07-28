@@ -1,11 +1,12 @@
 import { pathExists, outputFile, remove } from 'fs-extra'
-import { defineNuxtModule, addServerHandler, createResolver, useLogger, isNuxt2, findPath, resolvePath, tryRequireModule } from '@nuxt/kit'
+import { defineNuxtModule, addServerHandler, createResolver, useLogger, isNuxt2, findPath, resolvePath, tryRequireModule, addTemplate } from '@nuxt/kit'
 import { name, version } from '../package.json'
 import { Rule } from './types'
 import { getRules, render } from './utils'
 
 export type ModuleOptions = {
-  configPath: string
+  configPath: string,
+  rules: Rule | Rule[]
 }
 
 export interface ModuleHooks {
@@ -23,7 +24,11 @@ export default defineNuxtModule<ModuleOptions>({
     configKey: 'robots'
   },
   defaults: {
-    configPath: 'robots.config'
+    configPath: 'robots.config',
+    rules: {
+      UserAgent: '*',
+      Disallow: ''
+    }
   },
   async setup (options, nuxt) {
     const { resolve } = createResolver(import.meta.url)
@@ -35,7 +40,7 @@ export default defineNuxtModule<ModuleOptions>({
     )
 
     if (await pathExists(staticFilePath)) {
-      logger.warn('To use this module please remove robots.txt')
+      logger.warn('To use `' + name + ' module`, please remove public `robots.txt`')
       return
     }
 
@@ -46,6 +51,14 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.nitro.publicAssets = nuxt.options.nitro.publicAssets || []
     nuxt.options.nitro.publicAssets.push({ dir: outputDir })
 
+    nuxt.options.alias['#robots-config'] = configPath
+    nuxt.options.alias['#robots-rules'] = addTemplate({
+      filename: 'robots-rules.mjs',
+      write: true,
+      getContents: () => `export const rules = ${JSON.stringify(options.rules, null, 2)}`
+    }).dst
+
+    // Generate static robots.txt
     nuxt.hook('build:done', async () => {
       if (!nuxt.options._generate) {
         await remove(resolve(outputDir, ROBOTS_FILENAME))

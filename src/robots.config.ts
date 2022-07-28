@@ -1,4 +1,3 @@
-export default {
-  UserAgent: '*',
-  Disallow: ''
-}
+import { rules } from '#robots-rules'
+
+export default rules
