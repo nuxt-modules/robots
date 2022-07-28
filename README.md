@@ -76,7 +76,10 @@ If you need to use function in any rule, you need to create a config file throug
 ```js
 export default {
   UserAgent: '*',
-  Disallow: () => '/'
+  Disallow: '/',
+      
+  // Be aware that this will NOT work on target: 'static' mode
+  Sitemap: (req) => `https://${req.headers.host}/sitemap.xml`
 }
 ```
 
