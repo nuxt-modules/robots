@@ -8,11 +8,6 @@ export type ModuleOptions = {
   rules: Rule | Rule[]
 }
 
-export interface ModuleHooks {
-  'robots:generate:before': (rules: Rule | Rule[]) => void
-  'robots:generate:done': (content: string) => void
-}
-
 const ROBOTS_FILENAME = 'robots.txt'
 const logger = useLogger('nuxt:robots')
 
@@ -50,15 +45,10 @@ export default defineNuxtModule<ModuleOptions>({
       getContents: () => `export const rules = ${JSON.stringify(options.rules, null, 2)}`
     }).dst
 
-    // Generate static robots.txt
-    if (nuxt.options._generate) {
-      nuxt.options.nitro = nuxt.options.nitro || {}
-      nuxt.options.nitro.prerender = nuxt.options.nitro.prerender || {}
-      nuxt.options.nitro.prerender.routes = nuxt.options.nitro.prerender.routes || []
-      nuxt.options.nitro.prerender.routes.push(`/${ROBOTS_FILENAME}`)
-    }
+    nuxt.hook('nitro:build:before', (nitro) => {
+      nitro.options.prerender.routes.push(`/${ROBOTS_FILENAME}`)
+    })
 
-    // Transpile runtime
     const runtimeDir = resolve('./runtime')
     nuxt.options.build.transpile.push(runtimeDir)
 

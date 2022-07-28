@@ -104,15 +104,6 @@ Disallow: /admin
 
 **Note:** Don't worry, keys are parsed with case insensitivity and special characters.
 
-## Hooks
-
-Hooks are listeners to Nuxt events. [Learn more](https://nuxtjs.org/docs/configuration-glossary/configuration-hooks/)
-
-| Hook                   | Arguments             | When                               |
-| ---------------------- | --------------------- | ---------------------------------- |
-| robots:generate:before | (robotsOptions)       | Hook on before site generation     |
-| robots:generate:done   | (robotsContent)       | Hook on robots generation finished |
-
 ## License
 
 [MIT License](./LICENSE)
