@@ -3,12 +3,14 @@
   "version": "2.5.0",
   "description": "A Nuxt.js module that injects a middleware to generate a robots.txt file",
   "repository": "nuxt-community/robots-module",
+  "license": "MIT",
   "contributors": [
     "Ricardo Gobbo de Souza <ricardogobbosouza@yahoo.com.br>",
     "Robert Reinhard",
     "William DA SILVA <william.da.silva@outlook.com>"
   ],
-  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": {
       "require": "./dist/module.cjs",
@@ -22,26 +24,24 @@
   ],
   "scripts": {
     "build": "nuxt-module-build",
-    "dev": "nuxi dev playground",
-    "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground",
-    "lint": "eslint --ext .js,.vue,.ts .",
+    "dev": "nuxt dev playground",
+    "lint": "eslint --ext .js,.ts,.vue",
     "prepack": "yarn build",
-    "release": "yarn test && yarn build && standard-version && git push --follow-tags && npm publish",
+    "release": "yarn test && standard-version && git push --follow-tags && npm publish",
     "test": "yarn lint && nuxi test --coverage"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.0.0-rc.1",
-    "knitwork": "^0.1.1",
-    "pathe": "^0.2.0"
+    "@nuxt/kit": "^3.0.0-rc.6",
+    "fs-extra": "^10.1.0"
   },
   "devDependencies": {
     "@nuxt/module-builder": "latest",
-    "@nuxt/test-utils": "latest",
+    "@nuxt/test-utils": "^3.0.0-rc.6",
     "@nuxtjs/eslint-config-typescript": "latest",
     "c8": "latest",
     "eslint": "latest",
-    "nuxt": "^3.0.0-rc.1",
+    "nuxt": "^3.0.0-rc.6",
     "standard-version": "latest",
     "vitest": "latest"
   },

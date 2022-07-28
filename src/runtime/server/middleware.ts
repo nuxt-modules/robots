@@ -1,9 +1,8 @@
 import { defineHandler } from 'h3'
-import { options, getRules, render } from '#robots-options'
+import { getRules, render } from '../../utils'
+import config from '#robots-config'
 
 export default defineHandler(async ({ req, res }) => {
-  const rules = await getRules(options, req)
-
   res.setHeader('Content-Type', 'text/plain')
-  res.end(render(rules))
+  res.end(render(await getRules(config, req)))
 })

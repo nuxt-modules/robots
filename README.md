@@ -13,7 +13,6 @@
 ## Features
 
 - Nuxt 3 and Nuxt Bridge support
-- Load and merge existing `robots.txt`
 - Generate `robots.txt` for static mode
 - Add middleware for `robots.txt`
 
@@ -54,42 +53,19 @@ export default {
 
 ## Options
 
-The module option parameter can be:
+### configPath
 
-### `Object`
+- Type: `String`
+- Default: `robots.config`
 
-```js
-export default {
-  robots: {
-    UserAgent: '*',
-    Disallow: '/'
-  }
-}
-```
+## Robots config
 
-### `Array`
+Create a configuration file `robots.config.ts`
 
 ```js
 export default {
-  robots: [
-    {
-      UserAgent: 'Googlebot',
-      Disallow: () => '/users' // accepts function
-    }
-  ]
-}
-```
-
-### `Function`
-
-```js
-export default {
-  robots: () => {
-    return {
-      UserAgent: '*',
-      Disallow: '/'
-    }
-  }
+  UserAgent: '*',
+  Disallow: () => '/'
 }
 ```
 

@@ -1,18 +1,20 @@
-import { existsSync, writeFileSync } from 'fs'
-import { defineNuxtModule, addTemplate, addServerMiddleware, createResolver } from '@nuxt/kit'
-import { genArrayFromRaw } from 'knitwork'
-import { resolve } from 'pathe'
+import { pathExists, outputFile, remove } from 'fs-extra'
+import { defineNuxtModule, addServerHandler, createResolver, useLogger, isNuxt2, findPath, resolvePath, tryRequireModule } from '@nuxt/kit'
 import { name, version } from '../package.json'
 import { Rule } from './types'
 import { getRules, render } from './utils'
 
-// TODO: Remove function type `(() => Rule | Rule[])` when merged https://github.com/nuxt/framework/pull/4476
-export type ModuleOptions = Rule | Rule[] | (() => Rule | Rule[])
+export type ModuleOptions = {
+  configPath: string
+}
 
 export interface ModuleHooks {
-  'robots:generate:before': (moduleOptions: ModuleOptions) => void
+  'robots:generate:before': (rules: Rule | Rule[]) => void
   'robots:generate:done': (content: string) => void
 }
+
+const ROBOTS_FILENAME = 'robots.txt'
+const logger = useLogger('nuxt:robots')
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
@@ -20,57 +22,50 @@ export default defineNuxtModule<ModuleOptions>({
     version,
     configKey: 'robots'
   },
-
-  // TODO: remove doube quotes when merged https://github.com/unjs/knitwork/pull/9
   defaults: {
-    UserAgent: '"*"',
-    Disallow: '""'
+    configPath: 'robots.config'
   },
+  async setup (options, nuxt) {
+    const { resolve } = createResolver(import.meta.url)
 
-  setup (options, nuxt) {
-    // TODO: use robots.txt in public fodler?
-    const staticFilePath = resolve(nuxt.options.srcDir, nuxt.options.dir.public, 'robots.txt')
+    const staticFilePath = resolve(
+      nuxt.options.srcDir,
+      isNuxt2() ? nuxt.options.dir.static : nuxt.options.dir.public,
+      ROBOTS_FILENAME
+    )
 
-    if (existsSync(staticFilePath)) {
+    if (await pathExists(staticFilePath)) {
+      logger.warn('To use this module please remove robots.txt')
       return
     }
 
-    const rules = (Array.isArray(options) ? options : [options]) as Rule[]
+    const configPath = await findPath(options.configPath) ?? resolve('./robots.config')
+    const outputDir = await resolvePath('node_modules/.cache/nuxt-robots')
 
-    // Generate robots.txt
-    nuxt.hook('generate:done', async () => {
-      // @ts-ignore
+    nuxt.options.nitro = nuxt.options.nitro || {}
+    nuxt.options.nitro.publicAssets = nuxt.options.nitro.publicAssets || []
+    nuxt.options.nitro.publicAssets.push({ dir: outputDir })
+
+    nuxt.hook('build:done', async () => {
+      if (!nuxt.options._generate) {
+        await remove(resolve(outputDir, ROBOTS_FILENAME))
+        return
+      }
+
+      const rules: Rule | Rule[] = tryRequireModule(configPath)
       await nuxt.callHook('robots:generate:before', rules)
-
-      const generateFilePath = resolve(nuxt.options.rootDir, nuxt.options.generate.dir, 'robots.txt')
       const content = render(await getRules(rules))
-
-      writeFileSync(generateFilePath, content)
-
-      // @ts-ignore
+      await outputFile(resolve(outputDir, ROBOTS_FILENAME), content)
       await nuxt.callHook('robots:generate:done', content)
     })
 
-    // Inject options via virtual template
-    nuxt.options.alias['#robots-options'] = addTemplate({
-      filename: 'robots-options.mjs',
-      write: true,
-      getContents: () => [
-        // TODO: use `genObjectFromValues` when merged https://github.com/unjs/knitwork/pull/9
-        `export const options = ${genArrayFromRaw(rules)}`,
-        `export const getRules = ${getRules.toString()}`,
-        `export const render = ${render.toString()}`
-      ].join('\n')
-    }).dst
-
     // Transpile runtime
-    const resolver = createResolver(import.meta.url)
-    const runtimeDir = resolver.resolve('./runtime')
+    const runtimeDir = resolve('./runtime')
+    nuxt.options.alias['#robots-config'] = configPath
     nuxt.options.build.transpile.push(runtimeDir)
 
-    // Middleware /robots.txt
-    addServerMiddleware({
-      route: '/robots.txt',
+    addServerHandler({
+      route: `/${ROBOTS_FILENAME}`,
       handler: resolve(runtimeDir, 'server/middleware')
     })
   }

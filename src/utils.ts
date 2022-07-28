@@ -1,6 +1,6 @@
 import { RuleInterface, Rule, RuleValue } from './types'
 
-export async function getRules (options: Rule[], req = null) {
+export async function getRules (options: Rule | Rule[], req = null) {
   const correspondences = {
     useragent: 'User-agent',
     crawldelay: 'Crawl-delay',
@@ -23,7 +23,7 @@ export async function getRules (options: Rule[], req = null) {
     return parsed
   }
 
-  for (const rule of options) {
+  for (const rule of Array.isArray(options) ? options : [options]) {
     const parsed = parseRule(rule)
     const keys = Object.keys(correspondences).filter(key => typeof parsed[key] !== 'undefined')
 
