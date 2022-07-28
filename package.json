@@ -32,8 +32,7 @@
     "test": "yarn lint && nuxi test --coverage"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.0.0-rc.6",
-    "fs-extra": "^10.1.0"
+    "@nuxt/kit": "^3.0.0-rc.6"
   },
   "devDependencies": {
     "@nuxt/module-builder": "latest",

@@ -1,8 +1,7 @@
-import { pathExists, outputFile, remove } from 'fs-extra'
-import { defineNuxtModule, addServerHandler, createResolver, useLogger, isNuxt2, findPath, resolvePath, tryRequireModule, addTemplate } from '@nuxt/kit'
+import { existsSync } from 'node:fs'
+import { defineNuxtModule, addServerHandler, createResolver, useLogger, isNuxt2, findPath, addTemplate } from '@nuxt/kit'
 import { name, version } from '../package.json'
 import { Rule } from './types'
-import { getRules, render } from './utils'
 
 export type ModuleOptions = {
   configPath: string,
@@ -39,19 +38,12 @@ export default defineNuxtModule<ModuleOptions>({
       ROBOTS_FILENAME
     )
 
-    if (await pathExists(staticFilePath)) {
+    if (existsSync(staticFilePath)) {
       logger.warn('To use `' + name + ' module`, please remove public `robots.txt`')
       return
     }
 
-    const configPath = await findPath(options.configPath) ?? resolve('./robots.config')
-    const outputDir = await resolvePath('node_modules/.cache/nuxt-robots')
-
-    nuxt.options.nitro = nuxt.options.nitro || {}
-    nuxt.options.nitro.publicAssets = nuxt.options.nitro.publicAssets || []
-    nuxt.options.nitro.publicAssets.push({ dir: outputDir })
-
-    nuxt.options.alias['#robots-config'] = configPath
+    nuxt.options.alias['#robots-config'] = await findPath(options.configPath) ?? resolve('./robots.config')
     nuxt.options.alias['#robots-rules'] = addTemplate({
       filename: 'robots-rules.mjs',
       write: true,
@@ -59,22 +51,15 @@ export default defineNuxtModule<ModuleOptions>({
     }).dst
 
     // Generate static robots.txt
-    nuxt.hook('build:done', async () => {
-      if (!nuxt.options._generate) {
-        await remove(resolve(outputDir, ROBOTS_FILENAME))
-        return
-      }
-
-      const rules: Rule | Rule[] = tryRequireModule(configPath)
-      await nuxt.callHook('robots:generate:before', rules)
-      const content = render(await getRules(rules))
-      await outputFile(resolve(outputDir, ROBOTS_FILENAME), content)
-      await nuxt.callHook('robots:generate:done', content)
-    })
+    if (nuxt.options._generate) {
+      nuxt.options.nitro = nuxt.options.nitro || {}
+      nuxt.options.nitro.prerender = nuxt.options.nitro.prerender || {}
+      nuxt.options.nitro.prerender.routes = nuxt.options.nitro.prerender.routes || []
+      nuxt.options.nitro.prerender.routes.push(`/${ROBOTS_FILENAME}`)
+    }
 
     // Transpile runtime
     const runtimeDir = resolve('./runtime')
-    nuxt.options.alias['#robots-config'] = configPath
     nuxt.options.build.transpile.push(runtimeDir)
 
     addServerHandler({
