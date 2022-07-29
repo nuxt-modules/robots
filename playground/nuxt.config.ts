@@ -1,5 +1,6 @@
+
 import { defineNuxtConfig } from 'nuxt'
-import RobotsModule from '../../../src/module'
+import RobotsModule from '..'
 
 export default defineNuxtConfig({
   modules: [

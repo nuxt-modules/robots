@@ -1,6 +1,15 @@
-export default {
-  rootDir: __dirname,
+import { defineNuxtConfig } from 'nuxt'
+import RobotsModule from '../../../src/module'
+
+export default defineNuxtConfig({
   modules: [
-    ['../../../src/module.ts', []]
-  ]
-}
+    RobotsModule
+  ],
+
+  robots: {
+    rules: {
+      UserAgent: false,
+      Disallow: false
+    }
+  }
+})

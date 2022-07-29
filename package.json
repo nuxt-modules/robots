@@ -9,32 +9,40 @@
     "Robert Reinhard",
     "William DA SILVA <william.da.silva@outlook.com>"
   ],
-  "main": "./dist/module.js",
-  "types": "./dist/module.d.ts",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "require": "./dist/module.cjs",
+      "import": "./dist/module.mjs"
+    }
+  },
+  "main": "./dist/module.cjs",
+  "types": "./dist/types.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "siroc build",
-    "prepublishOnly": "yarn build",
-    "dev": "nuxt dev test/fixture/basic",
-    "lint": "eslint --ext .js,.ts,.vue .",
-    "release": "yarn test && yarn build && standard-version && git push --follow-tags && npm publish",
-    "test": "yarn lint && yarn jest"
+    "build": "nuxt-module-build",
+    "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground",
+    "dev": "nuxt dev playground",
+    "lint": "eslint --ext .js,.ts,.vue",
+    "prepack": "yarn build",
+    "release": "yarn test && standard-version && git push --follow-tags && npm publish",
+    "test": "yarn lint && nuxi test --coverage"
+  },
+  "dependencies": {
+    "@nuxt/kit": "^3.0.0-rc.6"
   },
   "devDependencies": {
-    "@babel/preset-typescript": "latest",
-    "@nuxt/test-utils": "latest",
-    "@nuxt/types": "latest",
+    "@nuxt/module-builder": "latest",
+    "@nuxt/test-utils": "^3.0.0-rc.6",
     "@nuxtjs/eslint-config-typescript": "latest",
-    "@types/jest": "latest",
-    "@types/node": "latest",
-    "del": "latest",
+    "c8": "latest",
     "eslint": "latest",
-    "jest": "latest",
-    "nuxt": "latest",
-    "siroc": "latest",
-    "standard-version": "latest"
+    "nuxt": "^3.0.0-rc.6",
+    "standard-version": "latest",
+    "vitest": "latest"
   },
   "publishConfig": {
     "access": "public"

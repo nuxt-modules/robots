@@ -14,9 +14,8 @@ jobs:
 
     strategy:
       matrix:
-        # os: [ubuntu-latest, macos-latest, windows-latest]
-        os: [ubuntu-latest]
-        node: [12]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: [14, 16, 18]
 
     steps:
       - uses: actions/setup-node@v3
@@ -33,8 +32,10 @@ jobs:
           key: ${{ matrix.os }}-node-v${{ matrix.node }}-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/yarn.lock')) }}
 
       - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
         run: yarn
+
+      - name: Prepare TypeScript environment
+        run: yarn dev:prepare
 
       - name: Lint
         run: yarn lint

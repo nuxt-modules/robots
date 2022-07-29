@@ -1,8 +1,6 @@
-import { RuleInterface, Rule } from './types'
+import { RuleInterface, Rule, RuleValue } from './types'
 
-export const FILE_NAME = 'robots.txt'
-
-export async function getRules (options: Rule[], req = null) {
+export async function getRules (options: Rule | Rule[], req = null) {
   const correspondences = {
     useragent: 'User-agent',
     crawldelay: 'Crawl-delay',
@@ -15,37 +13,43 @@ export async function getRules (options: Rule[], req = null) {
 
   const rules: RuleInterface[] = []
 
-  for (const rule of options) {
+  const parseRule = (rule: Rule) => {
+    const parsed: Rule = {}
+
+    for (const [key, value] of Object.entries(rule)) {
+      parsed[String(key).toLowerCase().replace(/[\W_]+/g, '')] = value
+    }
+
+    return parsed
+  }
+
+  for (const rule of Array.isArray(options) ? options : [options]) {
     const parsed = parseRule(rule)
     const keys = Object.keys(correspondences).filter(key => typeof parsed[key] !== 'undefined')
 
     for (const key of keys) {
       const parsedKey = parsed[key]
 
-      let values: string | Function | (string | Function)[]
-      values = typeof parsedKey === 'function' ? await parsedKey.call(this, req) : parsedKey
+      let values: RuleValue
+      values = typeof parsedKey === 'function' ? await parsedKey.call(req) : parsedKey
       values = (Array.isArray(values)) ? values : [values]
 
       for (const value of values) {
+        const v = typeof value === 'function' ? await value(req) : value
+
+        if (v === false) {
+          continue
+        }
+
         rules.push({
           key: correspondences[key],
-          value: typeof value === 'function' ? await value.call(this, req) : value
+          value: v
         })
       }
     }
   }
 
   return rules
-}
-
-function parseRule (item: Rule) {
-  const parsed: Rule = {}
-
-  for (const [key, value] of Object.entries(item)) {
-    parsed[String(key).toLowerCase().replace(/[\W_]+/g, '')] = value
-  }
-
-  return parsed
 }
 
 export function render (rules: RuleInterface[]) {

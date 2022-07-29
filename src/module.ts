@@ -1,56 +1,60 @@
-import type { Module } from '@nuxt/types'
+import { existsSync } from 'node:fs'
+import { defineNuxtModule, addServerHandler, createResolver, useLogger, isNuxt2, findPath, addTemplate } from '@nuxt/kit'
 import { name, version } from '../package.json'
-import { build } from './build'
-import { generate } from './generate'
-import { middleware } from './middleware'
 import { Rule } from './types'
 
-const CONFIG_KEY = 'robots'
-
-export type { Rule }
-
-export type ModuleOptions = Rule | Rule[] | (() => Rule | Rule[])
-
-async function getOptions (moduleOptions: ModuleOptions): Promise<Rule[]> {
-  if (typeof moduleOptions === 'function') {
-    moduleOptions = await moduleOptions.call(this)
-  }
-
-  if (Array.isArray(moduleOptions)) {
-    return moduleOptions
-  }
-
-  let { robots } = this.options
-
-  if (typeof robots === 'function') {
-    robots = await robots.call(this)
-  }
-
-  if (Array.isArray(robots)) {
-    return robots
-  }
-
-  return [{
-    UserAgent: '*',
-    Disallow: '',
-    ...robots,
-    ...moduleOptions
-  }]
+export type ModuleOptions = {
+  configPath: string,
+  rules: Rule | Rule[]
 }
 
-const nuxtModule: Module<ModuleOptions> = async function (moduleOptions) {
-  const options: Rule[] = await getOptions.call(this, moduleOptions)
+const ROBOTS_FILENAME = 'robots.txt'
+const logger = useLogger('nuxt:robots')
 
-  build.bind(this)()
-  generate.bind(this)(options)
-  middleware.bind(this)(options)
-}
+export default defineNuxtModule<ModuleOptions>({
+  meta: {
+    name,
+    version,
+    configKey: 'robots'
+  },
+  defaults: {
+    configPath: 'robots.config',
+    rules: {
+      UserAgent: '*',
+      Disallow: ''
+    }
+  },
+  async setup (options, nuxt) {
+    const { resolve } = createResolver(import.meta.url)
 
-;(nuxtModule as any).meta = { name, version }
+    const staticFilePath = resolve(
+      nuxt.options.srcDir,
+      isNuxt2() ? nuxt.options.dir.static : nuxt.options.dir.public,
+      ROBOTS_FILENAME
+    )
 
-declare module '@nuxt/types' {
-  interface NuxtConfig { [CONFIG_KEY]?: ModuleOptions } // Nuxt 2.14+
-  interface Configuration { [CONFIG_KEY]?: ModuleOptions } // Nuxt 2.9 - 2.13
-}
+    if (existsSync(staticFilePath)) {
+      logger.warn('To use `' + name + '` module, please remove public `robots.txt`')
+      return
+    }
 
-export default nuxtModule
+    nuxt.options.alias['#robots-config'] = await findPath(options.configPath) ?? resolve('./robots.config')
+    nuxt.options.alias['#robots-rules'] = addTemplate({
+      filename: 'robots-rules.mjs',
+      write: true,
+      getContents: () => `export const rules = ${JSON.stringify(options.rules, null, 2)}`
+    }).dst
+
+    nuxt.hook('nitro:build:before', (nitro) => {
+      nitro.options.prerender.routes.push(`/${ROBOTS_FILENAME}`)
+    })
+
+    const runtimeDir = resolve('./runtime')
+    nuxt.options.build.transpile.push(runtimeDir)
+
+    addServerHandler({
+      route: `/${ROBOTS_FILENAME}`,
+      handler: resolve(runtimeDir, 'server/middleware')
+    })
+  }
+})

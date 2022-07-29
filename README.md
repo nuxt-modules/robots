@@ -8,7 +8,13 @@
 
 > A Nuxt.js module that injects a middleware to generate a robots.txt file
 
-[📖 **Release Notes**](./CHANGELOG.md)
+- [📖 **Release Notes**](./CHANGELOG.md)
+
+## Features
+
+- Nuxt 3 and Nuxt Bridge support
+- Generate `robots.txt` for static mode
+- Add middleware for `robots.txt`
 
 ## Setup
 
@@ -47,45 +53,33 @@ export default {
 
 ## Options
 
-The module option parameter can be:
+### configPath
 
-### `Object`
+- Type: `String`
+- Default: `robots.config`
 
+### rules
+
+- Type: `Object|Array`
+- Default: 
 ```js
-export default {
-  robots: {
-    UserAgent: '*',
-    Disallow: '/'
-  }
+{
+  UserAgent: '*',
+  Disallow: ''
 }
 ```
 
-### `Array`
+## Robots config
+
+If you need to use function in any rule, you need to create a config file through the `configPath` option
 
 ```js
 export default {
-  robots: [
-    {
-      UserAgent: 'Googlebot',
-      Disallow: () => '/users' // accepts function
-    }
-  ]
-}
-```
-
-### `Function`
-
-```js
-export default {
-  robots: () => {
-    return {
-      UserAgent: '*',
-      Disallow: '/',
+  UserAgent: '*',
+  Disallow: '/',
       
-      // Be aware that this will NOT work on target: 'static' mode
-      Sitemap: (req) => `https://${req.headers.host}/sitemap.xml`
-    }
-  }
+  // Be aware that this will NOT work on target: 'static' mode
+  Sitemap: (req) => `https://${req.headers.host}/sitemap.xml`
 }
 ```
 
@@ -109,15 +103,6 @@ Disallow: /admin
 - CleanParam = `Clean-param`
 
 **Note:** Don't worry, keys are parsed with case insensitivity and special characters.
-
-## Hooks
-
-Hooks are listeners to Nuxt events. [Learn more](https://nuxtjs.org/docs/configuration-glossary/configuration-hooks/)
-
-| Hook                   | Arguments             | When                               |
-| ---------------------- | --------------------- | ---------------------------------- |
-| robots:generate:before | (nuxt, robotsOptions) | Hook on before site generation     |
-| robots:generate:done   | (nuxt, robotsContent) | Hook on robots generation finished |
 
 ## License
 
