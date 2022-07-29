@@ -34,7 +34,7 @@ export default defineNuxtModule<ModuleOptions>({
     )
 
     if (existsSync(staticFilePath)) {
-      logger.warn('To use `' + name + ' module`, please remove public `robots.txt`')
+      logger.warn('To use `' + name + '` module, please remove public `robots.txt`')
       return
     }
 

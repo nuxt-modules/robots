@@ -3,14 +3,7 @@ import { setup, $fetch } from '@nuxt/test-utils'
 
 describe('empty', async () => {
   await setup({
-    nuxtConfig: {
-      robots: {
-        rules: {
-          UserAgent: false,
-          Disallow: false
-        }
-      }
-    }
+    fixture: 'fixture/empty'
   })
 
   test('render', async () => {

@@ -4,7 +4,9 @@ import { describe, test, expect } from 'vitest'
 import { setup, useTestContext } from '@nuxt/test-utils'
 
 describe('generate', async () => {
-  await setup({})
+  await setup({
+    fixture: 'fixture/generate'
+  })
 
   test('render', () => {
     const body = readFileSync(resolve(useTestContext().nuxt?.options.nitro.output?.dir || '', 'public/robots.txt'), 'utf8')

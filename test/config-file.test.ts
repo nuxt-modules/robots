@@ -3,11 +3,7 @@ import { setup, $fetch } from '@nuxt/test-utils'
 
 describe('config file', async () => {
   await setup({
-    nuxtConfig: {
-      robots: {
-        configPath: './robots.configfile.ts'
-      }
-    }
+    fixture: 'fixture/config-file'
   })
 
   test('render', async () => {
