@@ -1,4 +1,4 @@
-import { RuleInterface, Rule, RuleValue } from '../../types'
+import { RuleInterface, Rule, RuleValue } from './types'
 
 export async function getRules (options: Rule | Rule[], req = null) {
   const correspondences = {
