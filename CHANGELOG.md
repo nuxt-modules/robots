@@ -8,11 +8,15 @@ All notable changes to this project will be documented in this file. See [standa
 ### ⚠ BREAKING CHANGES
 
 * add support for nuxt 3/nuxt bridge (#52)
-
+* move modules options to rules property
+* disable module if exists `robots.txt` inside public directory
+ 
 ### Features
 
-* add hooks in generate mode before and after file generation ([#48](https://github.com/nuxt-community/robots-module/issues/48)) ([329e8bc](https://github.com/nuxt-community/robots-module/commit/329e8bc8369dfff6ed770094064512bfb3be128f))
 * add support for nuxt 3/nuxt bridge ([#52](https://github.com/nuxt-community/robots-module/issues/52)) ([d950072](https://github.com/nuxt-community/robots-module/commit/d950072487f7140e826272caa9b7e617aba70554))
+* move modules options to rules property
+* add option `configPath` to use configuration as file `robots.config.ts`
+* disable module if exists `robots.txt` inside public directory
 
 ## [2.5.0](https://github.com/nuxt-community/robots-module/compare/v2.4.2...v2.5.0) (2021-03-11)
 
