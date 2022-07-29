@@ -1,5 +1,5 @@
 import { defineHandler } from 'h3'
-import { getRules, render } from '../../utils'
+import { getRules, render } from './utils'
 import config from '#robots-config'
 
 export default defineHandler(async ({ req, res }) => {
