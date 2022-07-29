@@ -83,15 +83,6 @@ export default {
 }
 ```
 
-### Will generate a /robots.txt
-
-```bash
-User-agent: Googlebot
-Disallow: /users
-User-agent: Bingbot
-Disallow: /admin
-```
-
 ### The keys and values available:
 
 - UserAgent = `User-agent`
