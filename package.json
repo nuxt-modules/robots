@@ -5,9 +5,7 @@
   "repository": "nuxt-community/robots-module",
   "license": "MIT",
   "contributors": [
-    "Ricardo Gobbo de Souza <ricardogobbosouza@yahoo.com.br>",
-    "Robert Reinhard",
-    "William DA SILVA <william.da.silva@outlook.com>"
+    "Ricardo Gobbo de Souza <ricardogobbosouza@yahoo.com.br>"
   ],
   "type": "module",
   "sideEffects": false,

@@ -1,7 +1,7 @@
 import { existsSync } from 'fs'
 import { defineNuxtModule, addServerHandler, createResolver, useLogger, isNuxt2, findPath, addTemplate } from '@nuxt/kit'
 import { name, version } from '../package.json'
-import { Rule } from './runtime/server/types'
+import { Rule } from './types'
 
 export type ModuleOptions = {
   configPath: string,
@@ -38,12 +38,11 @@ export default defineNuxtModule<ModuleOptions>({
       return
     }
 
-    nuxt.options.alias['#robots-config'] = await findPath(options.configPath) ?? resolve('./robots.config')
-    nuxt.options.alias['#robots-rules'] = addTemplate({
-      filename: 'robots-rules.mjs',
+    nuxt.options.alias['#robots'] = await findPath(options.configPath) ?? (addTemplate({
+      filename: 'robots.mjs',
       write: true,
-      getContents: () => `export const rules = ${JSON.stringify(options.rules, null, 2)}`
-    }).dst || ''
+      getContents: () => `export default ${JSON.stringify(options.rules, null, 2)}`
+    }).dst || '')
 
     nuxt.hook('nitro:build:before', (nitro) => {
       nitro.options.prerender.routes.push(`/${ROBOTS_FILENAME}`)
