@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-1](https://github.com/nuxt-community/robots-module/compare/v3.0.0-0...v3.0.0-1) (2022-07-30)
+
+
+### Bug Fixes
+
+* resolve paths ([#62](https://github.com/nuxt-community/robots-module/issues/62)) ([72db46f](https://github.com/nuxt-community/robots-module/commit/72db46f323bb9eb567bc41bb9c633ea33e8b964e))
+
 ## [3.0.0-0](https://github.com/nuxt-community/robots-module/compare/v2.5.0...v3.0.0-0) (2022-07-29)
 
 
