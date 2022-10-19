@@ -2119,6 +2119,11 @@ destr@^1.1.1:
   resolved "https://registry.yarnpkg.com/destr/-/destr-1.1.1.tgz#910457d10a2f2f247add4ca4fdb4a03adcc49079"
   integrity sha512-QqkneF8LrYmwATMdnuD2MLI3GHQIcBnG6qFC2q9bSH430VTCDAVjcspPmUaKhPGtAtPAftIUFqY1obQYQuwmbg==
 
+destr@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/destr/-/destr-1.2.0.tgz#8adb17fa3861b8032ea1bba92f60ba989a9ff119"
+  integrity sha512-JG+cG4ZPB1L27sl2C2URg8MIOmIUtTbE5wEx02BpmrTCqg/hXxFKXsYsnODl5PdpqNRaS1KQGUQ56V8jk8XpYQ==
+
 destroy@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/destroy/-/destroy-1.2.0.tgz#4803735509ad8be552934c67df614f94e66fa015"
@@ -3400,6 +3405,16 @@ h3@^0.8.1, h3@^0.8.4:
   dependencies:
     cookie-es "^0.5.0"
     destr "^1.1.1"
+    radix3 "^0.2.1"
+    ufo "^0.8.6"
+
+h3@^0.8.5:
+  version "0.8.5"
+  resolved "https://registry.yarnpkg.com/h3/-/h3-0.8.5.tgz#59b84b55da407cd9f8d02ae838a3d5130816fa90"
+  integrity sha512-A+rVzJ+31e67JJzlRf2Ycphu/mvl2qknbpch38xRfrs9HuGSKTtOWuzPnpgaEGIfnzuD/BsDOfhQLJevXEm3ag==
+  dependencies:
+    cookie-es "^0.5.0"
+    destr "^1.2.0"
     radix3 "^0.2.1"
     ufo "^0.8.6"
 
