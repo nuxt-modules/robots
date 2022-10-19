@@ -1,10 +1,10 @@
-import { defineHandler } from 'h3'
+import { defineEventHandler, setHeader } from 'h3'
 import { RuleInterface, RuleValue, Rule } from '../../types'
 import robots from '#robots'
 
-export default defineHandler(async ({ req, res }) => {
-  res.setHeader('Content-Type', 'text/plain')
-  res.end(render(await getRules(robots, req)))
+export default defineEventHandler(async (event) => {
+  setHeader(event, 'Content-Type', 'text/plain')
+  return render(await getRules(robots, event.req))
 })
 
 function render (rules: RuleInterface[]) {

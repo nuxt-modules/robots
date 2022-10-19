@@ -30,15 +30,16 @@
     "test": "yarn lint && nuxi test --coverage"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.0.0-rc.6"
+    "@nuxt/kit": "^3.0.0-rc.12",
+    "h3": "^0.8.4"
   },
   "devDependencies": {
     "@nuxt/module-builder": "latest",
-    "@nuxt/test-utils": "^3.0.0-rc.6",
+    "@nuxt/test-utils": "^3.0.0-rc.12",
     "@nuxtjs/eslint-config-typescript": "latest",
     "c8": "latest",
     "eslint": "latest",
-    "nuxt": "^3.0.0-rc.6",
+    "nuxt": "^3.0.0-rc.12",
     "standard-version": "latest",
     "vitest": "latest"
   },
