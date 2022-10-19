@@ -42,7 +42,7 @@ async function getRules (options: Rule | Rule[], req = null) {
       const parsedKey = parsed[key]
 
       let values: RuleValue
-      values = typeof parsedKey === 'function' ? await parsedKey.call(req) : parsedKey
+      values = typeof parsedKey === 'function' ? await parsedKey(req) : parsedKey
       values = (Array.isArray(values)) ? values : [values]
 
       for (const value of values) {
