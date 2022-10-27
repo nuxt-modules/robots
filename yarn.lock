@@ -3408,10 +3408,10 @@ h3@^0.8.1, h3@^0.8.4:
     radix3 "^0.2.1"
     ufo "^0.8.6"
 
-h3@^0.8.5:
-  version "0.8.5"
-  resolved "https://registry.yarnpkg.com/h3/-/h3-0.8.5.tgz#59b84b55da407cd9f8d02ae838a3d5130816fa90"
-  integrity sha512-A+rVzJ+31e67JJzlRf2Ycphu/mvl2qknbpch38xRfrs9HuGSKTtOWuzPnpgaEGIfnzuD/BsDOfhQLJevXEm3ag==
+h3@^0.8.6:
+  version "0.8.6"
+  resolved "https://registry.yarnpkg.com/h3/-/h3-0.8.6.tgz#8095ef998fe14769b87170b7c8b68ba9c54973d5"
+  integrity sha512-CSWNOKa3QGo67rFU2PhbFTp0uPJtilNji2Z0pMiSRQt3+OkIW0u3E1WMJqIycLqaTgb9JyFqH/S4mcTyyGtvyQ==
   dependencies:
     cookie-es "^0.5.0"
     destr "^1.2.0"
