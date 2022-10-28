@@ -1,7 +1,7 @@
 import { existsSync } from 'fs'
 import { defineNuxtModule, addServerHandler, createResolver, useLogger, isNuxt2, findPath, addTemplate } from '@nuxt/kit'
 import { name, version } from '../package.json'
-import { Rule } from './types'
+import type { Rule } from './types'
 
 export type ModuleOptions = {
   configPath: string,
@@ -15,7 +15,10 @@ export default defineNuxtModule<ModuleOptions>({
   meta: {
     name,
     version,
-    configKey: 'robots'
+    configKey: 'robots',
+    compatibility: {
+      bridge: true
+    }
   },
   defaults: {
     configPath: 'robots.config',
