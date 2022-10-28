@@ -74,13 +74,25 @@ export default {
 If you need to use function in any rule, you need to create a config file through the `configPath` option
 
 ```js
-export default {
-  UserAgent: '*',
-  Disallow: '/',
+export default [
+  { UserAgent: '*' },
+  { Disallow: '/' },
+  { BlankLine: true },
+  { Comment: 'Comment here' },
       
   // Be aware that this will NOT work on target: 'static' mode
-  Sitemap: (req) => `https://${req.headers.host}/sitemap.xml`
-}
+  { Sitemap: (req) => `https://${req.headers.host}/sitemap.xml` }
+]
+```
+
+output: 
+
+```txt
+User-agent: *
+Disallow: /
+
+# Comment here
+Sitemap: https://robots.nuxtjs.org/sitemap.xml
 ```
 
 ### The keys and values available:
@@ -92,6 +104,8 @@ export default {
 - Host = `Host`
 - Sitemap = `Sitemap`
 - CleanParam = `Clean-param`
+- Comment = `# Comment`
+- BlankLine = `Add blank line`
 
 **Note:** Don't worry, keys are parsed with case insensitivity and special characters.
 

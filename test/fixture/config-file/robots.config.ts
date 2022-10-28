@@ -1,4 +1,6 @@
-export default {
-  UserAgent: () => ['Googlebot', () => 'Bingbot'],
-  Disallow: '/admin'
-}
+export default [
+  { UserAgent: () => ['Googlebot', () => 'Bingbot'] },
+  { Comment: 'Comment here' },
+  { BlankLine: true },
+  { Disallow: '/admin' }
+]
