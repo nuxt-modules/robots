@@ -109,6 +109,20 @@ Sitemap: https://robots.nuxtjs.org/sitemap.xml
 
 **Note:** Don't worry, keys are parsed with case insensitivity and special characters.
 
+## Contributing
+
+You can contribute to this module online with CodeSandBox:
+
+[![Edit @nuxtjs/robots](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/nuxt-community/robots-module/?fontsize=14&hidenavigation=1&theme=dark)
+
+Or locally:
+
+1. Clone this repository
+2. Install dependencies using `pnpm install`
+3. Prepare development server using `pnpm dev:prepare`
+4. Build module using `pnpm build`
+5. Launch playground using `pnpm dev`
+
 ## License
 
 [MIT License](./LICENSE)
