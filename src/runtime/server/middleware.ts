@@ -1,5 +1,5 @@
-import { defineEventHandler, setHeader } from 'h3'
-import { RuleInterface, RuleValue, Rule } from '../../types'
+import { defineEventHandler, NodeIncomingMessage, setHeader } from 'h3'
+import { RuleValue, Rule } from '../../types'
 import robots from '#robots'
 
 export default defineEventHandler(async (event) => {
@@ -7,11 +7,39 @@ export default defineEventHandler(async (event) => {
   return render(await getRules(robots, event.req))
 })
 
-function render (rules: RuleInterface[]) {
-  return rules.map(rule => `${rule.key}: ${String(rule.value).trim()}`).join('\n')
+enum Correspondence {
+  'User-agent',
+  'Crawl-delay',
+  'Disallow',
+  'Allow',
+  'Host',
+  'Sitemap',
+  'Clean-param',
+  'Comment',
+  'BlankLine'
 }
 
-async function getRules (options: Rule | Rule[], req = null) {
+interface RuleInterface {
+  key: Correspondence
+  value: string
+}
+
+function render (rules: RuleInterface[]) {
+  return rules.map((rule) => {
+    const value = String(rule.value).trim()
+
+    switch (rule.key.toString()) {
+      case Correspondence[Correspondence.Comment]:
+        return `# ${value}`
+      case Correspondence[Correspondence.BlankLine]:
+        return ''
+      default:
+        return `${rule.key}: ${value}`
+    }
+  }).join('\n')
+}
+
+async function getRules (options: Rule | Rule[], req: NodeIncomingMessage) {
   const correspondences = {
     useragent: 'User-agent',
     crawldelay: 'Crawl-delay',
@@ -19,7 +47,9 @@ async function getRules (options: Rule | Rule[], req = null) {
     allow: 'Allow',
     host: 'Host',
     sitemap: 'Sitemap',
-    cleanparam: 'Clean-param'
+    cleanparam: 'Clean-param',
+    comment: 'Comment',
+    blankline: 'BlankLine'
   }
 
   const rules: RuleInterface[] = []

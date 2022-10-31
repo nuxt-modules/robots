@@ -8,6 +8,6 @@ describe('config file', async () => {
 
   test('render', async () => {
     const body = await $fetch('/robots.txt')
-    expect(body).toBe('User-agent: Googlebot\nUser-agent: Bingbot\nDisallow: /admin')
+    expect(body).toBe('User-agent: Googlebot\nUser-agent: Bingbot\n# Comment here\n\nDisallow: /admin')
   })
 })
