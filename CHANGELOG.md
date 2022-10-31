@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0-2](https://github.com/nuxt-community/robots-module/compare/v3.0.0-1...v3.0.0-2) (2022-10-31)
+
+
+### Features
+
+* add blank lines and comments ([#73](https://github.com/nuxt-community/robots-module/issues/73)) ([0cdf4ee](https://github.com/nuxt-community/robots-module/commit/0cdf4ee42d4496b2ba1fffbdba3733c87383e801))
+
+
+### Bug Fixes
+
+* compatibility with bridge ([d994b99](https://github.com/nuxt-community/robots-module/commit/d994b992e81fc8cc376c85e4ce1819278d62e725))
+* fixed config function not passing in req ([#67](https://github.com/nuxt-community/robots-module/issues/67)) ([afc1978](https://github.com/nuxt-community/robots-module/commit/afc1978dd099f23db6c952ba9312e74b65798118))
+
 ## [3.0.0-1](https://github.com/nuxt-community/robots-module/compare/v3.0.0-0...v3.0.0-1) (2022-07-30)
 
 
