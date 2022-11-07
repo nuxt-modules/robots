@@ -47,7 +47,7 @@ export default defineNuxtModule<ModuleOptions>({
       getContents: () => `export default ${JSON.stringify(options.rules, null, 2)}`
     }).dst || '')
 
-    if (nuxt.options.target === 'static') {
+    if (nuxt.options._generate) {
       nuxt.hook('nitro:build:before', (nitro) => {
         nitro.options.prerender.routes.push(`/${ROBOTS_FILENAME}`)
       })
