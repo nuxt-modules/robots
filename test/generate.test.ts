@@ -5,7 +5,12 @@ import { setup, useTestContext } from '@nuxt/test-utils'
 
 describe('generate', async () => {
   await setup({
-    fixture: 'fixture/generate'
+    fixture: 'fixture/generate',
+    build: true,
+    server: false,
+    nuxtConfig: {
+      _generate: true
+    }
   })
 
   test('render', () => {

@@ -47,9 +47,11 @@ export default defineNuxtModule<ModuleOptions>({
       getContents: () => `export default ${JSON.stringify(options.rules, null, 2)}`
     }).dst || '')
 
-    nuxt.hook('nitro:build:before', (nitro) => {
-      nitro.options.prerender.routes.push(`/${ROBOTS_FILENAME}`)
-    })
+    if (nuxt.options._generate) {
+      nuxt.hook('nitro:build:before', (nitro) => {
+        nitro.options.prerender.routes.push(`/${ROBOTS_FILENAME}`)
+      })
+    }
 
     const runtimeDir = resolve('./runtime')
     nuxt.options.build.transpile.push(runtimeDir)
