@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@nuxt/kit": "^3.0.0-rc.13",
-    "h3": "^0.8.6"
+    "h3": "^1.0.1"
   },
   "devDependencies": {
     "@nuxt/module-builder": "latest",
