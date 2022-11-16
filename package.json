@@ -30,21 +30,21 @@
     "test": "pnpm lint && vitest run --coverage"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.0.0-rc.13",
+    "@nuxt/kit": "^3.0.0",
     "h3": "^1.0.1"
   },
   "devDependencies": {
     "@nuxt/module-builder": "latest",
-    "@nuxt/test-utils": "^3.0.0-rc.13",
+    "@nuxt/test-utils": "^3.0.0",
     "@nuxtjs/eslint-config-typescript": "latest",
     "@vitest/coverage-c8": "latest",
     "changelogen": "latest",
     "eslint": "latest",
-    "nuxt": "^3.0.0-rc.13",
+    "nuxt": "^3.0.0",
     "vitest": "latest"
   },
   "publishConfig": {
     "access": "public"
   },
-  "packageManager": "pnpm@7.15.0"
+  "packageManager": "pnpm@7.16.1"
 }
