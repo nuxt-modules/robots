@@ -7,8 +7,6 @@
   "contributors": [
     "Ricardo Gobbo de Souza <ricardogobbosouza@yahoo.com.br>"
   ],
-  "type": "module",
-  "sideEffects": false,
   "exports": {
     ".": {
       "require": "./dist/module.cjs",
@@ -35,12 +33,12 @@
   },
   "devDependencies": {
     "@nuxt/module-builder": "latest",
-    "@nuxt/test-utils": "^3.0.0",
+    "@nuxt/test-utils": "latest",
     "@nuxtjs/eslint-config-typescript": "latest",
     "@vitest/coverage-c8": "latest",
     "changelogen": "latest",
     "eslint": "latest",
-    "nuxt": "^3.0.0",
+    "nuxt": "latest",
     "vitest": "latest"
   },
   "publishConfig": {
