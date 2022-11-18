@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## v3.0.0
+
+
+### 🩹 Fixes
+
+  - Only prerender for static target (#75)
+
+### 🏡 Chore
+
+  - Update deps (49654ab)
+
+### ❤️  Contributors
+
+- Ricardo Gobbo De Souza <ricardogobbosouza@yahoo.com.br>
+- Jonas Thelemann <e-mail@jonas-thelemann.de>
+
 ## [3.0.0-2](https://github.com/nuxt-community/robots-module/compare/v3.0.0-1...v3.0.0-2) (2022-10-31)
 
 
