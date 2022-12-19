@@ -60,21 +60,14 @@ Using route rules, you can configure how your routes are indexed by search engin
 
 ```ts
 export default defineNuxtConfig({
-  // Recommended 
-  runtimeConfig: {
-    siteUrl: 'https://example.com',
-  },
-  // OR 
-  sitemap: {
-    host: 'https://example.com',
-  },
+  routeRules: {
+    // disable indexing to all routes in /secret/
+    '/secret/**': { index: false },
+  }
 })
 ```
 
 ## Module Config
-
-  robotsEnabledValue: string
-  robotsDisabledValue: string
 
 ### `indexable`
 
