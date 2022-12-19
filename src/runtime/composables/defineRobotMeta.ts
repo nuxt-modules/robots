@@ -1,10 +1,11 @@
+import { useServerHead } from '@vueuse/head'
 import config from '#nuxt-simple-robots/config'
 import { useNuxtApp } from '#imports'
 
 export function defineRobotMeta() {
   if (process.server) {
     const nuxtApp = useNuxtApp()
-    useHead({
+    useServerHead({
       meta: [
         {
           name: 'robots',
