@@ -1,4 +1,5 @@
 import config from '#nuxt-simple-robots/config'
+import { useNuxtApp } from '#imports'
 
 export function defineRobotMeta() {
   if (process.server) {
