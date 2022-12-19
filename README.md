@@ -29,8 +29,8 @@ Simply manage the robots crawling your Nuxt v3 app.
 
 ## Features
 
-- 🤖 Creates best practice robots.txt
-- 🗿 Add `X-Robots-Tag` header and robot meta tag
+- 🤖 Creates best practice robot data
+- 🗿 Adds `X-Robots-Tag` header, robot meta tag and robots.txt
 - 🔄 Configure using route rules
 
 ## Install
@@ -54,9 +54,9 @@ export default defineNuxtConfig({
 })
 ```
 
-### Set host (optional)
+### Configure route indexing
 
-You'll need to provide the host of your site so that the crawler can resolve absolute URLs that may be internal.
+Using route rules, you can configure how your routes are indexed by search engines.
 
 ```ts
 export default defineNuxtConfig({
@@ -73,20 +73,48 @@ export default defineNuxtConfig({
 
 ## Module Config
 
-### `host`
+  robotsEnabledValue: string
+  robotsDisabledValue: string
 
-- Type: `string`
-- Default: `runtimeConfig.public.siteUrl`
-- Required: `false`
-
-The host of your site. This is required to validate absolute URLs which may be internal.
-
-### `trailingSlash`
+### `indexable`
 
 - Type: `boolean`
+- Default: `runtimeConfig.public.indexable`
+- Required: `nuxt.options.runtimeConfig.indexable || process.env.NODE_ENV === 'production'`
+
+Whether the site is indexable by search engines.
+
+### `disallow`
+
+- Type: `string[]`
+- Default: `['/_nuxt/*']`
+- Required: `false`
+
+Disallow paths from being crawled.
+
+### `sitemap`
+
+- Type: `string | string[] | false`
 - Default: `false`
 
-Whether internal links should have a trailing slash or not.
+The sitemap URL(s) for the site. If you have multiple sitemaps, you can provide an array of URLs. Note that they must
+be absolute URLs.
+
+### `robotsEnabledValue`
+
+- Type: `string`
+- Default: `'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'`
+- Required: `false`
+
+The value to use when the site is indexable.
+
+### `robotsDisabledValue`
+
+- Type: `string`
+- Default: `'noindex, nofollow'`
+- Required: `false`
+
+The value to use when the site is not indexable.
 
 ## Sponsors
 
