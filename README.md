@@ -10,7 +10,7 @@
 
 
 <p align="center">
-Simply manage your Nuxt v3 apps robot crawling.
+Simply manage the robots crawling your Nuxt v3 app.
 </p>
 
 <p align="center">
