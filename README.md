@@ -27,6 +27,8 @@ Simply manage the robots crawling your Nuxt v3 app.
 </table>
 </p>
 
+ℹ️ Looking for a complete SEO solution? Check out [nuxt-seo-kit](https://github.com/harlan-zw/nuxt-seo-kit).
+
 ## Features
 
 - 🤖 Creates best practice robot data
