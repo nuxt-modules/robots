@@ -34,6 +34,8 @@ Simply manage the robots crawling your Nuxt v3 app.
 - 🤖 Creates best practice robot data
 - 🗿 Adds `X-Robots-Tag` header, robot meta tag and robots.txt
 - 🔄 Configure using route rules
+- 🔒 Disables non-production environments from being crawled automatically
+- Best practice default config
 
 ## Install
 
