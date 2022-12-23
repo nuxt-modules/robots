@@ -69,6 +69,28 @@ export default defineNuxtConfig({
 })
 ```
 
+## Injecting Meta Tags (optional)
+
+By default, only the robots.txt and HTTP headers will be used to control indexing. If you want to add a meta tag to your page as well,
+you can use the composable or the component provided.
+
+This shouldn't be necessary, but it's useful if you want to be extra sure that your page is not indexed and can make debugging easier.
+
+Within your app.vue or a layout:
+
+```vue
+<script lang="ts" setup>
+// Use Composition API
+defineRobotMeta()
+</script>
+<template>
+  <div>
+    <!-- OR Component API -->
+    <RobotMeta />
+  </div>
+</template>
+```
+
 ## Module Config
 
 ### `indexable`
