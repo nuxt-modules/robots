@@ -106,7 +106,7 @@ Whether the site is indexable by search engines.
 ### `disallow`
 
 - Type: `string[]`
-- Default: `undefined`
+- Default: `[]`
 - Required: `false`
 
 Disallow paths from being crawled.

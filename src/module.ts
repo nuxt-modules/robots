@@ -27,7 +27,7 @@ export default defineNuxtModule<ModuleOptions>({
     return {
       indexable: (nuxt.options.runtimeConfig.indexable && nuxt.options.runtimeConfig.indexable !== false) || process.env.NODE_ENV === 'production',
       sitemap: false,
-      disallow: false,
+      disallow: [],
       robotsEnabledValue: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
       robotsDisabledValue: 'noindex, nofollow',
     }
