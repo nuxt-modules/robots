@@ -12,7 +12,8 @@ export function defineRobotMeta() {
           content: () => {
             // SSR only
             const routeRules = nuxtApp?.ssrContext?.event?.context?._nitro?.routeRules
-            return config[(config.indexable === false || routeRules?.index === false) ? 'robotsDisabledValue' : 'robotsEnabledValue']
+            const key = (config.indexable === false || routeRules?.index === false) ? 'robotsDisabledValue' : 'robotsEnabledValue' as const
+            return config[key]
           },
         },
       ],

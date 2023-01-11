@@ -1,11 +1,7 @@
 import { defineComponent } from 'vue'
 import { defineRobotMeta } from '#imports'
 
-export default defineComponent<{
-  title?: string
-  description?: string
-  component?: string
-}>({
+export default defineComponent({
   name: 'RobotMeta',
   setup() {
     defineRobotMeta()
