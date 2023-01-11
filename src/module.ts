@@ -21,16 +21,23 @@ export default defineNuxtModule<ModuleOptions>({
     configKey: 'robots',
   },
   defaults(nuxt) {
+    let indexable = true
+    if (typeof process.env.NUXT_INDEXABLE !== 'undefined')
+      indexable = String(process.env.NUXT_INDEXABLE) !== 'false'
+    else if (typeof nuxt.options.runtimeConfig.indexable !== 'undefined')
+      indexable = String(nuxt.options.runtimeConfig.indexable) !== 'false'
+    else if (process.env.NODE_ENV !== 'production')
+      indexable = false
     return {
-      indexable: (nuxt.options.runtimeConfig.indexable && nuxt.options.runtimeConfig.indexable !== false) || process.env.NODE_ENV === 'production',
-      sitemap: false,
-      disallow: [],
+      indexable,
       robotsEnabledValue: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
       robotsDisabledValue: 'noindex, nofollow',
     }
   },
   async setup(config, nuxt) {
     const { resolve } = createResolver(import.meta.url)
+
+    config.indexable = String(config.indexable) !== 'false'
 
     // paths.d.ts
     addTemplate({
