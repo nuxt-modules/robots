@@ -98,8 +98,7 @@ defineRobotMeta()
 ### `indexable`
 
 - Type: `boolean`
-- Default: `runtimeConfig.public.indexable`
-- Required: `nuxt.options.runtimeConfig.indexable || process.env.NODE_ENV === 'production'`
+- Default: `process.env.NUXT_INDEXABLE || nuxt.options.runtimeConfig.indexable || process.env.NODE_ENV === 'production'`
 
 Whether the site is indexable by search engines.
 
