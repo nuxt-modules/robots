@@ -1,17 +1,14 @@
 import { addComponent, addImports, addServerHandler, addTemplate, createResolver, defineNuxtModule } from '@nuxt/kit'
 
 export interface ModuleOptions {
-  indexable: boolean
+  indexable?: boolean
   /**
    * Path to the sitemap.xml file, if it exists.
    */
-  sitemap: string | string[] | false
-  disallow: string | string[] | false
-  robotsEnabledValue: string
-  robotsDisabledValue: string
-}
-
-export interface ModuleHooks {
+  sitemap?: string | string[]
+  disallow?: string | string[]
+  robotsEnabledValue?: string
+  robotsDisabledValue?: string
 }
 
 export default defineNuxtModule<ModuleOptions>({
