@@ -1,4 +1,5 @@
 import { useServerHead } from '@vueuse/head'
+// eslint-disable-next-line import/default
 import config from '#nuxt-simple-robots/config'
 import { useNuxtApp } from '#imports'
 
