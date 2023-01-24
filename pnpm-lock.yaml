@@ -17,6 +17,7 @@ importers:
       vitest: ^0.28.1
     dependencies:
       '@nuxt/kit': 3.0.0
+      pathe: 1.1.0
     devDependencies:
       '@antfu/eslint-config': 0.34.1_eslint@8.32.0
       '@nuxt/module-builder': 0.2.1
@@ -26,7 +27,6 @@ importers:
       eslint: 8.32.0
       execa: 6.1.0
       nuxt: 3.0.0_eslint@8.32.0
-      pathe: 1.1.0
       vitest: 0.28.1
 
   .playground:
