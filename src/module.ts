@@ -6,8 +6,8 @@ export interface ModuleOptions {
   /**
    * Path to the sitemap.xml file, if it exists.
    */
-  sitemap?: string | string[]
-  disallow?: string | string[]
+  sitemap: string | string[]
+  disallow: string | string[]
   robotsEnabledValue: string
   robotsDisabledValue: string
 }
@@ -30,6 +30,8 @@ export default defineNuxtModule<ModuleOptions>({
     else if (process.env.NODE_ENV !== 'production')
       indexable = false
     return {
+      disallow: [],
+      sitemap: [],
       indexable,
       robotsEnabledValue: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
       robotsDisabledValue: 'noindex, nofollow',
