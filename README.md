@@ -10,7 +10,7 @@
 
 
 <p align="center">
-Simply manage the robots crawling your Nuxt v3 app.
+Simply manage the robots crawling your Nuxt 3 app.
 </p>
 
 <p align="center">
@@ -18,7 +18,7 @@ Simply manage the robots crawling your Nuxt v3 app.
 <tbody>
 <td align="center">
 <img width="800" height="0" /><br>
-<i>Status:</i> Early Access</b> <br>
+<i>Status:</i> Stable</b> <br>
 <sup> Please report any issues 🐛</sup><br>
 <sub>Made possible by my <a href="https://github.com/sponsors/harlan-zw">Sponsor Program 💖</a><br> Follow me <a href="https://twitter.com/harlan_zw">@harlan_zw</a> 🐦 • Join <a href="https://discord.gg/275MBUBvgP">Discord</a> for help</sub><br>
 <img width="800" height="0" />
@@ -27,7 +27,7 @@ Simply manage the robots crawling your Nuxt v3 app.
 </table>
 </p>
 
-ℹ️ Looking for a complete SEO solution? Check out [nuxt-seo-kit](https://github.com/harlan-zw/nuxt-seo-kit).
+ℹ️ Looking for a complete SEO solution? Check out [Nuxt SEO Kit](https://github.com/harlan-zw/nuxt-seo-kit).
 
 ## Features
 
