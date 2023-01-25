@@ -7,6 +7,8 @@ export default defineEventHandler((event) => {
     return
   // add noindex header
   const routeRules = getRouteRules(event)
-  if (routeRules.index === false || indexable === false)
+  if (typeof routeRules.robots === 'string')
+    setHeader(event, 'X-Robots-Tag', routeRules.robots)
+  else if (routeRules.index === false || indexable === false)
     setHeader(event, 'X-Robots-Tag', robotsDisabledValue)
 })

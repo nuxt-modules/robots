@@ -12,6 +12,8 @@ export function defineRobotMeta() {
           content: () => {
             // SSR only
             const routeRules = nuxtApp?.ssrContext?.event?.context?._nitro?.routeRules
+            if (typeof routeRules.robots === 'string')
+              return routeRules.robots
             return (indexable === false || routeRules?.index === false) ? robotsDisabledValue : robotsEnabledValue
           },
         },

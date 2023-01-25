@@ -67,6 +67,10 @@ export default defineNuxtConfig({
   routeRules: {
     // disable indexing to all routes in /secret/
     '/secret/**': { index: false },
+    // add exceptions for individual routes
+    '/secret/visible': { index: true },
+    // set custom robot rules as a string if you prefer
+    '/custom-robots': { robots: 'index, follow' },
   }
 })
 ```
