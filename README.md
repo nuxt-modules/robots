@@ -65,11 +65,11 @@ Using route rules, you can configure how your routes are indexed by search engin
 ```ts
 export default defineNuxtConfig({
   routeRules: {
-    // disable indexing to all routes in /secret/
+    // use the `index` shortcut for simple rules
     '/secret/**': { index: false },
     // add exceptions for individual routes
     '/secret/visible': { index: true },
-    // set custom robot rules as a string if you prefer
+    // use the `robots` rule if you need finer control
     '/custom-robots': { robots: 'index, follow' },
   }
 })
