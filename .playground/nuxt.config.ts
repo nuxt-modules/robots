@@ -16,6 +16,9 @@ export default defineNuxtConfig({
       ]
     }
   },
+  runtimeConfig: {
+    siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://example.com',
+  },
   robots: {
     indexable: true,
     disallow: '/hidden/',

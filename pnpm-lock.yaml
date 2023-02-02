@@ -14,10 +14,12 @@ importers:
       execa: ^6.1.0
       nuxt: ^3.1.1
       pathe: ^1.1.0
+      ufo: ^1.0.1
       vitest: ^0.28.3
     dependencies:
       '@nuxt/kit': 3.1.1
       pathe: 1.1.0
+      ufo: 1.0.1
     devDependencies:
       '@antfu/eslint-config': 0.35.1_eslint@8.33.0
       '@nuxt/module-builder': 0.2.1
