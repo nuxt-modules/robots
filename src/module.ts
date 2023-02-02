@@ -1,4 +1,5 @@
-import { addComponent, addImports, addServerHandler, addTemplate, createResolver, defineNuxtModule } from '@nuxt/kit'
+import { addComponent, addImports, addServerHandler, addTemplate, createResolver, defineNuxtModule, useLogger } from '@nuxt/kit'
+import { withBase } from 'ufo'
 import { exposeModuleConfig } from './nuxt-utils'
 
 export interface ModuleOptions {
@@ -41,6 +42,28 @@ export default defineNuxtModule<ModuleOptions>({
     const { resolve } = createResolver(import.meta.url)
 
     config.indexable = String(config.indexable) !== 'false'
+
+    const logger = useLogger('nuxt-simple-robots')
+
+    // validate sitemaps are absolute
+    if (typeof config.sitemap !== 'undefined') {
+      if (typeof config.sitemap === 'string')
+        config.sitemap = [config.sitemap]
+      for (const k in config.sitemap) {
+        const sitemap = config.sitemap[k]
+        if (!sitemap.startsWith('http')) {
+          // infer siteUrl from runtime config
+          if (nuxt.options.runtimeConfig.siteUrl) {
+            config.sitemap[k] = withBase(sitemap, nuxt.options.runtimeConfig.siteUrl)
+          }
+          else {
+            // remove the sitemap entry from config.sitemap
+            config.sitemap.splice(Number(k), 1)
+            logger.error(`Ignoring robots.txt entry ${sitemap}, sitemap must be absolute.\nPlease provide "runtimeConfig.siteUrl" or make the link absolute, for example: https://example.com${sitemap}.`)
+          }
+        }
+      }
+    }
 
     // paths.d.ts
     addTemplate({

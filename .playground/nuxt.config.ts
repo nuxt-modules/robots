@@ -19,7 +19,7 @@ export default defineNuxtConfig({
   robots: {
     indexable: true,
     disallow: '/hidden/',
-    sitemap: 'https://example.com/sitemap.xml'
+    sitemap: '/sitemap.xml'
   },
   routeRules: {
     '/secret/**': {

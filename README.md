@@ -119,8 +119,32 @@ Disallow paths from being crawled.
 - Type: `string | string[] | false`
 - Default: `false`
 
-The sitemap URL(s) for the site. If you have multiple sitemaps, you can provide an array of URLs. Note that they must
-be absolute URLs.
+The sitemap URL(s) for the site. If you have multiple sitemaps, you can provide an array of URLs. 
+
+You must either define the runtime config `siteUrl` or provide the sitemap as absolute URLs.
+
+```ts
+// option 1. provide runtime config for site url
+export default defineNuxtConfig({
+  runtimeConfig: {
+    siteUrl: process.env.SITE_URL || 'https://example.com',
+  },
+  robots: {
+    sitemap: '/sitemap.xml',
+  },
+})
+```
+
+```ts
+// option 2. provide absolute URLs
+export default defineNuxtConfig({
+  robots: {
+    sitemap: [
+      'https://example.com/sitemap.xml',
+    ],
+  },
+})
+```
 
 ### `robotsEnabledValue`
 
