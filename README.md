@@ -127,7 +127,7 @@ You must either define the runtime config `siteUrl` or provide the sitemap as ab
 // option 1. provide runtime config for site url
 export default defineNuxtConfig({
   runtimeConfig: {
-    siteUrl: process.env.SITE_URL || 'https://example.com',
+    siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://example.com',
   },
   robots: {
     sitemap: '/sitemap.xml',
