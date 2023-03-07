@@ -3,6 +3,10 @@ import { withBase } from 'ufo'
 import { exposeModuleConfig } from './nuxt-utils'
 
 export interface ModuleOptions {
+  /**
+   * The hostname of your website. Used to generate absolute URLs.
+   */
+  host: string
   indexable: boolean
   /**
    * Path to the sitemap.xml file, if it exists.
@@ -31,6 +35,7 @@ export default defineNuxtModule<ModuleOptions>({
     else if (process.env.NODE_ENV !== 'production')
       indexable = false
     return {
+      host: process.env.NUXT_PUBLIC_SITE_URL || process.env.NUXT_SITE_URL || nuxt.options.runtimeConfig.public?.siteUrl || nuxt.options.runtimeConfig.siteUrl,
       disallow: [],
       sitemap: [],
       indexable,
@@ -53,13 +58,13 @@ export default defineNuxtModule<ModuleOptions>({
         const sitemap = config.sitemap[k]
         if (!sitemap.startsWith('http')) {
           // infer siteUrl from runtime config
-          if (nuxt.options.runtimeConfig.siteUrl) {
-            config.sitemap[k] = withBase(sitemap, nuxt.options.runtimeConfig.siteUrl)
+          if (config.host) {
+            config.sitemap[k] = withBase(sitemap, config.host)
           }
           else {
             // remove the sitemap entry from config.sitemap
             config.sitemap.splice(Number(k), 1)
-            logger.error(`Ignoring robots.txt entry ${sitemap}, sitemap must be absolute.\nPlease provide "runtimeConfig.siteUrl" or make the link absolute, for example: https://example.com${sitemap}.`)
+            logger.error(`Ignoring robots.txt entry ${sitemap}, sitemap must be absolute.\nPlease provide "host" or make the link absolute, for example: https://example.com${sitemap}.`)
           }
         }
       }

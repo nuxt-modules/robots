@@ -99,6 +99,26 @@ defineRobotMeta()
 
 ## Module Config
 
+### `host`
+
+- Type: `string`
+- Default: `process.env.NUXT_PUBLIC_SITE_URL || nuxt.options.runtimeConfig.public?.siteUrl`
+
+Used to ensure sitemaps are absolute URLs.
+
+It's recommended that you use runtime config for this.
+
+```ts
+export default defineNuxtConfig({
+  runtimeConfig: {
+    public: {
+      // can be set with environment variables
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://example.com',
+    }
+  },
+})
+```
+
 ### `indexable`
 
 - Type: `boolean`
@@ -124,23 +144,11 @@ The sitemap URL(s) for the site. If you have multiple sitemaps, you can provide 
 You must either define the runtime config `siteUrl` or provide the sitemap as absolute URLs.
 
 ```ts
-// option 1. provide runtime config for site url
-export default defineNuxtConfig({
-  runtimeConfig: {
-    siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://example.com',
-  },
-  robots: {
-    sitemap: '/sitemap.xml',
-  },
-})
-```
-
-```ts
-// option 2. provide absolute URLs
 export default defineNuxtConfig({
   robots: {
     sitemap: [
-      'https://example.com/sitemap.xml',
+      '/sitemap-one.xml',
+      '/sitemap-two.xml',
     ],
   },
 })
