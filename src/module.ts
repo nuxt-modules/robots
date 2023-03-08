@@ -4,6 +4,12 @@ import { exposeModuleConfig } from './nuxt-utils'
 
 export interface ModuleOptions {
   /**
+   * Whether the robots.txt should be generated.
+   *
+   * @default true
+   */
+  enabled: boolean
+  /**
    * The hostname of your website. Used to generate absolute URLs.
    */
   host: string
@@ -35,6 +41,7 @@ export default defineNuxtModule<ModuleOptions>({
     else if (process.env.NODE_ENV !== 'production')
       indexable = false
     return {
+      enabled: true,
       host: process.env.NUXT_PUBLIC_SITE_URL || process.env.NUXT_SITE_URL || nuxt.options.runtimeConfig.public?.siteUrl || nuxt.options.runtimeConfig.siteUrl,
       disallow: [],
       sitemap: [],
@@ -44,6 +51,9 @@ export default defineNuxtModule<ModuleOptions>({
     }
   },
   async setup(config, nuxt) {
+    if (config.enabled === false)
+      return
+
     const { resolve } = createResolver(import.meta.url)
 
     config.indexable = String(config.indexable) !== 'false'
