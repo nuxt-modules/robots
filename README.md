@@ -1,4 +1,4 @@
-_<h1 align='center'>nuxt-simple-robots</h1>
+<h1 align='center'>nuxt-simple-robots</h1>
 
 <p align="center">
 <a href='https://github.com/harlan-zw/nuxt-simple-robots/actions/workflows/test.yml'>
@@ -33,7 +33,7 @@ Simply manage the robots crawling your Nuxt 3 app.
 
 - 🤖 Creates best practice robot data
 - 🗿 Adds `X-Robots-Tag` header, robot meta tag and robots.txt
-- 🔄 Configure using route rules
+- 🔄 Configure using route rules and hooks
 - 🔒 Disables non-production environments from being crawled automatically
 - Best practice default config
 
@@ -228,4 +228,4 @@ export default defineNitroPlugin((nitroApp) => {
 
 ## License
 
-MIT License © 2022-PRESENT [Harlan Wilton](https://github.com/harlan-zw)_
+MIT License © 2022-PRESENT [Harlan Wilton](https://github.com/harlan-zw)
