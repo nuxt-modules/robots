@@ -32,7 +32,7 @@
     "dev:build": "nuxi build .playground",
     "dev:prepare": "nuxt-module-build --stub && nuxi prepare .playground",
     "release": "bumpp package.json --commit --push --tag",
-    "test": "pnpm lint"
+    "test": "pnpm lint && vitest"
   },
   "dependencies": {
     "@nuxt/kit": "3.3.1",
