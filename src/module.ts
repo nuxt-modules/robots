@@ -1,6 +1,6 @@
 import { addComponent, addImports, addServerHandler, addTemplate, createResolver, defineNuxtModule, useLogger } from '@nuxt/kit'
 import { withBase } from 'ufo'
-import { exposeModuleConfig } from './nuxt-utils'
+import { asArray } from './util'
 
 export interface ModuleOptions {
   /**
@@ -21,6 +21,19 @@ export interface ModuleOptions {
   disallow: string | string[]
   robotsEnabledValue: string
   robotsDisabledValue: string
+}
+
+export interface ResolvedModuleOptions extends ModuleOptions {
+  sitemap: string[]
+  disallow: string[]
+}
+
+export interface ModuleHooks {
+  'robots:config': (config: ResolvedModuleOptions) => Promise<void> | void
+}
+
+export interface ModulePublicRuntimeConfig {
+  ['nuxt-simple-robots']: ResolvedModuleOptions
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -60,10 +73,9 @@ export default defineNuxtModule<ModuleOptions>({
 
     const logger = useLogger('nuxt-simple-robots')
 
-    // validate sitemaps are absolute
-    if (typeof config.sitemap !== 'undefined') {
-      if (typeof config.sitemap === 'string')
-        config.sitemap = [config.sitemap]
+    nuxt.hook('modules:done', () => {
+      config.sitemap = asArray(config.sitemap)
+      // validate sitemaps are absolute
       for (const k in config.sitemap) {
         const sitemap = config.sitemap[k]
         if (!sitemap.startsWith('http')) {
@@ -78,7 +90,14 @@ export default defineNuxtModule<ModuleOptions>({
           }
         }
       }
-    }
+      config.sitemap = [...new Set(config.sitemap)]
+
+      config.disallow = asArray(config.disallow)
+      config.disallow = [...new Set(config.disallow)]
+      // @ts-expect-error runtime type
+      nuxt.hooks.callHook('robots:config', config)
+      nuxt.options.runtimeConfig.public['nuxt-simple-robots'] = config as ResolvedModuleOptions
+    })
 
     // paths.d.ts
     addTemplate({
