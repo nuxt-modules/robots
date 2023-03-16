@@ -185,6 +185,8 @@ The value to use when the site is not indexable.
 
 ### `robots:config`
 
+**Type:** `async (config: ModuleOptions) => void | Promise<void>`
+
 This hook allows you to modify the robots config before it is used to generate the robots.txt and meta tags.
 
 ```ts
@@ -201,6 +203,8 @@ export default defineNuxtConfig({
 ## Nitro Hooks
 
 ### `robots:robots-txt`
+
+**Type:** `async (ctx: { robotsTxt: string }) => void | Promise<void>`
 
 This hook allows you to modify the robots.txt content before it is sent to the client.
 
