@@ -6,14 +6,14 @@ export default defineEventHandler(async (e) => {
   if (!process.dev)
     setHeader(e, 'Cache-Control', 'max-age=14400, must-revalidate')
 
-  const { disallow, indexable, sitemap } = useRuntimeConfig().public['nuxt-simple-robots']
+  const { disallow, sitemap, indexable } = useRuntimeConfig().public['nuxt-simple-robots']
   const robotsTxt = [
-    '# START nuxt-simple-robots',
+    `# START nuxt-simple-robots (indexable: ${indexable ? 'true' : 'false'})`,
     process.dev ? '# This is a development preview' : false,
     'User-agent: *',
-    ...(indexable ? disallow : ['/']).map(path => `Disallow: ${path}`),
+    ...(disallow).map(path => `Disallow: ${path}`),
     '',
-    ...(sitemap || []).map(path => `Sitemap: ${path}`),
+    ...(sitemap).map(path => `Sitemap: ${path}`),
     '# END nuxt-simple-robots',
   ].filter(l => l !== false).join('\n')
 
