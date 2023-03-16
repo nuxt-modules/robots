@@ -126,7 +126,8 @@ export {}
       nitro.options.prerender.routes.push('/robots.txt')
     })
 
-    exposeModuleConfig('nuxt-simple-robots', config)
+    // defineRobotMeta is a server-only composable
+    nuxt.options.optimization.treeShake.composables.client['nuxt-simple-robots'] = ['defineRobotMeta']
 
     addImports({
       name: 'defineRobotMeta',
