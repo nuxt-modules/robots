@@ -9,6 +9,7 @@ export default defineNuxtConfig({
     'nuxt-simple-robots',
   ],
   nitro: {
+    plugins: ['plugins/robots.ts'],
     prerender: {
       crawlLinks: true,
       routes: [
