@@ -1,4 +1,4 @@
-<h1 align='center'>nuxt-simple-robots</h1>
+_<h1 align='center'>nuxt-simple-robots</h1>
 
 <p align="center">
 <a href='https://github.com/harlan-zw/nuxt-simple-robots/actions/workflows/test.yml'>
@@ -99,7 +99,7 @@ defineRobotMeta()
 
 ## Module Config
 
-### `host`
+### `siteUrl`
 
 - Type: `string`
 - Default: `process.env.NUXT_PUBLIC_SITE_URL || nuxt.options.runtimeConfig.public?.siteUrl`
@@ -125,6 +125,17 @@ export default defineNuxtConfig({
 - Default: `process.env.NUXT_INDEXABLE || nuxt.options.runtimeConfig.indexable || process.env.NODE_ENV === 'production'`
 
 Whether the site is indexable by search engines.
+
+It's recommended that you use runtime config for this.
+
+```ts
+export default defineNuxtConfig({
+  runtimeConfig: {
+    // can be set with environment variables
+    indexable: process.env.NUXT_INDEXABLE || false,
+  },
+})
+```
 
 ### `disallow`
 
@@ -170,6 +181,42 @@ The value to use when the site is indexable.
 
 The value to use when the site is not indexable.
 
+## Nuxt Hooks
+
+### `robots:config`
+
+This hook allows you to modify the robots config before it is used to generate the robots.txt and meta tags.
+
+```ts
+export default defineNuxtConfig({
+  hooks: {
+    'robots:config': (config) => {
+      // modify the config
+      config.sitemap = '/sitemap.xml'
+    },
+  },
+})
+```
+
+## Nitro Hooks
+
+### `robots:robots-txt`
+
+This hook allows you to modify the robots.txt content before it is sent to the client.
+
+```ts
+import { defineNitroPlugin } from 'nitropack/runtime/plugin'
+
+export default defineNitroPlugin((nitroApp) => {
+  if (!process.dev) {
+    nitroApp.hooks.hook('robots:robots-txt', async (ctx) => {
+      // remove comments from robotsTxt in production
+      ctx.robotsTxt = ctx.robotsTxt.replace(/^#.*$/gm, '').trim()
+    })
+  }
+})
+```
+
 ## Sponsors
 
 <p align="center">
@@ -181,4 +228,4 @@ The value to use when the site is not indexable.
 
 ## License
 
-MIT License © 2022-PRESENT [Harlan Wilton](https://github.com/harlan-zw)
+MIT License © 2022-PRESENT [Harlan Wilton](https://github.com/harlan-zw)_
