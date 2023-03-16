@@ -11,8 +11,13 @@ export interface ModuleOptions {
   enabled: boolean
   /**
    * The hostname of your website. Used to generate absolute URLs.
+   * @deprecated use `siteUrl`
    */
-  host: string
+  host?: string
+  /**
+   * The hostname of your website. Used to generate absolute URLs.
+   */
+  siteUrl: string
   indexable: boolean
   /**
    * Path to the sitemap.xml file, if it exists.
@@ -53,9 +58,10 @@ export default defineNuxtModule<ModuleOptions>({
       indexable = String(nuxt.options.runtimeConfig.indexable) !== 'false'
     else if (process.env.NODE_ENV !== 'production')
       indexable = false
+    const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || process.env.NUXT_SITE_URL || nuxt.options.runtimeConfig.public?.siteUrl || nuxt.options.runtimeConfig.siteUrl
     return {
       enabled: true,
-      host: process.env.NUXT_PUBLIC_SITE_URL || process.env.NUXT_SITE_URL || nuxt.options.runtimeConfig.public?.siteUrl || nuxt.options.runtimeConfig.siteUrl,
+      siteUrl,
       disallow: [],
       sitemap: [],
       indexable,
@@ -66,6 +72,8 @@ export default defineNuxtModule<ModuleOptions>({
   async setup(config, nuxt) {
     if (config.enabled === false)
       return
+    // allow config fallback
+    config.siteUrl = config.siteUrl || config.host!
 
     const { resolve } = createResolver(import.meta.url)
 
@@ -80,8 +88,8 @@ export default defineNuxtModule<ModuleOptions>({
         const sitemap = config.sitemap[k]
         if (!sitemap.startsWith('http')) {
           // infer siteUrl from runtime config
-          if (config.host) {
-            config.sitemap[k] = withBase(sitemap, config.host)
+          if (config.siteUrl) {
+            config.sitemap[k] = withBase(sitemap, config.siteUrl)
           }
           else {
             // remove the sitemap entry from config.sitemap
@@ -90,9 +98,11 @@ export default defineNuxtModule<ModuleOptions>({
           }
         }
       }
-      config.sitemap = [...new Set(config.sitemap)]
+      config.sitemap = !config.indexable ? [] : [...new Set(config.sitemap)]
 
-      config.disallow = asArray(config.disallow)
+      config.disallow = config.indexable ? asArray(config.disallow) : ['/']
+      if (!config.disallow.length)
+        config.disallow.push('')
       config.disallow = [...new Set(config.disallow)]
       // @ts-expect-error runtime type
       nuxt.hooks.callHook('robots:config', config)
@@ -142,7 +152,7 @@ export {}
     // add robots.txt server handler
     addServerHandler({
       route: '/robots.txt',
-      handler: resolve('./runtime/server/robots-route'),
+      handler: resolve('./runtime/server/robots-txt.ts'),
     })
     // add robots HTTP header handler
     addServerHandler({
