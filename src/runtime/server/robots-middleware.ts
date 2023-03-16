@@ -1,11 +1,11 @@
 import { defineEventHandler, setHeader } from 'h3'
-import { indexable, robotsDisabledValue } from '#nuxt-simple-robots/config'
-import { getRouteRules } from '#internal/nitro'
+import { getRouteRules, useRuntimeConfig } from '#internal/nitro'
 
 export default defineEventHandler((event) => {
   if (event.path === '/robots.txt')
     return
   // add noindex header
+  const { indexable, robotsDisabledValue } = useRuntimeConfig().public['nuxt-simple-robots']
   const routeRules = getRouteRules(event)
   if (typeof routeRules.robots === 'string')
     setHeader(event, 'X-Robots-Tag', routeRules.robots)

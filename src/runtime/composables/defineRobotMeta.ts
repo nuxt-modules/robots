@@ -1,10 +1,10 @@
-import { indexable, robotsDisabledValue, robotsEnabledValue } from '#nuxt-simple-robots/config'
-import { useHead, useNuxtApp } from '#imports'
+import { useNuxtApp, useRuntimeConfig, useServerHead } from '#imports'
 
 export function defineRobotMeta() {
   if (process.server) {
     const nuxtApp = useNuxtApp()
-    useHead({
+    const { indexable, robotsDisabledValue, robotsEnabledValue } = useRuntimeConfig().public['nuxt-simple-robots']
+    useServerHead({
       meta: [
         {
           name: 'robots',
@@ -17,6 +17,6 @@ export function defineRobotMeta() {
           },
         },
       ],
-    }, { mode: 'server' })
+    })
   }
 }
