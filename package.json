@@ -4,6 +4,7 @@
   "version": "2.0.1",
   "packageManager": "pnpm@7.18.0",
   "license": "MIT",
+  "description": "Simply manage the robots crawling your Nuxt 3 app.",
   "funding": "https://github.com/sponsors/harlan-zw",
   "homepage": "https://github.com/harlan-zw/nuxt-simple-robots#readme",
   "repository": {
