@@ -152,7 +152,7 @@ export {}
     // add robots.txt server handler
     addServerHandler({
       route: '/robots.txt',
-      handler: resolve('./runtime/server/robots-txt.ts'),
+      handler: resolve('./runtime/server/robots-txt'),
     })
     // add robots HTTP header handler
     addServerHandler({
