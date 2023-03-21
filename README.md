@@ -68,6 +68,8 @@ export default defineNuxtConfig({
 
 Using route rules, you can configure how your routes are indexed by search engines.
 
+For routes that have `index: false`, meta tags and headers will be added to prevent indexing. 
+
 ```ts
 export default defineNuxtConfig({
   routeRules: {
@@ -81,12 +83,24 @@ export default defineNuxtConfig({
 })
 ```
 
-## Injecting Meta Tags (optional)
+If you prefer to have these values within the robots.txt itself, you should use the `exclude` rule as well.
 
-By default, only the robots.txt and HTTP headers will be used to control indexing. If you want to add a meta tag to your page as well,
-you can use the composable or the component provided.
+```ts
+export default defineNuxtConfig({
+  robots: {
+      exclude: [
+        '/secret/**',
+      ]
+  },
+})
+```
 
-This shouldn't be necessary, but it's useful if you want to be extra sure that your page is not indexed and can make debugging easier.
+
+## Injecting Meta Tags
+
+By default, only the robots.txt and HTTP headers provided by server middleware will be used to control indexing. 
+
+It's recommended for SSG apps or to improve debugging, to add a meta tags to your page as well.
 
 Within your app.vue or a layout:
 
