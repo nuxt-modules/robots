@@ -81,7 +81,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     const logger = useLogger('nuxt-simple-robots')
 
-    nuxt.hook('modules:done', () => {
+    nuxt.hook('modules:done', async () => {
       config.sitemap = asArray(config.sitemap)
       // validate sitemaps are absolute
       for (const k in config.sitemap) {
@@ -105,7 +105,7 @@ export default defineNuxtModule<ModuleOptions>({
         config.disallow.push('')
       config.disallow = [...new Set(config.disallow)]
       // @ts-expect-error runtime type
-      nuxt.hooks.callHook('robots:config', config)
+      await nuxt.hooks.callHook('robots:config', config)
       nuxt.options.runtimeConfig.public['nuxt-simple-robots'] = config as ResolvedModuleOptions
     })
 
