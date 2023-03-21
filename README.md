@@ -37,6 +37,12 @@ Simply manage the robots crawling your Nuxt 3 app.
 - 🔒 Disables non-production environments from being crawled automatically
 - Best practice default config
 
+### Zero Config Integrations
+
+- [`nuxt-simple-robots`](https://github.com/harlan-zw/nuxt-simple-robots)
+
+Will automatically add sitemap entries.
+
 ## Install
 
 ```bash
