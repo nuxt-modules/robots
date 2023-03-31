@@ -83,14 +83,14 @@ export default defineNuxtConfig({
 })
 ```
 
-If you prefer to have these values within the robots.txt itself, you should use the `exclude` rule as well.
+If you prefer to have these values within the robots.txt itself, you should use the `disallow` rule as well.
 
 ```ts
 export default defineNuxtConfig({
   robots: {
-      exclude: [
-        '/secret/**',
-      ]
+    disallow: [
+      '/secret/**',
+    ]
   },
 })
 ```
