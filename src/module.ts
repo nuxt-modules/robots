@@ -85,6 +85,11 @@ export default defineNuxtModule<ModuleOptions>({
 
     nuxt.hook('modules:done', async () => {
       config.sitemap = asArray(config.sitemap)
+      config.disallow = asArray(config.disallow)
+      if (!config.indexable)
+        config.disallow.push('/')
+      // @ts-expect-error runtime type
+      await nuxt.hooks.callHook('robots:config', config)
       // validate sitemaps are absolute
       for (const k in config.sitemap) {
         const sitemap = config.sitemap[k]
@@ -102,7 +107,7 @@ export default defineNuxtModule<ModuleOptions>({
       }
       config.sitemap = !config.indexable ? [] : [...new Set(config.sitemap)]
 
-      const disallow = config.indexable ? asArray(config.disallow) : ['/']
+      const disallow = config.disallow
       if (config.disallowNonIndexableRoutes && config.indexable) {
         // iterate the route rules and add any non indexable rules to disallow
         Object.entries(nuxt.options.routeRules || {}).forEach(([route, rules]) => {
@@ -115,8 +120,7 @@ export default defineNuxtModule<ModuleOptions>({
       if (!disallow.length)
         disallow.push('')
       config.disallow = [...new Set(disallow)]
-      // @ts-expect-error runtime type
-      await nuxt.hooks.callHook('robots:config', config)
+
       nuxt.options.runtimeConfig.public['nuxt-simple-robots'] = config as ResolvedModuleOptions
     })
 
