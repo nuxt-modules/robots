@@ -64,11 +64,14 @@ export default defineNuxtConfig({
 })
 ```
 
-### Configure route indexing
+### Using route rules
 
 Using route rules, you can configure how your routes are indexed by search engines.
 
-For routes that have `index: false`, meta tags and headers will be added to prevent indexing. 
+You can provide the following rules:
+
+- `index: false` - Will disable the route from being indexed using the `robotsDisabledValue`config _(default `noindex, nofollow`)_
+- `robots: <string>` - Will add robots the provided string as the robots rule
 
 ```ts
 export default defineNuxtConfig({
@@ -83,22 +86,14 @@ export default defineNuxtConfig({
 })
 ```
 
-If you prefer to have these values within the robots.txt itself, you should use the `disallow` rule as well.
+The rules are applied using the following logic:
+- `X-Robots-Tag` header - SSR only
+- `<meta name="robots">` - When using the `defineRobotMeta` or `RobotMeta` composable or component
+- `/robots.txt` disallow entry - When `disallowNonIndexableRoutes` is enabled
 
-```ts
-export default defineNuxtConfig({
-  robots: {
-    disallow: [
-      '/secret/**',
-    ]
-  },
-})
-```
+## Meta Tags
 
-
-## Injecting Meta Tags
-
-By default, only the robots.txt and HTTP headers provided by server middleware will be used to control indexing. 
+By default, only the `/robots.txt` and HTTP headers provided by server middleware will be used to control indexing. 
 
 It's recommended for SSG apps or to improve debugging, to add a meta tags to your page as well.
 
@@ -200,6 +195,13 @@ The value to use when the site is indexable.
 - Required: `false`
 
 The value to use when the site is not indexable.
+
+### `disallowNonIndexableRoutes`
+
+- Type: `boolean`
+- Default: `'false'`
+
+Should route rules which disallow indexing be added to the `/robots.txt` file.
 
 ## Nuxt Hooks
 

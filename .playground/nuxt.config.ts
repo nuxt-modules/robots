@@ -19,7 +19,7 @@ export default defineNuxtConfig({
   },
   robots: {
     disallow: '/hidden/',
-    sitemap: '/sitemap.xml'
+    sitemap: '/sitemap.xml',
   },
   routeRules: {
     '/secret/**': {
@@ -29,6 +29,9 @@ export default defineNuxtConfig({
     '/secret/visible': {
       // index: true,
       robots: 'index, follow',
+    },
+    '/excluded/*': {
+      index: false,
     }
   }
 })

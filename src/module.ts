@@ -26,6 +26,7 @@ export interface ModuleOptions {
   disallow: string | string[]
   robotsEnabledValue: string
   robotsDisabledValue: string
+  disallowNonIndexableRoutes: boolean
 }
 
 export interface ResolvedModuleOptions extends ModuleOptions {
@@ -67,6 +68,7 @@ export default defineNuxtModule<ModuleOptions>({
       indexable,
       robotsEnabledValue: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
       robotsDisabledValue: 'noindex, nofollow',
+      disallowNonIndexableRoutes: false,
     }
   },
   async setup(config, nuxt) {
@@ -100,10 +102,19 @@ export default defineNuxtModule<ModuleOptions>({
       }
       config.sitemap = !config.indexable ? [] : [...new Set(config.sitemap)]
 
-      config.disallow = config.indexable ? asArray(config.disallow) : ['/']
-      if (!config.disallow.length)
-        config.disallow.push('')
-      config.disallow = [...new Set(config.disallow)]
+      const disallow = config.indexable ? asArray(config.disallow) : ['/']
+      if (config.disallowNonIndexableRoutes && config.indexable) {
+        // iterate the route rules and add any non indexable rules to disallow
+        Object.entries(nuxt.options.routeRules || {}).forEach(([route, rules]) => {
+          if (rules.index === false || rules.robots?.includes('noindex')) {
+            // single * is supported but ignored
+            disallow.push(route.replaceAll('**', '*'))
+          }
+        })
+      }
+      if (!disallow.length)
+        disallow.push('')
+      config.disallow = [...new Set(disallow)]
       // @ts-expect-error runtime type
       await nuxt.hooks.callHook('robots:config', config)
       nuxt.options.runtimeConfig.public['nuxt-simple-robots'] = config as ResolvedModuleOptions
