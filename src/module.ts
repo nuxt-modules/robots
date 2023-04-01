@@ -99,7 +99,8 @@ export default defineNuxtModule<ModuleOptions>({
           else {
             // remove the sitemap entry from config.sitemap
             config.sitemap.splice(Number(k), 1)
-            logger.error(`Ignoring robots.txt entry ${sitemap}, sitemap must be absolute.\nPlease provide "host" or make the link absolute, for example: https://example.com${sitemap}.`)
+            if (!nuxt.options._prepare)
+              logger.error(`Ignoring robots.txt non-absolute sitemap: ${sitemap}.\nPlease provide "siteUrl" or make the sitemap an absolute link, for example: https://example.com${sitemap}.`)
           }
         }
       }
