@@ -64,6 +64,25 @@ export default defineNuxtConfig({
 })
 ```
 
+### Set Site URL (required when prerendering)
+
+For prerendered robots.txt that use sitemaps, you'll need to provide the URL of your site.
+
+```ts
+export default defineNuxtConfig({
+  // Recommended 
+  runtimeConfig: {
+    public: {
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://example.com',
+    }
+  },
+  // OR 
+  robots: {
+    siteUrl: 'https://example.com',
+  },
+})
+```
+
 ### Using route rules
 
 Using route rules, you can configure how your routes are indexed by search engines.

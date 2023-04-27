@@ -1,5 +1,4 @@
 import { addComponent, addImports, addServerHandler, addTemplate, createResolver, defineNuxtModule, useLogger } from '@nuxt/kit'
-import { withBase } from 'ufo'
 import { asArray } from './util'
 
 export interface ModuleOptions {
@@ -88,22 +87,7 @@ export default defineNuxtModule<ModuleOptions>({
       config.disallow = asArray(config.disallow)
       // @ts-expect-error runtime type
       await nuxt.hooks.callHook('robots:config', config)
-      // validate sitemaps are absolute
-      for (const k in config.sitemap) {
-        const sitemap = config.sitemap[k]
-        if (!sitemap.startsWith('http')) {
-          // infer siteUrl from runtime config
-          if (config.siteUrl) {
-            config.sitemap[k] = withBase(sitemap, config.siteUrl)
-          }
-          else {
-            // remove the sitemap entry from config.sitemap
-            config.sitemap.splice(Number(k), 1)
-            if (!nuxt.options._prepare)
-              logger.error(`Ignoring robots.txt non-absolute sitemap: ${sitemap}.\nPlease provide "siteUrl" or make the sitemap an absolute link, for example: https://example.com${sitemap}.`)
-          }
-        }
-      }
+
       config.sitemap = !config.indexable ? [] : [...new Set(config.sitemap)]
 
       let disallow = config.disallow
@@ -121,6 +105,10 @@ export default defineNuxtModule<ModuleOptions>({
       else if (!disallow.length)
         disallow.push('')
       config.disallow = [...new Set(disallow)]
+
+      const hasRelativeSitemaps = config.sitemap.some(sitemap => !sitemap.startsWith('http'))
+      if (hasRelativeSitemaps && !config.siteUrl && nuxt.options._generate)
+        logger.warn('You are prerendering your robots.txt but have not set a siteUrl. This will result in relative sitemap URLs which are not valid.')
 
       nuxt.options.runtimeConfig.public['nuxt-simple-robots'] = config as ResolvedModuleOptions
     })
@@ -147,10 +135,13 @@ export {}
       references.push({ path: resolve(nuxt.options.buildDir, 'nuxt-simple-robots.d.ts') })
     })
 
-    nuxt.hooks.hook('nitro:init', async (nitro) => {
-      nitro.options.prerender.routes = nitro.options.prerender.routes || []
-      nitro.options.prerender.routes.push('/robots.txt')
-    })
+    // only prerender for `nuxi generate`
+    if (nuxt.options._generate) {
+      nuxt.hooks.hook('nitro:init', async (nitro) => {
+        nitro.options.prerender.routes = nitro.options.prerender.routes || []
+        nitro.options.prerender.routes.push('/robots.txt')
+      })
+    }
 
     // defineRobotMeta is a server-only composable
     nuxt.options.optimization.treeShake.composables.client['nuxt-simple-robots'] = ['defineRobotMeta']
