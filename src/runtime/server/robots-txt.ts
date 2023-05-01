@@ -16,7 +16,7 @@ export default defineEventHandler(async (e) => {
   for (const k in sitemap) {
     const entry = sitemap[k]
     if (!entry.startsWith('http')) {
-      if (process.env.prerender)
+      if (process.env.prerender && !siteUrl)
         console.warn('You are prerendering your robots.txt but have not provided a siteUrl. This will result in invalid sitemap entries.')
       // infer siteUrl from runtime config
       sitemaps.push(withBase(entry, siteUrl || useHostname(e)))
