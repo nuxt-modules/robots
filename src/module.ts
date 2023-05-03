@@ -1,4 +1,5 @@
 import { addComponent, addImports, addServerHandler, addTemplate, createResolver, defineNuxtModule, useLogger } from '@nuxt/kit'
+import defu from 'defu'
 import { asArray } from './util'
 
 export interface ModuleOptions {
@@ -89,6 +90,20 @@ export default defineNuxtModule<ModuleOptions>({
       await nuxt.hooks.callHook('robots:config', config)
 
       config.sitemap = !config.indexable ? [] : [...new Set(config.sitemap)]
+
+      nuxt.options.routeRules = nuxt.options.routeRules || {}
+      // convert robot routeRules to header routeRules
+      Object.entries(nuxt.options.routeRules).forEach(([route, rules]) => {
+        if (rules.index === false || rules.robots) {
+          // single * is supported but ignored
+          // @ts-expect-error untyped
+          nuxt.options.routeRules[route] = defu({
+            headers: {
+              'X-Robots-Tag': rules.index === false ? config.robotsDisabledValue : rules.robots,
+            },
+          }, nuxt.options.routeRules?.[route])
+        }
+      })
 
       let disallow = config.disallow
       if (config.disallowNonIndexableRoutes && config.indexable) {
