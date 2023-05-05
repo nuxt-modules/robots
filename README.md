@@ -39,7 +39,7 @@ Simply manage the robots crawling your Nuxt 3 app.
 
 ### Zero Config Integrations
 
-- [`nuxt-simple-robots`](https://github.com/harlan-zw/nuxt-simple-robots)
+- [`nuxt-simple-sitemap`](https://github.com/harlan-zw/nuxt-simple-sitemap)
 
 Will automatically add sitemap entries.
 
