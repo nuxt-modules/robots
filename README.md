@@ -286,7 +286,17 @@ When set to `false`, no merging will occur.
 - Default: `false`
 - Required: `false`
 
-Blocks bots that don't benefit our SEO and are known to cause issues.
+Blocks some non-SEO bots from crawling your site. This is not a replacement for a full-blown bot management solution, but it can help to reduce the load on your server.
+
+See [const.ts](https://github.com/harlan-zw/nuxt-simple-robots/blob/main/src/const.ts#L6) for the list of bots that are blocked.
+
+```ts
+export default defineNuxtConfig({
+  robots: {
+    blockNonSeoBots: true
+  }
+})
+```
 
 ### `debug`
 
@@ -296,13 +306,29 @@ Blocks bots that don't benefit our SEO and are known to cause issues.
 
 Enables debug logs and a debug endpoint.
 
+
 ### `credits`
 
 - Type: `boolean`
 - Default: `true`
 - Required: `false`
 
-Should the robots.txt display credits for the module.
+Control the module credit comment in the generated robots.txt file.
+
+```txt
+# START nuxt-simple-robots (indexable) <- credits
+ ...
+# END nuxt-simple-robots <- credits
+```
+
+```ts
+export default defineNuxtConfig({
+  robots: {
+    credits: false
+  }
+})
+```
+
 
 ### `siteUrl` - DEPRECATED
 

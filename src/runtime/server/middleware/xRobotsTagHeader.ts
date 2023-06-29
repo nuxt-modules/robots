@@ -1,7 +1,7 @@
 import { defineEventHandler, setHeader } from 'h3'
+import { asArray } from '../../util'
 import { getRouteRules } from '#internal/nitro'
 import { useRuntimeConfig, useSiteConfig } from '#imports'
-import { asArray } from '../../util'
 
 export default defineEventHandler((e) => {
   if (e.path === '/robots.txt')
