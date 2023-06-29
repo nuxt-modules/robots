@@ -32,47 +32,35 @@ The simplest way to control the robots crawling and indexing your Nuxt site.
 ## Features
 
 - 🤖 Merge in your existing robots.txt or programmatically create a new one
-- 🗿 Automatic headers `X-Robots-Tag` and meta tags
+- 🗿 Automatic `X-Robots-Tag` header and `<meta name="robots` ...>` meta tag
 - 🔄 Integrates with route rules and runtime hooks
 - 🔒 Disables non-production environments from being indexed
 - Solves common issues and best practice default config
 
 ### Module Integrations
 
-- [`nuxt-site-conifg`](https://github.com/harlan-zw/nuxt-site-config) - Configures `siteUrl`
-- [`nuxt-simple-sitemap`](https://github.com/harlan-zw/nuxt-simple-sitemap) - Automatically add sitemap entries.
+- [`nuxt-site-conifg`](https://github.com/harlan-zw/nuxt-site-config) - Configures the canonical site URL for absolute sitemap entries.
+- [`nuxt-simple-sitemap`](https://github.com/harlan-zw/nuxt-simple-sitemap) - Adds sitemap entries.
 
 ## Install
 
 ```bash
-npm install --save-dev nuxt-simple-robots
-
-# Using yarn
+npm install -D nuxt-simple-robots
+#
 yarn add --dev nuxt-simple-robots
+#
+pnpm add -D nuxt-simple-robots
 ```
 
 ## Setup
 
-_nuxt.config.ts_
+Add the module to your `nuxt.config.ts`.
 
 ```ts
 export default defineNuxtConfig({
   modules: [
     'nuxt-simple-robots',
   ],
-})
-```
-
-### Prerendered Site Setup (optional)
-
-For prerendered robots.txt that use sitemaps, you'll need to provide the URL of your site.
-
-```ts
-export default defineNuxtConfig({
-  // @see https://github.com/harlan-zw/nuxt-site-config
-  site: {
-    url: process.env.NUXT_SITE_URL || 'https://example.com',
-  },
 })
 ```
 
@@ -91,14 +79,40 @@ User-agent: *
 Disallow: /secret
 ```
 
-You can change the path using the `mergeWithRobotsTxtPath` config.
+If you'd prefer to load your `robots.txt` file from a different path, you can use the `mergeWithRobotsTxtPath` config.
 
-Note:
-you can also create a `robots.txt` in your `<rootDir>/public` folder,
-but you won't benefit from all of this modules features.
+#### Public folder 
 
+You're free to place your `robots.txt` in your `<rootDir>/public` folder,
+however, you won't benefit from all the features of this module.
 
-## Route Rules configuration
+### Programmatic build-time configuration
+
+If you need programmatic control, you can configure the module using nuxt.config with the following options:
+- `disallow` - An array of paths to disallow for `*`
+- `allow` - An array of paths to allow for `*`
+- `stacks` - A stack of objects to provide granular control (see below)
+
+```ts
+export default defineNuxtConfig({
+  robots: {
+    // provide simple disallow rules for all robots `user-agent: *`
+    disallow: ['/secret'],
+    // add more granular rules
+    stacks: [
+      // block specific robots from specific pages
+      {
+        userAgents: ['AdsBot-Google-Mobile', 'AdsBot-Google-Mobile-Apps'],
+        disallow: ['/admin'],
+        allow: ['/admin/login'],
+        comments: 'Allow Google AdsBot to index the login page but no-admin pages'
+      },
+    ]
+  }
+})
+```
+
+### Route Rules configuration
 
 If you prefer, you can use route rules to configure how your routes are indexed by search engines.
 
@@ -125,33 +139,7 @@ The rules are applied using the following logic:
 - `<meta name="robots">` - When using the `defineRobotMeta` or `RobotMeta` composable or component
 - `/robots.txt` disallow entry - When `disallowNonIndexableRoutes` is enabled
 
-## Programmatic build-time configuration
-
-If you need more control, you can also configure the module programmatically using the following options:
-- `disallow` - An array of paths to disallow for `*`
-- `allow` - An array of paths to allow for `*`
-- `stacks` - A stack of objects to provide granular control (see below)
-
-```ts
-export default defineNuxtConfig({
-  robots: {
-    // provide simple disallow rules for all robots
-    disallow: ['/secret'],
-    // add more granular rules
-    stacks: [
-      // block specific robots from specific pages
-      {
-        userAgents: ['AdsBot-Google-Mobile', 'AdsBot-Google-Mobile-Apps'],
-        disallow: ['/admin'],
-        allow: ['/admin/login'],
-        comments: 'Allow Google AdsBot to index the login page but no-admin pages'
-      },
-    ]
-  }
-})
-```
-
-## Meta Tags
+### Meta Tags
 
 By default, only the `/robots.txt` and `X-Robots-Tag` HTTP header will be used to control indexing. 
 
@@ -171,6 +159,20 @@ defineRobotMeta()
     <RobotMeta />
   </div>
 </template>
+```
+
+### Prerendering robots.txt
+
+If you plan to prerender your robots.txt and aren't providing absolute sitemap URLs, then you should
+provide a canonical site URL through the [nuxt-site-config](https://github.com/harlan-zw/nuxt-site-config) module.
+
+```ts
+export default defineNuxtConfig({
+  // @see https://github.com/harlan-zw/nuxt-site-config
+  site: {
+    url: process.env.NUXT_SITE_URL || 'https://example.com',
+  },
+})
 ```
 
 ## Module Config
