@@ -17,4 +17,4 @@ export const NonHelpfulBots = [
   'Barkrowler',
   'BLEXBot',
   'magpie-crawler',
-] as const
+]
