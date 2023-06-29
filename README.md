@@ -89,9 +89,9 @@ however, you won't benefit from all the features of this module.
 ### Programmatic build-time configuration
 
 If you need programmatic control, you can configure the module using nuxt.config with the following options:
-- `disallow` - An array of paths to disallow for `*`
-- `allow` - An array of paths to allow for `*`
-- `groups` - A stack of objects to provide granular control (see below)
+- `disallow` - An array of paths to disallow for the `*` user-agent.
+- `allow` - An array of paths to allow for the `*` user-agent.
+- `groups` - A stack of objects to provide granular control (see below).
 
 ```ts
 export default defineNuxtConfig({
@@ -118,8 +118,8 @@ If you prefer, you can use route rules to configure how your routes are indexed 
 
 You can provide the following rules:
 
-- `index: false` - Will disable the route from being indexed using the `robotsDisabledValue`config _(default `noindex, nofollow`)_
-- `robots: <string>` - Will add robots the provided string as the robots rule
+- `{ index: false }` - Will disable the route from being indexed using the [robotsDisabledValue](https://github.com/harlan-zw/nuxt-simple-robots#robotsdisabledvalue) config.
+- `{ robots: <string> }` - Will add the provided string as the robots rule
 
 ```ts
 export default defineNuxtConfig({
@@ -135,9 +135,9 @@ export default defineNuxtConfig({
 ```
 
 The rules are applied using the following logic:
-- `X-Robots-Tag` header - SSR only
+- `X-Robots-Tag` header - SSR only,
 - `<meta name="robots">` - When using the `defineRobotMeta` or `RobotMeta` composable or component
-- `/robots.txt` disallow entry - When `disallowNonIndexableRoutes` is enabled
+- `/robots.txt` disallow entry - When [disallowNonIndexableRoutes](https://github.com/harlan-zw/nuxt-simple-robots#disallownonindexableroutes) is enabled
 
 ### Meta Tags
 
