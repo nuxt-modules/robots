@@ -17,6 +17,7 @@ import { asArray } from './util'
 import { extendTypes } from './kit'
 import { parseRobotsTxt } from './robotsTxtParser'
 import type { Arrayable, RobotsGroupInput, RobotsGroupResolved } from './types'
+import { NonHelpfulBots } from './const'
 
 export interface ModuleOptions {
   /**
@@ -180,21 +181,7 @@ export default defineNuxtModule<ModuleOptions>({
     if (config.blockNonSeoBots) {
       // credits to yoast.com/robots.txt
       config.groups.push({
-        userAgent: [
-          'Nuclei',
-          'WikiDo',
-          'Riddler',
-          'PetalBot',
-          'Zoominfobot',
-          'Go-http-client',
-          'Node/simplecrawler',
-          'CazoodleBot',
-          'dotbot/1.0',
-          'Gigabot',
-          'Barkrowler',
-          'BLEXBot',
-          'magpie-crawler',
-        ],
+        userAgent: NonHelpfulBots,
         comment: ['Block bots that don\'t benefit us.'],
         disallow: ['/'],
       })
