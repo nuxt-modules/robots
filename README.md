@@ -91,7 +91,7 @@ however, you won't benefit from all the features of this module.
 If you need programmatic control, you can configure the module using nuxt.config with the following options:
 - `disallow` - An array of paths to disallow for `*`
 - `allow` - An array of paths to allow for `*`
-- `stacks` - A stack of objects to provide granular control (see below)
+- `groups` - A stack of objects to provide granular control (see below)
 
 ```ts
 export default defineNuxtConfig({
@@ -99,7 +99,7 @@ export default defineNuxtConfig({
     // provide simple disallow rules for all robots `user-agent: *`
     disallow: ['/secret'],
     // add more granular rules
-    stacks: [
+    groups: [
       // block specific robots from specific pages
       {
         userAgents: ['AdsBot-Google-Mobile', 'AdsBot-Google-Mobile-Apps'],
@@ -222,18 +222,18 @@ Allow paths to be indexed for the `*` user-agent (all robots).
 
 Disallow paths from being indexed for the `*` user-agent (all robots).
 
-### `stacks`
+### `groups`
 
 - Type: `{ userAgent: []; allow: []; disallow: []; comments: [] }[]`
 - Default: `[]`
 - Required: `false`
 
-Define more granular rules for the robots.txt. Each stack is a set of rules for specific user agent(s).
+Define more granular rules for the robots.txt. Each group is a set of rules for specific user agent(s).
 
 ```ts
 export default defineNuxtConfig({
   robots: {
-    stacks: [
+    groups: [
       {
         userAgents: ['AdsBot-Google-Mobile', 'AdsBot-Google-Mobile-Apps'],
         disallow: ['/admin'],

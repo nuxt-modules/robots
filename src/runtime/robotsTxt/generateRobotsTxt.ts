@@ -1,7 +1,7 @@
 import type { RobotsGroupResolved } from '../../types'
 
 export function generateRobotsTxt({ groups, sitemaps }: { groups: RobotsGroupResolved[]; sitemaps: string[] }): string {
-  // iterate over the stacks
+  // iterate over the groups
   const lines: string[] = []
   for (const group of groups) {
     // add the comments

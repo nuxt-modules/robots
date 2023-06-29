@@ -6,11 +6,11 @@ export function defineRobotMeta() {
     const path = useRoute().path
     const { indexable } = useSiteConfig()
     const { robotsDisabledValue, robotsEnabledValue, groups } = useRuntimeConfig()['nuxt-simple-robots']
-    // check if the route exist within any of the disallow stacks and not within the allow of the same stack
-    let indexableFromStack = true
+    // check if the route exist within any of the disallow groups and not within the allow of the same stack
+    let indexableFromGroup = true
     for (const group of groups) {
       if (group.disallow.some((rule: string) => path.startsWith(rule)) && !group.allow.some((rule: string) => path.startsWith(rule))) {
-        indexableFromStack = false
+        indexableFromGroup = false
         break
       }
     }
@@ -25,7 +25,7 @@ export function defineRobotMeta() {
               return routeRules.robots
             if (indexable === false || routeRules?.index === false)
               return robotsDisabledValue
-            return indexableFromStack ? robotsEnabledValue : robotsDisabledValue
+            return indexableFromGroup ? robotsEnabledValue : robotsDisabledValue
           },
         },
       ],
