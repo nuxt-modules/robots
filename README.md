@@ -32,7 +32,7 @@ The simplest way to control the robots crawling and indexing your Nuxt site.
 ## Features
 
 - 🤖 Merge in your existing robots.txt or programmatically create a new one
-- 🗿 Automatic `X-Robots-Tag` header and `<meta name="robots` ...>` meta tag
+- 🗿 Automatic `X-Robots-Tag` header and `<meta name="robots" ...>` meta tag
 - 🔄 Integrates with route rules and runtime hooks
 - 🔒 Disables non-production environments from being indexed
 - Solves common issues and best practice default config
