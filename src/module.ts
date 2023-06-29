@@ -13,7 +13,7 @@ import { defu } from 'defu'
 // @ts-expect-error types being weird
 import { requireSiteConfig, updateSiteConfig } from 'nuxt-site-config/kit'
 import { join, relative } from 'pathe'
-import { asArray } from './util'
+import { asArray } from './runtime/util'
 import { extendTypes } from './kit'
 import { parseRobotsTxt } from './robotsTxtParser'
 import type { Arrayable, RobotsGroupInput, RobotsGroupResolved } from './types'

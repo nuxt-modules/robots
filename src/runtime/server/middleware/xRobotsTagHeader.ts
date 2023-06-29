@@ -1,6 +1,7 @@
 import { defineEventHandler, setHeader } from 'h3'
 import { getRouteRules } from '#internal/nitro'
 import { useRuntimeConfig, useSiteConfig } from '#imports'
+import { asArray } from '../../util'
 
 export default defineEventHandler((e) => {
   if (e.path === '/robots.txt')
@@ -18,7 +19,7 @@ export default defineEventHandler((e) => {
   }
   else {
     // check if the route exist within any of the disallow groups and not within the allow of the same stack
-    for (const group of groups) {
+    for (const group of groups.filter((group: any) => asArray(group.userAgent).includes('*'))) {
       if (group.disallow.some((rule: string) => e.path.startsWith(rule)) && !group.allow.some((rule: string) => e.path.startsWith(rule))) {
         setHeader(e, 'X-Robots-Tag', robotsDisabledValue)
         return
