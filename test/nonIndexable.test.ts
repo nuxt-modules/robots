@@ -4,26 +4,21 @@ import { createResolver } from '@nuxt/kit'
 
 const { resolve } = createResolver(import.meta.url)
 
+process.env.NODE_ENV = 'staging'
 await setup({
   rootDir: resolve('../.playground'),
   build: true,
   server: true,
-  nuxtConfig: {
-    robots: {
-      indexable: false,
-      siteUrl: 'https://nuxt-simple-robots.com',
-    },
-  },
 })
 
-describe('build', () => {
+describe('nonIndexable', () => {
   it('basic', async () => {
     expect(await $fetch('/robots.txt')).toMatchInlineSnapshot(`
-      "# START nuxt-simple-robots (indexable: false)
+      "# START nuxt-simple-robots (indexing disabled)
       User-agent: *
       Disallow: /
 
       # END nuxt-simple-robots"
     `)
-  }, 60000)
+  })
 })

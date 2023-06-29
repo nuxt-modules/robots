@@ -10,7 +10,7 @@
 
 
 <p align="center">
-Simply manage the robots crawling your Nuxt 3 app.
+The simplest way to control the robots crawling and indexing your Nuxt site.
 </p>
 
 <p align="center">
@@ -18,7 +18,7 @@ Simply manage the robots crawling your Nuxt 3 app.
 <tbody>
 <td align="center">
 <img width="800" height="0" /><br>
-<i>Status:</i> <a href="https://github.com/harlan-zw/nuxt-simple-robots/releases/tag/v2.0.0">v2 Released 🎉</a></b> <br>
+<i>Status:</i> <a href="https://github.com/harlan-zw/nuxt-simple-robots/releases/tag/v3.0.0">v3 Released 🎉</a></b> <br>
 <sup> Please report any issues 🐛</sup><br>
 <sub>Made possible by my <a href="https://github.com/sponsors/harlan-zw">Sponsor Program 💖</a><br> Follow me <a href="https://twitter.com/harlan_zw">@harlan_zw</a> 🐦 • Join <a href="https://discord.gg/275MBUBvgP">Discord</a> for help</sub><br>
 <img width="800" height="0" />
@@ -31,17 +31,16 @@ Simply manage the robots crawling your Nuxt 3 app.
 
 ## Features
 
-- 🤖 Creates best practice robot data
-- 🗿 Adds `X-Robots-Tag` header, robot meta tag and robots.txt
-- 🔄 Configure using route rules and hooks
-- 🔒 Disables non-production environments from being crawled automatically
-- Best practice default config
+- 🤖 Merge in your existing robots.txt or programmatically create a new one
+- 🗿 Automatic headers `X-Robots-Tag` and meta tags
+- 🔄 Integrates with route rules and runtime hooks
+- 🔒 Disables non-production environments from being indexed
+- Solves common issues and best practice default config
 
-### Zero Config Integrations
+### Module Integrations
 
-- [`nuxt-simple-sitemap`](https://github.com/harlan-zw/nuxt-simple-sitemap)
-
-Will automatically add sitemap entries.
+- [`nuxt-site-conifg`](https://github.com/harlan-zw/nuxt-site-config) - Configures `siteUrl`
+- [`nuxt-simple-sitemap`](https://github.com/harlan-zw/nuxt-simple-sitemap) - Automatically add sitemap entries.
 
 ## Install
 
@@ -64,28 +63,44 @@ export default defineNuxtConfig({
 })
 ```
 
-### Set Site URL (required when prerendering)
+### Prerendered Site Setup (optional)
 
 For prerendered robots.txt that use sitemaps, you'll need to provide the URL of your site.
 
 ```ts
 export default defineNuxtConfig({
-  // Recommended 
-  runtimeConfig: {
-    public: {
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://example.com',
-    }
-  },
-  // OR 
-  robots: {
-    siteUrl: 'https://example.com',
+  // @see https://github.com/harlan-zw/nuxt-site-config
+  site: {
+    url: process.env.NUXT_SITE_URL || 'https://example.com',
   },
 })
 ```
 
-### Using route rules
+## Usage
 
-Using route rules, you can configure how your routes are indexed by search engines.
+### Robots.txt configuration
+
+The recommendation way to implement your robots.txt configuration,
+is to simply create a `robots.txt` file in your project root or assets folder.
+
+For environments that are indexable,
+this file will be parsed and merged with the module config.
+
+```txt
+User-agent: *
+Disallow: /secret
+```
+
+You can change the path using the `mergeWithRobotsTxtPath` config.
+
+Note:
+you can also create a `robots.txt` in your `<rootDir>/public` folder,
+but you won't benefit from all of this modules features.
+
+
+## Route Rules configuration
+
+If you prefer, you can use route rules to configure how your routes are indexed by search engines.
 
 You can provide the following rules:
 
@@ -110,9 +125,35 @@ The rules are applied using the following logic:
 - `<meta name="robots">` - When using the `defineRobotMeta` or `RobotMeta` composable or component
 - `/robots.txt` disallow entry - When `disallowNonIndexableRoutes` is enabled
 
+## Programmatic build-time configuration
+
+If you need more control, you can also configure the module programmatically using the following options:
+- `disallow` - An array of paths to disallow for `*`
+- `allow` - An array of paths to allow for `*`
+- `stacks` - A stack of objects to provide granular control (see below)
+
+```ts
+export default defineNuxtConfig({
+  robots: {
+    // provide simple disallow rules for all robots
+    disallow: ['/secret'],
+    // add more granular rules
+    stacks: [
+      // block specific robots from specific pages
+      {
+        userAgents: ['AdsBot-Google-Mobile', 'AdsBot-Google-Mobile-Apps'],
+        disallow: ['/admin'],
+        allow: ['/admin/login'],
+        comments: 'Allow Google AdsBot to index the login page but no-admin pages'
+      },
+    ]
+  }
+})
+```
+
 ## Meta Tags
 
-By default, only the `/robots.txt` and HTTP headers provided by server middleware will be used to control indexing. 
+By default, only the `/robots.txt` and `X-Robots-Tag` HTTP header will be used to control indexing. 
 
 It's recommended for SSG apps or to improve debugging, to add a meta tags to your page as well.
 
@@ -123,6 +164,7 @@ Within your app.vue or a layout:
 // Use Composition API
 defineRobotMeta()
 </script>
+
 <template>
   <div>
     <!-- OR Component API -->
@@ -133,58 +175,21 @@ defineRobotMeta()
 
 ## Module Config
 
-### `siteUrl`
-
-- Type: `string`
-- Default: `process.env.NUXT_PUBLIC_SITE_URL || nuxt.options.runtimeConfig.public?.siteUrl`
-
-Used to ensure sitemaps are absolute URLs.
-
-It's recommended that you use runtime config for this.
-
-```ts
-export default defineNuxtConfig({
-  runtimeConfig: {
-    public: {
-      // can be set with environment variables
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://example.com',
-    }
-  },
-})
-```
-
-### `indexable`
+### `enabled`
 
 - Type: `boolean`
-- Default: `process.env.NUXT_INDEXABLE || nuxt.options.runtimeConfig.indexable || process.env.NODE_ENV === 'production'`
-
-Whether the site is indexable by search engines.
-
-It's recommended that you use runtime config for this.
-
-```ts
-export default defineNuxtConfig({
-  runtimeConfig: {
-    // can be set with environment variables
-    indexable: process.env.NUXT_INDEXABLE || false,
-  },
-})
-```
-
-### `disallow`
-
-- Type: `string[]`
-- Default: `[]`
+- Default: `true`
 - Required: `false`
 
-Disallow paths from being crawled.
+Conditionally toggle the module.
+
 
 ### `sitemap`
 
 - Type: `string | string[] | false`
 - Default: `false`
 
-The sitemap URL(s) for the site. If you have multiple sitemaps, you can provide an array of URLs. 
+The sitemap URL(s) for the site. If you have multiple sitemaps, you can provide an array of URLs.
 
 You must either define the runtime config `siteUrl` or provide the sitemap as absolute URLs.
 
@@ -196,6 +201,45 @@ export default defineNuxtConfig({
       '/sitemap-two.xml',
     ],
   },
+})
+```
+
+### `allow`
+
+- Type: `string[]`
+- Default: `[]`
+- Required: `false`
+
+Allow paths to be indexed for the `*` user-agent (all robots).
+
+### `disallow`
+
+- Type: `string[]`
+- Default: `[]`
+- Required: `false`
+
+Disallow paths from being indexed for the `*` user-agent (all robots).
+
+### `stacks`
+
+- Type: `{ userAgent: []; allow: []; disallow: []; comments: [] }[]`
+- Default: `[]`
+- Required: `false`
+
+Define more granular rules for the robots.txt. Each stack is a set of rules for specific user agent(s).
+
+```ts
+export default defineNuxtConfig({
+  robots: {
+    stacks: [
+      {
+        userAgents: ['AdsBot-Google-Mobile', 'AdsBot-Google-Mobile-Apps'],
+        disallow: ['/admin'],
+        allow: ['/admin/login'],
+        comments: 'Allow Google AdsBot to index the login page but no-admin pages'
+      },
+    ]
+  }
 })
 ```
 
@@ -221,6 +265,74 @@ The value to use when the site is not indexable.
 - Default: `'false'`
 
 Should route rules which disallow indexing be added to the `/robots.txt` file.
+
+### `mergeWithRobotsTxtPath`
+
+- Type: `boolean | string`
+- Default: `true`
+- Required: `false`
+
+Specify a robots.txt path to merge the config from, relative to the root directory.
+
+When set to `true`, the default path of `<publicDir>/robots.txt` will be used.
+
+When set to `false`, no merging will occur.
+
+### `blockNonSeoBots`
+
+- Type: `boolean`
+- Default: `false`
+- Required: `false`
+
+Blocks bots that don't benefit our SEO and are known to cause issues.
+
+### `debug`
+
+- Type: `boolean`
+- Default: `false`
+- Required: `false`
+
+Enables debug logs and a debug endpoint.
+
+### `credits`
+
+- Type: `boolean`
+- Default: `true`
+- Required: `false`
+
+Should the robots.txt display credits for the module.
+
+### `siteUrl` - DEPRECATED
+
+- Type: `string`
+
+Used to ensure sitemaps are absolute URLs.
+
+Note: This is only required when prerendering your site.
+
+This is now handled by the [nuxt-site-config](https://github.com/harlan-zw/nuxt-site-config) module.
+
+You should provide `url` through site config instead, otherwise see the module for more examples.  
+
+```ts
+export default defineNuxtConfig({
+  site: {
+    url: process.env.NUXT_SITE_URL || 'https://example.com',
+  },
+})
+```
+
+### `indexable` - DEPRECATED
+
+- Type: `boolean`
+- Default: `process.env.NODE_ENV === 'production'`
+
+Whether the site is indexable by search engines.
+
+This is now handled by the [nuxt-site-config](https://github.com/harlan-zw/nuxt-site-config) module.
+
+If you need to change the default,
+then you should provide `indexable` through site config instead or see the module for more examples.
 
 ## Nuxt Hooks
 

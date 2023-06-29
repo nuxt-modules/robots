@@ -1,40 +1,47 @@
 import { defineEventHandler, setHeader } from 'h3'
 import { withBase } from 'ufo'
-import { useHostname } from '../util-hostname'
+import { generateRobotsTxt } from '../robotsTxt/generateRobotsTxt'
 import { useNitroApp } from '#internal/nitro'
-import { useRuntimeConfig } from '#imports'
+import { useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
+import type { RobotsGroupResolved } from '~/src/types'
 
 export default defineEventHandler(async (e) => {
   setHeader(e, 'Content-Type', 'text/plain; charset=utf-8')
-  if (!process.dev)
-    setHeader(e, 'Cache-Control', 'max-age=14400, must-revalidate')
+  setHeader(e, 'Cache-Control', process.dev ? 'no-store' : 'max-age=14400, must-revalidate')
 
-  const { disallow, sitemap, indexable, siteUrl } = useRuntimeConfig().public['nuxt-simple-robots']
+  const { groups, sitemap, credits } = useRuntimeConfig()['nuxt-simple-robots']
+  const { url, indexable } = useSiteConfig(e)
+  // in dev we serve the sitemap with localhost paths so can click into it
+  const siteUrl = withBase(process.dev ? useNitroOrigin(e) : (url || useNitroOrigin(e)), useRuntimeConfig().app.baseURL)
 
-  const sitemaps: string[] = []
-  // validate sitemaps are absolute
-  for (const k in sitemap) {
-    const entry = sitemap[k]
-    if (!entry.startsWith('http')) {
-      if (process.env.prerender && !siteUrl)
-        console.warn('You are prerendering your robots.txt but have not provided a siteUrl. This will result in invalid sitemap entries.')
-      // infer siteUrl from runtime config
-      sitemaps.push(withBase(entry, siteUrl || useHostname(e)))
-    }
-    else {
-      sitemaps.push(entry)
-    }
+  let sitemaps: string[] = [...(Array.isArray(sitemap) ? sitemap : [sitemap])]
+    // validate sitemaps are absolute
+    .map((s) => {
+      // ensure base
+      if (!s.startsWith('http'))
+        return withBase(s, siteUrl)
+      return s
+    })
+
+  let robotGroups: RobotsGroupResolved[] = [...groups]
+  if (!indexable) {
+    robotGroups = [
+      {
+        userAgent: ['*'],
+        disallow: ['/'],
+      },
+    ]
+    sitemaps = [] // no point adding sitemaps if not indexable
   }
 
-  const robotsTxt = [
-    `# START nuxt-simple-robots (indexable: ${indexable ? 'true' : 'false'})`,
-    process.dev ? '# This is a development preview' : false,
-    'User-agent: *',
-    ...(disallow).map(path => `Disallow: ${path}`),
-    '',
-    ...(sitemaps).map(path => `Sitemap: ${path}`),
-    '# END nuxt-simple-robots',
-  ].filter(l => l !== false).join('\n')
+  let robotsTxt: string = generateRobotsTxt({ groups: robotGroups, sitemaps })
+  if (credits) {
+    robotsTxt = [
+      `# START nuxt-simple-robots (${process.dev ? 'dev mode - ' : ''}${indexable ? 'indexable' : 'indexing disabled'})`,
+      robotsTxt,
+      '# END nuxt-simple-robots',
+    ].join('\n')
+  }
 
   const hookCtx = { robotsTxt }
   const nitro = useNitroApp()

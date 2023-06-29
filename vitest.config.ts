@@ -5,7 +5,12 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   test: {
-    threads: false,
+    env: {
+      // prod by default
+      NODE_ENV: 'production',
+    },
+    testTimeout: 60000,
+    threads: true,
     deps: {
       inline: [
         '@nuxt/test-utils',

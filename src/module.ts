@@ -1,6 +1,22 @@
-import { addComponent, addImports, addServerHandler, addTemplate, createResolver, defineNuxtModule, useLogger } from '@nuxt/kit'
-import defu from 'defu'
+import fsp from 'node:fs/promises'
+import {
+  addComponent,
+  addImports,
+  addServerHandler,
+  createResolver,
+  defineNuxtModule,
+  installModule,
+  resolvePath, useLogger,
+} from '@nuxt/kit'
+import { defu } from 'defu'
+
+// @ts-expect-error types being weird
+import { requireSiteConfig, updateSiteConfig } from 'nuxt-site-config/kit'
+import { join, relative } from 'pathe'
 import { asArray } from './util'
+import { extendTypes } from './kit'
+import { parseRobotsTxt } from './robotsTxtParser'
+import type { Arrayable, RobotsGroupInput, RobotsGroupResolved } from './types'
 
 export interface ModuleOptions {
   /**
@@ -10,23 +26,111 @@ export interface ModuleOptions {
    */
   enabled: boolean
   /**
-   * The hostname of your website. Used to generate absolute URLs.
-   * @deprecated use `siteUrl`
+   * Path to the sitemaps, if it exists.
+   * Will automatically be resolved as an absolute path.
+   *
+   * @default []
+   */
+  sitemap: Arrayable<string>
+  /**
+   * Paths to add to the robots.txt with the allow keyword.
+   *
+   * @default []
+   */
+  allow: Arrayable<string>
+  /**
+   * Paths to add to the robots.txt with the disallow keyword.
+   *
+   * @default []
+   */
+  disallow: Arrayable<string>
+  /**
+   * Define more granular rules for the robots.txt. Each stack is a set of rules for specific user agent(s).
+   *
+   * @default []
+   * @example [
+   *    {
+   *    userAgents: ['AdsBot-Google-Mobile', 'AdsBot-Google-Mobile-Apps'],
+   *    disallow: ['/admin'],
+   *    allow: ['/admin/login'],
+   *    },
+  *  ]
+   */
+  groups: RobotsGroupInput[]
+  /**
+   * The value to use when the site is indexable.
+   *
+   * @default 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+   */
+  robotsEnabledValue: string
+  /**
+   * The value to use when the site is not indexable.
+   *
+   * @default 'noindex, nofollow'
+   */
+  robotsDisabledValue: string
+  /**
+   * Should route rules which disallow indexing be added to the `/robots.txt` file.
+   *
+   * @default false
+   */
+  disallowNonIndexableRoutes: boolean
+  /**
+   * Specify a robots.txt path to merge the config from, relative to the root directory.
+   *
+   * When set to `true`, the default path of `<publicDir>/robots.txt` will be used.
+   *
+   * When set to `false`, no merging will occur.
+   *
+   * @default true
+   */
+  mergeWithRobotsTxtPath: boolean | string
+  /**
+   * Blocks bots that don't benefit our SEO and are known to cause issues.
+   *
+   * @default false
+   */
+  blockNonSeoBots: boolean
+  /**
+   * Enables debug logs and a debug endpoint.
+   */
+  debug: boolean
+  /**
+   * Should the robots.txt display credits for the module.
+   *
+   * @default true
+   */
+  credits: boolean
+  /**
+   * The url of your site.
+   * Used to generate absolute URLs for the sitemap.
+   *
+   * Note: This is only required when prerendering your site.
+   *
+   * @deprecated Provide `url` through site config instead: `{ site: { url: <value> }}`.
+   * This is powered by the `nuxt-site-config` module.
+   * @see https://github.com/harlan-zw/nuxt-site-config
    */
   host?: string
   /**
-   * The hostname of your website. Used to generate absolute URLs.
+   * The url of your site.
+   * Used to generate absolute URLs for the sitemap.
+   *
+   * Note: This is only required when prerendering your site.
+   *
+   * @deprecated Provide `url` through site config instead: `{ site: { url: <value> }}`.
+   * This is powered by the `nuxt-site-config` module.
+   * @see https://github.com/harlan-zw/nuxt-site-config
    */
-  siteUrl: string
-  indexable: boolean
+  siteUrl?: string
   /**
-   * Path to the sitemap.xml file, if it exists.
+   * Can your site be crawled by search engines.
+   *
+   * @deprecated Provide `indexable` through site config instead: `{ site: { indexable: <value> }}`.
+   * This is powered by the `nuxt-site-config` module.
+   * @see https://github.com/harlan-zw/nuxt-site-config
    */
-  sitemap: string | string[]
-  disallow: string | string[]
-  robotsEnabledValue: string
-  robotsDisabledValue: string
-  disallowNonIndexableRoutes: boolean
+  indexable?: boolean
 }
 
 export interface ResolvedModuleOptions extends ModuleOptions {
@@ -46,53 +150,110 @@ export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'nuxt-simple-robots',
     compatibility: {
-      nuxt: '^3.3.1',
+      nuxt: '^3.6.1',
       bridge: false,
     },
     configKey: 'robots',
   },
-  defaults(nuxt) {
-    let indexable = true
-    if (typeof process.env.NUXT_INDEXABLE !== 'undefined')
-      indexable = String(process.env.NUXT_INDEXABLE) !== 'false'
-    else if (typeof nuxt.options.runtimeConfig.indexable !== 'undefined')
-      indexable = String(nuxt.options.runtimeConfig.indexable) !== 'false'
-    else if (process.env.NODE_ENV !== 'production')
-      indexable = false
-    const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || process.env.NUXT_SITE_URL || nuxt.options.runtimeConfig.public?.siteUrl || nuxt.options.runtimeConfig.siteUrl
-    return {
-      enabled: true,
-      siteUrl,
-      disallow: [],
-      sitemap: [],
-      indexable,
-      robotsEnabledValue: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
-      robotsDisabledValue: 'noindex, nofollow',
-      disallowNonIndexableRoutes: false,
-    }
+  defaults: {
+    enabled: true,
+    credits: true,
+    debug: false,
+    allow: [],
+    disallow: [],
+    sitemap: [],
+    groups: [],
+    blockNonSeoBots: false,
+    mergeWithRobotsTxtPath: true,
+    robotsEnabledValue: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
+    robotsDisabledValue: 'noindex, nofollow',
+    disallowNonIndexableRoutes: false,
   },
   async setup(config, nuxt) {
-    if (config.enabled === false)
+    const logger = useLogger('nuxt-simple-robots')
+    logger.level = (config.debug || nuxt.options.debug) ? 4 : 3
+    if (config.enabled === false) {
+      logger.debug('The module is disabled, skipping setup.')
       return
-    // allow config fallback
-    config.siteUrl = config.siteUrl || config.host!
+    }
+
+    if (config.blockNonSeoBots) {
+      // credits to yoast.com/robots.txt
+      config.groups.push({
+        userAgent: [
+          'Nuclei',
+          'WikiDo',
+          'Riddler',
+          'PetalBot',
+          'Zoominfobot',
+          'Go-http-client',
+          'Node/simplecrawler',
+          'CazoodleBot',
+          'dotbot/1.0',
+          'Gigabot',
+          'Barkrowler',
+          'BLEXBot',
+          'magpie-crawler',
+        ],
+        comment: ['Block bots that don\'t benefit us.'],
+        disallow: ['/'],
+      })
+    }
 
     const { resolve } = createResolver(import.meta.url)
 
-    config.indexable = String(config.indexable) !== 'false'
+    // allow config fallback
+    config.siteUrl = config.siteUrl || config.host!
 
-    const logger = useLogger('nuxt-simple-robots')
+    await installModule(await resolvePath('nuxt-site-config'))
+    await updateSiteConfig({
+      url: config.siteUrl,
+      indexable: config.indexable,
+    })
+
+    let providedOwnRobotsTxt = false
+    if (config.mergeWithRobotsTxtPath !== false) {
+      // we're going to check if a robots.txt is present, if so we can disable this module by default
+      const pathsToCheck = []
+      if (config.mergeWithRobotsTxtPath === true) {
+        pathsToCheck.push(resolve(nuxt.options.rootDir, nuxt.options.dir.assets, 'robots.txt'))
+        pathsToCheck.push(resolve(nuxt.options.rootDir, nuxt.options.dir.public, 'robots.txt'))
+        pathsToCheck.push(resolve(nuxt.options.rootDir, 'robots.txt'))
+      }
+      else {
+        pathsToCheck.push(resolve(nuxt.options.rootDir, config.mergeWithRobotsTxtPath))
+      }
+      let usingRobotsTxtPath = ''
+      let robotsTxt: boolean | string = false
+      for (const path of pathsToCheck) {
+        robotsTxt = await fsp.readFile(path, { encoding: 'utf-8' }).catch(() => false)
+        if (robotsTxt) {
+          usingRobotsTxtPath = path
+          break
+        }
+      }
+      if (typeof robotsTxt === 'string') {
+        logger.debug(`A robots.txt file was found at \`./${relative(nuxt.options.rootDir, usingRobotsTxtPath)}\`, merging config.`)
+        const { groups, sitemaps } = parseRobotsTxt(robotsTxt)
+        config.groups.push(...groups)
+        // merge in with config
+        config.sitemap = [...new Set([...asArray(config.sitemap), ...sitemaps])]
+        if (usingRobotsTxtPath.endsWith(join(nuxt.options.dir.public, 'robots.txt'))) {
+          providedOwnRobotsTxt = true
+          logger.debug('Using user-provided robots.txt instead of the server endpoint.')
+        }
+      }
+    }
 
     nuxt.hook('modules:done', async () => {
       config.sitemap = asArray(config.sitemap)
       config.disallow = asArray(config.disallow)
+      config.allow = asArray(config.allow)
       // @ts-expect-error runtime type
       await nuxt.hooks.callHook('robots:config', config)
 
-      config.sitemap = !config.indexable ? [] : [...new Set(config.sitemap)]
-
       nuxt.options.routeRules = nuxt.options.routeRules || {}
-      // convert robot routeRules to header routeRules
+      // convert robot routeRules to header routeRules for static hosting
       Object.entries(nuxt.options.routeRules).forEach(([route, rules]) => {
         if (rules.index === false || rules.robots) {
           // single * is supported but ignored
@@ -105,8 +266,8 @@ export default defineNuxtModule<ModuleOptions>({
         }
       })
 
-      let disallow = config.disallow
-      if (config.disallowNonIndexableRoutes && config.indexable) {
+      const disallow = config.disallow
+      if (config.disallowNonIndexableRoutes) {
         // iterate the route rules and add any non indexable rules to disallow
         Object.entries(nuxt.options.routeRules || {}).forEach(([route, rules]) => {
           if (rules.index === false || rules.robots?.includes('noindex')) {
@@ -115,24 +276,54 @@ export default defineNuxtModule<ModuleOptions>({
           }
         })
       }
-      if (!config.indexable)
-        disallow = ['/']
-      else if (!disallow.length)
-        disallow.push('')
       config.disallow = [...new Set(disallow)]
+      // make sure any groups have a user agent, if not we set it to *
+      config.groups = config.groups.map((group) => {
+        group.userAgent = group.userAgent ? asArray(group.userAgent) : ['*']
+        group.disallow = asArray(group.disallow)
+        group.allow = asArray(group.allow)
+        return group
+      })
+      if (!providedOwnRobotsTxt) {
+        // find an existing stack with a user agent that is equal to "['*']"
+        const existingGroup = (config.groups as RobotsGroupResolved[]).find(stack => stack.userAgent.length === 1 && stack.userAgent[0] === '*')
+        if (existingGroup) {
+          // we'll just add the disallow, allow to the existing stack
+          existingGroup.disallow = [...new Set([...(existingGroup.disallow || []), ...config.disallow])]
+          if (existingGroup.disallow.length > 1) {
+            // remove any empty disallows
+            existingGroup.disallow = existingGroup.disallow.filter(disallow => disallow !== '')
+          }
+          existingGroup.allow = [...new Set([...(existingGroup.allow || []), ...config.allow])]
+        }
+        else {
+          // otherwise make a new stack
+          config.groups.unshift(<RobotsGroupResolved>{
+            userAgent: ['*'],
+            disallow: config.disallow.length > 0 ? config.disallow : [''],
+            allow: config.allow,
+          })
+        }
+      }
 
       const hasRelativeSitemaps = config.sitemap.some(sitemap => !sitemap.startsWith('http'))
-      if (hasRelativeSitemaps && !config.siteUrl && nuxt.options._generate)
-        logger.warn('You are prerendering your robots.txt but have not set a siteUrl. This will result in relative sitemap URLs which are not valid.')
+      if (hasRelativeSitemaps) {
+        requireSiteConfig('nuxt-simple-robots', {
+          url: 'Required to render relative Sitemap paths as absolute URLs.',
+        }, { prerender: true })
+      }
 
-      nuxt.options.runtimeConfig.public['nuxt-simple-robots'] = config as ResolvedModuleOptions
+      nuxt.options.runtimeConfig['nuxt-simple-robots'] = {
+        credits: config.credits,
+        groups: config.groups,
+        sitemap: config.sitemap,
+        robotsEnabledValue: config.robotsEnabledValue,
+        robotsDisabledValue: config.robotsDisabledValue,
+      }
     })
 
-    // paths.d.ts
-    addTemplate({
-      filename: 'nuxt-simple-robots.d.ts',
-      getContents: () => {
-        return `// Generated by nuxt-simple-robots
+    extendTypes('nuxt-simple-robots', () => {
+      return `
 interface NuxtSimpleRobotsNitroRules {
   index?: boolean
   robots?: string
@@ -140,18 +331,11 @@ interface NuxtSimpleRobotsNitroRules {
 declare module 'nitropack' {
   interface NitroRouteRules extends NuxtSimpleRobotsNitroRules {}
   interface NitroRouteConfig extends NuxtSimpleRobotsNitroRules {}
-}
-export {}
-`
-      },
-    })
-
-    nuxt.hooks.hook('prepare:types', ({ references }) => {
-      references.push({ path: resolve(nuxt.options.buildDir, 'nuxt-simple-robots.d.ts') })
+}`
     })
 
     // only prerender for `nuxi generate`
-    if (nuxt.options._generate) {
+    if (nuxt.options._generate && !providedOwnRobotsTxt) {
       nuxt.hooks.hook('nitro:init', async (nitro) => {
         nitro.options.prerender.routes = nitro.options.prerender.routes || []
         nitro.options.prerender.routes.push('/robots.txt')
@@ -172,13 +356,15 @@ export {}
     })
 
     // add robots.txt server handler
-    addServerHandler({
-      route: '/robots.txt',
-      handler: resolve('./runtime/server/robots-txt'),
-    })
+    if (!providedOwnRobotsTxt) {
+      addServerHandler({
+        route: '/robots.txt',
+        handler: resolve('./runtime/server/robots-txt'),
+      })
+    }
     // add robots HTTP header handler
     addServerHandler({
-      handler: resolve('./runtime/server/robots-middleware'),
+      handler: resolve('./runtime/server/middleware/xRobotsTagHeader'),
     })
   },
 })

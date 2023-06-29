@@ -10,8 +10,6 @@ await setup({
   server: true,
   nuxtConfig: {
     robots: {
-      indexable: true,
-      siteUrl: 'https://nuxt-simple-robots.com',
       disallowNonIndexableRoutes: true,
     },
     routeRules: {
@@ -21,26 +19,35 @@ await setup({
       '/robots-rule/*': {
         robots: 'noindex',
       },
+      '/secret/**': {
+        // index: false,
+        robots: 'noindex, nofollow',
+      },
+      '/secret/visible': {
+        // index: true,
+        robots: 'index, follow',
+      },
+      '/excluded/*': {
+        index: false,
+      },
     },
   },
 })
 
-describe('prod-disallow-non-indexable', () => {
+describe('route rule merging', () => {
   it('basic', async () => {
     const robotsTxt = await $fetch('/robots.txt')
     expect(robotsTxt).toContain('Disallow: /index-rule/*')
     expect(robotsTxt).toContain('Disallow: /robots-rule/*')
     expect(robotsTxt).toMatchInlineSnapshot(`
-      "# START nuxt-simple-robots (indexable: true)
+      "# START nuxt-simple-robots (indexable)
       User-agent: *
-      Disallow: /hidden/
-      Disallow: /secret/*
-      Disallow: /excluded/*
       Disallow: /index-rule/*
       Disallow: /robots-rule/*
+      Disallow: /secret/*
+      Disallow: /excluded/*
 
-      Sitemap: https://nuxt-simple-robots.com/sitemap.xml
       # END nuxt-simple-robots"
     `)
-  }, 60000)
+  })
 })
