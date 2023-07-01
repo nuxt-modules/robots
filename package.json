@@ -38,8 +38,8 @@
   "dependencies": {
     "@nuxt/kit": "^3.6.1",
     "defu": "^6.1.2",
-    "nuxt-site-config": "^0.7.4",
-    "nuxt-site-config-kit": "^0.7.4",
+    "nuxt-site-config": "^0.7.5",
+    "nuxt-site-config-kit": "^0.7.5",
     "pathe": "^1.1.1",
     "ufo": "^1.1.2"
   },
