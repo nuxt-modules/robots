@@ -9,9 +9,7 @@ import {
   resolvePath, useLogger,
 } from '@nuxt/kit'
 import { defu } from 'defu'
-
-// @ts-expect-error types being weird
-import { requireSiteConfig, updateSiteConfig } from 'nuxt-site-config/kit'
+import { requireSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
 import { join, relative } from 'pathe'
 import { asArray } from './runtime/util'
 import { extendTypes } from './kit'
@@ -94,6 +92,8 @@ export interface ModuleOptions {
   blockNonSeoBots: boolean
   /**
    * Enables debug logs and a debug endpoint.
+   *
+   * @default false
    */
   debug: boolean
   /**

@@ -38,7 +38,8 @@
   "dependencies": {
     "@nuxt/kit": "^3.6.1",
     "defu": "^6.1.2",
-    "nuxt-site-config": "^0.6.0",
+    "nuxt-site-config": "^0.7.4",
+    "nuxt-site-config-kit": "^0.7.4",
     "pathe": "^1.1.1",
     "ufo": "^1.1.2"
   },
@@ -48,7 +49,7 @@
     "@nuxt/test-utils": "3.6.1",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "bumpp": "^9.1.1",
-    "eslint": "8.43.0",
+    "eslint": "8.44.0",
     "execa": "^7.1.1",
     "nuxt": "^3.6.1",
     "vitest": "^0.32.2"
