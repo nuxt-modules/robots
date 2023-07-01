@@ -1,4 +1,4 @@
-import { defineEventHandler, setHeader } from 'h3'
+import { defineEventHandler, getQuery, setHeader } from 'h3'
 import { withBase } from 'ufo'
 import { generateRobotsTxt } from '../robotsTxt/generateRobotsTxt'
 import { useNitroApp } from '#internal/nitro'
@@ -6,6 +6,7 @@ import { useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
 import type { RobotsGroupResolved } from '~/src/types'
 
 export default defineEventHandler(async (e) => {
+  const query = getQuery(e)
   setHeader(e, 'Content-Type', 'text/plain; charset=utf-8')
   setHeader(e, 'Cache-Control', process.dev ? 'no-store' : 'max-age=14400, must-revalidate')
 
@@ -13,6 +14,9 @@ export default defineEventHandler(async (e) => {
   const { url, indexable } = useSiteConfig(e)
   // in dev we serve the sitemap with localhost paths so can click into it
   const siteUrl = withBase(process.dev ? useNitroOrigin(e) : (url || useNitroOrigin(e)), useRuntimeConfig().app.baseURL)
+
+  // allow previewing with ?indexable=true
+  const isIndexable = (process.dev && query.indexable) || indexable !== false
 
   let sitemaps: string[] = [...(Array.isArray(sitemap) ? sitemap : [sitemap])]
     // validate sitemaps are absolute
@@ -24,7 +28,7 @@ export default defineEventHandler(async (e) => {
     })
 
   let robotGroups: RobotsGroupResolved[] = [...groups]
-  if (!indexable) {
+  if (!isIndexable) {
     robotGroups = [
       {
         userAgent: ['*'],
@@ -35,12 +39,16 @@ export default defineEventHandler(async (e) => {
   }
 
   let robotsTxt: string = generateRobotsTxt({ groups: robotGroups, sitemaps })
+  if (process.dev) {
+    // append
+    robotsTxt += `\n# Dev mode ${query.indexable ? '' : ' - You can test indexable by appending ?indexable=true'}` + '\n'
+  }
   if (credits) {
     robotsTxt = [
-      `# START nuxt-simple-robots (${process.dev ? 'dev mode - ' : ''}${indexable ? 'indexable' : 'indexing disabled'})`,
+      `# START nuxt-simple-robots (${isIndexable ? 'indexable' : 'indexing disabled'})`,
       robotsTxt,
       '# END nuxt-simple-robots',
-    ].join('\n')
+    ].filter(Boolean).join('\n')
   }
 
   const hookCtx = { robotsTxt }
