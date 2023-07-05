@@ -10,7 +10,7 @@
 
 
 <p align="center">
-The simplest way to control the robots crawling and indexing your Nuxt site.
+Tame the robots crawling and indexing your Nuxt site with ease.
 </p>
 
 <p align="center">
@@ -27,8 +27,6 @@ The simplest way to control the robots crawling and indexing your Nuxt site.
 </table>
 </p>
 
-ℹ️ Looking for a complete SEO solution? Check out [Nuxt SEO Kit](https://github.com/harlan-zw/nuxt-seo-kit).
-
 ## Features
 
 - 🤖 Merge in your existing robots.txt or programmatically create a new one
@@ -36,6 +34,33 @@ The simplest way to control the robots crawling and indexing your Nuxt site.
 - 🔄 Integrates with route rules and runtime hooks
 - 🔒 Disables non-production environments from being indexed
 - Solves common issues and best practice default config
+
+## Installation
+
+1. Install `nuxt-simple-robots` dependency to your project:
+
+```bash
+#
+yarn add -D nuxt-simple-robots
+#
+npm install -D nuxt-simple-robots
+#
+pnpm i -D nuxt-simple-robots
+```
+
+
+2. Add it to your `modules` section in your `nuxt.config`:
+
+```ts
+export default defineNuxtConfig({
+  modules: ['nuxt-simple-robots']
+})
+```
+
+# Documentation
+
+[📖 Read the full documentation](https://nuxtseo.com/robots) for more information.
+
 
 ### Module Integrations
 
