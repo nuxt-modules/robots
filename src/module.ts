@@ -192,8 +192,9 @@ export default defineNuxtModule<ModuleOptions>({
     // allow config fallback
     config.siteUrl = config.siteUrl || config.host!
 
-    await installModule(await resolvePath('nuxt-site-config'))
+    await installNuxtSiteConfig()
     await updateSiteConfig({
+      _context: 'nuxt-simple-robots:config',
       url: config.siteUrl,
       indexable: config.indexable,
     })
