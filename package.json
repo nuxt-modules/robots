@@ -6,7 +6,7 @@
   "description": "Tame the robots crawling and indexing your Nuxt site with ease.",
   "license": "MIT",
   "funding": "https://github.com/sponsors/harlan-zw",
-  "homepage": "https://github.com/harlan-zw/nuxt-simple-robots#readme",
+  "homepage": "https://nuxtseo.com/robots",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/harlan-zw/nuxt-simple-robots.git"
