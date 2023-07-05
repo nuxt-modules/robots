@@ -226,9 +226,17 @@ export default defineNuxtModule<ModuleOptions>({
         config.groups.push(...groups)
         // merge in with config
         config.sitemap = [...new Set([...asArray(config.sitemap), ...sitemaps])]
-        if (usingRobotsTxtPath.endsWith(join(nuxt.options.dir.public, 'robots.txt'))) {
-          providedOwnRobotsTxt = true
-          logger.debug('Using user-provided robots.txt instead of the server endpoint.')
+        if (usingRobotsTxtPath === publicRobotsTxtPath) {
+          // we need to move their robots.txt to _robots.txt
+          await fsp.rename(usingRobotsTxtPath, resolve(nuxt.options.rootDir, nuxt.options.dir.public, '_robots.txt'))
+          logger.warn('Your robots.txt file was moved to `./public/_robots.txt` to avoid conflicts.')
+          const extraPaths: string[] = []
+          // use validPaths
+          for (const path of validPaths) {
+            if (path !== usingRobotsTxtPath)
+              extraPaths.push(` - ./${relative(nuxt.options.rootDir, path)}`)
+          }
+          logger.info(`The following paths are also valid for your robots.txt:\n${extraPaths.join('\n')}\n`)
         }
       }
     }
@@ -272,26 +280,24 @@ export default defineNuxtModule<ModuleOptions>({
         group.allow = asArray(group.allow)
         return group
       })
-      if (!providedOwnRobotsTxt) {
-        // find an existing stack with a user agent that is equal to "['*']"
-        const existingGroup = (config.groups as RobotsGroupResolved[]).find(stack => stack.userAgent.length === 1 && stack.userAgent[0] === '*')
-        if (existingGroup) {
-          // we'll just add the disallow, allow to the existing stack
-          existingGroup.disallow = [...new Set([...(existingGroup.disallow || []), ...config.disallow])]
-          if (existingGroup.disallow.length > 1) {
-            // remove any empty disallows
-            existingGroup.disallow = existingGroup.disallow.filter(disallow => disallow !== '')
-          }
-          existingGroup.allow = [...new Set([...(existingGroup.allow || []), ...config.allow])]
+      // find an existing stack with a user agent that is equal to "['*']"
+      const existingGroup = (config.groups as RobotsGroupResolved[]).find(stack => stack.userAgent.length === 1 && stack.userAgent[0] === '*')
+      if (existingGroup) {
+        // we'll just add the disallow, allow to the existing stack
+        existingGroup.disallow = [...new Set([...(existingGroup.disallow || []), ...config.disallow])]
+        if (existingGroup.disallow.length > 1) {
+          // remove any empty disallows
+          existingGroup.disallow = existingGroup.disallow.filter(disallow => disallow !== '')
         }
-        else {
-          // otherwise make a new stack
-          config.groups.unshift(<RobotsGroupResolved>{
-            userAgent: ['*'],
-            disallow: config.disallow.length > 0 ? config.disallow : [''],
-            allow: config.allow,
-          })
-        }
+        existingGroup.allow = [...new Set([...(existingGroup.allow || []), ...config.allow])]
+      }
+      else {
+        // otherwise make a new stack
+        config.groups.unshift(<RobotsGroupResolved>{
+          userAgent: ['*'],
+          disallow: config.disallow.length > 0 ? config.disallow : [''],
+          allow: config.allow,
+        })
       }
 
       const hasRelativeSitemaps = config.sitemap.some(sitemap => !sitemap.startsWith('http'))
@@ -323,12 +329,12 @@ declare module 'nitropack' {
     })
 
     // only prerender for `nuxi generate`
-    if (nuxt.options._generate && !providedOwnRobotsTxt) {
-      nuxt.hooks.hook('nitro:init', async (nitro) => {
+    nuxt.hooks.hook('nitro:init', async (nitro) => {
+      if (nuxt.options._generate) {
         nitro.options.prerender.routes = nitro.options.prerender.routes || []
         nitro.options.prerender.routes.push('/robots.txt')
-      })
-    }
+      }
+    })
 
     // defineRobotMeta is a server-only composable
     nuxt.options.optimization.treeShake.composables.client['nuxt-simple-robots'] = ['defineRobotMeta']
@@ -344,12 +350,10 @@ declare module 'nitropack' {
     })
 
     // add robots.txt server handler
-    if (!providedOwnRobotsTxt) {
-      addServerHandler({
-        route: '/robots.txt',
-        handler: resolve('./runtime/server/robots-txt'),
-      })
-    }
+    addServerHandler({
+      route: '/robots.txt',
+      handler: resolve('./runtime/server/robots-txt'),
+    })
     // add robots HTTP header handler
     addServerHandler({
       handler: resolve('./runtime/server/middleware/xRobotsTagHeader'),
