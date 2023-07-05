@@ -15,8 +15,9 @@ export default defineEventHandler(async (e) => {
   // in dev we serve the sitemap with localhost paths so can click into it
   const siteUrl = withBase(process.dev ? useNitroOrigin(e) : (url || useNitroOrigin(e)), useRuntimeConfig().app.baseURL)
 
-  // allow previewing with ?indexable=true
-  const isIndexable = (process.dev && query.indexable) || indexable !== false
+  // allow previewing with ?indexable
+  const queryIndexableEnabled = String(query.indexable) === 'true' || query.indexable === ''
+  const isIndexable = (process.dev && queryIndexableEnabled) || indexable !== false
 
   let sitemaps: string[] = [...(Array.isArray(sitemap) ? sitemap : [sitemap])]
     // validate sitemaps are absolute
@@ -41,7 +42,7 @@ export default defineEventHandler(async (e) => {
   let robotsTxt: string = generateRobotsTxt({ groups: robotGroups, sitemaps })
   if (process.dev) {
     // append
-    robotsTxt += `\n# Dev mode ${query.indexable ? '' : ' - You can test indexable by appending ?indexable=true'}` + '\n'
+    robotsTxt += `\n# Dev mode ${queryIndexableEnabled ? 'Previewing indexable. Remove ?indexable to see the default.' : ' - View the indexable output by setting ?indexable'}` + '\n'
   }
   if (credits) {
     robotsTxt = [
