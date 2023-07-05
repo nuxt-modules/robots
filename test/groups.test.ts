@@ -38,9 +38,6 @@ describe('stack', () => {
   it('basic', async () => {
     expect(await $fetch('/robots.txt')).toMatchInlineSnapshot(`
       "# START nuxt-simple-robots (indexable)
-      User-agent: *
-      Disallow: 
-
       User-agent: Googlebot
       Disallow: /test/
       Disallow: /test3/
@@ -49,6 +46,12 @@ describe('stack', () => {
       User-agent: Yandex
       Disallow: /test2/
 
+      User-agent: *
+      Allow: /secret/exception
+      Disallow: /secret
+      Disallow: /admin
+
+      Sitemap: http://localhost/sitemap.xml
       # END nuxt-simple-robots"
     `)
   })

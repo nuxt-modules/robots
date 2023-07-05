@@ -42,11 +42,15 @@ describe('route rule merging', () => {
     expect(robotsTxt).toMatchInlineSnapshot(`
       "# START nuxt-simple-robots (indexable)
       User-agent: *
+      Allow: /secret/exception
+      Disallow: /secret
+      Disallow: /admin
       Disallow: /index-rule/*
       Disallow: /robots-rule/*
       Disallow: /secret/*
       Disallow: /excluded/*
 
+      Sitemap: http://localhost/sitemap.xml
       # END nuxt-simple-robots"
     `)
   })

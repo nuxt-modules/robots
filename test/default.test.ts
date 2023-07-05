@@ -15,8 +15,11 @@ describe('default', () => {
     expect(await $fetch('/robots.txt')).toMatchInlineSnapshot(`
       "# START nuxt-simple-robots (indexable)
       User-agent: *
-      Disallow: 
+      Allow: /secret/exception
+      Disallow: /secret
+      Disallow: /admin
 
+      Sitemap: http://localhost/sitemap.xml
       # END nuxt-simple-robots"
     `)
   })
