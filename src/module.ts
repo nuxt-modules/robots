@@ -4,13 +4,11 @@ import {
   addImports,
   addServerHandler,
   createResolver,
-  defineNuxtModule,
-  installModule,
-  resolvePath, useLogger,
+  defineNuxtModule, useLogger,
 } from '@nuxt/kit'
 import { defu } from 'defu'
-import { requireSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
-import { join, relative } from 'pathe'
+import { installNuxtSiteConfig, requireSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
+import { relative } from 'pathe'
 import { asArray } from './runtime/util'
 import { extendTypes } from './kit'
 import { parseRobotsTxt } from './robotsTxtParser'
@@ -53,7 +51,7 @@ export interface ModuleOptions {
    *    disallow: ['/admin'],
    *    allow: ['/admin/login'],
    *    },
-  *  ]
+   *  ]
    */
   groups: RobotsGroupInput[]
   /**
@@ -199,25 +197,44 @@ export default defineNuxtModule<ModuleOptions>({
       indexable: config.indexable,
     })
 
-    let providedOwnRobotsTxt = false
     if (config.mergeWithRobotsTxtPath !== false) {
-      // we're going to check if a robots.txt is present, if so we can disable this module by default
-      const pathsToCheck = []
-      if (config.mergeWithRobotsTxtPath === true) {
-        pathsToCheck.push(resolve(nuxt.options.rootDir, nuxt.options.dir.assets, 'robots.txt'))
-        pathsToCheck.push(resolve(nuxt.options.rootDir, nuxt.options.dir.public, 'robots.txt'))
-        pathsToCheck.push(resolve(nuxt.options.rootDir, 'robots.txt'))
-      }
-      else {
-        pathsToCheck.push(resolve(nuxt.options.rootDir, config.mergeWithRobotsTxtPath))
-      }
       let usingRobotsTxtPath = ''
       let robotsTxt: boolean | string = false
-      for (const path of pathsToCheck) {
-        robotsTxt = await fsp.readFile(path, { encoding: 'utf-8' }).catch(() => false)
-        if (robotsTxt) {
-          usingRobotsTxtPath = path
-          break
+      const publicRobotsTxtPath = resolve(nuxt.options.rootDir, nuxt.options.dir.public, 'robots.txt')
+      const validPaths = [
+        // public/robots.txt - This is the default, we need to move this to avoid issues
+        publicRobotsTxtPath,
+        // assets/robots.txt
+        resolve(nuxt.options.rootDir, nuxt.options.dir.assets, 'robots.txt'),
+        // public/_robots.txt
+        resolve(nuxt.options.rootDir, nuxt.options.dir.public, '_robots.txt'),
+        // public/_dir/robots.txt
+        resolve(nuxt.options.rootDir, nuxt.options.dir.public, '_dir', 'robots.txt'),
+        // pages/_dir/robots.txt
+        resolve(nuxt.options.rootDir, nuxt.options.dir.pages, '_dir', 'robots.txt'),
+        // pages/robots.txt
+        resolve(nuxt.options.rootDir, nuxt.options.dir.pages, 'robots.txt'),
+        // robots.txt
+        resolve(nuxt.options.rootDir, 'robots.txt'),
+      ]
+      // we're going to check if a robots.txt is present, if so we can disable this module by default
+      if (config.mergeWithRobotsTxtPath === true) {
+        for (const path of validPaths) {
+          robotsTxt = await fsp.readFile(path, { encoding: 'utf-8' }).catch(() => false)
+          if (robotsTxt) {
+            usingRobotsTxtPath = path
+            break
+          }
+        }
+      }
+      else {
+        const customPath = resolve(nuxt.options.rootDir, config.mergeWithRobotsTxtPath)
+        if (!(await fsp.statfs(customPath).catch(() => false))) {
+          logger.error(`You provided an invalid \`mergeWithRobotsTxtPath\`, the file does not exist: ${customPath}.`)
+        }
+        else {
+          usingRobotsTxtPath = customPath
+          robotsTxt = await fsp.readFile(customPath, { encoding: 'utf-8' })
         }
       }
       if (typeof robotsTxt === 'string') {
