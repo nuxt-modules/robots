@@ -2,7 +2,7 @@
 /// <reference types="vitest/globals" />
 
 import { defineConfig } from 'vite'
-
+import { isCI } from 'std-env'
 export default defineConfig({
   test: {
     env: {
@@ -10,7 +10,7 @@ export default defineConfig({
       NODE_ENV: 'production',
     },
     testTimeout: 60000,
-    threads: true,
+    threads: isCI,
     deps: {
       inline: [
         '@nuxt/test-utils',

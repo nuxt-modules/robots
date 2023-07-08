@@ -1,9 +1,0 @@
-{
-  "private": true,
-  "dependencies": {
-    "nuxt-simple-robots": "link:../"
-  },
-  "scripts": {
-    "prepare": "nuxi prepare"
-  }
-}

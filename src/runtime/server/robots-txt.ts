@@ -3,7 +3,7 @@ import { withBase } from 'ufo'
 import { generateRobotsTxt } from '../robotsTxt/generateRobotsTxt'
 import { useNitroApp } from '#internal/nitro'
 import { useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
-import type { RobotsGroupResolved } from '~/src/types'
+import type { RobotsGroupResolved } from '../../types'
 
 export default defineEventHandler(async (e) => {
   const query = getQuery(e)
