@@ -1,9 +1,9 @@
 import { defineEventHandler, getQuery, setHeader } from 'h3'
 import { withBase } from 'ufo'
 import { generateRobotsTxt } from '../robotsTxt/generateRobotsTxt'
+import type { RobotsGroupResolved } from '../types'
 import { useNitroApp } from '#internal/nitro'
 import { useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
-import type { RobotsGroupResolved } from '../../types'
 
 export default defineEventHandler(async (e) => {
   const query = getQuery(e)

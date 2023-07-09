@@ -12,7 +12,7 @@ import { relative } from 'pathe'
 import { asArray } from './runtime/util'
 import { extendTypes } from './kit'
 import { parseRobotsTxt } from './robotsTxtParser'
-import type { Arrayable, RobotsGroupInput, RobotsGroupResolved } from './types'
+import type { Arrayable, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
 import { NonHelpfulBots } from './const'
 
 export interface ModuleOptions {

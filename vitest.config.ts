@@ -3,6 +3,7 @@
 
 import { defineConfig } from 'vite'
 import { isCI } from 'std-env'
+
 export default defineConfig({
   test: {
     env: {

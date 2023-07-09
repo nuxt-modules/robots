@@ -1,4 +1,4 @@
-import type { RobotsGroupResolved } from './types'
+import type { RobotsGroupResolved } from './runtime/types'
 
 /**
  * We're going to read the robots.txt and extract any disallow or sitemaps rules from it.

@@ -1,4 +1,4 @@
-import { asArray } from '../util'
+import { indexableFromGroup } from '../util'
 import { useNuxtApp, useRoute, useRuntimeConfig, useServerHead, useSiteConfig } from '#imports'
 
 export function defineRobotMeta() {
@@ -8,13 +8,7 @@ export function defineRobotMeta() {
     const { indexable } = useSiteConfig()
     const { robotsDisabledValue, robotsEnabledValue, groups } = useRuntimeConfig()['nuxt-simple-robots']
     // check if the route exist within any of the disallow groups and not within the allow of the same stack
-    let indexableFromGroup = true
-    for (const group of groups.filter((group: any) => asArray(group.userAgent).includes('*'))) {
-      if (group.disallow.some((rule: string) => path.startsWith(rule)) && !group.allow.some((rule: string) => path.startsWith(rule))) {
-        indexableFromGroup = false
-        break
-      }
-    }
+    const groupIndexable = indexableFromGroup(groups, path)
     useServerHead({
       meta: [
         {
@@ -26,7 +20,7 @@ export function defineRobotMeta() {
               return routeRules.robots
             if (indexable === false || routeRules?.index === false)
               return robotsDisabledValue
-            return indexableFromGroup ? robotsEnabledValue : robotsDisabledValue
+            return groupIndexable ? robotsEnabledValue : robotsDisabledValue
           },
         },
       ],
