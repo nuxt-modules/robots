@@ -1,5 +1,5 @@
 import { defineEventHandler, setHeader } from 'h3'
-import { asArray } from '../../util'
+import { indexableFromGroup } from '../../util'
 import { getRouteRules } from '#internal/nitro'
 import { useRuntimeConfig, useSiteConfig } from '#imports'
 
@@ -13,17 +13,13 @@ export default defineEventHandler((e) => {
   const routeRules = getRouteRules(e)
   if (typeof routeRules.robots === 'string') {
     setHeader(e, 'X-Robots-Tag', routeRules.robots)
+    return
   }
-  else if (routeRules.index === false || indexable === false) {
+  if (routeRules.index === false || indexable === false) {
     setHeader(e, 'X-Robots-Tag', robotsDisabledValue)
+    return
   }
-  else {
-    // check if the route exist within any of the disallow groups and not within the allow of the same stack
-    for (const group of groups.filter((group: any) => asArray(group.userAgent).includes('*'))) {
-      if (group.disallow.some((rule: string) => e.path.startsWith(rule)) && !group.allow.some((rule: string) => e.path.startsWith(rule))) {
-        setHeader(e, 'X-Robots-Tag', robotsDisabledValue)
-        return
-      }
-    }
-  }
+  const groupIndexable = indexableFromGroup(groups, e.path)
+  if (!groupIndexable)
+    setHeader(e, 'X-Robots-Tag', robotsDisabledValue)
 })

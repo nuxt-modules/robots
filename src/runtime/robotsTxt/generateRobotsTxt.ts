@@ -1,4 +1,4 @@
-import type { RobotsGroupResolved } from '../../types'
+import type { RobotsGroupResolved } from '../types'
 
 export function generateRobotsTxt({ groups, sitemaps }: { groups: RobotsGroupResolved[]; sitemaps: string[] }): string {
   // iterate over the groups
