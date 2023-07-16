@@ -36,22 +36,22 @@
     "test": "pnpm lint && vitest"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.6.2",
+    "@nuxt/kit": "^3.6.3",
     "defu": "^6.1.2",
-    "nuxt-site-config": "^1.0.5",
-    "nuxt-site-config-kit": "^1.0.5",
+    "nuxt-site-config": "^1.0.6",
+    "nuxt-site-config-kit": "^1.0.6",
     "pathe": "^1.1.1",
     "ufo": "^1.1.2"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^0.39.7",
+    "@antfu/eslint-config": "^0.39.8",
     "@nuxt/module-builder": "^0.4.0",
-    "@nuxt/test-utils": "3.6.2",
+    "@nuxt/test-utils": "3.6.3",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "bumpp": "^9.1.1",
-    "eslint": "8.44.0",
+    "eslint": "8.45.0",
     "execa": "^7.1.1",
-    "nuxt": "^3.6.2",
+    "nuxt": "^3.6.3",
     "vitest": "^0.33.0"
   }
 }
