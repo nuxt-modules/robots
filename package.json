@@ -2,7 +2,7 @@
   "name": "nuxt-simple-robots",
   "type": "module",
   "version": "3.0.3",
-  "packageManager": "pnpm@8.6.6",
+  "packageManager": "pnpm@8.6.10",
   "description": "Tame the robots crawling and indexing your Nuxt site with ease.",
   "license": "MIT",
   "funding": "https://github.com/sponsors/harlan-zw",
@@ -38,8 +38,8 @@
   "dependencies": {
     "@nuxt/kit": "^3.6.5",
     "defu": "^6.1.2",
-    "nuxt-site-config": "^1.0.7",
-    "nuxt-site-config-kit": "^1.0.7",
+    "nuxt-site-config": "^1.0.8",
+    "nuxt-site-config-kit": "^1.0.8",
     "pathe": "^1.1.1",
     "ufo": "^1.1.2"
   },
@@ -50,7 +50,7 @@
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "bumpp": "^9.1.1",
     "eslint": "8.45.0",
-    "execa": "^7.1.1",
+    "execa": "^7.2.0",
     "nuxt": "^3.6.5",
     "vitest": "^0.33.0"
   }
