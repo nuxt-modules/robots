@@ -69,7 +69,7 @@ export interface ModuleOptions {
   /**
    * Should route rules which disallow indexing be added to the `/robots.txt` file.
    *
-   * @default false
+   * @default true
    */
   disallowNonIndexableRoutes: boolean
   /**
@@ -166,7 +166,7 @@ export default defineNuxtModule<ModuleOptions>({
     mergeWithRobotsTxtPath: true,
     robotsEnabledValue: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
     robotsDisabledValue: 'noindex, nofollow',
-    disallowNonIndexableRoutes: false,
+    disallowNonIndexableRoutes: true,
   },
   async setup(config, nuxt) {
     const logger = useLogger('nuxt-simple-robots')
@@ -187,15 +187,15 @@ export default defineNuxtModule<ModuleOptions>({
 
     const { resolve } = createResolver(import.meta.url)
 
-    // allow config fallback
-    config.siteUrl = config.siteUrl || config.host!
-
     await installNuxtSiteConfig()
-    await updateSiteConfig({
-      _context: 'nuxt-simple-robots:config',
-      url: config.siteUrl,
-      indexable: config.indexable,
-    })
+    // allow config fallback
+    if (config.siteUrl || config.host!) {
+      await updateSiteConfig({
+        _context: 'nuxt-simple-robots:config',
+        url: config.siteUrl,
+        indexable: config.indexable,
+      })
+    }
 
     if (config.mergeWithRobotsTxtPath !== false) {
       let usingRobotsTxtPath = ''
