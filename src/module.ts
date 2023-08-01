@@ -361,7 +361,7 @@ declare module 'nitropack' {
       from: resolve('./runtime/composables/defineRobotMeta'),
     })
 
-    await addComponent({
+    addComponent({
       name: 'RobotMeta',
       filePath: resolve('./runtime/components/RobotMeta'),
     })

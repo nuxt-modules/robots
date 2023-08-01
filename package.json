@@ -17,8 +17,8 @@
   "exports": {
     ".": {
       "types": "./dist/types.d.ts",
-      "require": "./dist/module.cjs",
-      "import": "./dist/module.mjs"
+      "import": "./dist/module.mjs",
+      "require": "./dist/module.cjs"
     }
   },
   "main": "./dist/module.cjs",
@@ -38,20 +38,20 @@
   "dependencies": {
     "@nuxt/kit": "^3.6.5",
     "defu": "^6.1.2",
-    "nuxt-site-config": "^1.0.8",
-    "nuxt-site-config-kit": "^1.0.8",
+    "nuxt-site-config": "^1.0.10",
+    "nuxt-site-config-kit": "^1.0.10",
     "pathe": "^1.1.1",
-    "ufo": "^1.1.2"
+    "ufo": "^1.2.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^0.39.8",
+    "@antfu/eslint-config": "^0.40.0",
     "@nuxt/module-builder": "^0.4.0",
     "@nuxt/test-utils": "3.6.5",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "bumpp": "^9.1.1",
-    "eslint": "8.45.0",
+    "eslint": "8.46.0",
     "execa": "^7.2.0",
     "nuxt": "^3.6.5",
-    "vitest": "^0.33.0"
+    "vitest": "^0.34.1"
   }
 }
