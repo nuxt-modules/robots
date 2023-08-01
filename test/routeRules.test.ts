@@ -50,7 +50,7 @@ describe('route rule merging', () => {
       Disallow: /secret/*
       Disallow: /excluded/*
 
-      Sitemap: http://localhost/sitemap.xml
+      Sitemap: https://nuxtseo.com/sitemap.xml
       # END nuxt-simple-robots"
     `)
   })

@@ -5,6 +5,9 @@ export default defineNuxtConfig({
   modules: [
     Module,
   ],
+  site: {
+    url: 'https://nuxtseo.com/',
+  },
   nitro: {
     plugins: ['plugins/robots.ts'],
     prerender: {

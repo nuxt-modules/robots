@@ -1,9 +1,7 @@
 import { defineEventHandler, getQuery, setHeader } from 'h3'
-import { withBase } from 'ufo'
 import { generateRobotsTxt } from '../robotsTxt/generateRobotsTxt'
 import type { RobotsGroupResolved } from '../types'
-import { useNitroApp } from '#internal/nitro'
-import { useNitroOrigin, useRuntimeConfig, useSiteConfig } from '#imports'
+import { useNitroApp, useRuntimeConfig, useSiteConfig, withSiteUrl } from '#imports'
 
 export default defineEventHandler(async (e) => {
   const query = getQuery(e)
@@ -11,9 +9,7 @@ export default defineEventHandler(async (e) => {
   setHeader(e, 'Cache-Control', process.dev ? 'no-store' : 'max-age=14400, must-revalidate')
 
   const { groups, sitemap, credits } = useRuntimeConfig()['nuxt-simple-robots']
-  const { url, indexable } = useSiteConfig(e)
-  // in dev we serve the sitemap with localhost paths so can click into it
-  const siteUrl = withBase(process.dev ? useNitroOrigin(e) : (url || useNitroOrigin(e)), useRuntimeConfig().app.baseURL)
+  const { indexable } = useSiteConfig(e)
 
   // allow previewing with ?indexable
   const queryIndexableEnabled = String(query.indexable) === 'true' || query.indexable === ''
@@ -24,7 +20,7 @@ export default defineEventHandler(async (e) => {
     .map((s) => {
       // ensure base
       if (!s.startsWith('http'))
-        return withBase(s, siteUrl)
+        return withSiteUrl(e, s, { withBase: true, absolute: true })
       return s
     })
 
