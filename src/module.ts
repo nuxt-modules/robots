@@ -5,7 +5,7 @@ import type { Rule } from './types'
 
 export type ModuleOptions = {
   configPath: string,
-  rules: Rule | Rule[]
+  rules?: Rule | Rule[]
 }
 
 const ROBOTS_FILENAME = 'robots.txt'
@@ -22,10 +22,6 @@ export default defineNuxtModule<ModuleOptions>({
   },
   defaults: {
     configPath: 'robots.config',
-    rules: {
-      UserAgent: '*',
-      Disallow: ''
-    }
   },
   async setup (options, nuxt) {
     const { resolve } = createResolver(import.meta.url)
@@ -35,6 +31,15 @@ export default defineNuxtModule<ModuleOptions>({
       isNuxt2() ? nuxt.options.dir.static : nuxt.options.dir.public,
       ROBOTS_FILENAME
     )
+
+    if (!options.rules) {
+      options.rules = [
+        {
+          UserAgent: '*',
+          Disallow: ''
+        }
+      ]
+    }
 
     if (existsSync(staticFilePath)) {
       logger.warn('To use `' + name + '` module, please remove public `robots.txt`')
