@@ -6,6 +6,9 @@
   "rules": {
     "@typescript-eslint/no-unused-vars": [
       "off"
+    ],
+    "n/prefer-global/process": [
+      "off"
     ]
   }
 }
