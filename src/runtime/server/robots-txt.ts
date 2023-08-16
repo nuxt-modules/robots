@@ -23,6 +23,8 @@ export default defineEventHandler(async (e) => {
         return withSiteUrl(e, s, { withBase: true, absolute: true })
       return s
     })
+  // dedupe sitemaps
+  sitemaps = [...new Set(sitemaps)]
 
   let robotGroups: RobotsGroupResolved[] = [...groups]
   if (!isIndexable) {
