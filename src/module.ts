@@ -229,7 +229,7 @@ export default defineNuxtModule<ModuleOptions>({
       }
       else {
         const customPath = resolve(nuxt.options.rootDir, config.mergeWithRobotsTxtPath)
-        if (!(await fsp.statfs(customPath).catch(() => false))) {
+        if (!(await fsp.stat(customPath).catch(() => false))) {
           logger.error(`You provided an invalid \`mergeWithRobotsTxtPath\`, the file does not exist: ${customPath}.`)
         }
         else {
