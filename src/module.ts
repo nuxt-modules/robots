@@ -7,7 +7,7 @@ import {
   defineNuxtModule, useLogger,
 } from '@nuxt/kit'
 import { defu } from 'defu'
-import { installNuxtSiteConfig, requireSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
+import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
 import { relative } from 'pathe'
 import { asArray } from './runtime/util'
 import { extendTypes } from './kit'
@@ -315,13 +315,6 @@ export default defineNuxtModule<ModuleOptions>({
           disallow: config.disallow.length > 0 ? config.disallow : [''],
           allow: config.allow,
         })
-      }
-
-      const hasRelativeSitemaps = config.sitemap.some(sitemap => !sitemap.startsWith('http'))
-      if (hasRelativeSitemaps) {
-        requireSiteConfig('nuxt-simple-robots', {
-          url: 'Required to render relative Sitemap paths as absolute URLs.',
-        }, { prerender: true })
       }
 
       nuxt.options.runtimeConfig['nuxt-simple-robots'] = {
