@@ -11,8 +11,8 @@ export default defineConfig({
       NODE_ENV: 'production',
     },
     testTimeout: 60000,
-    isolate: !isCI,
-    threads: isCI,
+    isolate: true,
+    threads: false,
     deps: {
       inline: [
         '@nuxt/test-utils',
