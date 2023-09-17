@@ -7,8 +7,6 @@ const { resolve } = createResolver(import.meta.url)
 process.env.NODE_ENV = 'staging'
 await setup({
   rootDir: resolve('../.playground'),
-  build: true,
-  server: true,
 })
 
 describe('nonIndexable', () => {
