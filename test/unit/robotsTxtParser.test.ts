@@ -243,5 +243,4 @@ describe('robotsTxtParser', () => {
       }
     `)
   })
-
 })
