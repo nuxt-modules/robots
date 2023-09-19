@@ -9,6 +9,7 @@ import type { RobotsGroupResolved } from './runtime/types'
  * - allow: a URL path that may be crawled.
  * - disallow: a URL path that may not be crawled.
  * - sitemap: the complete URL of a sitemap.
+ * - host: the host name of the site, this is optional non-standard directive.
  *
  * @param s robots.txt file contents
  * @see https://developers.google.com/search/docs/crawling-indexing/robots/robots_txt
@@ -60,6 +61,9 @@ export function parseRobotsTxt(s: string) {
         break
       case 'Sitemap':
         sitemaps.push(val)
+        break
+      case 'Host':
+        currentGroup.host = val
         break
     }
   }

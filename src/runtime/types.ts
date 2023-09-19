@@ -12,4 +12,5 @@ export interface RobotsGroupResolved {
   disallow: string[]
   allow: string[]
   userAgent: string[]
+  host?: string
 }

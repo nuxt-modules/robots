@@ -241,6 +241,13 @@ export default defineNuxtModule<ModuleOptions>({
         logger.debug(`A robots.txt file was found at \`./${relative(nuxt.options.rootDir, usingRobotsTxtPath)}\`, merging config.`)
         const { groups, sitemaps } = parseRobotsTxt(robotsTxt)
         config.groups.push(...groups)
+        const host = groups.map(g => g.host).filter(Boolean)[0]
+        if (host) {
+          updateSiteConfig({
+            _context: usingRobotsTxtPath,
+            url: host,
+          })
+        }
         // merge in with config
         config.sitemap = [...new Set([...asArray(config.sitemap), ...sitemaps])]
         if (usingRobotsTxtPath === publicRobotsTxtPath) {

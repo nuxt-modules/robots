@@ -218,4 +218,30 @@ describe('robotsTxtParser', () => {
       }
     `)
   })
+
+  it('robots #36', async () => {
+    // read fixture yoastRobots.txt
+    const robotsTxt = await fsp.readFile('./test/fixtures/issue36.txt', { encoding: 'utf-8' })
+    expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
+      {
+        "groups": [
+          {
+            "allow": [],
+            "comment": [],
+            "disallow": [
+              "",
+            ],
+            "host": "https://doyban.com",
+            "userAgent": [
+              "*",
+            ],
+          },
+        ],
+        "sitemaps": [
+          "https://doyban.com/sitemap.xml",
+        ],
+      }
+    `)
+  })
+
 })
