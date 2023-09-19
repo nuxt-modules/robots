@@ -61,6 +61,10 @@ export default defineNuxtConfig({
 
 [📖 Read the full documentation](https://nuxtseo.com/robots) for more information.
 
+## Demos
+
+- [Default - StackBlitz](https://stackblitz.com/edit/nuxt-starter-zycxux?file=public%2F_robots.txt)
+
 
 ## Sponsors
 
