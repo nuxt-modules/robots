@@ -4,7 +4,8 @@ import {
   addImports,
   addServerHandler,
   createResolver,
-  defineNuxtModule, useLogger,
+  defineNuxtModule,
+  useLogger,
 } from '@nuxt/kit'
 import { defu } from 'defu'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
@@ -227,12 +228,12 @@ export default defineNuxtModule<ModuleOptions>({
           }
         }
       }
- else {
+      else {
         const customPath = resolve(nuxt.options.rootDir, config.mergeWithRobotsTxtPath)
         if (!(await fsp.stat(customPath).catch(() => false))) {
           logger.error(`You provided an invalid \`mergeWithRobotsTxtPath\`, the file does not exist: ${customPath}.`)
         }
- else {
+        else {
           usingRobotsTxtPath = customPath
           robotsTxt = await fsp.readFile(customPath, { encoding: 'utf-8' })
         }
@@ -315,7 +316,7 @@ export default defineNuxtModule<ModuleOptions>({
         }
         existingGroup.allow = [...new Set([...(existingGroup.allow || []), ...config.allow])]
       }
- else {
+      else {
         // otherwise make a new stack
         config.groups.unshift(<RobotsGroupResolved>{
           userAgent: ['*'],
