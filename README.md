@@ -100,6 +100,7 @@ Sitemap: https://robots.nuxtjs.org/sitemap.xml
 - UserAgent = `User-agent`
 - CrawlDelay = `Crawl-delay`
 - Disallow = `Disallow`
+- Disavow = `Disavow`
 - Allow = `Allow`
 - Host = `Host`
 - Sitemap = `Sitemap`
