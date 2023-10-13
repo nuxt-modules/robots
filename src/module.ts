@@ -1,11 +1,11 @@
 import { existsSync } from 'fs'
 import { defineNuxtModule, addServerHandler, createResolver, useLogger, isNuxt2, findPath, addTemplate } from '@nuxt/kit'
 import { name, version } from '../package.json'
-import type { Rule } from './types'
+import type { RuleSet } from './types'
 
 export type ModuleOptions = {
   configPath: string,
-  rules: Rule | Rule[]
+  rules: RuleSet
 }
 
 const ROBOTS_FILENAME = 'robots.txt'
