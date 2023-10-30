@@ -8,9 +8,9 @@ export default defineEventHandler(async (e) => {
   setHeader(e, 'Content-Type', 'text/plain; charset=utf-8')
   setHeader(e, 'Cache-Control', import.meta.dev ? 'no-store' : 'max-age=14400, must-revalidate')
 
-  const { groups, sitemap, credits } = useRuntimeConfig()['nuxt-simple-robots']
-  const { indexable, _context } = useSiteConfig(e, { debug: import.meta.dev })
-
+  const { groups, sitemap, credits, isRobotsGroupsBlockingIndexing } = useRuntimeConfig()['nuxt-simple-robots']
+  const { indexable: _indexable, _context } = useSiteConfig(e, { debug: import.meta.dev })
+  let indexable = Boolean(_indexable)
   // allow previewing with ?indexable
   const queryIndexableEnabled = String(query.indexable) === 'true' || query.indexable === ''
   let sitemaps: string[] = [...(Array.isArray(sitemap) ? sitemap : [sitemap])]
@@ -24,35 +24,27 @@ export default defineEventHandler(async (e) => {
   // dedupe sitemaps
   sitemaps = [...new Set(sitemaps)]
 
-  let computedIndexable = indexable
-  const isRobotsGroupConfigBlockingIndexing = (groups as RobotsGroupResolved[]).some(
-    g => g.userAgent.includes('*') && g.disallow.includes('/'),
-  )
-  if (computedIndexable && isRobotsGroupConfigBlockingIndexing)
-    computedIndexable = false
   const devHints: string[] = []
   if (import.meta.dev) {
-    if (isRobotsGroupConfigBlockingIndexing) {
-      devHints.push('Robots config is blocking indexing.')
+    if (!indexable && _context.indexable === 'nuxt-simple-robots:config') {
+      devHints.push('You are blocking indexing with your nuxt-simple-robots config.')
     }
-    else {
-      if (queryIndexableEnabled && _context.indexable === 'computed-env') {
-        computedIndexable = true
-        devHints.push('You are mocking a production enviroment with ?indexable query.')
-      }
-      else if (!computedIndexable && !indexable) {
-        if (_context.indexable === 'computed-env')
-          devHints.push(`Indexing is blocked because of the environment. You can mock a production environment with ?indexable query.`)
-        else
-          devHints.push(`Indexing is blocked by site config set by ${_context.indexable}.`)
-      }
+    else if (queryIndexableEnabled && _context.indexable === 'computed-env') {
+      indexable = true
+      devHints.push('You are mocking a production enviroment with ?indexable query.')
+    }
+    else if (!indexable && !indexable) {
+      if (_context.indexable === 'computed-env')
+        devHints.push(`Indexing is blocked because of the environment. You can mock a production environment with ?indexable query.`)
+      else
+        devHints.push(`Indexing is blocked by site config set by ${_context.indexable}.`)
     }
   }
-  if (!computedIndexable) {
+  if (!indexable) {
     // no point adding sitemaps if not indexable
     sitemaps = []
   }
-  const robotGroups: RobotsGroupResolved[] = computedIndexable
+  const robotGroups: RobotsGroupResolved[] = indexable
     ? ([...groups] as RobotsGroupResolved[])
     : [
         {
@@ -70,7 +62,7 @@ export default defineEventHandler(async (e) => {
   }
   if (credits) {
     robotsTxt = [
-      `# START nuxt-simple-robots (${computedIndexable ? 'indexable' : 'indexing disabled'})`,
+      `# START nuxt-simple-robots (${indexable ? 'indexable' : 'indexing disabled'})`,
       robotsTxt,
       '# END nuxt-simple-robots',
     ].filter(Boolean).join('\n')

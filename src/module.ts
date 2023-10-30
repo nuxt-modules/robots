@@ -325,7 +325,20 @@ export default defineNuxtModule<ModuleOptions>({
         })
       }
 
+      const isRobotsGroupsBlockingIndexing = (config.groups as RobotsGroupResolved[]).some(
+        g => g.userAgent.includes('*') && g.disallow.includes('/'),
+      )
+
+      if (isRobotsGroupsBlockingIndexing) {
+        updateSiteConfig({
+          _priority: 1, // this should be a source of truth
+          _context: 'nuxt-simple-robots:config',
+          indexable: false,
+        })
+      }
+
       nuxt.options.runtimeConfig['nuxt-simple-robots'] = {
+        isRobotsGroupsBlockingIndexing,
         credits: config.credits,
         groups: config.groups,
         sitemap: config.sitemap,

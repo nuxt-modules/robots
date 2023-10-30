@@ -12,6 +12,7 @@ await setup({
   server: true,
   nuxtConfig: {
     site: {
+      debug: true,
       url: 'https://nuxt-simple-robots.com',
     },
     robots: {
@@ -32,5 +33,8 @@ describe('manualNoIndexing', () => {
 
       # END nuxt-simple-robots"
     `)
+
+    const siteConfigDebug = await $fetch('/api/__site-config__/debug')
+    expect(siteConfigDebug.config._context.indexable).toMatchInlineSnapshot('"nuxt-simple-robots:config"')
   })
 })
