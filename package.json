@@ -28,10 +28,10 @@
   ],
   "scripts": {
     "lint": "eslint . --fix",
-    "build": "nuxt-module-build --stub && nuxt-module-build prepare && nuxt-module-build",
+    "build": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build",
     "dev": "nuxi dev .playground",
     "dev:build": "nuxi build .playground",
-    "dev:prepare": "nuxt-module-build --stub && nuxi prepare .playground",
+    "dev:prepare": "nuxt-module-build build --stub && nuxi prepare .playground",
     "release": "bumpp package.json --commit --push --tag",
     "test": "vitest"
   },
