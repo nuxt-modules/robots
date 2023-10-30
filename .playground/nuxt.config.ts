@@ -14,10 +14,25 @@ export default defineNuxtConfig({
       crawlLinks: true,
       routes: [
         '/',
-      ]
-    }
+      ],
+    },
+  },
+  routeRules: {
+    '/**/account': {
+      index: false,
+    },
   },
   robots: {
     debug: true,
+    // disallow: ['/'],
+    sitemap: [
+      '/sitemap.xml',
+      '/sitemap.xml',
+    ],
+  },
+  hooks: {
+    'robots:config': function (robotsConfig) {
+      robotsConfig.sitemap.push('/sitemap.xml')
+    },
   },
 })

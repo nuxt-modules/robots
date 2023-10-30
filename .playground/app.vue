@@ -3,11 +3,12 @@ import { defineRobotMeta } from '#imports'
 
 defineRobotMeta()
 </script>
+
 <template>
-<div>
-  <RobotMeta />
   <div>
-    <NuxtPage />
+    <RobotMeta />
+    <div>
+      <NuxtPage />
+    </div>
   </div>
-</div>
 </template>

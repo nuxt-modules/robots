@@ -52,6 +52,7 @@ describe('stack', () => {
       Allow: /secret/exception
       Disallow: /secret
       Disallow: /admin
+      Disallow: /*/account
 
       Sitemap: https://nuxtseo.com/sitemap.xml
       # END nuxt-simple-robots"
