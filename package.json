@@ -20,7 +20,7 @@
   ],
   "scripts": {
     "build": "nuxt-module-build",
-    "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground",
+    "dev:prepare": "nuxt-module-build --stub && nuxt-module-build prepare && nuxi prepare playground",
     "dev": "nuxt dev playground",
     "lint": "eslint --ext .js,.ts,.vue",
     "prepack": "pnpm build",
