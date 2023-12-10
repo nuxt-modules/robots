@@ -8,7 +8,7 @@ export default defineEventHandler(async (e) => {
   setHeader(e, 'Content-Type', 'text/plain; charset=utf-8')
   setHeader(e, 'Cache-Control', import.meta.dev ? 'no-store' : 'max-age=14400, must-revalidate')
 
-  const { groups, sitemap, credits, isRobotsGroupsBlockingIndexing } = useRuntimeConfig()['nuxt-simple-robots']
+  const { groups, sitemap, credits } = useRuntimeConfig()['nuxt-simple-robots']
   const { indexable: _indexable, _context } = useSiteConfig(e, { debug: import.meta.dev })
   let indexable = Boolean(_indexable)
   // allow previewing with ?indexable

@@ -2,7 +2,7 @@ import { indexableFromGroup } from '../util'
 import { useNuxtApp, useRoute, useRuntimeConfig, useServerHead, useSiteConfig } from '#imports'
 
 export function defineRobotMeta() {
-  if (process.server) {
+  if (import.meta.server) {
     const nuxtApp = useNuxtApp()
     const path = useRoute().path
     const { indexable } = useSiteConfig()

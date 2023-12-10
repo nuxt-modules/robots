@@ -1,7 +1,7 @@
 import { defineNitroPlugin } from 'nitropack/runtime/plugin'
 
 export default defineNitroPlugin((nitroApp) => {
-  if (process.dev) {
+  if (import.meta.dev) {
     nitroApp.hooks.hook('robots:robots-txt', async (ctx) => {
       // only if we have existing comments
       if (ctx.robotsTxt.includes('#'))

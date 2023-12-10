@@ -8,7 +8,6 @@
 <a href="https://github.com/harlan-zw/nuxt-simple-robots" target="__blank"><img alt="GitHub stars" src="https://img.shields.io/github/stars/harlan-zw/nuxt-simple-robots?flat&colorA=002438&colorB=28CF8D"></a>
 </p>
 
-
 <p align="center">
 Tame the robots crawling and indexing your Nuxt site with ease.
 </p>
@@ -48,7 +47,6 @@ npm install -D nuxt-simple-robots
 pnpm i -D nuxt-simple-robots
 ```
 
-
 2. Add it to your `modules` section in your `nuxt.config`:
 
 ```ts
@@ -65,7 +63,6 @@ export default defineNuxtConfig({
 
 - [Default - StackBlitz](https://stackblitz.com/edit/nuxt-starter-zycxux?file=public%2F_robots.txt)
 
-
 ## Sponsors
 
 <p align="center">
@@ -73,7 +70,6 @@ export default defineNuxtConfig({
     <img src='https://raw.githubusercontent.com/harlan-zw/static/main/sponsors.svg'/>
   </a>
 </p>
-
 
 ## License
 

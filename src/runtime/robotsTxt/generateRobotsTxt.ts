@@ -1,6 +1,6 @@
 import type { RobotsGroupResolved } from '../types'
 
-export function generateRobotsTxt({ groups, sitemaps }: { groups: RobotsGroupResolved[]; sitemaps: string[] }): string {
+export function generateRobotsTxt({ groups, sitemaps }: { groups: RobotsGroupResolved[], sitemaps: string[] }): string {
   // iterate over the groups
   const lines: string[] = []
   for (const group of groups) {

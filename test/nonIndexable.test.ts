@@ -4,11 +4,20 @@ import { createResolver } from '@nuxt/kit'
 
 const { resolve } = createResolver(import.meta.url)
 
+process.env.NODE_ENV = 'production'
 await setup({
   rootDir: resolve('../.playground'),
+  build: true,
   nuxtConfig: {
     site: {
+      url: 'https://example.com',
+      trailingSlash: true,
       indexable: false,
+    },
+
+    robots: {
+      enabled: true,
+      debug: true,
     },
   },
 })
