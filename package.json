@@ -38,13 +38,13 @@
   "dependencies": {
     "@nuxt/kit": "^3.8.2",
     "defu": "^6.1.3",
-    "nuxt-site-config": "^1.6.6",
-    "nuxt-site-config-kit": "^1.6.6",
+    "nuxt-site-config": "^1.6.7",
+    "nuxt-site-config-kit": "^1.6.7",
     "pathe": "^1.1.1",
     "ufo": "^1.3.2"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "2.4.3",
+    "@antfu/eslint-config": "2.4.4",
     "@nuxt/module-builder": "^0.5.4",
     "@nuxt/test-utils": "3.8.1",
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
