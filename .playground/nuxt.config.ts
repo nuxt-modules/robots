@@ -9,6 +9,9 @@ export default defineNuxtConfig({
     url: 'https://nuxtseo.com/',
   },
   nitro: {
+    typescript: {
+      internalPaths: true,
+    },
     plugins: ['plugins/robots.ts'],
     prerender: {
       crawlLinks: true,

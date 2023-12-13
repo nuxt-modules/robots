@@ -1,7 +1,10 @@
 import { defineEventHandler, getQuery, setHeader } from 'h3'
-import { generateRobotsTxt } from '../robotsTxt/generateRobotsTxt'
-import type { RobotsGroupResolved } from '../types'
-import { useNitroApp, useRuntimeConfig, useSiteConfig, withSiteUrl } from '#imports'
+import { generateRobotsTxt } from '../../util'
+import type { RobotsGroupResolved } from '../../types'
+import { useSiteConfig, withSiteUrl } from '#internal/nuxt-site-config'
+
+// @ts-expect-error alias module
+import { useNitroApp, useRuntimeConfig } from '#internal/nitro'
 
 export default defineEventHandler(async (e) => {
   const query = getQuery(e)

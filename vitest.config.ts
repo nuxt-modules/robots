@@ -10,15 +10,12 @@ export default defineConfig({
       // prod by default
       NODE_ENV: 'production',
     },
-    testTimeout: 60000,
-    isolate: !isCI,
-    threads: isCI,
-    deps: {
-      inline: [
-        '@nuxt/test-utils',
-        '@nuxt/test-utils-edge',
-      ],
+    poolOptions: {
+      threads: {
+        singleThread: !isCI,
+      },
     },
+    testTimeout: 60000,
     watchExclude: [
       'dist',
       'playground',

@@ -12,7 +12,7 @@ import { defu } from 'defu'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
 import { relative } from 'pathe'
 import { asArray, parseRobotsTxt, validateRobots } from './runtime/util'
-import { extendTypes } from './kit'
+import { extendTypes, isNuxtGenerate } from './kit'
 import type { Arrayable, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
 import { NonHelpfulBots } from './const'
 
@@ -264,11 +264,6 @@ export default defineNuxtModule<ModuleOptions>({
         if (wildCardGroups.some((group: any) => asArray(group.disallow).includes('/'))) {
           logger.warn(`The \`./${path}\` is blocking indexing for all environments.`)
           logger.info('It\'s recommended to use the \`indexable\` Site Config to toggle this instead.')
-          updateSiteConfig({
-            _priority: 1, // this should be a source of truth
-            _context: usingRobotsTxtPath,
-            indexable: false,
-          })
         }
         config.groups.push(...parsedRobotsTxt.groups)
         const host = parsedRobotsTxt.groups.map(g => g.host).filter(Boolean)[0]
@@ -378,45 +373,46 @@ export default defineNuxtModule<ModuleOptions>({
 
     extendTypes('nuxt-simple-robots', () => {
       return `
-interface NuxtSimpleRobotsNitroRules {
-  index?: boolean
-  robots?: string
-}
 declare module 'nitropack' {
-  interface NitroRouteRules extends NuxtSimpleRobotsNitroRules {}
-  interface NitroRouteConfig extends NuxtSimpleRobotsNitroRules {}
+  interface NitroRouteRules {
+    index?: boolean
+    robots?: string
+  }
+  interface NitroRouteConfig {
+    index?: boolean
+    robots?: string
+  }
 }`
     })
 
     // only prerender for `nuxi generate`
-    nuxt.hooks.hook('nitro:init', async (nitro) => {
-      if (nuxt.options._generate) {
-        nitro.options.prerender.routes = nitro.options.prerender.routes || []
-        nitro.options.prerender.routes.push('/robots.txt')
-      }
-    })
+    if (isNuxtGenerate()) {
+      nuxt.options.generate = nuxt.options.generate || {}
+      nuxt.options.generate.routes = asArray(nuxt.options.generate.routes || [])
+      nuxt.options.generate.routes.push('/robots.txt')
+    }
 
     // defineRobotMeta is a server-only composable
     nuxt.options.optimization.treeShake.composables.client['nuxt-simple-robots'] = ['defineRobotMeta']
 
     addImports({
       name: 'defineRobotMeta',
-      from: resolve('./runtime/composables/defineRobotMeta'),
+      from: resolve('./runtime/nuxt/composables/defineRobotMeta'),
     })
 
     addComponent({
       name: 'RobotMeta',
-      filePath: resolve('./runtime/components/RobotMeta'),
+      filePath: resolve('./runtime/nuxt/components/RobotMeta'),
     })
 
     // add robots.txt server handler
     addServerHandler({
       route: '/robots.txt',
-      handler: resolve('./runtime/server/robots-txt'),
+      handler: resolve('./runtime/nitro/server/robots-txt'),
     })
     // add robots HTTP header handler
     addServerHandler({
-      handler: resolve('./runtime/server/middleware/xRobotsTagHeader'),
+      handler: resolve('./runtime/nitro/server/middleware/xRobotsTagHeader'),
     })
   },
 })

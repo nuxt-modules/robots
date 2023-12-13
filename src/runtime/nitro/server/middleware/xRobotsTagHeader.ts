@@ -1,7 +1,11 @@
 import { defineEventHandler, setHeader } from 'h3'
-import { indexableFromGroup } from '../../util'
-import { createNitroRouteRuleMatcher } from '../../nitro/kit'
-import { useRuntimeConfig, useSiteConfig } from '#imports'
+import { indexableFromGroup } from '../../../util'
+import { createNitroRouteRuleMatcher } from '../../kit'
+
+// @ts-expect-error alias module
+import { useRuntimeConfig } from '#internal/nitro'
+
+import { useSiteConfig } from '#internal/nuxt-site-config'
 
 export default defineEventHandler((e) => {
   if (e.path === '/robots.txt')

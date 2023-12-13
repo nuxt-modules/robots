@@ -1,5 +1,6 @@
 import { addTemplate, createResolver, useNuxt } from '@nuxt/kit'
 import { relative } from 'pathe'
+import type { Nuxt } from '@nuxt/schema'
 
 export function extendTypes(module: string, template: (options: { typesPath: string }) => string | Promise<string>) {
   const nuxt = useNuxt()
@@ -20,4 +21,8 @@ export {}
   nuxt.hooks.hook('prepare:types', ({ references }) => {
     references.push({ path: resolve(nuxt.options.buildDir, `module/${module}.d.ts`) })
   })
+}
+
+export function isNuxtGenerate(nuxt: Nuxt = useNuxt()) {
+  return nuxt.options._generate || nuxt.options.nitro.static || nuxt.options.nitro.preset === 'static'
 }
