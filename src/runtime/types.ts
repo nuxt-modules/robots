@@ -19,3 +19,11 @@ export interface RobotsGroupResolved {
   userAgent: string[]
   host?: string
 }
+
+export interface HookRobotsTxtContext {
+  robotsTxt: string
+}
+
+export interface HookRobotsConfigContext extends ParsedRobotsTxt {
+  context: 'robots.txt' | 'middleware'
+}

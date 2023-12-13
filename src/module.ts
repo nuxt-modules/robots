@@ -371,7 +371,7 @@ export default defineNuxtModule<ModuleOptions>({
       }
     })
 
-    extendTypes('nuxt-simple-robots', () => {
+    extendTypes('nuxt-simple-robots', ({ typesPath }) => {
       return `
 declare module 'nitropack' {
   interface NitroRouteRules {
@@ -382,7 +382,11 @@ declare module 'nitropack' {
     index?: boolean
     robots?: string
   }
-}`
+  interface NitroRuntimeHooks {
+    'robots:config': (ctx: import('${typesPath}').HookRobotsConfigContext) => void | Promise<void>
+    'robots:robots-txt': (ctx: import('${typesPath}').HookRobotsTxtContext) => void | Promise<void>
+  }
+}
 declare module 'h3' {
   interface H3EventContext {
     robots: {

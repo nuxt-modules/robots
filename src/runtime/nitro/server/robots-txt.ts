@@ -1,32 +1,20 @@
 import { defineEventHandler, getQuery, setHeader } from 'h3'
 import { generateRobotsTxt } from '../../util'
-import type { RobotsGroupResolved } from '../../types'
-import { useSiteConfig, withSiteUrl } from '#internal/nuxt-site-config'
-
-// @ts-expect-error alias module
-import { useNitroApp, useRuntimeConfig } from '#internal/nitro'
+import { resolveRobotsTxtContext } from '../util'
+import type { HookRobotsTxtContext } from '../../types'
+import { useNitroApp, useRuntimeConfig, useSiteConfig } from '#imports'
 
 export default defineEventHandler(async (e) => {
+  const nitro = useNitroApp()
   const query = getQuery(e)
   setHeader(e, 'Content-Type', 'text/plain; charset=utf-8')
   setHeader(e, 'Cache-Control', import.meta.dev ? 'no-store' : 'max-age=14400, must-revalidate')
 
-  const { groups, sitemap, credits } = useRuntimeConfig()['nuxt-simple-robots']
+  const { credits } = useRuntimeConfig()['nuxt-simple-robots']
   const { indexable: _indexable, _context } = useSiteConfig(e, { debug: import.meta.dev })
   let indexable = Boolean(_indexable)
   // allow previewing with ?indexable
   const queryIndexableEnabled = String(query.indexable) === 'true' || query.indexable === ''
-  let sitemaps: string[] = [...(Array.isArray(sitemap) ? sitemap : [sitemap])]
-    // validate sitemaps are absolute
-    .map((s) => {
-      // ensure base
-      if (!s.startsWith('http'))
-        return withSiteUrl(e, s, { withBase: true, absolute: true })
-      return s
-    })
-  // dedupe sitemaps
-  sitemaps = [...new Set(sitemaps)]
-
   const devHints: string[] = []
   if (import.meta.dev) {
     if (!indexable && _context.indexable === 'nuxt-simple-robots:config') {
@@ -43,22 +31,8 @@ export default defineEventHandler(async (e) => {
         devHints.push(`Indexing is blocked by site config set by ${_context.indexable}.`)
     }
   }
-  if (!indexable) {
-    // no point adding sitemaps if not indexable
-    sitemaps = []
-  }
-  const robotGroups: RobotsGroupResolved[] = indexable
-    ? ([...groups] as RobotsGroupResolved[])
-    : [
-        {
-          allow: [],
-          comment: [],
-          userAgent: ['*'],
-          disallow: ['/'],
-        },
-      ]
-
-  let robotsTxt: string = generateRobotsTxt({ groups: robotGroups, sitemaps })
+  const robotsTxtCtx = await resolveRobotsTxtContext(e, indexable, 'robots.txt')
+  let robotsTxt: string = generateRobotsTxt(robotsTxtCtx)
   if (import.meta.dev && devHints.length) {
     // append
     robotsTxt += `\n# DEVELOPMENT HINTS: ${devHints.join(', ')}\n`
@@ -71,8 +45,7 @@ export default defineEventHandler(async (e) => {
     ].filter(Boolean).join('\n')
   }
 
-  const hookCtx = { robotsTxt }
-  const nitro = useNitroApp()
+  const hookCtx: HookRobotsTxtContext = { robotsTxt }
   await nitro.hooks.callHook('robots:robots-txt', hookCtx)
   return hookCtx.robotsTxt
 })

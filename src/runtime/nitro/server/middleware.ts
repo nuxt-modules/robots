@@ -1,17 +1,16 @@
 import { defineEventHandler, setHeader } from 'h3'
-import { indexableFromGroup } from '../../../util'
-import { createNitroRouteRuleMatcher } from '../../kit'
-
-// @ts-expect-error alias module
-import { useRuntimeConfig } from '#internal/nitro'
-
+import { indexableFromGroup } from '../../util'
+import { createNitroRouteRuleMatcher } from '../kit'
+import { resolveRobotsTxtContext } from '../util'
+import { useRuntimeConfig } from '#imports'
 import { useSiteConfig } from '#internal/nuxt-site-config'
 
-export default defineEventHandler((e) => {
+export default defineEventHandler(async (e) => {
   if (e.path === '/robots.txt')
     return
   const { indexable } = useSiteConfig(e)
-  const { robotsDisabledValue, groups } = useRuntimeConfig()['nuxt-simple-robots']
+  const { robotsDisabledValue } = useRuntimeConfig()['nuxt-simple-robots']
+  const robotsTxtCtx = await resolveRobotsTxtContext(e, indexable, 'middleware')
 
   // add noindex header
   const routeRuleMatcher = createNitroRouteRuleMatcher()
