@@ -383,6 +383,15 @@ declare module 'nitropack' {
     robots?: string
   }
 }`
+declare module 'h3' {
+  interface H3EventContext {
+    robots: {
+      rule: string
+      indexable: boolean
+    }
+  }
+}
+`
     })
 
     // only prerender for `nuxi generate`
@@ -412,7 +421,7 @@ declare module 'nitropack' {
     })
     // add robots HTTP header handler
     addServerHandler({
-      handler: resolve('./runtime/nitro/server/middleware/xRobotsTagHeader'),
+      handler: resolve('./runtime/nitro/server/middleware'),
     })
   },
 })

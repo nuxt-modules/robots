@@ -18,13 +18,26 @@ export default defineEventHandler((e) => {
   const routeRules = routeRuleMatcher(e.path)
   if (typeof routeRules.robots === 'string') {
     setHeader(e, 'X-Robots-Tag', routeRules.robots)
+    e.context.robots = {
+      rule: routeRules.robots,
+      indexable: !routeRules.robots.includes('noindex'),
+    }
     return
   }
   if (routeRules.index === false || indexable === false) {
     setHeader(e, 'X-Robots-Tag', robotsDisabledValue)
+    e.context.robots = {
+      rule: robotsDisabledValue,
+      indexable: false,
+    }
     return
   }
-  const groupIndexable = indexableFromGroup(groups, e.path)
-  if (!groupIndexable)
+  const groupIndexable = indexableFromGroup(robotsTxtCtx.groups, e.path)
+  if (!groupIndexable) {
     setHeader(e, 'X-Robots-Tag', robotsDisabledValue)
+    e.context.robots = {
+      rule: robotsDisabledValue,
+      indexable: false,
+    }
+  }
 })
