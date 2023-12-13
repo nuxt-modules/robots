@@ -19,6 +19,14 @@
       "types": "./dist/types.d.ts",
       "import": "./dist/module.mjs",
       "require": "./dist/module.cjs"
+    },
+    "./util": {
+      "types": "./dist/runtime/util.d.ts",
+      "import": "./dist/runtime/util.mjs"
+    },
+    "./dist/runtime/util": {
+      "types": "./dist/runtime/util.d.ts",
+      "import": "./dist/runtime/util.mjs"
     }
   },
   "main": "./dist/module.cjs",
