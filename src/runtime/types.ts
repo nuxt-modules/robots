@@ -27,3 +27,11 @@ export interface HookRobotsTxtContext {
 export interface HookRobotsConfigContext extends ParsedRobotsTxt {
   context: 'robots.txt' | 'middleware'
 }
+
+export type NormalisedLocales = { code: string, iso?: string, domain?: string }[]
+export interface AutoI18nConfig {
+  differentDomains?: boolean
+  locales: NormalisedLocales
+  defaultLocale: string
+  strategy: 'prefix' | 'prefix_except_default' | 'prefix_and_default' | 'no_prefix'
+}

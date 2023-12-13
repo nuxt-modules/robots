@@ -15,6 +15,7 @@ import { asArray, parseRobotsTxt, validateRobots } from './runtime/util'
 import { extendTypes, isNuxtGenerate } from './kit'
 import type { Arrayable, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
 import { NonHelpfulBots } from './const'
+import { resolveI18nConfig, splitPathForI18nLocales } from './i18n'
 
 export interface ModuleOptions {
   /**
@@ -183,6 +184,8 @@ export default defineNuxtModule<ModuleOptions>({
       logger.debug('The module is disabled, skipping setup.')
       return
     }
+
+    const resolvedAutoI18n = await resolveI18nConfig(logger)
 
     if (config.blockNonSeoBots) {
       // credits to yoast.com/robots.txt
@@ -359,6 +362,14 @@ export default defineNuxtModule<ModuleOptions>({
           _context: 'nuxt-simple-robots:config',
           indexable: false,
         })
+      }
+
+      if (resolvedAutoI18n && resolvedAutoI18n.locales && resolvedAutoI18n.strategy !== 'no_prefix') {
+        const i18n = resolvedAutoI18n
+        for (const group of config.groups) {
+          group.allow = asArray(group.allow || []).map(path => splitPathForI18nLocales(path, i18n)).flat()
+          group.disallow = asArray(group.disallow || []).map(path => splitPathForI18nLocales(path, i18n)).flat()
+        }
       }
 
       nuxt.options.runtimeConfig['nuxt-simple-robots'] = {

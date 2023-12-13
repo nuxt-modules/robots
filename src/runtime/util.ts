@@ -1,3 +1,4 @@
+import { createDefu } from 'defu'
 import type { ParsedRobotsTxt, RobotsGroupInput, RobotsGroupResolved } from './types'
 
 /**
@@ -153,4 +154,27 @@ export function generateRobotsTxt({ groups, sitemaps }: { groups: RobotsGroupRes
     lines.push(`Sitemap: ${sitemap}`)
 
   return lines.join('\n')
+}
+
+const merger = createDefu((obj, key, value) => {
+  // merge arrays using a set
+  if (Array.isArray(obj[key]) && Array.isArray(value))
+    // @ts-expect-error untyped
+    obj[key] = Array.from(new Set([...obj[key], ...value]))
+  return obj[key]
+})
+
+export function mergeOnKey<T, K extends keyof T>(arr: T[], key: K) {
+  const res: Record<string, T> = {}
+  arr.forEach((item) => {
+    const k = item[key] as string
+    // @ts-expect-error untyped
+    res[k] = merger(item, res[k] || {})
+  })
+  return Object.values(res)
+}
+
+export function isInternalRoute(path: string) {
+  const lastSegment = path.split('/').pop() || path
+  return lastSegment.includes('.') || path.startsWith('/__') || path.startsWith('@')
 }

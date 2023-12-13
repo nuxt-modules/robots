@@ -57,6 +57,7 @@
     "@nuxt/module-builder": "^0.5.4",
     "@nuxt/test-utils": "3.8.1",
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
+    "@nuxtjs/i18n": "8.0.0-rc.9",
     "bumpp": "^9.2.1",
     "eslint": "8.55.0",
     "execa": "^8.0.1",
