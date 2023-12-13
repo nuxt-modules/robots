@@ -25,9 +25,11 @@ describe('i18n', () => {
     expect(await $fetch('/robots.txt')).toMatchInlineSnapshot(`
       "# START nuxt-simple-robots (indexable)
       User-agent: *
+      Disallow: /secret
       Disallow: /en/secret
       Disallow: /es/secret
       Disallow: /fr/secret
+      Disallow: /admin
       Disallow: /en/admin
       Disallow: /es/admin
       Disallow: /fr/admin
