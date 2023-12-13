@@ -1,6 +1,6 @@
 import { defineEventHandler, setHeader } from 'h3'
 import { indexableFromGroup } from '../../util'
-import { getRouteRules } from '#internal/nitro'
+import { createNitroRouteRuleMatcher } from '../../nitro/kit'
 import { useRuntimeConfig, useSiteConfig } from '#imports'
 
 export default defineEventHandler((e) => {
@@ -10,7 +10,8 @@ export default defineEventHandler((e) => {
   const { robotsDisabledValue, groups } = useRuntimeConfig()['nuxt-simple-robots']
 
   // add noindex header
-  const routeRules = getRouteRules(e)
+  const routeRuleMatcher = createNitroRouteRuleMatcher()
+  const routeRules = routeRuleMatcher(e.path)
   if (typeof routeRules.robots === 'string') {
     setHeader(e, 'X-Robots-Tag', routeRules.robots)
     return
