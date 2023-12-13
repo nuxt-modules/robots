@@ -1,7 +1,6 @@
 import fsp from 'node:fs/promises'
 import { describe, expect, it } from 'vitest'
-import { parseRobotsTxt } from '../../src/robotsTxtParser'
-import { generateRobotsTxt } from '../../src/runtime/robotsTxt/generateRobotsTxt'
+import { generateRobotsTxt, parseRobotsTxt } from '../../src/runtime/util'
 
 describe('generateRobotsTxt', () => {
   it('yoast', async () => {
