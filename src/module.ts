@@ -11,9 +11,8 @@ import {
 import { defu } from 'defu'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
 import { relative } from 'pathe'
-import { asArray } from './runtime/util'
+import { asArray, parseRobotsTxt, validateRobots } from './runtime/util'
 import { extendTypes } from './kit'
-import { parseRobotsTxt } from './robotsTxtParser'
 import type { Arrayable, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
 import { NonHelpfulBots } from './const'
 
@@ -250,10 +249,29 @@ export default defineNuxtModule<ModuleOptions>({
         }
       }
       if (typeof robotsTxt === 'string') {
-        logger.debug(`A robots.txt file was found at \`./${relative(nuxt.options.rootDir, usingRobotsTxtPath)}\`, merging config.`)
-        const { groups, sitemaps } = parseRobotsTxt(robotsTxt)
-        config.groups.push(...groups)
-        const host = groups.map(g => g.host).filter(Boolean)[0]
+        const path = relative(nuxt.options.rootDir, usingRobotsTxtPath)
+        logger.debug(`A robots.txt file was found at \`./${path}\`, merging config.`)
+        const parsedRobotsTxt = parseRobotsTxt(robotsTxt)
+        const errors = validateRobots(parsedRobotsTxt)
+        if (errors.length > 0) {
+          logger.error(`The \`./${path}\` file contains errors:`)
+          for (const error of errors)
+            logger.log(` - ${error}`)
+          logger.log('')
+        }
+        // check if the robots.txt is blocking indexing
+        const wildCardGroups = parsedRobotsTxt.groups.filter((group: any) => asArray(group.userAgent).includes('*'))
+        if (wildCardGroups.some((group: any) => asArray(group.disallow).includes('/'))) {
+          logger.warn(`The \`./${path}\` is blocking indexing for all environments.`)
+          logger.info('It\'s recommended to use the \`indexable\` Site Config to toggle this instead.')
+          updateSiteConfig({
+            _priority: 1, // this should be a source of truth
+            _context: usingRobotsTxtPath,
+            indexable: false,
+          })
+        }
+        config.groups.push(...parsedRobotsTxt.groups)
+        const host = parsedRobotsTxt.groups.map(g => g.host).filter(Boolean)[0]
         if (host) {
           updateSiteConfig({
             _context: usingRobotsTxtPath,
@@ -261,7 +279,7 @@ export default defineNuxtModule<ModuleOptions>({
           })
         }
         // merge in with config
-        config.sitemap = [...new Set([...asArray(config.sitemap), ...sitemaps])]
+        config.sitemap = [...new Set([...asArray(config.sitemap), ...parsedRobotsTxt.sitemaps])]
         if (usingRobotsTxtPath === publicRobotsTxtPath) {
           // we need to move their robots.txt to _robots.txt
           await fsp.rename(usingRobotsTxtPath, resolve(nuxt.options.rootDir, nuxt.options.dir.public, '_robots.txt'))

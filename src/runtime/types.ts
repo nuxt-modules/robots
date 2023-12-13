@@ -1,5 +1,10 @@
 export type Arrayable<T> = T | T[]
 
+export interface ParsedRobotsTxt {
+  groups: RobotsGroupResolved[]
+  sitemaps: string[]
+}
+
 export interface RobotsGroupInput {
   comment?: Arrayable<string>
   disallow?: Arrayable<string>
