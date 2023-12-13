@@ -2,6 +2,7 @@ import fsp from 'node:fs/promises'
 import {
   addComponent,
   addImports,
+  addPlugin,
   addServerHandler,
   createResolver,
   defineNuxtModule,
@@ -23,6 +24,12 @@ export interface ModuleOptions {
    * @default true
    */
   enabled: boolean
+  /**
+   * Should a `<meta name="robots" content="<>">` tag be added to the head.
+   *
+   * @default true
+   */
+  metaTag: boolean
   /**
    * Path to the sitemaps, if it exists.
    * Will automatically be resolved as an absolute path.
@@ -165,6 +172,7 @@ export default defineNuxtModule<ModuleOptions>({
     groups: [],
     blockNonSeoBots: false,
     mergeWithRobotsTxtPath: true,
+    metaTag: true,
     robotsEnabledValue: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
     robotsDisabledValue: 'noindex, nofollow',
     disallowNonIndexableRoutes: true,
@@ -197,6 +205,9 @@ export default defineNuxtModule<ModuleOptions>({
         indexable: config.indexable,
       })
     }
+
+    if (config.metaTag)
+      addPlugin({ mode: 'server', src: resolve('./runtime/nuxt/plugins/robot-meta.server') })
 
     if (config.mergeWithRobotsTxtPath !== false) {
       let usingRobotsTxtPath = ''
