@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { setup } from '@nuxt/test-utils'
+import { $fetch, setup } from '@nuxt/test-utils'
 import { createResolver } from '@nuxt/kit'
 
 const { resolve } = createResolver(import.meta.url)
@@ -16,7 +16,6 @@ await setup({
     },
 
     robots: {
-      enabled: true,
       debug: true,
     },
   },

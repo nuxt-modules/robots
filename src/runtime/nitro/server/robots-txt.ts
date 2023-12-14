@@ -10,7 +10,7 @@ export default defineEventHandler(async (e) => {
   const nitro = useNitroApp()
   const query = getQuery(e)
   setHeader(e, 'Content-Type', 'text/plain; charset=utf-8')
-  setHeader(e, 'Cache-Control', import.meta.dev ? 'no-store' : 'max-age=14400, must-revalidate')
+  setHeader(e, 'Cache-Control', (import.meta.dev || import.meta.test) ? 'no-store' : 'max-age=14400, must-revalidate')
 
   const { credits, groups } = useRuntimeConfig()['nuxt-simple-robots']
   // move towards deprecating indexable

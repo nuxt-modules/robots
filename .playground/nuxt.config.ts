@@ -22,7 +22,8 @@ export default defineNuxtConfig({
   },
   routeRules: {
     '/**/account': {
-      index: false,
+      robots: false,
+      // index: false,
     },
   },
   robots: {
