@@ -4,11 +4,13 @@ import { $fetch, setup } from '@nuxt/test-utils'
 
 const { resolve } = createResolver(import.meta.url)
 
+// would normally not be indexable
+process.env.NODE_ENV = 'staging'
 await setup({
   rootDir: resolve('./fixtures/basic'),
   nuxtConfig: {
     site: {
-      env: 'staging',
+      indexable: true,
       url: 'https://nuxt-simple-robots.com',
     },
     robots: {
@@ -22,7 +24,7 @@ await setup({
 describe('siteConfig', () => {
   it('basic', async () => {
     const robotsTxt = await $fetch('/robots.txt')
-    // indexing disabled due to non-production env
-    expect(robotsTxt.includes('(indexing disabled)')).toBe(true)
+    // site.indexable should be honoured
+    expect(robotsTxt.includes('(indexable)')).toBe(true)
   })
 })

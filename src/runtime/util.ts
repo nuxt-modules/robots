@@ -1,4 +1,5 @@
 import { createDefu } from 'defu'
+import type { NitroRouteConfig } from 'nitropack'
 import type { ParsedRobotsTxt, RobotsGroupInput, RobotsGroupResolved } from './types'
 
 /**
@@ -115,6 +116,8 @@ export function indexableFromGroup(groups: RobotsGroupInput[], path: string) {
   let indexable = true
   const wildCardGroups = groups.filter((group: any) => asArray(group.userAgent).includes('*'))
   for (const group of wildCardGroups) {
+    if (asArray(group.disallow).includes((rule: string) => rule === '/'))
+      return false
     const hasDisallowRule = asArray(group.disallow)
       // filter out empty rule
       .filter(rule => Boolean(rule))
@@ -177,4 +180,30 @@ export function mergeOnKey<T, K extends keyof T>(arr: T[], key: K) {
 export function isInternalRoute(path: string) {
   const lastSegment = path.split('/').pop() || path
   return lastSegment.includes('.') || path.startsWith('/__') || path.startsWith('@')
+}
+
+export function normaliseRobotsRouteRule(rules: NitroRouteConfig, indexableFromGroup: boolean, disabledValue: string, enabledValue: string) {
+  let isIndexingEnabled = indexableFromGroup
+  let rule: string | undefined
+  if (typeof rules.robots === 'boolean')
+    isIndexingEnabled = rules.robots
+  else if (typeof rules.robots === 'object' && typeof rules.robots.indexable !== 'undefined')
+    isIndexingEnabled = rules.robots.indexable
+  else if (typeof rules.robots === 'object' && typeof rules.robots.rule !== 'undefined')
+    rule = rules.robots.rule
+
+  else if (typeof rules.robots === 'string')
+    rule = rules.robots
+
+  // rules takes precedence
+  if (rule)
+    isIndexingEnabled = !rule.includes('noindex')
+  // make sure they haven't opt-ed out using legacy rule
+  const indexable = (typeof rules.index === 'undefined' || rules.index) && isIndexingEnabled
+  if (!rule)
+    rule = indexable ? enabledValue : disabledValue
+  return {
+    indexable,
+    rule,
+  }
 }

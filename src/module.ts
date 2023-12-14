@@ -11,7 +11,8 @@ import {
 import { defu } from 'defu'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
 import { relative } from 'pathe'
-import { asArray, parseRobotsTxt, validateRobots } from './runtime/util'
+import type { Preset } from 'unimport'
+import { asArray, indexableFromGroup, normaliseRobotsRouteRule, parseRobotsTxt, validateRobots } from './runtime/util'
 import { extendTypes, isNuxtGenerate } from './kit'
 import type { Arrayable, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
 import { NonHelpfulBots } from './const'
@@ -297,34 +298,6 @@ export default defineNuxtModule<ModuleOptions>({
       config.sitemap = asArray(config.sitemap)
       config.disallow = asArray(config.disallow)
       config.allow = asArray(config.allow)
-      // @ts-expect-error runtime type
-      await nuxt.hooks.callHook('robots:config', config)
-
-      nuxt.options.routeRules = nuxt.options.routeRules || {}
-      // convert robot routeRules to header routeRules for static hosting
-      Object.entries(nuxt.options.routeRules).forEach(([route, rules]) => {
-        if (rules.index === false || rules.robots) {
-          // single * is supported but ignored
-          // @ts-expect-error untyped
-          nuxt.options.routeRules[route] = defu({
-            headers: {
-              'X-Robots-Tag': rules.index === false ? config.robotsDisabledValue : rules.robots,
-            },
-          }, nuxt.options.routeRules?.[route])
-        }
-      })
-
-      const disallow = config.disallow
-      if (config.disallowNonIndexableRoutes) {
-        // iterate the route rules and add any non indexable rules to disallow
-        Object.entries(nuxt.options.routeRules || {}).forEach(([route, rules]) => {
-          if (rules.index === false || rules.robots?.includes('noindex')) {
-            // single * is supported but ignored
-            disallow.push(route.replaceAll('**', '*'))
-          }
-        })
-      }
-      config.disallow = [...new Set(disallow)]
       // make sure any groups have a user agent, if not we set it to *
       config.groups = config.groups.map((group) => {
         group.userAgent = group.userAgent ? asArray(group.userAgent) : ['*']
@@ -352,17 +325,39 @@ export default defineNuxtModule<ModuleOptions>({
         })
       }
 
-      const isRobotsGroupsBlockingIndexing = (config.groups as RobotsGroupResolved[]).some(
-        g => g.userAgent.includes('*') && g.disallow.includes('/'),
-      )
+      // @ts-expect-error runtime type
+      await nuxt.hooks.callHook('robots:config', config)
 
-      if (isRobotsGroupsBlockingIndexing) {
-        updateSiteConfig({
-          _priority: 1, // this should be a source of truth
-          _context: 'nuxt-simple-robots:config',
-          indexable: false,
+      nuxt.options.routeRules = nuxt.options.routeRules || {}
+      // convert robot routeRules to header routeRules for static hosting
+      Object.entries(nuxt.options.routeRules).forEach(([route, rules]) => {
+        const groupIndexable = indexableFromGroup(config.groups, route)
+        const robotRules = normaliseRobotsRouteRule(rules, groupIndexable, config.robotsDisabledValue, config.robotsEnabledValue)
+        // single * is supported but ignored
+        // @ts-expect-error untyped
+        nuxt.options.routeRules[route] = defu({
+          headers: {
+            'X-Robots-Tag': robotRules.rule,
+          },
+        }, nuxt.options.routeRules?.[route])
+      })
+
+      const extraDisallows = new Set<string>()
+      if (config.disallowNonIndexableRoutes) {
+        // iterate the route rules and add any non indexable rules to disallow
+        Object.entries(nuxt.options.routeRules || {}).forEach(([route, rules]) => {
+          const groupIndexable = indexableFromGroup(config.groups, route)
+          const { indexable } = normaliseRobotsRouteRule(rules, groupIndexable, config.robotsDisabledValue, config.robotsEnabledValue)
+          if (!indexable) {
+            // single * is supported but ignored
+            extraDisallows.add(route.replaceAll('**', '*'))
+          }
         })
       }
+      // merge into first group with wildcard user agent
+      const firstGroup = (config.groups as RobotsGroupResolved[]).find(group => group.userAgent.includes('*'))
+      if (firstGroup)
+        firstGroup.disallow = [...new Set([...(firstGroup.disallow || []), ...extraDisallows])]
 
       if (resolvedAutoI18n && resolvedAutoI18n.locales && resolvedAutoI18n.strategy !== 'no_prefix') {
         const i18n = resolvedAutoI18n
@@ -373,7 +368,6 @@ export default defineNuxtModule<ModuleOptions>({
       }
 
       nuxt.options.runtimeConfig['nuxt-simple-robots'] = {
-        isRobotsGroupsBlockingIndexing,
         credits: config.credits,
         groups: config.groups,
         sitemap: config.sitemap,
@@ -386,12 +380,24 @@ export default defineNuxtModule<ModuleOptions>({
       return `
 declare module 'nitropack' {
   interface NitroRouteRules {
+    /**
+     * @deprecated Use \`robots: { indexable: boolean }\` instead.
+     */
     index?: boolean
-    robots?: string
+    robots?: boolean | string | {
+      indexable: boolean
+      rule: string
+    }
   }
   interface NitroRouteConfig {
+    /**
+     * @deprecated Use \`robots: { indexable: boolean }\` instead.
+     */
     index?: boolean
-    robots?: string
+    robots?: boolean | string | {
+      indexable: boolean
+      rule: string
+    }
   }
   interface NitroRuntimeHooks {
     'robots:config': (ctx: import('${typesPath}').HookRobotsConfigContext) => void | Promise<void>
@@ -438,5 +444,19 @@ declare module 'h3' {
     addServerHandler({
       handler: resolve('./runtime/nitro/server/middleware'),
     })
+
+    const siteConfigPreset: Preset = {
+      from: '#internal/nuxt-simple-robots',
+      imports: [
+        'getPathRobotConfig',
+        'getSiteIndexable',
+      ],
+    }
+    nuxt.options.nitro = nuxt.options.nitro || {}
+    nuxt.options.nitro.imports = nuxt.options.nitro.imports || {}
+    nuxt.options.nitro.imports.presets = nuxt.options.nitro.imports.presets || []
+    nuxt.options.nitro.imports.presets.push(siteConfigPreset)
+    nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
+    nuxt.options.nitro.alias['#internal/nuxt-simple-robots'] = resolve('./runtime/nitro/composables')
   },
 })
