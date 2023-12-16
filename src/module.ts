@@ -109,36 +109,6 @@ export interface ModuleOptions {
    * @default true
    */
   credits: boolean
-  /**
-   * The url of your site.
-   * Used to generate absolute URLs for the sitemap.
-   *
-   * Note: This is only required when prerendering your site.
-   *
-   * @deprecated Provide `url` through site config instead: `{ site: { url: <value> }}`.
-   * This is powered by the `nuxt-site-config` module.
-   * @see https://github.com/harlan-zw/nuxt-site-config
-   */
-  host?: string
-  /**
-   * The url of your site.
-   * Used to generate absolute URLs for the sitemap.
-   *
-   * Note: This is only required when prerendering your site.
-   *
-   * @deprecated Provide `url` through site config instead: `{ site: { url: <value> }}`.
-   * This is powered by the `nuxt-site-config` module.
-   * @see https://github.com/harlan-zw/nuxt-site-config
-   */
-  siteUrl?: string
-  /**
-   * Can your site be crawled by search engines.
-   *
-   * @deprecated Provide `indexable` through site config instead: `{ site: { indexable: <value> }}`.
-   * This is powered by the `nuxt-site-config` module.
-   * @see https://github.com/harlan-zw/nuxt-site-config
-   */
-  indexable?: boolean
 }
 
 export interface ResolvedModuleOptions extends ModuleOptions {
@@ -200,14 +170,6 @@ export default defineNuxtModule<ModuleOptions>({
     const { resolve } = createResolver(import.meta.url)
 
     await installNuxtSiteConfig()
-    // allow config fallback
-    if (config.siteUrl || config.host!) {
-      await updateSiteConfig({
-        _context: 'nuxt-simple-robots:config',
-        url: config.siteUrl,
-        indexable: config.indexable,
-      })
-    }
 
     if (config.metaTag)
       addPlugin({ mode: 'server', src: resolve('./runtime/nuxt/plugins/robot-meta.server') })
@@ -381,7 +343,7 @@ export default defineNuxtModule<ModuleOptions>({
 declare module 'nitropack' {
   interface NitroRouteRules {
     /**
-     * @deprecated Use \`robots: { indexable: boolean }\` instead.
+     * @deprecated Use \`robots: <boolean>\` instead.
      */
     index?: boolean
     robots?: boolean | string | {
@@ -391,7 +353,7 @@ declare module 'nitropack' {
   }
   interface NitroRouteConfig {
     /**
-     * @deprecated Use \`robots: { indexable: boolean }\` instead.
+     * @deprecated Use \`robots: <boolean>\` instead.
      */
     index?: boolean
     robots?: boolean | string | {
