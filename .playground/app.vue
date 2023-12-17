@@ -1,12 +1,13 @@
 <script lang="ts" setup>
-import { defineRobotMeta } from '#imports'
-
-defineRobotMeta()
 </script>
 
 <template>
   <div>
-    <RobotMeta />
+    <div>
+      <NuxtLink to="/">
+        Home
+      </NuxtLink>
+    </div>
     <div>
       <NuxtPage />
     </div>

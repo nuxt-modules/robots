@@ -12,11 +12,13 @@ import { defu } from 'defu'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
 import { relative } from 'pathe'
 import type { Preset } from 'unimport'
+import { version } from '../package.json'
 import { asArray, indexableFromGroup, normaliseRobotsRouteRule, parseRobotsTxt, validateRobots } from './runtime/util'
 import { extendTypes, isNuxtGenerate } from './kit'
 import type { Arrayable, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
 import { NonHelpfulBots } from './const'
 import { resolveI18nConfig, splitPathForI18nLocales } from './i18n'
+import { setupDevToolsUI } from './devtools'
 
 export interface ModuleOptions {
   /**
@@ -330,6 +332,8 @@ export default defineNuxtModule<ModuleOptions>({
       }
 
       nuxt.options.runtimeConfig['nuxt-simple-robots'] = {
+        version,
+        debug: config.debug,
         credits: config.credits,
         groups: config.groups,
         sitemap: config.sitemap,
@@ -406,6 +410,20 @@ declare module 'h3' {
     addServerHandler({
       handler: resolve('./runtime/nitro/server/middleware'),
     })
+
+    if (config.debug || nuxt.options.dev) {
+      addServerHandler({
+        route: '/__robots__/debug.json',
+        handler: resolve('./runtime/nitro/server/__robots__/debug'),
+      })
+      addServerHandler({
+        route: '/__robots__/debug-path.json',
+        handler: resolve('./runtime/nitro/server/__robots__/debug-path'),
+      })
+    }
+
+    if (nuxt.options.dev)
+      setupDevToolsUI(config, resolve)
 
     const siteConfigPreset: Preset = {
       from: '#internal/nuxt-simple-robots',

@@ -1,3 +1,9 @@
 <template>
-  <div>valid page</div>
+  <div>
+    <div>
+      <NuxtLink to="/secret">
+        Secret page - not crawlable
+      </NuxtLink>
+    </div>
+  </div>
 </template>

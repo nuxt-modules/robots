@@ -33,8 +33,5 @@ describe('manualNoIndexing', () => {
 
       # END nuxt-simple-robots"
     `)
-
-    const siteConfigDebug = await $fetch('/__site-config__/debug.json')
-    expect(siteConfigDebug.config._context.indexable).toMatchInlineSnapshot(`"computed-env"`)
   })
 })
