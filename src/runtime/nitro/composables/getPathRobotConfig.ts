@@ -3,12 +3,12 @@ import { resolveRobotsTxtContext } from '../util'
 import { createNitroRouteRuleMatcher } from '../kit'
 import { indexableFromGroup, normaliseRobotsRouteRule } from '../../util'
 import { useRuntimeConfig } from '#imports'
-import { getSiteIndexable } from '#internal/nuxt-simple-robots'
+import { getSiteRobotConfig } from '#internal/nuxt-simple-robots'
 
 export async function getPathRobotConfig(e: H3Event, options: { skipSiteIndexable?: boolean, path: string, context: string }) {
-  const { robotsDisabledValue, robotsEnabledValue } = useRuntimeConfig()['nuxt-simple-robots']
+  const { robotsDisabledValue, robotsEnabledValue } = useRuntimeConfig(e)['nuxt-simple-robots']
   if (!options.skipSiteIndexable) {
-    if (!getSiteIndexable(e)) {
+    if (!getSiteRobotConfig(e).indexable) {
       return {
         rule: robotsDisabledValue,
         indexable: false,

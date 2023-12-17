@@ -1,2 +1,2 @@
 export { getPathRobotConfig } from './getPathRobotConfig'
-export { getSiteIndexable } from './getSiteIndexable'
+export { getSiteRobotConfig } from './getSiteRobotConfig'
