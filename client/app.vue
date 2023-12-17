@@ -129,7 +129,7 @@ const tab = useLocalStorage('nuxt-robots:tab', 'overview')
             </NLink>
           </div>
           <div class="opacity-80 text-sm">
-            <NLink href="https://github.com/harlan-zw/nuxt-og-image" target="_blank">
+            <NLink href="https://github.com/harlan-zw/nuxt-simple-robots" target="_blank">
               <NIcon icon="logos:github-icon" class="mr-[2px]" />
               Submit an issue
             </NLink>
