@@ -182,8 +182,8 @@ export function isInternalRoute(path: string) {
   return lastSegment.includes('.') || path.startsWith('/__') || path.startsWith('@')
 }
 
-export function normaliseRobotsRouteRule(rules: NitroRouteConfig, indexableFromGroup: boolean, disabledValue: string, enabledValue: string) {
-  let isIndexingEnabled = indexableFromGroup
+export function normaliseRobotsRouteRule(rules: NitroRouteConfig, defaultIndexable: boolean, disabledValue: string, enabledValue: string) {
+  let isIndexingEnabled = defaultIndexable
   let rule: string | undefined
   if (typeof rules.robots === 'boolean')
     isIndexingEnabled = rules.robots

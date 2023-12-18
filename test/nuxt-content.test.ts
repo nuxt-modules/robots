@@ -17,8 +17,8 @@ describe('nuxt/content default', () => {
       ]
     `)
 
-    const sitemap = await $fetch('/robots.txt')
-    expect(sitemap).toMatchInlineSnapshot(`
+    const robots = await $fetch('/robots.txt')
+    expect(robots).toMatchInlineSnapshot(`
       "# START nuxt-simple-robots (indexable)
       User-agent: *
       Disallow: /bar
@@ -26,5 +26,8 @@ describe('nuxt/content default', () => {
 
       # END nuxt-simple-robots"
     `)
+
+    const fooHtml = await $fetch('/foo')
+    expect(fooHtml.includes('<meta name="robots" content="noindex, nofollow">')).toBe(true)
   }, 60000)
 })
