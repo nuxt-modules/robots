@@ -17,8 +17,8 @@ export function getSiteRobotConfig(e: H3Event): { indexable: boolean, hints: str
   }
   // allow previewing with ?mockProductionEnv
   const queryIndexableEnabled = String(query.mockProductionEnv) === 'true' || query.mockProductionEnv === ''
-  if (debug && !indexable) {
-    const { _context } = useSiteConfig(e, { debug })
+  if ((debug || import.meta.dev) && !indexable) {
+    const { _context } = useSiteConfig(e, { debug: debug || import.meta.dev })
     if (queryIndexableEnabled && !_context.indexable) {
       indexable = true
       hints.push('You are mocking a production enviroment with ?mockProductionEnv query.')
