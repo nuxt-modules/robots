@@ -6,6 +6,7 @@ import {
   addServerHandler,
   createResolver,
   defineNuxtModule,
+  hasNuxtModule,
   useLogger,
 } from '@nuxt/kit'
 import { defu } from 'defu'
@@ -333,6 +334,7 @@ export default defineNuxtModule<ModuleOptions>({
 
       nuxt.options.runtimeConfig['nuxt-simple-robots'] = {
         version,
+        usingNuxtContent: hasNuxtModule('@nuxt/content'),
         debug: config.debug,
         credits: config.credits,
         groups: config.groups,
@@ -410,6 +412,13 @@ declare module 'h3' {
     addServerHandler({
       handler: resolve('./runtime/nitro/server/middleware'),
     })
+
+    if (hasNuxtModule('@nuxt/content')) {
+      addServerHandler({
+        route: '/__robots__/nuxt-content.json',
+        handler: resolve('./runtime/nitro/server/__robots__/nuxt-content'),
+      })
+    }
 
     if (config.debug || nuxt.options.dev) {
       addServerHandler({

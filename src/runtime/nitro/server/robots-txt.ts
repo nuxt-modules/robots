@@ -8,11 +8,8 @@ import { getSiteRobotConfig } from '#internal/nuxt-simple-robots'
 
 export default defineEventHandler(async (e) => {
   const nitro = useNitroApp()
-  setHeader(e, 'Content-Type', 'text/plain; charset=utf-8')
-  setHeader(e, 'Cache-Control', (import.meta.dev || import.meta.test) ? 'no-store' : 'max-age=14400, must-revalidate')
-
   const { indexable, hints } = getSiteRobotConfig(e)
-  const { credits } = useRuntimeConfig(e)['nuxt-simple-robots']
+  const { credits, usingNuxtContent } = useRuntimeConfig(e)['nuxt-simple-robots']
   // move towards deprecating indexable
   let robotsTxtCtx: Omit<HookRobotsConfigContext, 'context'> = {
     sitemaps: [],
@@ -33,6 +30,21 @@ export default defineEventHandler(async (e) => {
         // validate sitemaps are absolute
         .map(s => !s.startsWith('http') ? withSiteUrl(e, s, { withBase: true, absolute: true }) : s),
     )]
+    if (usingNuxtContent) {
+      const contentWithRobotRules = await e.$fetch<string[]>('/__robots__/nuxt-content.json', {
+        headers: {
+          Accept: 'application/json',
+        },
+      })
+      // add to first '*' group
+      for (const group of robotsTxtCtx.groups) {
+        if (group.userAgent.includes('*')) {
+          group.disallow.push(...contentWithRobotRules)
+          // need to filter out empty strings since we now have some content
+          group.disallow = group.disallow.filter(Boolean)
+        }
+      }
+    }
   }
   let robotsTxt: string = generateRobotsTxt(robotsTxtCtx)
   if (import.meta.dev && hints.length) {
@@ -47,7 +59,9 @@ export default defineEventHandler(async (e) => {
     ].filter(Boolean).join('\n')
   }
 
-  const hookCtx: HookRobotsTxtContext = { robotsTxt }
+  setHeader(e, 'Content-Type', 'text/plain; charset=utf-8')
+  setHeader(e, 'Cache-Control', (import.meta.dev || import.meta.test) ? 'no-store' : 'max-age=14400, must-revalidate')
+  const hookCtx: HookRobotsTxtContext = { robotsTxt, e }
   await nitro.hooks.callHook('robots:robots-txt', hookCtx)
   return hookCtx.robotsTxt
 })

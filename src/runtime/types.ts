@@ -1,3 +1,5 @@
+import type { H3Event } from 'h3'
+
 export type Arrayable<T> = T | T[]
 
 export interface ParsedRobotsTxt {
@@ -22,6 +24,7 @@ export interface RobotsGroupResolved {
 
 export interface HookRobotsTxtContext {
   robotsTxt: string
+  e: H3Event
 }
 
 export interface HookRobotsConfigContext extends ParsedRobotsTxt {
