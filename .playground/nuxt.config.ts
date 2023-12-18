@@ -64,6 +64,9 @@ export default defineNuxtConfig({
       // index: false,
     },
   },
+  experimental: {
+    inlineRouteRules: true
+  },
   robots: {
     debug: true,
     // disallow: ['/'],
