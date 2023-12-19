@@ -65,7 +65,7 @@ export default defineNuxtConfig({
     },
   },
   experimental: {
-    inlineRouteRules: true
+    inlineRouteRules: true,
   },
   robots: {
     debug: true,

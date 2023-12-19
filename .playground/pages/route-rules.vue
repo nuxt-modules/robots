@@ -5,6 +5,7 @@ defineRouteRules({
   robots: false,
 })
 </script>
+
 <template>
   <div>route rules</div>
 </template>

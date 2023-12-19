@@ -4,6 +4,7 @@ import {
   addImports,
   addPlugin,
   addServerHandler,
+  addServerPlugin,
   createResolver,
   defineNuxtModule,
   hasNuxtModule,
@@ -347,6 +348,12 @@ export default defineNuxtModule<ModuleOptions>({
     extendTypes('nuxt-simple-robots', ({ typesPath }) => {
       return `
 declare module 'nitropack' {
+  interface NitroApp {
+    _robots: {
+      ctx: import('${typesPath}').HookRobotsConfigContext
+      nuxtContentUrls: Set<string>
+    }
+  }
   interface NitroRouteRules {
     /**
      * @deprecated Use \`robots: <boolean>\` instead.
@@ -412,6 +419,7 @@ declare module 'h3' {
     addServerHandler({
       handler: resolve('./runtime/nitro/server/middleware'),
     })
+    addServerPlugin(resolve('./runtime/nitro/plugins/initContext'))
 
     if (hasNuxtModule('@nuxt/content')) {
       addServerHandler({
