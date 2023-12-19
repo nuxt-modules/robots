@@ -7,7 +7,7 @@ import { defineNitroPlugin, useRuntimeConfig } from '#imports'
 export default defineNitroPlugin(async (nitroApp: NitroApp) => {
   const { usingNuxtContent } = useRuntimeConfig()['nuxt-simple-robots']
   nitroApp._robots = {} as typeof nitroApp._robots
-  await resolveRobotsTxtContext('init', nitroApp)
+  await resolveRobotsTxtContext(undefined, nitroApp)
   const nuxtContentUrls = new Set<string>()
   if (usingNuxtContent) {
     const urls = await (await nitroApp.localFetch('/__robots__/nuxt-content.json', {})).json()

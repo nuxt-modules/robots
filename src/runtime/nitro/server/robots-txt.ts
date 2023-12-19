@@ -11,7 +11,7 @@ export default defineEventHandler(async (e) => {
   const { indexable, hints } = getSiteRobotConfig(e)
   const { credits, usingNuxtContent } = useRuntimeConfig(e)['nuxt-simple-robots']
   // move towards deprecating indexable
-  let robotsTxtCtx: Omit<HookRobotsConfigContext, 'context'> = {
+  let robotsTxtCtx: Omit<HookRobotsConfigContext, 'context' | 'event'> = {
     sitemaps: [],
     groups: [
       {
@@ -23,7 +23,7 @@ export default defineEventHandler(async (e) => {
     ],
   }
   if (indexable) {
-    robotsTxtCtx = await resolveRobotsTxtContext('robots.txt')
+    robotsTxtCtx = await resolveRobotsTxtContext(e)
     // normalise
     robotsTxtCtx.sitemaps = [...new Set(
       asArray(robotsTxtCtx.sitemaps)

@@ -28,7 +28,8 @@ export interface HookRobotsTxtContext {
 }
 
 export interface HookRobotsConfigContext extends ParsedRobotsTxt {
-  context: 'robots.txt' | 'middleware' | string
+  event?: H3Event
+  context: 'robots.txt' | 'init'
 }
 
 export type NormalisedLocales = { code: string, iso?: string, domain?: string }[]
