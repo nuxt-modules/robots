@@ -7,7 +7,7 @@ import { getSiteRobotConfig } from '#internal/nuxt-simple-robots'
 
 export function getPathRobotConfig(e: H3Event, options?: { skipSiteIndexable?: boolean, path?: string }) {
   // has already been resolved
-  const { robotsDisabledValue, robotsEnabledValue, usingNuxtContent } = useRuntimeConfig(e)['nuxt-simple-robots']
+  const { robotsDisabledValue, robotsEnabledValue, usingNuxtContent } = useRuntimeConfig()['nuxt-simple-robots']
   if (!options?.skipSiteIndexable) {
     if (!getSiteRobotConfig(e).indexable) {
       return {
