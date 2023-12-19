@@ -1,4 +1,5 @@
 import type { NitroApp } from 'nitropack'
+import { withoutTrailingSlash } from 'ufo'
 import { resolveRobotsTxtContext } from '../util'
 import { defineNitroPlugin, useRuntimeConfig } from '#imports'
 
@@ -11,7 +12,7 @@ export default defineNitroPlugin(async (nitroApp: NitroApp) => {
   const nuxtContentUrls = new Set<string>()
   if (usingNuxtContent) {
     const urls = await (await nitroApp.localFetch('/__robots__/nuxt-content.json', {})).json()
-    urls.forEach((url: string) => nuxtContentUrls.add(url))
+    urls.forEach((url: string) => nuxtContentUrls.add(withoutTrailingSlash(url)))
   }
   nitroApp._robots.nuxtContentUrls = nuxtContentUrls
 })
