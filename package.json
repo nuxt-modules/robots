@@ -41,7 +41,9 @@
   ],
   "scripts": {
     "lint": "eslint . --fix",
-    "build": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build",
+    "client:build": "nuxi generate client",
+    "client:dev": "nuxi dev client --port 3300",
+    "build": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && npm run client:build",
     "dev": "nuxi dev .playground",
     "dev:build": "nuxi build .playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxi prepare .playground",
