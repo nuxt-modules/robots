@@ -1,5 +1,4 @@
 import { defineEventHandler, setHeader } from 'h3'
-import { withoutQuery } from '../kit'
 import { getPathRobotConfig } from '#internal/nuxt-simple-robots'
 
 export default defineEventHandler(async (e) => {
