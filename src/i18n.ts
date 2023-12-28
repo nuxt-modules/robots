@@ -7,7 +7,7 @@ import { getNuxtModuleOptions } from './kit'
 
 export function splitPathForI18nLocales(path: string, autoI18n: AutoI18nConfig) {
   const locales = autoI18n.strategy === 'prefix_except_default' ? autoI18n.locales.filter(l => l.code !== autoI18n.defaultLocale) : autoI18n.locales
-  if (isInternalRoute(path))
+  if (!path || isInternalRoute(path))
     return path
   const match = path.match(new RegExp(`^/(${locales.map(l => l.code).join('|')})(.*)`))
   const locale = match?.[1]
