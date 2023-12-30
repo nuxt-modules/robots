@@ -7,12 +7,16 @@ import {
 export default defineNuxtPlugin({
   setup() {
     const event = useRequestEvent()
+    const ctx = event.context.robots
+    // set from nitro, not available for internal routes
+    if (!ctx)
+      return
     useServerHead({
       meta: [
         {
           'name': 'robots',
-          'content': () => event.context.robots?.rule || '',
-          'data-hint': (import.meta.dev && !event.context.robots.indexable) ? 'disabled in development' : undefined,
+          'content': () => ctx.rule || '',
+          'data-hint': (import.meta.dev && !ctx.indexable) ? 'disabled in development' : undefined,
         },
       ],
     })
