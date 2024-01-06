@@ -49,7 +49,7 @@ const tab = useLocalStorage('nuxt-robots:tab', 'overview')
         <div class="flex space-x-5">
           <h1 text-xl flex items-center gap-2>
             <NIcon icon="carbon:bot" class="text-blue-300" />
-            Nuxt Simple Robots <NBadge class="text-sm">
+            Robots <NBadge class="text-sm">
               {{ version }}
             </NBadge>
           </h1>
@@ -136,7 +136,6 @@ const tab = useLocalStorage('nuxt-robots:tab', 'overview')
           </div>
           <a href="https://nuxtseo.com" target="_blank" class="flex items-end gap-1.5 font-semibold text-xl dark:text-white font-title">
             <NuxtSeoLogo />
-            <span class="hidden sm:block">Nuxt</span><span class="sm:text-green-500 dark:sm:text-green-400">SEO</span>
           </a>
         </div>
       </div>
