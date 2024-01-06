@@ -1,7 +1,7 @@
 {
   "name": "nuxt-simple-robots",
   "type": "module",
-  "version": "4.0.0-rc.9",
+  "version": "4.0.0-rc.10",
   "packageManager": "pnpm@8.14.0",
   "description": "Tame the robots crawling and indexing your Nuxt site with ease.",
   "author": {
@@ -47,7 +47,7 @@
     "dev": "nuxi dev .playground",
     "dev:build": "nuxi build .playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxi prepare .playground",
-    "release": "bumpp && pnpm -r publish",
+    "release": "pnpm build && bumpp && pnpm -r publish",
     "test": "vitest",
     "typecheck": "tsc --noEmit"
   },
