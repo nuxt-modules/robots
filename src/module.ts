@@ -446,7 +446,7 @@ declare module 'h3' {
       from: '#internal/nuxt-simple-robots',
       imports: [
         'getPathRobotConfig',
-        'getSiteIndexable',
+        'getSiteRobotConfig',
       ],
     }
     nuxt.options.nitro = nuxt.options.nitro || {}
