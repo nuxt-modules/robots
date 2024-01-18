@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /cdn-cgi/challenge-platform/
+
+User-agent: Yandex
+Disallow:
+Clean-param: s /forum/index.php
+Clean-param: s /forum/showthread.php
+
+Sitemap: https://yoast.com/sitemap_index.xml
+

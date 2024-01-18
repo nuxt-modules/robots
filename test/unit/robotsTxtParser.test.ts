@@ -243,4 +243,42 @@ describe('robotsTxtParser', () => {
       }
     `)
   })
+
+  it('yandex', async () => {
+    // read fixture yoastRobots.txt
+    const robotsTxt = await fsp.readFile('./test/fixtures/yandex.txt', { encoding: 'utf-8' })
+    expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
+      {
+        "groups": [
+          {
+            "allow": [],
+            "comment": [],
+            "disallow": [
+              "/cdn-cgi/challenge-platform/",
+            ],
+            "userAgent": [
+              "*",
+            ],
+          },
+          {
+            "allow": [],
+            "cleanParam": [
+              "s /forum/index.php",
+              "s /forum/showthread.php",
+            ],
+            "comment": [],
+            "disallow": [
+              "",
+            ],
+            "userAgent": [
+              "Yandex",
+            ],
+          },
+        ],
+        "sitemaps": [
+          "https://yoast.com/sitemap_index.xml",
+        ],
+      }
+    `)
+  })
 })

@@ -7,11 +7,17 @@ export interface ParsedRobotsTxt {
   sitemaps: string[]
 }
 
-export interface RobotsGroupInput {
+export type RobotsGroupInput = GoogleInput | YandexInput
+
+export interface GoogleInput {
   comment?: Arrayable<string>
   disallow?: Arrayable<string>
   allow?: Arrayable<string>
   userAgent?: Arrayable<string>
+}
+
+export interface YandexInput extends GoogleInput {
+  cleanParam?: Arrayable<string>
 }
 
 export interface RobotsGroupResolved {
@@ -20,6 +26,8 @@ export interface RobotsGroupResolved {
   allow: string[]
   userAgent: string[]
   host?: string
+  // yandex only
+  cleanParam?: string[]
 }
 
 export interface HookRobotsTxtContext {

@@ -66,6 +66,12 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
       case 'Host':
         currentGroup.host = val
         break
+      case 'Clean-param':
+        if (currentGroup.userAgent.includes('Yandex')) {
+          currentGroup.cleanParam = currentGroup.cleanParam || []
+          currentGroup.cleanParam.push(val)
+        }
+        break
     }
   }
   // push final stack
@@ -149,6 +155,10 @@ export function generateRobotsTxt({ groups, sitemaps }: { groups: RobotsGroupRes
     // add the disallow rules
     for (const disallow of group.disallow || [])
       lines.push(`Disallow: ${disallow}`)
+
+    // yandex only (see https://yandex.com/support/webmaster/robot-workings/clean-param.html)
+    for (const cleanParam of group.cleanParam || [])
+      lines.push(`Clean-param: ${cleanParam}`)
 
     lines.push('') // seperator
   }
