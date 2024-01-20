@@ -33,7 +33,6 @@ export default defineNuxtConfig({
           console.log(` sub: ${data.toString()}`)
         })
 
-        // eslint-disable-next-line node/prefer-global/process
         process.on('exit', () => {
           subprocess.terminate()
         })
@@ -63,6 +62,8 @@ export default defineNuxtConfig({
       robots: false,
       // index: false,
     },
+    '/sub/:name': { robots: false },
+    '/spa': { ssr: false },
   },
   experimental: {
     inlineRouteRules: true,

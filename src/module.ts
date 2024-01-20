@@ -297,7 +297,8 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt.options.routeRules = nuxt.options.routeRules || {}
       // convert robot routeRules to header routeRules for static hosting
       Object.entries(nuxt.options.routeRules).forEach(([route, rules]) => {
-        const groupIndexable = indexableFromGroup(config.groups, route)
+        const url = route.split('/').map(segment => segment.startsWith(':') ? '*' : segment).join('/')
+        const groupIndexable = indexableFromGroup(config.groups, url)
         const robotRules = normaliseRobotsRouteRule(rules, groupIndexable, config.robotsDisabledValue, config.robotsEnabledValue)
         // single * is supported but ignored
         // @ts-expect-error untyped
@@ -312,11 +313,12 @@ export default defineNuxtModule<ModuleOptions>({
       if (config.disallowNonIndexableRoutes) {
         // iterate the route rules and add any non indexable rules to disallow
         Object.entries(nuxt.options.routeRules || {}).forEach(([route, rules]) => {
-          const groupIndexable = indexableFromGroup(config.groups, route)
+          const url = route.split('/').map(segment => segment.startsWith(':') ? '*' : segment).join('/')
+          const groupIndexable = indexableFromGroup(config.groups, url)
           const { indexable } = normaliseRobotsRouteRule(rules, groupIndexable, config.robotsDisabledValue, config.robotsEnabledValue)
           if (!indexable) {
             // single * is supported but ignored
-            extraDisallows.add(route.replaceAll('**', '*'))
+            extraDisallows.add(url.replaceAll('**', '*'))
           }
         })
       }
