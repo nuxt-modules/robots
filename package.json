@@ -58,10 +58,10 @@
     "flatted": "^3.2.9",
     "floating-vue": "5.2.0",
     "nuxt-icon": "^0.6.8",
-    "nuxt-site-config": "^2.2.5",
-    "nuxt-site-config-kit": "^2.2.5",
+    "nuxt-site-config": "^2.2.6",
+    "nuxt-site-config-kit": "^2.2.6",
     "pathe": "^1.1.2",
-    "shikiji": "0.10.0-beta.8",
+    "shikiji": "0.10.0-beta.9",
     "sirv": "^2.0.4",
     "ufo": "^1.3.2"
   },
@@ -96,5 +96,8 @@
     "externals": [
       "h3"
     ]
+  },
+  "resolutions": {
+    "untyped": "1.4.0"
   }
 }
