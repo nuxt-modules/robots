@@ -26,6 +26,7 @@ describe('mergeWithRobotsTxtPath', () => {
       Disallow: /secret
       Disallow: /admin
       Disallow: /*/account
+      Disallow: /sub/*
 
       Sitemap: https://nuxtseo.com/sitemap.xml
       # END nuxt-simple-robots"

@@ -46,6 +46,7 @@ describe('route rule merging', () => {
       Disallow: /secret
       Disallow: /admin
       Disallow: /*/account
+      Disallow: /sub/*
       Disallow: /index-rule/*
       Disallow: /robots-rule/*
       Disallow: /secret/*
