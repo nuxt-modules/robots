@@ -20,6 +20,9 @@ export default defineNitroPlugin(async (nitroApp: NitroApp) => {
 
   // need to inject HTML if we have an SPA route
   nitroApp.hooks.hook('render:html', async (ctx, { event }) => {
+    // make sure the route has robots context
+    if (!event.context.robots)
+      return
     const routeOptions = getRouteRules(event)
     const isIsland = (process.env.NUXT_COMPONENT_ISLANDS && event.path.startsWith('/__nuxt_island'))
     const url = event.path
