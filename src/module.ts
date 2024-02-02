@@ -395,7 +395,7 @@ declare module 'h3' {
     const nitroPreset = resolveNitroPreset(nuxt.options.nitro)
     // only prerender for `nuxi generate`
     const isFirebase = nitroPreset === 'firebase'
-    if (isNuxtGenerate() || (isFirebase && nuxt.options.build)) {
+    if (isNuxtGenerate() || (isFirebase && nuxt.options._build)) {
       nuxt.options.generate = nuxt.options.generate || {}
       nuxt.options.generate.routes = asArray(nuxt.options.generate.routes || [])
       nuxt.options.generate.routes.push('/robots.txt')
