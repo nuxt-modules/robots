@@ -1,5 +1,5 @@
-import type { BundledLanguage, Highlighter } from 'shikiji'
-import { getHighlighter } from 'shikiji'
+import type { BundledLanguage, Highlighter } from 'shiki'
+import { getHighlighter } from 'shiki'
 import { ref } from 'vue'
 import { useColorMode } from '#imports'
 
