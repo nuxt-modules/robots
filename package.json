@@ -63,6 +63,7 @@
     "pathe": "^1.1.2",
     "shiki": "1.0.0-beta.3",
     "sirv": "^2.0.4",
+    "std-env": "^3.7.0",
     "ufo": "^1.3.2"
   },
   "devDependencies": {
