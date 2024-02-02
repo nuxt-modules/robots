@@ -16,7 +16,7 @@ import { relative } from 'pathe'
 import type { Preset } from 'unimport'
 import { version } from '../package.json'
 import { asArray, indexableFromGroup, normaliseRobotsRouteRule, parseRobotsTxt, validateRobots } from './runtime/util'
-import { extendTypes, isNuxtGenerate } from './kit'
+import { extendTypes, isNuxtGenerate, resolveNitroPreset } from './kit'
 import type { Arrayable, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
 import { NonHelpfulBots } from './const'
 import { resolveI18nConfig, splitPathForI18nLocales } from './i18n'
@@ -392,11 +392,15 @@ declare module 'h3' {
 `
     })
 
+    const nitroPreset = resolveNitroPreset(nuxt.options.nitro)
     // only prerender for `nuxi generate`
-    if (isNuxtGenerate()) {
+    const isFirebase = nitroPreset === 'firebase'
+    if (isNuxtGenerate() || (isFirebase && nuxt.options.build)) {
       nuxt.options.generate = nuxt.options.generate || {}
       nuxt.options.generate.routes = asArray(nuxt.options.generate.routes || [])
       nuxt.options.generate.routes.push('/robots.txt')
+      if (isFirebase)
+        logger.info('Firebase does not support dynamic robots.txt files. Prerendering /robots.txt.')
     }
 
     // defineRobotMeta is a server-only composable

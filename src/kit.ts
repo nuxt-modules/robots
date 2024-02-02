@@ -2,6 +2,8 @@ import { addTemplate, createResolver, loadNuxtModuleInstance, useNuxt } from '@n
 import { relative } from 'pathe'
 import type { Nuxt } from '@nuxt/schema'
 import type { NuxtModule } from 'nuxt/schema'
+import { env, provider } from 'std-env'
+import type { NitroConfig } from 'nitropack'
 
 export function extendTypes(module: string, template: (options: { typesPath: string }) => string | Promise<string>) {
   const nuxt = useNuxt()
@@ -28,6 +30,37 @@ export {}
     config.typescript.tsConfig.include = config.typescript.tsConfig.include || []
     config.typescript.tsConfig.include.push(`./module/${module}.d.ts`)
   })
+}
+
+const autodetectableProviders = {
+  azure_static: 'azure',
+  cloudflare_pages: 'cloudflare-pages',
+  netlify: 'netlify',
+  stormkit: 'stormkit',
+  vercel: 'vercel',
+  cleavr: 'cleavr',
+  stackblitz: 'stackblitz',
+}
+
+const autodetectableStaticProviders = {
+  netlify: 'netlify-static',
+  vercel: 'vercel-static',
+}
+
+export function detectTarget(options: { static?: boolean } = {}) {
+  // @ts-expect-error untyped
+  return options?.static ? autodetectableStaticProviders[provider] : autodetectableProviders[provider]
+}
+
+export function resolveNitroPreset(nitroConfig?: NitroConfig): string {
+  if (provider === 'stackblitz' || provider === 'codesandbox')
+    return provider
+  let preset
+  if (nitroConfig && nitroConfig?.preset)
+    preset = nitroConfig.preset
+  if (!preset)
+    preset = env.NITRO_PRESET || detectTarget() || 'node-server'
+  return preset.replace('_', '-') // sometimes they are different
 }
 
 /**
