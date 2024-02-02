@@ -49,7 +49,7 @@ export default defineEventHandler(async (e) => {
   let robotsTxt: string = generateRobotsTxt(robotsTxtCtx)
   if (import.meta.dev && hints.length) {
     // append
-    robotsTxt += `\n# DEVELOPMENT HINTS: ${hints.join(', ')}\n`
+    robotsTxt += `\n# DEVELOPMENT HINTS:\n - ${hints.join('\n - ')}\n`
   }
   if (credits) {
     robotsTxt = [
