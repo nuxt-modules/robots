@@ -10,28 +10,35 @@ export function getSiteRobotConfig(e: H3Event): { indexable: boolean, hints: str
   const hints: string[] = []
   const { groups, debug } = useRuntimeConfig(e)['nuxt-simple-robots']
   let indexable = getSiteIndexable(e)
-  // get wildcard groups and which if they include an exclude for `/`
-  if ((groups as ParsedRobotsTxt['groups']).some(g => g.userAgent.includes('*') && g.disallow.includes('/'))) {
-    indexable = false
-    hints.push('You have a disallow rule with `/` which blocks all routes.')
-  }
   // allow previewing with ?mockProductionEnv
   const queryIndexableEnabled = String(query.mockProductionEnv) === 'true' || query.mockProductionEnv === ''
-  if ((debug || import.meta.dev) && !indexable) {
+  if ((debug || import.meta.dev)) {
     const { _context } = useSiteConfig(e, { debug: debug || import.meta.dev })
-    if (queryIndexableEnabled && !_context.indexable) {
+    if (queryIndexableEnabled) {
       indexable = true
       hints.push('You are mocking a production enviroment with ?mockProductionEnv query.')
     }
-    else if (_context.indexable === 'nuxt-simple-robots:config') {
+    else if (!indexable && _context.indexable === 'nuxt-simple-robots:config') {
       hints.push('You are blocking indexing with your nuxt-simple-robots config.')
     }
-    else if (!_context.indexable) {
-      hints.push(`Indexing is blocked because of the environment. You can mock a production environment with ?mockProductionEnv query.`)
+    else if (!queryIndexableEnabled && (!_context.indexable)) {
+      hints.push(`Indexing is blocked in development. You can mock a production environment with ?mockProductionEnv query.`)
     }
-    else {
+    else if (!indexable && !queryIndexableEnabled) {
       hints.push(`Indexing is blocked by site config set by ${_context.indexable}.`)
     }
+    else if (indexable && !queryIndexableEnabled) {
+      hints.push(`Indexing is enabled from ${_context.indexable}.`)
+    }
+  }
+  // get wildcard groups and which if they include an exclude for `/`
+  const hasWildcardDisallow = (groups as ParsedRobotsTxt['groups']).some(g => g.userAgent.includes('*') && g.disallow.includes('/'))
+  if (groups.length === 1 && hasWildcardDisallow) {
+    indexable = false
+    hints.push('You have a disallow rule with `Disallow /` which blocks all routes.')
+  }
+  else {
+    hints.push('You are blocking most crawlers with `Disallow /`.')
   }
   return { indexable, hints }
 }
