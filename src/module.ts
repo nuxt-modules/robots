@@ -14,7 +14,7 @@ import { defu } from 'defu'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
 import { relative } from 'pathe'
 import type { Preset } from 'unimport'
-import { version } from '../package.json'
+import { readPackageJSON } from 'pkg-types'
 import { asArray, indexableFromGroup, normaliseRobotsRouteRule, parseRobotsTxt, validateRobots } from './runtime/util'
 import { extendTypes, isNuxtGenerate, resolveNitroPreset } from './kit'
 import type { Arrayable, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
@@ -153,7 +153,8 @@ export default defineNuxtModule<ModuleOptions>({
     disallowNonIndexableRoutes: true,
   },
   async setup(config, nuxt) {
-    const logger = useLogger('nuxt-simple-robots')
+    const { resolve } = createResolver(import.meta.url)
+    const { version } = await readPackageJSON(resolve('../package.json'))
     logger.level = (config.debug || nuxt.options.debug) ? 4 : 3
     if (config.enabled === false) {
       logger.debug('The module is disabled, skipping setup.')
@@ -170,8 +171,6 @@ export default defineNuxtModule<ModuleOptions>({
         disallow: ['/'],
       })
     }
-
-    const { resolve } = createResolver(import.meta.url)
 
     await installNuxtSiteConfig()
 
