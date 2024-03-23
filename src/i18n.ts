@@ -1,9 +1,9 @@
 import type { NuxtI18nOptions } from '@nuxtjs/i18n/dist/module'
 import { getNuxtModuleVersion, hasNuxtModule, hasNuxtModuleCompatibility } from '@nuxt/kit'
-import type { ConsolaInstance } from 'consola'
 import type { AutoI18nConfig, NormalisedLocales } from './runtime/types'
 import { isInternalRoute, mergeOnKey } from './runtime/util'
 import { getNuxtModuleOptions } from './kit'
+import { logger } from './logger'
 
 export function splitPathForI18nLocales(path: string, autoI18n: AutoI18nConfig) {
   const locales = autoI18n.strategy === 'prefix_except_default' ? autoI18n.locales.filter(l => l.code !== autoI18n.defaultLocale) : autoI18n.locales
@@ -21,7 +21,7 @@ export function splitPathForI18nLocales(path: string, autoI18n: AutoI18nConfig) 
   ]
 }
 
-export async function resolveI18nConfig(logger: ConsolaInstance) {
+export async function resolveI18nConfig() {
   let nuxtI18nConfig: NuxtI18nOptions = {}
   let resolvedAutoI18n: false | AutoI18nConfig = false
   let normalisedLocales: NormalisedLocales = []

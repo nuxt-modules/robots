@@ -332,7 +332,7 @@ export default defineNuxtModule<ModuleOptions>({
 
       if (resolvedAutoI18n && resolvedAutoI18n.locales && resolvedAutoI18n.strategy !== 'no_prefix') {
         const i18n = resolvedAutoI18n
-        for (const group of config.groups) {
+        for (const group of config.groups.filter(g => !g._skipI18n)) {
           group.allow = asArray(group.allow || []).map(path => splitPathForI18nLocales(path, i18n)).flat()
           group.disallow = asArray(group.disallow || []).map(path => splitPathForI18nLocales(path, i18n)).flat()
         }
