@@ -193,7 +193,7 @@ export function isInternalRoute(_path: string) {
   // exclude things like cgi-bin, .well-known, etc.
   if (path.startsWith('.') || path.startsWith('_'))
     return true
-  if (path.startsWith('cgi-bin'))
+  if (path.startsWith('cgi-bin') || path.startsWith('cdn-cgi'))
     return true
   const lastSegment = path.split('/').pop() || path
   return lastSegment.includes('.') || path.startsWith('@')
