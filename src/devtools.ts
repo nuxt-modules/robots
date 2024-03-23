@@ -8,9 +8,9 @@ import type { ModuleOptions } from './module'
 export interface ServerFunctions {}
 
 export interface ClientFunctions {
-  refresh(): void
-  refreshRouteData(path: string): void
-  refreshGlobalData(): void
+  refresh: () => void
+  refreshRouteData: (path: string) => void
+  refreshGlobalData: () => void
 }
 
 const DEVTOOLS_UI_ROUTE = '/__nuxt-simple-robots'
