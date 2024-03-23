@@ -339,7 +339,7 @@ export default defineNuxtModule<ModuleOptions>({
       }
 
       nuxt.options.runtimeConfig['nuxt-simple-robots'] = {
-        version,
+        version: version || '',
         usingNuxtContent: hasNuxtModule('@nuxt/content'),
         debug: config.debug,
         credits: config.credits,

@@ -7,21 +7,20 @@ export interface ParsedRobotsTxt {
   sitemaps: string[]
 }
 
-export type RobotsGroupInput = GoogleInput | YandexInput | NuxtSimpleRobotsGroupInput
+export type RobotsGroupInput = GoogleInput | YandexInput
 
+// google is the base input
 export interface GoogleInput {
   comment?: Arrayable<string>
   disallow?: Arrayable<string>
   allow?: Arrayable<string>
   userAgent?: Arrayable<string>
+  // nuxt-simple-robots internals
+  _skipI18n?: boolean
 }
 
 export interface YandexInput extends GoogleInput {
   cleanParam?: Arrayable<string>
-}
-
-export interface NuxtSimpleRobotsGroupInput extends GoogleInput {
-  _skipI18n?: boolean
 }
 
 export interface RobotsGroupResolved {
