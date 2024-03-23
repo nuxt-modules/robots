@@ -1,5 +1,6 @@
 import { createDefu } from 'defu'
 import type { NitroRouteConfig } from 'nitropack'
+import { withoutLeadingSlash } from 'ufo'
 import type { ParsedRobotsTxt, RobotsGroupInput, RobotsGroupResolved } from './types'
 
 /**
@@ -187,9 +188,15 @@ export function mergeOnKey<T, K extends keyof T>(arr: T[], key: K) {
   return Object.values(res)
 }
 
-export function isInternalRoute(path: string) {
+export function isInternalRoute(_path: string) {
+  const path = withoutLeadingSlash(_path)
+  // exclude things like cgi-bin, .well-known, etc.
+  if (path.startsWith('.') || path.startsWith('_'))
+    return true
+  if (path.startsWith('cgi-bin'))
+    return true
   const lastSegment = path.split('/').pop() || path
-  return lastSegment.includes('.') || path.startsWith('/__') || path.startsWith('@')
+  return lastSegment.includes('.') || path.startsWith('@')
 }
 
 export function normaliseRobotsRouteRule(rules: NitroRouteConfig, defaultIndexable: boolean, disabledValue: string, enabledValue: string) {
