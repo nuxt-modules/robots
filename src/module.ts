@@ -16,7 +16,7 @@ import type { Preset } from 'unimport'
 import { readPackageJSON } from 'pkg-types'
 import { asArray, indexableFromGroup, normaliseRobotsRouteRule, parseRobotsTxt, validateRobots } from './runtime/util'
 import { extendTypes, isNuxtGenerate, resolveNitroPreset } from './kit'
-import type { Arrayable, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
+import type { Arrayable, AutoI18nConfig, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
 import { NonHelpfulBots } from './const'
 import { resolveI18nConfig, splitPathForI18nLocales } from './i18n'
 import { setupDevToolsUI } from './devtools'
@@ -102,6 +102,10 @@ export interface ModuleOptions {
    */
   blockNonSeoBots: boolean
   /**
+   * Override the auto i18n configuration.
+   */
+  autoI18n?: false | AutoI18nConfig
+  /**
    * Enables debug logs and a debug endpoint.
    *
    * @default false
@@ -161,7 +165,7 @@ export default defineNuxtModule<ModuleOptions>({
       return
     }
 
-    const resolvedAutoI18n = await resolveI18nConfig(logger)
+    const resolvedAutoI18n = typeof config.autoI18n === 'boolean' ? false : (config.autoI18n || await resolveI18nConfig())
 
     if (config.blockNonSeoBots) {
       // credits to yoast.com/robots.txt
