@@ -8,7 +8,6 @@ import {
   createResolver,
   defineNuxtModule,
   hasNuxtModule,
-  useLogger,
 } from '@nuxt/kit'
 import { defu } from 'defu'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
@@ -21,6 +20,7 @@ import type { Arrayable, RobotsGroupInput, RobotsGroupResolved } from './runtime
 import { NonHelpfulBots } from './const'
 import { resolveI18nConfig, splitPathForI18nLocales } from './i18n'
 import { setupDevToolsUI } from './devtools'
+import { logger } from './logger'
 
 export interface ModuleOptions {
   /**
