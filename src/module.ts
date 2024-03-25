@@ -357,7 +357,8 @@ declare module 'nitropack' {
     _robots: {
       ctx: import('${typesPath}').HookRobotsConfigContext
       nuxtContentUrls: Set<string>
-    }
+    },
+    _robotsRuleMactcher: (url: string) => string
   }
   interface NitroRouteRules {
     /**

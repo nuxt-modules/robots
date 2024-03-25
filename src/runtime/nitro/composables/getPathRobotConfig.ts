@@ -18,9 +18,8 @@ export function getPathRobotConfig(e: H3Event, options?: { skipSiteIndexable?: b
   }
   const path = withoutQuery(options?.path || e.path)
   const nitroApp = useNitroApp()
-  // add noindex header
-  const routeRuleMatcher = createNitroRouteRuleMatcher()
-  const routeRules = routeRuleMatcher(path)
+  nitroApp._robotsRuleMactcher = nitroApp._robotsRuleMactcher || createNitroRouteRuleMatcher()
+  const routeRules = nitroApp._robotsRuleMactcher(path)
   let defaultIndexable = indexableFromGroup(nitroApp._robots.ctx.groups, path)
   if (usingNuxtContent) {
     if (nitroApp._robots?.nuxtContentUrls?.has(withoutTrailingSlash(path)))
