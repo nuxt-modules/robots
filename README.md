@@ -39,12 +39,7 @@ Tame the robots crawling and indexing your Nuxt site with ease.
 1. Install `nuxt-simple-robots` dependency to your project:
 
 ```bash
-#
-yarn add -D nuxt-simple-robots
-#
-npm install -D nuxt-simple-robots
-#
-pnpm i -D nuxt-simple-robots
+npx nuxi@latest module add simple-robots
 ```
 
 2. Add it to your `modules` section in your `nuxt.config`:
