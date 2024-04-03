@@ -21,7 +21,7 @@
 1. Add `@nuxtjs/robots` dependency to your project
 
 ```bash
-yarn add @nuxtjs/robots # or npm install @nuxtjs/robots
+npx nuxi@latest module add robots
 ```
 
 2. Add `@nuxtjs/robots` to the `modules` section of `nuxt.config.js`
