@@ -9,7 +9,7 @@ import { getSiteRobotConfig } from '#internal/nuxt-simple-robots'
 export default defineEventHandler(async (e) => {
   const nitro = useNitroApp()
   const { indexable, hints } = getSiteRobotConfig(e)
-  const { credits, usingNuxtContent } = useRuntimeConfig(e)['nuxt-simple-robots']
+  const { credits, usingNuxtContent, cacheControl } = useRuntimeConfig(e)['nuxt-simple-robots']
   // move towards deprecating indexable
   let robotsTxtCtx: Omit<HookRobotsConfigContext, 'context' | 'event'> = {
     sitemaps: [],
@@ -60,7 +60,7 @@ export default defineEventHandler(async (e) => {
   }
 
   setHeader(e, 'Content-Type', 'text/plain; charset=utf-8')
-  setHeader(e, 'Cache-Control', (import.meta.dev || import.meta.test) ? 'no-store' : 'max-age=14400, must-revalidate')
+  setHeader(e, 'Cache-Control', (import.meta.dev || import.meta.test || !cacheControl) ? 'no-store' : cacheControl)
   const hookCtx: HookRobotsTxtContext = { robotsTxt, e }
   await nitro.hooks.callHook('robots:robots-txt', hookCtx)
   return hookCtx.robotsTxt

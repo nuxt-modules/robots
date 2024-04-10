@@ -106,6 +106,12 @@ export interface ModuleOptions {
    */
   autoI18n?: false | AutoI18nConfig
   /**
+   * Configure the Cache-Control header for the robots.txt file. Providing false will set the header to 'no-store'.
+   *
+   * @default max-age=14400, must-revalidate
+   */
+  cacheControl?: string | false
+  /**
    * Enables debug logs and a debug endpoint.
    *
    * @default false
@@ -152,6 +158,7 @@ export default defineNuxtModule<ModuleOptions>({
     blockNonSeoBots: false,
     mergeWithRobotsTxtPath: true,
     metaTag: true,
+    cacheControl: 'max-age=14400, must-revalidate',
     robotsEnabledValue: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
     robotsDisabledValue: 'noindex, nofollow',
     disallowNonIndexableRoutes: true,
@@ -347,6 +354,7 @@ export default defineNuxtModule<ModuleOptions>({
         sitemap: config.sitemap,
         robotsEnabledValue: config.robotsEnabledValue,
         robotsDisabledValue: config.robotsDisabledValue,
+        cacheControl: config.cacheControl,
       }
     })
 
