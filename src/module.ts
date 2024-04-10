@@ -354,6 +354,7 @@ export default defineNuxtModule<ModuleOptions>({
         sitemap: config.sitemap,
         robotsEnabledValue: config.robotsEnabledValue,
         robotsDisabledValue: config.robotsDisabledValue,
+        // @ts-expect-error untyped
         cacheControl: config.cacheControl,
       }
     })
