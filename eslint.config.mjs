@@ -9,6 +9,10 @@ export default createConfigForNuxt({
   dirs: {
     src: [
       './playground',
+      './test/fixture/config-file',
+      './test/fixture/empty',
+      './test/fixture/generate',
+      './test/fixture/warn',
     ],
   },
 })

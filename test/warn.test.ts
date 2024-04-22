@@ -3,15 +3,14 @@ import { setup } from '@nuxt/test-utils'
 import consola from 'consola'
 
 export function mockLogger(): typeof consola {
-  const mock = {}
+  const mock: Partial<typeof consola> = {}
 
   consola.mockTypes((type) => {
     mock[type] = mock[type] || vi.fn()
     return mock[type]
   })
 
-  // @ts-expect-error
-  return mock
+  return mock as typeof consola
 }
 
 describe('warn', async () => {
