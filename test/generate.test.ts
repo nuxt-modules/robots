@@ -1,5 +1,5 @@
-import { resolve } from 'path'
-import { readFileSync } from 'fs'
+import { resolve } from 'node:path'
+import { readFileSync } from 'node:fs'
 import { describe, test, expect } from 'vitest'
 import { setup, useTestContext } from '@nuxt/test-utils'
 
@@ -9,8 +9,8 @@ describe('generate', async () => {
     build: true,
     server: false,
     nuxtConfig: {
-      _generate: true
-    }
+      _generate: true,
+    },
   })
 
   test('render', () => {

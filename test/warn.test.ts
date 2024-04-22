@@ -2,7 +2,7 @@ import { describe, test, expect, vi } from 'vitest'
 import { setup } from '@nuxt/test-utils'
 import consola from 'consola'
 
-export function mockLogger (): typeof consola {
+export function mockLogger(): typeof consola {
   const mock = {}
 
   consola.mockTypes((type) => {
@@ -10,13 +10,13 @@ export function mockLogger (): typeof consola {
     return mock[type]
   })
 
-  // @ts-ignore
+  // @ts-expect-error
   return mock
 }
 
 describe('warn', async () => {
   await setup({
-    fixture: 'fixture/warn'
+    fixture: 'fixture/warn',
   })
 
   const logger = mockLogger()

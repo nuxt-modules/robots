@@ -1,5 +1,6 @@
-import { defineEventHandler, NodeIncomingMessage, setHeader } from 'h3'
-import { RuleValue, Rule } from '../../types'
+import type { NodeIncomingMessage } from 'h3'
+import { defineEventHandler, setHeader } from 'h3'
+import type { RuleValue, Rule } from '../../types'
 import robots from '#robots'
 
 export default defineEventHandler(async (event) => {
@@ -17,7 +18,7 @@ enum Correspondence {
   'Sitemap',
   'Clean-param',
   'Comment',
-  'BlankLine'
+  'BlankLine',
 }
 
 interface RuleInterface {
@@ -25,7 +26,7 @@ interface RuleInterface {
   value: string
 }
 
-function render (rules: RuleInterface[]) {
+function render(rules: RuleInterface[]) {
   return rules.map((rule) => {
     const value = String(rule.value).trim()
 
@@ -40,7 +41,7 @@ function render (rules: RuleInterface[]) {
   }).join('\n')
 }
 
-async function getRules (options: Rule | Rule[], req: NodeIncomingMessage) {
+async function getRules(options: Rule | Rule[], req: NodeIncomingMessage) {
   const correspondences = {
     useragent: 'User-agent',
     crawldelay: 'Crawl-delay',
@@ -51,7 +52,7 @@ async function getRules (options: Rule | Rule[], req: NodeIncomingMessage) {
     sitemap: 'Sitemap',
     cleanparam: 'Clean-param',
     comment: 'Comment',
-    blankline: 'BlankLine'
+    blankline: 'BlankLine',
   }
 
   const rules: RuleInterface[] = []
@@ -86,7 +87,7 @@ async function getRules (options: Rule | Rule[], req: NodeIncomingMessage) {
 
         rules.push({
           key: correspondences[key],
-          value: v
+          value: v,
         })
       }
     }

@@ -3,7 +3,7 @@ import { setup, $fetch } from '@nuxt/test-utils'
 
 describe('config file', async () => {
   await setup({
-    fixture: 'fixture/config-file'
+    fixture: 'fixture/config-file',
   })
 
   test('render', async () => {

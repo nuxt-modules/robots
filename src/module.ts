@@ -1,10 +1,10 @@
-import { existsSync } from 'fs'
+import { existsSync } from 'node:fs'
 import { defineNuxtModule, addServerHandler, createResolver, useLogger, isNuxt2, findPath, addTemplate } from '@nuxt/kit'
 import { name, version } from '../package.json'
 import type { Rule } from './types'
 
 export type ModuleOptions = {
-  configPath: string,
+  configPath: string
   rules: Rule | Rule[]
 }
 
@@ -17,23 +17,23 @@ export default defineNuxtModule<ModuleOptions>({
     version,
     configKey: 'robots',
     compatibility: {
-      bridge: true
-    }
+      bridge: true,
+    },
   },
   defaults: {
     configPath: 'robots.config',
     rules: {
       UserAgent: '*',
-      Disallow: ''
-    }
+      Disallow: '',
+    },
   },
-  async setup (options, nuxt) {
+  async setup(options, nuxt) {
     const { resolve } = createResolver(import.meta.url)
 
     const staticFilePath = resolve(
       nuxt.options.srcDir,
       isNuxt2() ? nuxt.options.dir.static : nuxt.options.dir.public,
-      ROBOTS_FILENAME
+      ROBOTS_FILENAME,
     )
 
     if (existsSync(staticFilePath)) {
@@ -44,7 +44,7 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.alias['#robots'] = await findPath(options.configPath) ?? (addTemplate({
       filename: 'robots.mjs',
       write: true,
-      getContents: () => `export default ${JSON.stringify(options.rules, null, 2)}`
+      getContents: () => `export default ${JSON.stringify(options.rules, null, 2)}`,
     }).dst || '')
 
     if (nuxt.options._generate) {
@@ -58,7 +58,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     addServerHandler({
       route: `/${ROBOTS_FILENAME}`,
-      handler: resolve(runtimeDir, 'server/middleware')
+      handler: resolve(runtimeDir, 'server/middleware'),
     })
-  }
+  },
 })
