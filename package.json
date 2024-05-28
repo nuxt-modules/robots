@@ -27,11 +27,11 @@
     },
     "./util": {
       "types": "./dist/runtime/util.d.ts",
-      "import": "./dist/runtime/util.mjs"
+      "import": "./dist/runtime/util.js"
     },
     "./dist/runtime/util": {
       "types": "./dist/runtime/util.d.ts",
-      "import": "./dist/runtime/util.mjs"
+      "import": "./dist/runtime/util.js"
     }
   },
   "main": "./dist/module.cjs",
