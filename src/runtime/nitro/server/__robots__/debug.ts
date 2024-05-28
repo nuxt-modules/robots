@@ -16,6 +16,7 @@ export default defineEventHandler(async (e) => {
     hints,
     runtimeConfig,
     siteConfig: {
+      url: siteConfig.url,
       env: siteConfig.env,
       indexable: siteConfig.indexable,
     },
