@@ -142,7 +142,7 @@ export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: 'nuxt-simple-robots',
     compatibility: {
-      nuxt: '^3.6.1',
+      nuxt: '>=3.6.1',
       bridge: false,
     },
     configKey: 'robots',
