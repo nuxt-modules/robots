@@ -32,13 +32,12 @@ export function getSiteRobotConfig(e: H3Event): { indexable: boolean, hints: str
     }
   }
   // get wildcard groups and which if they include an exclude for `/`
-  const hasWildcardDisallow = (groups as ParsedRobotsTxt['groups']).some(g => g.userAgent.includes('*') && g.disallow.includes('/'))
-  if (groups.length === 1 && hasWildcardDisallow) {
+  if ((groups as ParsedRobotsTxt['groups']).some(g => g.userAgent.includes('*') && g.disallow.includes('/'))) {
     indexable = false
-    hints.push('You have a disallow rule with `Disallow /` which blocks all routes.')
+    hints.push('You are blocking all user agents with a wildcard `Disallow /`.')
   }
-  else {
-    hints.push('You are blocking most crawlers with `Disallow /`.')
+  else if ((groups as ParsedRobotsTxt['groups']).some(g => g.disallow.includes('/'))) {
+    hints.push('You are blocking specific user agents with `Disallow /`.')
   }
   return { indexable, hints }
 }
