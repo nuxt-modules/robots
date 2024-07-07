@@ -424,6 +424,11 @@ declare module 'h3' {
       from: resolve('./runtime/nuxt/composables/defineRobotMeta'),
     })
 
+    addImports({
+      name: 'useRobotsRule',
+      from: resolve('./runtime/nuxt/composables/useRobotsRule'),
+    })
+
     addComponent({
       name: 'RobotMeta',
       filePath: resolve('./runtime/nuxt/components/RobotMeta'),
