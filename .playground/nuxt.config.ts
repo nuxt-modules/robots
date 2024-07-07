@@ -42,9 +42,11 @@ export default defineNuxtConfig({
       },
     }),
   ],
+
   site: {
     url: 'https://nuxtseo.com/',
   },
+
   nitro: {
     typescript: {
       internalPaths: true,
@@ -57,6 +59,7 @@ export default defineNuxtConfig({
       ],
     },
   },
+
   routeRules: {
     '/**/account': {
       robots: false,
@@ -65,9 +68,11 @@ export default defineNuxtConfig({
     '/sub/:name': { robots: false },
     '/spa': { ssr: false },
   },
+
   experimental: {
     inlineRouteRules: true,
   },
+
   robots: {
     debug: true,
     // disallow: ['/'],
@@ -76,9 +81,12 @@ export default defineNuxtConfig({
       '/sitemap.xml',
     ],
   },
+
   hooks: {
     'robots:config': function (robotsConfig) {
       robotsConfig.sitemap.push('/sitemap.xml')
     },
   },
+
+  compatibilityDate: '2024-07-07',
 })
