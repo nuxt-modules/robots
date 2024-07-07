@@ -1,5 +1,5 @@
+import { defineNuxtPlugin } from 'nuxt/app'
 import {
-  defineNuxtPlugin,
   useRequestEvent,
   useServerHead,
 } from '#imports'
@@ -7,7 +7,7 @@ import {
 export default defineNuxtPlugin({
   setup() {
     const event = useRequestEvent()
-    const ctx = event.context.robots
+    const ctx = event?.context?.robots
     // set from nitro, not available for internal routes
     if (!ctx)
       return
