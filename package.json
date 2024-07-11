@@ -1,16 +1,41 @@
 {
   "name": "@nuxtjs/robots",
-  "version": "3.0.0",
-  "description": "A Nuxt.js module that injects a middleware to generate a robots.txt file",
-  "repository": "nuxt-community/robots-module",
-  "license": "MIT",
+  "type": "module",
+  "version": "4.0.0-rc.20",
+  "packageManager": "pnpm@9.4.0",
+  "description": "Tame the robots crawling and indexing your Nuxt site with ease.",
+  "author": {
+    "name": "Harlan Wilton",
+    "email": "harlan@harlanzw.com",
+    "url": "https://harlanzw.com/"
+  },
   "contributors": [
-    "Ricardo Gobbo de Souza <ricardogobbosouza@yahoo.com.br>"
+    "Ricardo Gobbo de Souza <ricardogobbosouza@yahoo.com.br>",
+    "Harlan Wilton <harlan@harlanzw.com>"
   ],
+  "license": "MIT",
+  "funding": "https://github.com/sponsors/harlan-zw",
+  "homepage": "https://nuxtseo.com/robots",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nuxt-modules/robots.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nuxt-modules/robots/issues"
+  },
   "exports": {
     ".": {
-      "require": "./dist/module.cjs",
-      "import": "./dist/module.mjs"
+      "types": "./dist/types.d.ts",
+      "import": "./dist/module.mjs",
+      "require": "./dist/module.cjs"
+    },
+    "./util": {
+      "types": "./dist/runtime/util.d.ts",
+      "import": "./dist/runtime/util.js"
+    },
+    "./dist/runtime/util": {
+      "types": "./dist/runtime/util.d.ts",
+      "import": "./dist/runtime/util.js"
     }
   },
   "main": "./dist/module.cjs",
@@ -19,30 +44,65 @@
     "dist"
   ],
   "scripts": {
-    "build": "nuxt-module-build",
-    "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground",
-    "dev": "nuxt dev playground",
-    "lint": "eslint --ext .js,.ts,.vue",
-    "prepack": "pnpm build",
-    "release": "pnpm test && pnpm build && changelogen --release && git push --follow-tags && pnpm publish",
-    "test": "pnpm lint && vitest run --coverage"
+    "lint": "eslint . --fix",
+    "client:build": "nuxi generate client",
+    "client:dev": "nuxi dev client --port 3300",
+    "build": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && npm run client:build",
+    "dev": "nuxi dev .playground",
+    "dev:build": "nuxi build .playground",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && nuxi prepare .playground",
+    "release": "pnpm build && bumpp && pnpm -r publish",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.0.0",
-    "h3": "^1.0.2"
+    "@nuxt/devtools-kit": "^1.3.9",
+    "@nuxt/kit": "^3.12.3",
+    "consola": "^3.2.3",
+    "defu": "^6.1.4",
+    "flatted": "^3.3.1",
+    "floating-vue": "^5.2.2",
+    "nuxt-site-config": "^2.2.13",
+    "nuxt-site-config-kit": "^2.2.13",
+    "pathe": "^1.1.2",
+    "pkg-types": "^1.1.3",
+    "shiki": "1.10.1",
+    "sirv": "^2.0.4",
+    "std-env": "^3.7.0",
+    "ufo": "^1.5.3"
   },
   "devDependencies": {
-    "@nuxt/module-builder": "latest",
-    "@nuxt/test-utils": "latest",
-    "@nuxtjs/eslint-config-typescript": "latest",
-    "@vitest/coverage-c8": "latest",
-    "changelogen": "latest",
-    "eslint": "latest",
-    "nuxt": "latest",
-    "vitest": "latest"
+    "@antfu/eslint-config": "2.22.0-beta.2",
+    "@headlessui/vue": "^1.7.22",
+    "@iconify-json/carbon": "^1.1.36",
+    "@iconify-json/logos": "^1.1.43",
+    "@iconify-json/ri": "^1.1.21",
+    "@iconify-json/tabler": "^1.1.116",
+    "@nuxt/content": "^2.13.1",
+    "@nuxt/devtools-ui-kit": "^1.3.9",
+    "@nuxt/module-builder": "^0.8.1",
+    "@nuxt/test-utils": "^3.13.1",
+    "@nuxtjs/color-mode": "^3.4.2",
+    "@nuxtjs/eslint-config-typescript": "^12.1.0",
+    "@nuxtjs/i18n": "^8.3.1",
+    "@unocss/nuxt": "^0.61.2",
+    "@unocss/preset-icons": "^0.61.2",
+    "@unocss/preset-uno": "^0.61.2",
+    "@unocss/runtime": "^0.61.2",
+    "@vueuse/nuxt": "^10.11.0",
+    "bumpp": "^9.4.1",
+    "eslint": "^9.5.0",
+    "execa": "^9.3.0",
+    "firebase-functions": "^5.0.1",
+    "nuxt": "^3.12.3",
+    "typescript": "^5.4.5",
+    "unocss": "^0.61.2",
+    "vitest": "^1.6.0"
   },
-  "publishConfig": {
-    "access": "public"
-  },
-  "packageManager": "pnpm@8.8.0"
+  "build": {
+    "externals": [
+      "h3",
+      "consola"
+    ]
+  }
 }

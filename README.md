@@ -1,147 +1,63 @@
-# @nuxtjs/robots
+<h1 align='center'>@nuxtjs/robots</h1>
 
-[![npm version][npm-version-src]][npm-version-href]
-[![npm downloads][npm-downloads-src]][npm-downloads-href]
-[![Github Actions CI][github-actions-ci-src]][github-actions-ci-href]
-[![Codecov][codecov-src]][codecov-href]
-[![License][license-src]][license-href]
+<p align="center">
+<a href='https://github.com/nuxt-modules/robots/actions/workflows/test.yml'>
+</a>
+<a href="https://www.npmjs.com/package/@nuxtjs/robots" target="__blank"><img src="https://img.shields.io/npm/v/@nuxtjs/robots?style=flat&colorA=002438&colorB=28CF8D" alt="NPM version"></a>
+<a href="https://www.npmjs.com/package/@nuxtjs/robots" target="__blank"><img alt="NPM Downloads" src="https://img.shields.io/npm/dm/@nuxtjs/robots?flat&colorA=002438&colorB=28CF8D"></a>
+<a href="https://github.com/nuxt-modules/robots" target="__blank"><img alt="GitHub stars" src="https://img.shields.io/github/stars/nuxt-modules/robots?flat&colorA=002438&colorB=28CF8D"></a>
+</p>
 
-> A Nuxt.js module that injects a middleware to generate a robots.txt file
+<p align="center">
+Tame the robots crawling and indexing your Nuxt site with ease.
+</p>
 
-- [📖 **Release Notes**](./CHANGELOG.md)
+<p align="center">
+<table>
+<tbody>
+<td align="center">
+<img width="800" height="0" /><br>
+<i>Status:</i> <a href="https://github.com/nuxt-modules/robots/releases/tag/v4.0.0">v3 Released 🎉</a></b> <br>
+<sup> Please report any issues 🐛</sup><br>
+<sub>Made possible by my <a href="https://github.com/sponsors/harlan-zw">Sponsor Program 💖</a><br> Follow me <a href="https://twitter.com/harlan_zw">@harlan_zw</a> 🐦 • Join <a href="https://discord.gg/275MBUBvgP">Discord</a> for help</sub><br>
+<img width="800" height="0" />
+</td>
+</tbody>
+</table>
+</p>
 
 ## Features
 
-- Nuxt 3 and Nuxt Bridge support
-- Generate `robots.txt` for static mode
-- Add middleware for `robots.txt`
+- 🤖 Merge in your existing robots.txt or programmatically create a new one
+- 🗿 Automatic `X-Robots-Tag` header and `<meta name="robots" ...>` meta tag
+- 🔄 Integrates with route rules and runtime hooks
+- 🔒 Disables non-production environments from being indexed
+- Solves common issues and best practice default config
 
-## Setup
+## Installation
 
-1. Add `@nuxtjs/robots` dependency to your project
+Install `@nuxtjs/robots` dependency to your project:
 
 ```bash
-yarn add @nuxtjs/robots # or npm install @nuxtjs/robots
+npx nuxi@latest module add robots
 ```
 
-2. Add `@nuxtjs/robots` to the `modules` section of `nuxt.config.js`
+# Documentation
 
-```js
-export default {
-  modules: [
-    // Simple usage
-    '@nuxtjs/robots',
+[📖 Read the full documentation](https://nuxtseo.com/robots) for more information.
 
-    // With options
-    ['@nuxtjs/robots', { /* module options */ }]
-  ]
-}
-```
+## Demos
 
-### Using top level options
+- [Default - StackBlitz](https://stackblitz.com/edit/nuxt-starter-zycxux?file=public%2F_robots.txt)
 
-```js
-export default {
-  modules: [
-    '@nuxtjs/robots'
-  ],
-  robots: {
-    /* module options */
-  }
-}
-```
+## Sponsors
 
-## Options
-
-### configPath
-
-- Type: `String`
-- Default: `robots.config`
-
-### rules
-
-- Type: `Object|Array`
-- Default: 
-```js
-{
-  UserAgent: '*',
-  Disallow: ''
-}
-```
-
-## Robots config
-
-If you need to use function in any rule, you need to create a config file through the `configPath` option
-
-```js
-export default [
-  { UserAgent: '*' },
-  { Disallow: '/' },
-  { BlankLine: true },
-  { Comment: 'Comment here' },
-      
-  // Be aware that this will NOT work on target: 'static' mode
-  { Sitemap: (req) => `https://${req.headers.host}/sitemap.xml` }
-]
-```
-
-output: 
-
-```txt
-User-agent: *
-Disallow: /
-
-# Comment here
-Sitemap: https://robots.nuxtjs.org/sitemap.xml
-```
-
-### The keys and values available:
-
-- UserAgent = `User-agent`
-- CrawlDelay = `Crawl-delay`
-- Disallow = `Disallow`
-- Disavow = `Disavow`
-- Allow = `Allow`
-- Host = `Host`
-- Sitemap = `Sitemap`
-- CleanParam = `Clean-param`
-- Comment = `# Comment`
-- BlankLine = `Add blank line`
-
-**Note:** Don't worry, keys are parsed with case insensitivity and special characters.
-
-## Contributing
-
-You can contribute to this module online with CodeSandBox:
-
-[![Edit @nuxtjs/robots](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/nuxt-community/robots-module/?fontsize=14&hidenavigation=1&theme=dark)
-
-Or locally:
-
-1. Clone this repository
-2. Install dependencies using `pnpm install`
-3. Prepare development server using `pnpm dev:prepare`
-4. Build module using `pnpm build`
-5. Launch playground using `pnpm dev`
+<p align="center">
+  <a href="https://raw.githubusercontent.com/harlan-zw/static/main/sponsors.svg">
+    <img src='https://raw.githubusercontent.com/harlan-zw/static/main/sponsors.svg'/>
+  </a>
+</p>
 
 ## License
 
-[MIT License](./LICENSE)
-
-Copyright (c) - Nuxt Community
-
-<!-- Badges -->
-[npm-version-src]: https://img.shields.io/npm/v/@nuxtjs/robots/latest.svg
-[npm-version-href]: https://npmjs.com/package/@nuxtjs/robots
-
-[npm-downloads-src]: https://img.shields.io/npm/dt/@nuxtjs/robots.svg
-[npm-downloads-href]: https://npmjs.com/package/@nuxtjs/robots
-
-[github-actions-ci-src]: https://github.com/nuxt-community/robots-module/workflows/ci/badge.svg
-[github-actions-ci-href]: https://github.com/nuxt-community/robots-module/actions?query=workflow%3Aci
-
-[codecov-src]: https://img.shields.io/codecov/c/github/nuxt-community/robots-module.svg
-[codecov-href]: https://codecov.io/gh/nuxt-community/robots-module
-
-[license-src]: https://img.shields.io/npm/l/@nuxtjs/robots.svg
-[license-href]: https://npmjs.com/package/@nuxtjs/robots
+MIT License © 2022-PRESENT [Harlan Wilton](https://github.com/harlan-zw)
