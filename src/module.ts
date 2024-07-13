@@ -16,7 +16,7 @@ import type { Preset } from 'unimport'
 import { readPackageJSON } from 'pkg-types'
 import { asArray, indexableFromGroup, normaliseRobotsRouteRule, parseRobotsTxt, validateRobots } from './runtime/util'
 import { extendTypes, isNuxtGenerate, resolveNitroPreset } from './kit'
-import type { Arrayable, AutoI18nConfig, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
+import type { Arrayable, AutoI18nConfig, Robots3Rules, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
 import { NonHelpfulBots } from './const'
 import { resolveI18nConfig, splitPathForI18nLocales } from './i18n'
 import { setupDevToolsUI } from './devtools'
@@ -67,6 +67,10 @@ export interface ModuleOptions {
    *  ]
    */
   groups: RobotsGroupInput[]
+  /**
+   * @deprecated backwards compatibility with Nuxt Robots v3
+   */
+  rules: Robots3Rules | Robots3Rules[]
   /**
    * The value to use when the site is indexable.
    *
@@ -170,6 +174,39 @@ export default defineNuxtModule<ModuleOptions>({
     if (config.enabled === false) {
       logger.debug('The module is disabled, skipping setup.')
       return
+    }
+
+    // TODO remove with v5
+    if (config.rules) {
+      // warn v3 usage and convert to v4
+      logger.warn('The `rules` option is deprecated, please use the `groups` option instead.')
+      if (!config.groups?.length) {
+        const group = {}
+        const keyMap = {
+          UserAgent: 'userAgent',
+          Disallow: 'disallow',
+          Allow: 'allow',
+          Sitemap: 'sitemap',
+        }
+        const rules = asArray(config.rules)
+        for (const k in rules) {
+          // need to map all keys within the rules
+          const rule = rules[k]
+          for (const k2 in rule) {
+            const key = keyMap[k2]
+            if (key) {
+              if (group[key]) {
+                group[key] = asArray(group[key])
+                group[key].push(rule[k2])
+              }
+              else {
+                group[key] = rule[k2]
+              }
+            }
+          }
+        }
+        config.groups.push(group)
+      }
     }
 
     const resolvedAutoI18n = typeof config.autoI18n === 'boolean' ? false : (config.autoI18n || await resolveI18nConfig())

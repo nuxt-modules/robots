@@ -9,6 +9,19 @@ export interface ParsedRobotsTxt {
 
 export type RobotsGroupInput = GoogleInput | YandexInput
 
+export interface Robots3Rules {
+  UserAgent?: string
+  BlankLine?: true
+  Comment?: string
+  Disallow?: string
+  Allow?: string
+  Host?: string
+  Sitemap?: string
+  // yandex only
+  CleanParam?: string
+  CrawlDelay?: string
+}
+
 // google is the base input
 export interface GoogleInput {
   comment?: Arrayable<string>
