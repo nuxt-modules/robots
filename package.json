@@ -2,7 +2,7 @@
   "name": "@nuxtjs/robots",
   "type": "module",
   "version": "4.0.0-rc.21",
-  "packageManager": "pnpm@9.4.0",
+  "packageManager": "pnpm@9.5.0",
   "description": "Tame the robots crawling and indexing your Nuxt site with ease.",
   "author": {
     "name": "Harlan Wilton",
@@ -72,7 +72,7 @@
     "ufo": "^1.5.3"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "2.22.0",
+    "@antfu/eslint-config": "2.22.2",
     "@headlessui/vue": "^1.7.22",
     "@iconify-json/carbon": "^1.1.36",
     "@iconify-json/logos": "^1.1.43",
@@ -95,7 +95,7 @@
     "execa": "^9.3.0",
     "firebase-functions": "^5.0.1",
     "nuxt": "^3.12.3",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.3",
     "unocss": "^0.61.3",
     "vitest": "^2.0.2"
   },
