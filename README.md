@@ -12,12 +12,14 @@
 Tame the robots crawling and indexing your Nuxt site with ease.
 </p>
 
+For `@nuxtjs/robots` v3.0 usage, please use the [v3.x](https://github.com/nuxt-modules/robots/tree/v3.x) tag.
+
 <p align="center">
 <table>
 <tbody>
 <td align="center">
 <img width="800" height="0" /><br>
-<i>Status:</i> <a href="https://github.com/nuxt-modules/robots/releases/tag/v4.0.0">v3 Released 🎉</a></b> <br>
+<i>Status:</i> <a href="https://github.com/nuxt-modules/robots/releases/tag/v4.0.0">v4.0 Merged with <a href="https://github.com/nuxt-modules/robots/issues/116">Nuxt Simple Robots</a></a></b> <br>
 <sup> Please report any issues 🐛</sup><br>
 <sub>Made possible by my <a href="https://github.com/sponsors/harlan-zw">Sponsor Program 💖</a><br> Follow me <a href="https://twitter.com/harlan_zw">@harlan_zw</a> 🐦 • Join <a href="https://discord.gg/275MBUBvgP">Discord</a> for help</sub><br>
 <img width="800" height="0" />
@@ -35,6 +37,8 @@ Tame the robots crawling and indexing your Nuxt site with ease.
 - Solves common issues and best practice default config
 
 ## Installation
+
+> For `@nuxtjs/robots` v3.0 usage, please use the [v3.x](https://github.com/nuxt-modules/robots/tree/v3.x) tag.
 
 Install `@nuxtjs/robots` dependency to your project:
 
