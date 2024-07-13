@@ -70,7 +70,7 @@ export interface ModuleOptions {
   /**
    * @deprecated backwards compatibility with Nuxt Robots v3
    */
-  rules: Robots3Rules | Robots3Rules[]
+  rules?: Robots3Rules | Robots3Rules[]
   /**
    * The value to use when the site is indexable.
    *
@@ -181,21 +181,25 @@ export default defineNuxtModule<ModuleOptions>({
       // warn v3 usage and convert to v4
       logger.warn('The `rules` option is deprecated, please use the `groups` option instead.')
       if (!config.groups?.length) {
-        const group = {}
-        const keyMap = {
+        const group: RobotsGroupInput = {}
+        const keyMap: Robots3Rules = {
           UserAgent: 'userAgent',
           Disallow: 'disallow',
           Allow: 'allow',
-          Sitemap: 'sitemap',
-        }
+        } as const
         const rules = asArray(config.rules)
         for (const k in rules) {
           // need to map all keys within the rules
           const rule = rules[k]
           for (const k2 in rule) {
-            const key = keyMap[k2]
-            if (key) {
+            const key = (keyMap[k2 as keyof Robots3Rules] || k2) as (keyof RobotsGroupInput | 'Sitemap')
+            if (key === 'Sitemap') {
+              config.sitemap = asArray(config.sitemap)
+              config.sitemap.push(rule[k2])
+            }
+            else if (keyMap[k2 as keyof Robots3Rules]) {
               if (group[key]) {
+                // @ts-expect-error untyped
                 group[key] = asArray(group[key])
                 group[key].push(rule[k2])
               }
