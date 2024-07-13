@@ -173,6 +173,21 @@ export default defineNuxtModule<ModuleOptions>({
     logger.level = (config.debug || nuxt.options.debug) ? 4 : 3
     if (config.enabled === false) {
       logger.debug('The module is disabled, skipping setup.')
+      // need to mock the composables to allow module still to work when disabled
+      ;['defineRobotMeta', 'useRobotsRule']
+        .forEach((name) => {
+          addImports({ name, from: resolve(`./runtime/nuxt/composables/mock`) })
+        })
+      nuxt.options.nitro = nuxt.options.nitro || {}
+      nuxt.options.nitro.imports = nuxt.options.nitro.imports || {}
+      nuxt.options.nitro.imports.presets = nuxt.options.nitro.imports.presets || []
+      nuxt.options.nitro.imports.presets.push({
+        from: resolve('./runtime/nitro/composables/mock'),
+        imports: [
+          'getPathRobotConfig',
+          'getSiteRobotConfig',
+        ],
+      })
       return
     }
 
