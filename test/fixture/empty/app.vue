@@ -1,3 +1,0 @@
-<template>
-  <NuxtWelcome />
-</template>
