@@ -1,11 +1,9 @@
 import { computed, ref } from 'vue'
 import { useDebounceFn, useLocalStorage } from '@vueuse/core'
 import { withBase } from 'ufo'
-import type { _AsyncData } from '#app/composables/asyncData'
 
 export const envTab = useLocalStorage('nuxt-robots:env-tab', 'Production')
 
-export const globalDebug = ref<_AsyncData<{ indexable: boolean, hints: string[], runtimeConfig: { version: string } }, any>>()
 export const refreshTime = ref(Date.now())
 export const globalRefreshTime = ref(Date.now())
 

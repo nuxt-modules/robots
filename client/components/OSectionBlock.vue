@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useVModel } from '@vueuse/core'
+import { ref } from '#imports'
 
 const props = withDefaults(
   defineProps<{
@@ -20,9 +20,14 @@ const props = withDefaults(
   },
 )
 
-const open = useVModel(props, 'open')
+const emits = defineEmits<{
+  'update:modelValue': [value: boolean]
+}>()
+
+const open = ref(props.open)
 function onToggle(e: any) {
   open.value = e.target.open
+  emits('update:modelValue', e.target.open)
 }
 </script>
 

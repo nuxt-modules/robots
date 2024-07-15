@@ -4,6 +4,7 @@ import { ref } from 'vue'
 import { useColorMode } from '#imports'
 
 export const shiki = ref<Highlighter>()
+const mode = useColorMode()
 
 // TODO: Only loading when needed
 getHighlighter({
@@ -18,7 +19,6 @@ getHighlighter({
 }).then((i) => { shiki.value = i })
 
 export function highlight(code: string, lang: BundledLanguage) {
-  const mode = useColorMode()
   if (!shiki.value)
     return code
   return shiki.value.codeToHtml(code, {

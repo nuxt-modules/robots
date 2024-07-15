@@ -3,26 +3,52 @@ import 'floating-vue/dist/style.css'
 import { useLocalStorage } from '@vueuse/core'
 import {
   envTab,
-  globalDebug,
   path,
   refreshSources,
 } from './util/logic'
 import {
+  appFetch,
   colorMode,
   computed,
-  fetchGlobalDebug,
   highlight,
+  useAsyncData,
   useHead,
 } from '#imports'
-import { fetchPageDebug } from '~/composables/fetch'
 
 useHead({
-  title: 'Nuxt Simple Robots',
+  title: 'Nuxt Robots',
 })
 
-globalDebug.value = await fetchGlobalDebug()
+const globalDebugFetch = useAsyncData<{ indexable: boolean, hints: string[], runtimeConfig: { version: string } }>(() => {
+  if (!appFetch.value || typeof appFetch.value !== 'function') {
+    return null
+  }
+  const query: Record<string, any> = {}
+  if (envTab.value === 'Production')
+    query.mockProductionEnv = true
+  return appFetch.value('/__robots__/debug.json', {
+    query,
+  })
+}, {
+  watch: [envTab, appFetch],
+})
+const { data: globalDebug } = globalDebugFetch
 
-const pathDebug = await fetchPageDebug()
+const pathDebug = useAsyncData<any>(() => {
+  if (!appFetch.value || typeof appFetch.value !== 'function') {
+    return null
+  }
+  const query: Record<string, any> = {
+    path: path.value,
+  }
+  if (envTab.value === 'Production')
+    query.mockProductionEnv = true
+  return appFetch.value('/__robots__/debug-path.json', {
+    query,
+  })
+}, {
+  watch: [envTab, path, appFetch],
+})
 
 const pathDebugData = computed(() => pathDebug.data?.value)
 
@@ -33,7 +59,7 @@ useHead({
   },
 })
 
-const globalDebugData = computed(() => globalDebug.value?.data)
+const globalDebugData = computed(() => globalDebug.value || {})
 
 const version = computed(() => {
   return globalDebugData.value?.runtimeConfig?.version || ''
@@ -142,11 +168,11 @@ const tab = useLocalStorage('nuxt-robots:tab', 'overview')
     </header>
     <div class="flex-row flex p4 h-full" style="min-height: calc(100vh - 64px);">
       <main class="mx-auto flex flex-col w-full bg-white dark:bg-black dark:bg-dark-700 bg-light-200 ">
-        <div v-if="globalDebug!.pending">
+        <div v-if="!globalDebug || globalDebugFetch.status.value === 'pending'">
           <NLoading />
         </div>
-        <div v-if="globalDebug!.error">
-          {{ globalDebug!.error }}
+        <div v-else-if="globalDebugFetch.error.value">
+          {{ globalDebugFetch.error.value }}
         </div>
         <div v-else-if="tab === 'overview'" class="h-full relative max-h-full">
           <fieldset
