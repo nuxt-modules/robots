@@ -1,9 +1,9 @@
-import NuxtSimpleRobots from '../../../src/module'
+import NuxteRobots from '../../../src/module'
 
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
   modules: [
-    NuxtSimpleRobots,
+    NuxteRobots,
   ],
   site: {
     url: 'https://nuxtseo.com',

@@ -2,11 +2,11 @@ import { resolve } from 'node:path'
 import { defineNuxtConfig } from 'nuxt/config'
 import { startSubprocess } from '@nuxt/devtools-kit'
 import { defineNuxtModule } from '@nuxt/kit'
-import NuxtSimpleRobots from '../src/module'
+import NuxtRobots from '../src/module'
 
 export default defineNuxtConfig({
   modules: [
-    NuxtSimpleRobots,
+    NuxtRobots,
     /**
      * Start a sub Nuxt Server for developing the client
      *
