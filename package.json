@@ -97,7 +97,7 @@
     "nuxt": "^3.12.3",
     "typescript": "^5.5.3",
     "unocss": "^0.61.3",
-    "vitest": "^2.0.2"
+    "vitest": "^2.0.3"
   },
   "build": {
     "externals": [
