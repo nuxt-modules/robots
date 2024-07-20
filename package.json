@@ -69,7 +69,7 @@
     "ufo": "^1.5.4"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "2.22.4",
+    "@antfu/eslint-config": "^2.23.0",
     "@headlessui/vue": "^1.7.22",
     "@iconify-json/carbon": "^1.1.36",
     "@iconify-json/logos": "^1.1.43",
@@ -94,7 +94,13 @@
     "nuxt": "^3.12.4",
     "typescript": "^5.5.3",
     "unocss": "^0.61.5",
-    "vitest": "^2.0.3"
+    "vitest": "^2.0.3",
+    "vue": "3.4.31",
+    "vue-router": "^4.4.0"
+  },
+  "resolutions": {
+    "nuxt": "3.12.3",
+    "@nuxt/schema": "3.12.3"
   },
   "build": {
     "externals": [
