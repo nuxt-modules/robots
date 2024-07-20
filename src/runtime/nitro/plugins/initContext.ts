@@ -1,6 +1,7 @@
 import type { NitroApp } from 'nitropack'
 import { withoutTrailingSlash } from 'ufo'
 import { resolveRobotsTxtContext } from '../util'
+import { logger } from '../logger'
 import { defineNitroPlugin, getRouteRules, useRuntimeConfig } from '#imports'
 
 const PRERENDER_NO_SSR_ROUTES = new Set(['/index.html', '/200.html', '/404.html'])
@@ -13,8 +14,17 @@ export default defineNitroPlugin(async (nitroApp: NitroApp) => {
   await resolveRobotsTxtContext(undefined, nitroApp)
   const nuxtContentUrls = new Set<string>()
   if (usingNuxtContent) {
-    const urls = await (await nitroApp.localFetch('/__robots__/nuxt-content.json', {})).json()
-    urls.forEach((url: string) => nuxtContentUrls.add(withoutTrailingSlash(url)))
+    let urls: string[] | undefined
+    try {
+      urls = await (await nitroApp.localFetch('/__robots__/nuxt-content.json', {})).json()
+    }
+    catch (e) {
+      logger.error('Failed to read robot rules from content files.', e)
+      // silently fail I suppose
+    }
+    if (urls && Array.isArray(urls) && urls.length) {
+      urls.forEach((url: string) => nuxtContentUrls.add(withoutTrailingSlash(url)))
+    }
   }
   nitroApp._robots.nuxtContentUrls = nuxtContentUrls
 

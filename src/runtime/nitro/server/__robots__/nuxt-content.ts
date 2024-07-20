@@ -1,12 +1,19 @@
 import { defineEventHandler } from 'h3'
-import type { ParsedContent } from '@nuxt/content/dist/runtime/types'
+import type { ParsedContent } from '@nuxt/content'
+import { logger } from '../../logger'
 
 // @ts-expect-error alias module
 import { serverQueryContent } from '#content/server'
 
 export default defineEventHandler(async (e) => {
-  const contentList = (await serverQueryContent(e).find()) as ParsedContent[]
-  return contentList.map((c) => {
+  const content: ParsedContent[] = []
+  try {
+    content.push(...(await serverQueryContent(e).find()) as ParsedContent[])
+  }
+  catch (e) {
+    logger.error('Error querying Nuxt content', e)
+  }
+  return content.map((c) => {
     if (c._draft || c._extension !== 'md' || c._partial)
       return false
     if (c.path) {
