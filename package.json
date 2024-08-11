@@ -69,7 +69,7 @@
     "ufo": "^1.5.4"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^2.25.0",
+    "@antfu/eslint-config": "^2.25.1",
     "@headlessui/vue": "^1.7.22",
     "@iconify-json/carbon": "^1.1.37",
     "@iconify-json/logos": "^1.1.44",
