@@ -417,6 +417,7 @@ export default defineNuxtModule<ModuleOptions>({
         credits: config.credits,
         groups: config.groups,
         sitemap: config.sitemap,
+        header: config.header,
         robotsEnabledValue: config.robotsEnabledValue,
         robotsDisabledValue: config.robotsDisabledValue,
         // @ts-expect-error untyped
