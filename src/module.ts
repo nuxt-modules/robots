@@ -14,7 +14,13 @@ import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
 import { relative } from 'pathe'
 import type { Preset } from 'unimport'
 import { readPackageJSON } from 'pkg-types'
-import { asArray, indexableFromGroup, normaliseRobotsRouteRule, parseRobotsTxt, validateRobots } from './runtime/util'
+import {
+  asArray,
+  normaliseRobotsRouteRule,
+  normalizeGroup,
+  parseRobotsTxt,
+  validateRobots,
+} from './runtime/util'
 import { extendTypes, isNuxtGenerate, resolveNitroPreset } from './kit'
 import type { Arrayable, AutoI18nConfig, Robots3Rules, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
 import { NonHelpfulBots } from './const'
@@ -331,12 +337,7 @@ export default defineNuxtModule<ModuleOptions>({
       config.disallow = asArray(config.disallow)
       config.allow = asArray(config.allow)
       // make sure any groups have a user agent, if not we set it to *
-      config.groups = config.groups.map((group) => {
-        group.userAgent = group.userAgent ? asArray(group.userAgent) : ['*']
-        group.disallow = asArray(group.disallow)
-        group.allow = asArray(group.allow)
-        return group
-      })
+      config.groups = config.groups.map(normalizeGroup)
       // find an existing stack with a user agent that is equal to "['*']"
       const existingGroup = (config.groups as RobotsGroupResolved[]).find(stack => stack.userAgent.length === 1 && stack.userAgent[0] === '*')
       if (existingGroup) {
@@ -363,16 +364,16 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt.options.routeRules = nuxt.options.routeRules || {}
       // convert robot routeRules to header routeRules for static hosting
       Object.entries(nuxt.options.routeRules).forEach(([route, rules]) => {
-        const url = route.split('/').map(segment => segment.startsWith(':') ? '*' : segment).join('/')
-        const groupIndexable = indexableFromGroup(config.groups, url)
-        const robotRules = normaliseRobotsRouteRule(rules, groupIndexable, config.robotsDisabledValue, config.robotsEnabledValue)
-        // single * is supported but ignored
-        // @ts-expect-error untyped
-        nuxt.options.routeRules[route] = defu({
-          headers: {
-            'X-Robots-Tag': robotRules.rule,
-          },
-        }, nuxt.options.routeRules?.[route])
+        const robotRule = normaliseRobotsRouteRule(rules)
+        // only if a rule has been specified as robots.txt will cover disallows
+        if (robotRule && !robotRule.allow && robotRule.rule) {
+          // @ts-expect-error untyped
+          nuxt.options.routeRules[route] = defu({
+            headers: {
+              'X-Robots-Tag': robotRule.rule,
+            },
+          }, nuxt.options.routeRules?.[route])
+        }
       })
 
       const extraDisallows = new Set<string>()
@@ -380,9 +381,8 @@ export default defineNuxtModule<ModuleOptions>({
         // iterate the route rules and add any non indexable rules to disallow
         Object.entries(nuxt.options.routeRules || {}).forEach(([route, rules]) => {
           const url = route.split('/').map(segment => segment.startsWith(':') ? '*' : segment).join('/')
-          const groupIndexable = indexableFromGroup(config.groups, url)
-          const { indexable } = normaliseRobotsRouteRule(rules, groupIndexable, config.robotsDisabledValue, config.robotsEnabledValue)
-          if (!indexable) {
+          const robotsRule = normaliseRobotsRouteRule(rules)
+          if (robotsRule && !robotsRule.allow) {
             // single * is supported but ignored
             extraDisallows.add(url.replaceAll('**', '*'))
           }
@@ -400,6 +400,8 @@ export default defineNuxtModule<ModuleOptions>({
           group.disallow = asArray(group.disallow || []).map(path => splitPathForI18nLocales(path, i18n)).flat()
         }
       }
+
+      config.groups = config.groups.map(normalizeGroup)
 
       nuxt.options.runtimeConfig['nuxt-robots'] = {
         version: version || '',

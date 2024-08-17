@@ -20,10 +20,10 @@ onDevtoolsClientConnected(async (client) => {
   })
   const $route = client.host.nuxt.vueApp.config.globalProperties?.$route
   query.value = $route.query
-  path.value = $route.path || '/'
+  path.value = $route?.fullPath || '/'
   client.host.nuxt.$router.afterEach((route) => {
     query.value = route.query
-    path.value = route.path
+    path.value = route.fullPath
     refreshSources()
   })
   devtools.value = client.devtools
