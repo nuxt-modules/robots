@@ -19,7 +19,7 @@ await setup({
           ],
           disallow: [
             '/test/',
-            '/test3/',
+            '/test3',
           ],
         },
         {
@@ -42,7 +42,7 @@ describe('stack', () => {
       "# START nuxt-robots (indexable)
       User-agent: Googlebot
       Disallow: /test/
-      Disallow: /test3/
+      Disallow: /test3
 
       User-agent: Bingbot
       User-agent: Yandex
@@ -52,11 +52,23 @@ describe('stack', () => {
       Allow: /secret/exception
       Disallow: /secret
       Disallow: /admin
+      Disallow: /*/hidden
+      Disallow: /users/*/hidden
+      Disallow: /?a=
+      Disallow: /visible?*a=
       Disallow: /*/account
       Disallow: /sub/*
 
       Sitemap: https://nuxtseo.com/sitemap.xml
       # END nuxt-robots"
     `)
+  })
+  it('blocks GoogleBot from /test3', async () => {
+    const { headers } = await $fetch.raw('/test3', {
+      headers: {
+        'User-Agent': 'Googlebot',
+      },
+    })
+    expect(headers.get('x-robots-tag')).toMatchInlineSnapshot(`"noindex, nofollow"`)
   })
 })
