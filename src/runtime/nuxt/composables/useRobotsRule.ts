@@ -37,7 +37,9 @@ export function useRobotsRule(rule?: MaybeRef<boolean | string>) {
       _rule = _rule ? config['nuxt-robots'].robotsEnabledValue : config['nuxt-robots'].robotsDisabledValue
     }
     event.context.robots.rule = _rule
-    setHeader(event, 'X-Robots-Tag', _rule)
+    if (config['nuxt-robots'].header) {
+      setHeader(event, 'X-Robots-Tag', _rule)
+    }
     useServerHead({
       meta: [
         {

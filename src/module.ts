@@ -30,6 +30,12 @@ export interface ModuleOptions {
    */
   enabled: boolean
   /**
+   * Should a `X-Robots-Tag` header be added to the response.
+   *
+   * @default true
+   */
+  header: boolean
+  /**
    * Should a `<meta name="robots" content="<>">` tag be added to the head.
    *
    * @default true
@@ -161,6 +167,7 @@ export default defineNuxtModule<ModuleOptions>({
     groups: [],
     blockNonSeoBots: false,
     mergeWithRobotsTxtPath: true,
+    header: true,
     metaTag: true,
     cacheControl: 'max-age=14400, must-revalidate',
     robotsEnabledValue: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
@@ -362,18 +369,20 @@ export default defineNuxtModule<ModuleOptions>({
 
       nuxt.options.routeRules = nuxt.options.routeRules || {}
       // convert robot routeRules to header routeRules for static hosting
-      Object.entries(nuxt.options.routeRules).forEach(([route, rules]) => {
-        const url = route.split('/').map(segment => segment.startsWith(':') ? '*' : segment).join('/')
-        const groupIndexable = indexableFromGroup(config.groups, url)
-        const robotRules = normaliseRobotsRouteRule(rules, groupIndexable, config.robotsDisabledValue, config.robotsEnabledValue)
-        // single * is supported but ignored
-        // @ts-expect-error untyped
-        nuxt.options.routeRules[route] = defu({
-          headers: {
-            'X-Robots-Tag': robotRules.rule,
-          },
-        }, nuxt.options.routeRules?.[route])
-      })
+      if (config.header) {
+        Object.entries(nuxt.options.routeRules).forEach(([route, rules]) => {
+          const url = route.split('/').map(segment => segment.startsWith(':') ? '*' : segment).join('/')
+          const groupIndexable = indexableFromGroup(config.groups, url)
+          const robotRules = normaliseRobotsRouteRule(rules, groupIndexable, config.robotsDisabledValue, config.robotsEnabledValue)
+          // single * is supported but ignored
+          // @ts-expect-error untyped
+          nuxt.options.routeRules[route] = defu({
+            headers: {
+              'X-Robots-Tag': robotRules.rule,
+            },
+          }, nuxt.options.routeRules?.[route])
+        })
+      }
 
       const extraDisallows = new Set<string>()
       if (config.disallowNonIndexableRoutes) {
@@ -408,6 +417,7 @@ export default defineNuxtModule<ModuleOptions>({
         credits: config.credits,
         groups: config.groups,
         sitemap: config.sitemap,
+        header: config.header,
         robotsEnabledValue: config.robotsEnabledValue,
         robotsDisabledValue: config.robotsDisabledValue,
         // @ts-expect-error untyped
