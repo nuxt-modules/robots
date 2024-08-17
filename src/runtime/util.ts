@@ -184,7 +184,7 @@ export function asArray(v: any) {
 }
 
 export function normalizeGroup(group: RobotsGroupInput): RobotsGroupResolved {
-  const disallow = asArray(group.disallow).filter(rule => Boolean(rule))
+  const disallow = asArray(group.disallow) // we can have empty disallow
   const allow = asArray(group.allow).filter(rule => Boolean(rule))
   return <RobotsGroupResolved> {
     ...group,

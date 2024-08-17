@@ -374,15 +374,15 @@ export default defineNuxtModule<ModuleOptions>({
         Object.entries(nuxt.options.routeRules).forEach(([route, rules]) => {
           const robotRule = normaliseRobotsRouteRule(rules)
           // only if a rule has been specified as robots.txt will cover disallows
-        if (robotRule && !robotRule.allow && robotRule.rule) {
+          if (robotRule && !robotRule.allow && robotRule.rule) {
           // @ts-expect-error untyped
-          nuxt.options.routeRules[route] = defu({
-            headers: {
-              'X-Robots-Tag': robotRule.rule,
-            },
-          }, nuxt.options.routeRules?.[route])
-        }
-      })
+            nuxt.options.routeRules[route] = defu({
+              headers: {
+                'X-Robots-Tag': robotRule.rule,
+              },
+            }, nuxt.options.routeRules?.[route])
+          }
+        })
       }
 
       const extraDisallows = new Set<string>()

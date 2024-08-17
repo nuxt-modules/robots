@@ -20,6 +20,10 @@ describe('default', () => {
       Allow: /secret/exception
       Disallow: /secret
       Disallow: /admin
+      Disallow: /*/hidden
+      Disallow: /users/*/hidden
+      Disallow: /?a=
+      Disallow: /visible?*a=
       Disallow: /*/account
       Disallow: /sub/*
 
