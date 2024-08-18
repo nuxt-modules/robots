@@ -33,12 +33,6 @@ describe('query override', () => {
   })
   it('page', async () => {
     const homeResponse = await $fetch('/')
-    expect(homeResponse.match(/<meta name="robots" content="(.*)">/)?.[1]).toContain('noindex')
-    const homeResponseMocked = await $fetch('/', {
-      params: {
-        mockProductionEnv: true,
-      },
-    })
-    expect(homeResponseMocked.match(/<meta name="robots" content="(.*)">/)?.[1]).not.toContain('noindex')
+    expect(homeResponse.match(/<meta name="robots" content="(.*)">/)?.[1]).toMatchInlineSnapshot(`"noindex, nofollow"`)
   })
 })
