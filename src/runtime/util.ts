@@ -101,6 +101,70 @@ function validateGroupRules(group: ParsedRobotsTxt['groups'][number], errors: st
   })
 }
 
+function matches(pattern: string, path: string): boolean {
+  const pathLength = path.length
+  const patternLength = pattern.length
+  const matchingLengths: number[] = Array.from({ length: pathLength + 1 }).fill(0)
+  let numMatchingLengths = 1
+
+  let p = 0
+  while (p < patternLength) {
+    if (pattern[p] === '$' && p + 1 === patternLength) {
+      return matchingLengths[numMatchingLengths - 1] === pathLength
+    }
+
+    if (pattern[p] === '*') {
+      numMatchingLengths = pathLength - matchingLengths[0] + 1
+      for (let i = 1; i < numMatchingLengths; i++) {
+        matchingLengths[i] = matchingLengths[i - 1] + 1
+      }
+    }
+    else {
+      let numMatches = 0
+      for (let i = 0; i < numMatchingLengths; i++) {
+        const matchLength = matchingLengths[i]
+        if (matchLength < pathLength && path[matchLength] === pattern[p]) {
+          matchingLengths[numMatches++] = matchLength + 1
+        }
+      }
+      if (numMatches === 0) {
+        return false
+      }
+      numMatchingLengths = numMatches
+    }
+    p++
+  }
+
+  return true
+}
+export function matchPathToRule(path: string, rules: RobotsGroupResolved['_rules']): RobotsGroupResolved['_rules'][number] | null {
+  let matchedRule: RobotsGroupResolved['_rules'][number] | null = null
+
+  const rulesLength = rules.length
+  let i = 0
+  while (i < rulesLength) {
+    const rule = rules[i]
+    if (!matches(rule.pattern, path)) {
+      i++
+      continue
+    }
+
+    if (!matchedRule || rule.pattern.length > matchedRule.pattern.length) {
+      matchedRule = rule
+    }
+    else if (
+      rule.pattern.length === matchedRule.pattern.length
+      && rule.allow
+      && !matchedRule.allow
+    ) {
+      matchedRule = rule
+    }
+    i++
+  }
+
+  return matchedRule
+}
+
 export function validateRobots(robotsTxt: ParsedRobotsTxt) {
   const errors: string[] = []
   // 1. check that the include / exclude is either empty or starts with a slash OR a wildcard
@@ -119,23 +183,20 @@ export function asArray(v: any) {
   return typeof v === 'undefined' ? [] : (Array.isArray(v) ? v : [v])
 }
 
-export function indexableFromGroup(groups: RobotsGroupInput[], path: string) {
-  let indexable = true
-  const wildCardGroups = groups.filter((group: any) => asArray(group.userAgent).includes('*'))
-  for (const group of wildCardGroups) {
-    if (asArray(group.disallow).includes((rule: string) => rule === '/'))
-      return false
-    const hasDisallowRule = asArray(group.disallow)
-      // filter out empty rule
-      .filter(rule => Boolean(rule))
-      .some((rule: string) => path.startsWith(rule))
-    const hasAllowRule = asArray(group.allow).some((rule: string) => path.startsWith(rule))
-    if (hasDisallowRule && !hasAllowRule) {
-      indexable = false
-      break
-    }
+export function normalizeGroup(group: RobotsGroupInput): RobotsGroupResolved {
+  const disallow = asArray(group.disallow) // we can have empty disallow
+  const allow = asArray(group.allow).filter(rule => Boolean(rule))
+  return <RobotsGroupResolved> {
+    ...group,
+    userAgent: group.userAgent ? asArray(group.userAgent) : ['*'],
+    disallow,
+    allow,
+    _indexable: disallow.includes((rule: string) => rule === '/'),
+    _rules: [
+      ...disallow.map(r => ({ pattern: r, allow: false })),
+      ...allow.map(r => ({ pattern: r, allow: true })),
+    ],
   }
-  return indexable
 }
 
 export function generateRobotsTxt({ groups, sitemaps }: { groups: RobotsGroupResolved[], sitemaps: string[] }): string {
@@ -199,28 +260,27 @@ export function isInternalRoute(_path: string) {
   return lastSegment.includes('.') || path.startsWith('@')
 }
 
-export function normaliseRobotsRouteRule(rules: NitroRouteConfig, defaultIndexable: boolean, disabledValue: string, enabledValue: string) {
-  let isIndexingEnabled = defaultIndexable
+export function normaliseRobotsRouteRule(config: NitroRouteConfig) {
+  // parse allow
+  let allow: boolean | undefined
+  if (typeof config.robots === 'boolean')
+    allow = config.robots
+  else if (typeof config.robots === 'object' && typeof config.robots.indexable !== 'undefined')
+    allow = config.robots.indexable
+  else if (typeof config.index !== 'undefined')
+    allow = config.index
+  // parse rule
   let rule: string | undefined
-  if (typeof rules.robots === 'boolean')
-    isIndexingEnabled = rules.robots
-  else if (typeof rules.robots === 'object' && typeof rules.robots.indexable !== 'undefined')
-    isIndexingEnabled = rules.robots.indexable
-  else if (typeof rules.robots === 'object' && typeof rules.robots.rule !== 'undefined')
-    rule = rules.robots.rule
-
-  else if (typeof rules.robots === 'string')
-    rule = rules.robots
-
-  // rules takes precedence
-  if (rule)
-    isIndexingEnabled = !rule.includes('noindex')
-  // make sure they haven't opt-ed out using legacy rule
-  const indexable = (typeof rules.index === 'undefined' || rules.index) && isIndexingEnabled
-  if (!rule)
-    rule = indexable ? enabledValue : disabledValue
+  if (typeof config.robots === 'object' && typeof config.robots.rule !== 'undefined')
+    rule = config.robots.rule
+  else if (typeof config.robots === 'string')
+    rule = config.robots
+  if (rule && !allow)
+    allow = rule !== 'none' && !rule.includes('noindex')
+  if (typeof allow === 'undefined' && typeof rule === 'undefined')
+    return
   return {
-    indexable,
+    allow,
     rule,
   }
 }

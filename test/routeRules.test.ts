@@ -45,6 +45,10 @@ describe('route rule merging', () => {
       Allow: /secret/exception
       Disallow: /secret
       Disallow: /admin
+      Disallow: /*/hidden
+      Disallow: /users/*/hidden
+      Disallow: /?a=
+      Disallow: /visible?*a=
       Disallow: /*/account
       Disallow: /sub/*
       Disallow: /index-rule/*

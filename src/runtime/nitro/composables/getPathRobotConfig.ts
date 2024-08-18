@@ -1,11 +1,13 @@
 import type { H3Event } from 'h3'
 import { withoutTrailingSlash } from 'ufo'
-import { createNitroRouteRuleMatcher, withoutQuery } from '../kit'
-import { indexableFromGroup, normaliseRobotsRouteRule } from '../../util'
-import { useNitroApp, useRuntimeConfig } from '#imports'
+import { useNitroApp } from 'nitropack/runtime'
+import { getRequestHeader } from 'h3'
+import { createNitroRouteRuleMatcher } from '../kit'
+import { matchPathToRule, normaliseRobotsRouteRule } from '../../util'
+import { useRuntimeConfig } from '#imports'
 import { getSiteRobotConfig } from '#internal/nuxt-robots'
 
-export function getPathRobotConfig(e: H3Event, options?: { skipSiteIndexable?: boolean, path?: string }) {
+export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, skipSiteIndexable?: boolean, path?: string }) {
   // has already been resolved
   const { robotsDisabledValue, robotsEnabledValue, usingNuxtContent } = useRuntimeConfig()['nuxt-robots']
   if (!options?.skipSiteIndexable) {
@@ -16,14 +18,64 @@ export function getPathRobotConfig(e: H3Event, options?: { skipSiteIndexable?: b
       }
     }
   }
-  const path = withoutQuery(options?.path || e.path)
+  const path = options?.path || e.path
+  const userAgent = options?.userAgent || getRequestHeader(e, 'User-Agent')
   const nitroApp = useNitroApp()
-  nitroApp._robotsRuleMactcher = nitroApp._robotsRuleMactcher || createNitroRouteRuleMatcher()
-  const routeRules = nitroApp._robotsRuleMactcher(path)
-  let defaultIndexable = indexableFromGroup(nitroApp._robots.ctx.groups, path)
-  if (usingNuxtContent) {
-    if (nitroApp._robots?.nuxtContentUrls?.has(withoutTrailingSlash(path)))
-      defaultIndexable = false
+  // 1. robots txt no indexing
+  const groups = [
+    // run explicit user agent matching first
+    ...nitroApp._robots.ctx.groups.filter((g) => {
+      if (userAgent) {
+        return g.userAgent.some(ua => ua.toLowerCase().includes(userAgent.toLowerCase()))
+      }
+      return false
+    }),
+    // run wildcard matches second
+    ...nitroApp._robots.ctx.groups.filter(g => g.userAgent.includes('*')),
+  ]
+  for (const group of groups) {
+    const robotsTxtRule = matchPathToRule(path, group._rules)
+    if (robotsTxtRule) {
+      if (!robotsTxtRule.allow) {
+        return {
+          allow: false,
+          rule: robotsDisabledValue,
+          debug: {
+            source: '/robots.txt',
+            line: `Disallow: ${robotsTxtRule.pattern}`,
+          },
+        }
+      }
+      // exit loop continue to other checks (explicit robots allows)
+      break
+    }
   }
-  return normaliseRobotsRouteRule(routeRules, defaultIndexable, robotsDisabledValue, robotsEnabledValue)
+
+  // 2. nuxt content rules
+  if (usingNuxtContent && nitroApp._robots?.nuxtContentUrls?.has(withoutTrailingSlash(path))) {
+    return {
+      allow: false,
+      rule: robotsDisabledValue,
+      debug: {
+        source: 'Nuxt Content',
+      },
+    }
+  }
+
+  // 3. nitro route rules
+  nitroApp._robotsRuleMactcher = nitroApp._robotsRuleMactcher || createNitroRouteRuleMatcher()
+  const routeRules = normaliseRobotsRouteRule(nitroApp._robotsRuleMactcher(path))
+  if (routeRules) {
+    return {
+      allow: routeRules.allow,
+      rule: routeRules.rule || (routeRules.allow ? robotsEnabledValue : robotsDisabledValue),
+      debug: {
+        source: 'Route Rules',
+      },
+    }
+  }
+  return {
+    allow: true,
+    rule: robotsEnabledValue,
+  }
 }

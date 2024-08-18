@@ -2,5 +2,9 @@ User-agent: *
 Allow: /secret/exception
 Disallow: /secret
 Disallow: /admin
+Disallow: /*/hidden
+Disallow: /users/*/hidden
+Disallow: /?a=
+Disallow: /visible?*a=
 
 Sitemap: /sitemap.xml

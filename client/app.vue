@@ -38,13 +38,13 @@ const pathDebug = useAsyncData<any>(() => {
   if (!appFetch.value || typeof appFetch.value !== 'function') {
     return null
   }
-  const query: Record<string, any> = {
+  const req: Record<string, any> = {
     path: path.value,
   }
   if (envTab.value === 'Production')
-    query.mockProductionEnv = true
+    req.mockProductionEnv = true
   return appFetch.value('/__robots__/debug-path.json', {
-    query,
+    query: req,
   })
 }, {
   watch: [envTab, path, appFetch],
@@ -211,10 +211,10 @@ const tab = useLocalStorage('nuxt-robots:tab', 'overview')
               <div v-else>
                 <div class="inline-flex gap-3 mb-5 items-center">
                   <div>
-                    <NIcon v-if="pathDebugData?.indexable" icon="carbon:checkmark-filled" class="text-green-300" />
+                    <NIcon v-if="pathDebugData?.allow" icon="carbon:checkmark-filled" class="text-green-300" />
                     <NIcon v-else icon="carbon:warning-filled" class="text-red-300" />
                   </div>
-                  <div v-if="pathDebugData?.indexable">
+                  <div v-if="pathDebugData?.allow">
                     Robots can crawl <code class="opacity-60 text-sm">{{ path }}</code>.
                   </div>
                   <div v-else>
@@ -222,6 +222,14 @@ const tab = useLocalStorage('nuxt-robots:tab', 'overview')
                   </div>
                 </div>
                 <pre of-auto h-full text-sm style="white-space: break-spaces;" v-html="highlight(JSON.stringify(pathDebugData.rule || {}, null, 2), 'json')" />
+                <div v-if="pathDebugData?.debug" class="mt-3 flex gap-2">
+                  <div v-if="pathDebugData?.debug?.source" class="text-xs text-gray-300 mt-3 border-gray-600 rounded-xl border-1 px-2 py-1 inline-flex">
+                    Source: {{ pathDebugData?.debug?.source }}
+                  </div>
+                  <div v-if="pathDebugData?.debug?.line" class="text-xs text-gray-300 mt-3 border-gray-600 rounded-xl border-1 px-2 py-1 inline-flex">
+                    {{ pathDebugData?.debug?.line }}
+                  </div>
+                </div>
               </div>
             </div>
           </OSectionBlock>
