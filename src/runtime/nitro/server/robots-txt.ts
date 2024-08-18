@@ -1,8 +1,9 @@
 import { defineEventHandler, setHeader } from 'h3'
+import { useNitroApp } from 'nitropack/runtime/app'
 import { asArray, generateRobotsTxt } from '../../util'
 import { resolveRobotsTxtContext } from '../util'
 import type { HookRobotsConfigContext, HookRobotsTxtContext } from '../../types'
-import { useNitroApp, useRuntimeConfig } from '#imports'
+import { useRuntimeConfig } from '#imports'
 import { withSiteUrl } from '#internal/nuxt-site-config'
 import { getSiteRobotConfig } from '#internal/nuxt-robots'
 
