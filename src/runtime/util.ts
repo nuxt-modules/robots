@@ -137,9 +137,10 @@ function matches(pattern: string, path: string): boolean {
 
   return true
 }
-export function matchPathToRule(path: string, rules: RobotsGroupResolved['_rules']): RobotsGroupResolved['_rules'][number] | null {
+export function matchPathToRule(path: string, _rules: RobotsGroupResolved['_rules']): RobotsGroupResolved['_rules'][number] | null {
   let matchedRule: RobotsGroupResolved['_rules'][number] | null = null
 
+  const rules = _rules.filter(Boolean) // filter out empty line such as Disallow:
   const rulesLength = rules.length
   let i = 0
   while (i < rulesLength) {
@@ -193,7 +194,7 @@ export function normalizeGroup(group: RobotsGroupInput): RobotsGroupResolved {
     allow,
     _indexable: !disallow.includes((rule: string) => rule === '/'),
     _rules: [
-      ...disallow.map(r => ({ pattern: r, allow: false })),
+      ...disallow.filter(Boolean).map(r => ({ pattern: r, allow: false })),
       ...allow.map(r => ({ pattern: r, allow: true })),
     ],
   }
