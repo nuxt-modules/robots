@@ -7,7 +7,7 @@ import { matchPathToRule, normaliseRobotsRouteRule } from '../../util'
 import { useRuntimeConfig } from '#imports'
 import { getSiteRobotConfig } from '#internal/nuxt-robots'
 
-export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, skipSiteIndexable?: boolean, path?: string }): { rule: string, indexable: boolean, debug?: { source: string, line: string }} {
+export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, skipSiteIndexable?: boolean, path?: string }): { rule: string, indexable: boolean, debug?: { source: string, line: string } } {
   // has already been resolved
   const { robotsDisabledValue, robotsEnabledValue, usingNuxtContent } = useRuntimeConfig()['nuxt-robots']
   if (!options?.skipSiteIndexable) {
@@ -34,6 +34,16 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
     ...nitroApp._robots.ctx.groups.filter(g => g.userAgent.includes('*')),
   ]
   for (const group of groups) {
+    if (!group._indexable) {
+      return {
+        indexable: false,
+        rule: robotsDisabledValue,
+        debug: {
+          source: '/robots.txt',
+          line: `Disallow: /`,
+        },
+      }
+    }
     const robotsTxtRule = matchPathToRule(path, group._rules)
     if (robotsTxtRule) {
       if (!robotsTxtRule.allow) {
@@ -65,7 +75,7 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
   // 3. nitro route rules
   nitroApp._robotsRuleMactcher = nitroApp._robotsRuleMactcher || createNitroRouteRuleMatcher()
   const routeRules = normaliseRobotsRouteRule(nitroApp._robotsRuleMactcher(path))
-  if (routeRules) {
+  if (routeRules && (routeRules.allow || routeRules.rule)) {
     return {
       indexable: routeRules.allow,
       rule: routeRules.rule || (routeRules.allow ? robotsEnabledValue : robotsDisabledValue),
