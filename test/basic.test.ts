@@ -20,6 +20,7 @@ describe('basic', () => {
 
       # END nuxt-robots"
     `)
+    
 
     const instance = await fetch('/')
     expect(instance.headers.get('x-robots-tag')).toMatchInlineSnapshot(`"index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"`)
