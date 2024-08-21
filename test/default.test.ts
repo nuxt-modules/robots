@@ -37,5 +37,6 @@ describe('default', () => {
     expect((await $fetch.raw('/users/test/hidden')).headers.get('x-robots-tag')).toMatchInlineSnapshot(`"noindex, nofollow"`)
     // wildcard query
     expect((await $fetch.raw('/visible?b=foo&a=bar')).headers.get('x-robots-tag')).toMatchInlineSnapshot(`"noindex, nofollow"`)
+    expect((await $fetch.raw('/')).headers.get('x-robots-tag')).toMatchInlineSnapshot(`"index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"`)
   })
 })

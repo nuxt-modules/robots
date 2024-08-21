@@ -191,7 +191,7 @@ export function normalizeGroup(group: RobotsGroupInput): RobotsGroupResolved {
     userAgent: group.userAgent ? asArray(group.userAgent) : ['*'],
     disallow,
     allow,
-    _indexable: disallow.includes((rule: string) => rule === '/'),
+    _indexable: !disallow.includes((rule: string) => rule === '/'),
     _rules: [
       ...disallow.map(r => ({ pattern: r, allow: false })),
       ...allow.map(r => ({ pattern: r, allow: true })),
