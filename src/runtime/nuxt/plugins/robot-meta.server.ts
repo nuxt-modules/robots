@@ -1,6 +1,7 @@
 import { defineNuxtPlugin } from 'nuxt/app'
 import {
   useRequestEvent,
+  useRuntimeConfig,
   useServerHead,
 } from '#imports'
 
@@ -11,12 +12,14 @@ export default defineNuxtPlugin({
     // set from nitro, not available for internal routes
     if (!ctx)
       return
+    const config = useRuntimeConfig()
+
     useServerHead({
       meta: [
         {
           'name': 'robots',
           'content': () => ctx.rule || '',
-          'data-hint': (import.meta.dev && !ctx.indexable) ? 'disabled in development' : undefined,
+          'data-hint': () => config['nuxt-robots']?.debug ? ctx.debug?.source : undefined,
         },
       ],
     })
