@@ -8,7 +8,7 @@
     "@nuxt/kit": "^3.13.0",
     "floating-vue": "5.2.2",
     "nuxt": "latest",
-    "shiki": "^1.14.1",
+    "shiki": "^1.15.1",
     "vue": "3.4.38",
     "vue-router": "latest"
   }
