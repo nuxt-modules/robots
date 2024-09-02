@@ -19,7 +19,13 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
     }
   }
   const path = options?.path || e.path
-  const userAgent = options?.userAgent || getRequestHeader(e, 'User-Agent')
+  let userAgent = options?.userAgent
+  try {
+    userAgent = getRequestHeader(e, 'User-Agent')
+  }
+  catch {
+    // version conflict with sitemap module, ignore
+  }
   const nitroApp = useNitroApp()
   // 1. robots txt no indexing
   const groups = [
