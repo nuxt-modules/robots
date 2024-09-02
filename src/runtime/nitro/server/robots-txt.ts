@@ -1,5 +1,5 @@
 import { defineEventHandler, setHeader } from 'h3'
-import { useNitroApp } from 'nitropack/runtime/app'
+import { useNitroApp } from 'nitropack/runtime'
 import { asArray, generateRobotsTxt } from '../../util'
 import { resolveRobotsTxtContext } from '../util'
 import type { HookRobotsConfigContext, HookRobotsTxtContext } from '../../types'

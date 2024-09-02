@@ -1,6 +1,6 @@
 import type { NitroApp } from 'nitropack'
 import type { H3Event } from 'h3'
-import { useNitroApp } from 'nitropack/runtime/app'
+import { useNitroApp } from 'nitropack/runtime'
 import type { HookRobotsConfigContext } from '../types'
 import { useRuntimeConfig } from '#imports'
 
