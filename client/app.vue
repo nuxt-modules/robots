@@ -211,10 +211,10 @@ const tab = useLocalStorage('nuxt-robots:tab', 'overview')
               <div v-else>
                 <div class="inline-flex gap-3 mb-5 items-center">
                   <div>
-                    <NIcon v-if="pathDebugData?.allow" icon="carbon:checkmark-filled" class="text-green-300" />
+                    <NIcon v-if="pathDebugData?.indexable" icon="carbon:checkmark-filled" class="text-green-300" />
                     <NIcon v-else icon="carbon:warning-filled" class="text-red-300" />
                   </div>
-                  <div v-if="pathDebugData?.allow">
+                  <div v-if="pathDebugData.indexable">
                     Robots can crawl <code class="opacity-60 text-sm">{{ path }}</code>.
                   </div>
                   <div v-else>
