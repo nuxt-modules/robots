@@ -95,5 +95,8 @@ export async function getNuxtModuleOptions(module: string | NuxtModule, nuxt: Nu
 }
 
 export function isNuxtGenerate(nuxt: Nuxt = useNuxt()) {
-  return nuxt.options._generate || nuxt.options.nitro.static || nuxt.options.nitro.preset === 'static'
+  return nuxt.options._generate || [
+    'static',
+    'github-pages',
+  ].includes(resolveNitroPreset(nuxt.options.nitro))
 }
