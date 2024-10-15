@@ -3,11 +3,11 @@ import {
   appFetch,
   colorMode,
   computed,
-  highlight,
   useAsyncData,
   useHead,
 } from '#imports'
 import { useLocalStorage } from '@vueuse/core'
+import { loadShiki } from '~/composables/shiki'
 import {
   envTab,
   path,
@@ -18,6 +18,7 @@ import 'floating-vue/dist/style.css'
 useHead({
   title: 'Nuxt Robots',
 })
+await loadShiki()
 
 const globalDebugFetch = useAsyncData<{ indexable: boolean, hints: string[], runtimeConfig: { version: string } }>(() => {
   if (!appFetch.value || typeof appFetch.value !== 'function') {
@@ -63,6 +64,10 @@ const globalDebugData = computed(() => globalDebug.value || {})
 
 const version = computed(() => {
   return globalDebugData.value?.runtimeConfig?.version || ''
+})
+
+const metaTag = computed(() => {
+  return `<meta name="robots" content="${pathDebugData.value?.rule}">`
 })
 
 const tab = useLocalStorage('nuxt-robots:tab', 'overview')
@@ -221,7 +226,7 @@ const tab = useLocalStorage('nuxt-robots:tab', 'overview')
                     Robots are blocked from crawling <code class="opacity-60 text-sm">{{ path }}</code>.
                   </div>
                 </div>
-                <pre of-auto h-full text-sm style="white-space: break-spaces;" v-html="highlight(JSON.stringify(pathDebugData.rule || {}, null, 2), 'json')" />
+                <OCodeBlock :code="metaTag" lang="html" />
                 <div v-if="pathDebugData?.debug" class="mt-3 flex gap-2">
                   <div v-if="pathDebugData?.debug?.source" class="text-xs text-gray-300 mt-3 border-gray-600 rounded-xl border-1 px-2 py-1 inline-flex">
                     Source: {{ pathDebugData?.debug?.source }}
@@ -264,11 +269,11 @@ const tab = useLocalStorage('nuxt-robots:tab', 'overview')
           <OSectionBlock>
             <template #text>
               <h3 class="opacity-80 text-base mb-1">
-                robots.txt
+                /robots.txt
               </h3>
             </template>
             <div class="px-3 py-2 space-y-5">
-              <pre of-auto h-full text-sm style="white-space: break-spaces;" v-html="globalDebugData.robotsTxt" />
+              <OCodeBlock :code="globalDebugData.robotsTxt" lang="robots-txt" />
             </div>
           </OSectionBlock>
         </div>
@@ -281,7 +286,7 @@ const tab = useLocalStorage('nuxt-robots:tab', 'overview')
               </h3>
             </template>
             <div class="px-3 py-2 space-y-5">
-              <pre of-auto h-full text-sm style="white-space: break-spaces;" v-html="highlight(JSON.stringify(globalDebugData?.runtimeConfig || {}, null, 2), 'json')" />
+              <OCodeBlock :code="JSON.stringify(globalDebugData?.runtimeConfig || {}, null, 2)" lang="json" />
             </div>
           </OSectionBlock>
         </div>
@@ -358,14 +363,6 @@ html.dark {
 }
 .prose hr {
   --uno: border-solid border-1 border-b border-base h-1px w-full block my-2 op50;
-}
-
-.dark .shiki {
-  background: var(--shiki-dark-bg, inherit) !important;
-}
-
-.dark .shiki span {
-  color: var(--shiki-dark, inherit) !important;
 }
 
 /* JSON Editor */

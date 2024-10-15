@@ -1,28 +1,84 @@
-import type { BundledLanguage, Highlighter } from 'shiki'
-import { useColorMode } from '#imports'
-import { getHighlighter } from 'shiki'
-import { ref } from 'vue'
+import type { MaybeRef } from '@vueuse/core'
+import type { Highlighter, BundledLanguage } from 'shiki'
+import { createHighlighter } from 'shiki'
+import { computed, ref, toValue } from 'vue'
+import { devtools } from './rpc'
 
 export const shiki = ref<Highlighter>()
-const mode = useColorMode()
 
-// TODO: Only loading when needed
-getHighlighter({
-  themes: [
-    'vitesse-dark',
-    'vitesse-light',
-  ],
-  langs: [
-    'html',
-    'json',
-  ],
-}).then((i) => { shiki.value = i })
+export async function loadShiki() {
+  // Only loading when needed
+  shiki.value = await createHighlighter({
+    themes: [
+      'vitesse-dark',
+      'vitesse-light',
+    ],
+    langs: [
+      'html',
+      'json',
+      Object.freeze({
+        displayName: 'robots.txt',
+        name: 'robots-txt',
+        patterns: [
+          { include: '#main' },
+        ],
+        repository: {
+          $base: { patterns: [] },
+          $self: { name: 'source.robots-txt' },
+          main: {
+            patterns: [
+              { include: '#comment' },
+              { include: '#directive' },
+              { include: '#wildcard' },
+              { include: '#uri' },
+              { include: '#text' },
+              { include: '#number' },
+            ],
+          },
+          comment: {
+            name: 'comment.line.hash.robots-txt',
+            begin: '#',
+            end: '$',
+            beginCaptures: {
+              0: { name: 'punctuation.definition.comment.robots-txt' },
+            },
+          },
+          directive: {
+            name: 'keyword.control.directive.robots-txt',
+            begin: '^[A-Z][a-z-]*',
+            end: '\\s*:',
+          },
+          wildcard: {
+            name: 'constant.character.wildcard.robots-txt',
+            match: '\\*',
+          },
+          uri: {
+            name: 'string.unquoted.uri.robots-txt',
+            begin: '(?:[a-z]+:)\\/',
+            end: '$',
+          },
+          text: {
+            name: 'string.unquoted.text.robots-txt',
+            match: '[A-Za-z-]+',
+          },
+          number: {
+            name: 'constant.numeric.integer.robots-txt',
+            match: '\\d',
+          },
+        },
+        scopeName: 'text.robots-txt',
+      }),
+    ],
+  })
+  return shiki.value
+}
 
-export function highlight(code: string, lang: BundledLanguage) {
-  if (!shiki.value)
-    return code
-  return shiki.value.codeToHtml(code, {
-    lang,
-    theme: mode.value === 'dark' ? 'vitesse-dark' : 'vitesse-light',
+export function renderCodeHighlight(code: MaybeRef<string>, lang?: BundledLanguage | 'robots-txt') {
+  return computed(() => {
+    const colorMode = devtools.value?.colorMode || 'light'
+    return shiki.value!.codeToHtml(toValue(code), {
+      lang,
+      theme: colorMode === 'dark' ? 'vitesse-dark' : 'vitesse-light',
+    }) || ''
   })
 }
