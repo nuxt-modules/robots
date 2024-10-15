@@ -13,6 +13,7 @@ export default defineEventHandler(async (e) => {
   const { credits, usingNuxtContent, cacheControl } = useRuntimeConfig(e)['nuxt-robots']
   // move towards deprecating indexable
   let robotsTxtCtx: Omit<HookRobotsConfigContext, 'context' | 'event'> = {
+    errors: [],
     sitemaps: [],
     groups: [
       {
