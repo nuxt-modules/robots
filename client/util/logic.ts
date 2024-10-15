@@ -1,6 +1,6 @@
-import { computed, ref } from 'vue'
 import { useDebounceFn, useLocalStorage } from '@vueuse/core'
 import { withBase } from 'ufo'
+import { computed, ref } from 'vue'
 
 export const envTab = useLocalStorage('nuxt-robots:env-tab', 'Production')
 

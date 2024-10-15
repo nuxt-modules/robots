@@ -1,9 +1,9 @@
+import type { Nuxt } from '@nuxt/schema'
+import type { NitroConfig } from 'nitropack'
+import type { NuxtModule } from 'nuxt/schema'
 import { addTemplate, createResolver, loadNuxtModuleInstance, useNuxt } from '@nuxt/kit'
 import { relative } from 'pathe'
-import type { Nuxt } from '@nuxt/schema'
-import type { NuxtModule } from 'nuxt/schema'
 import { env, provider } from 'std-env'
-import type { NitroConfig } from 'nitropack'
 
 export function extendTypes(module: string, template: (options: { typesPath: string }) => string | Promise<string>) {
   const nuxt = useNuxt()

@@ -1,7 +1,7 @@
 import type { BundledLanguage, Highlighter } from 'shiki'
+import { useColorMode } from '#imports'
 import { getHighlighter } from 'shiki'
 import { ref } from 'vue'
-import { useColorMode } from '#imports'
 
 export const shiki = ref<Highlighter>()
 const mode = useColorMode()

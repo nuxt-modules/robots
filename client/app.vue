@@ -1,11 +1,4 @@
 <script lang="ts" setup>
-import 'floating-vue/dist/style.css'
-import { useLocalStorage } from '@vueuse/core'
-import {
-  envTab,
-  path,
-  refreshSources,
-} from './util/logic'
 import {
   appFetch,
   colorMode,
@@ -14,6 +7,13 @@ import {
   useAsyncData,
   useHead,
 } from '#imports'
+import { useLocalStorage } from '@vueuse/core'
+import {
+  envTab,
+  path,
+  refreshSources,
+} from './util/logic'
+import 'floating-vue/dist/style.css'
 
 useHead({
   title: 'Nuxt Robots',

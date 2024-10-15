@@ -1,9 +1,9 @@
-import { defineNuxtPlugin } from 'nuxt/app'
 import {
   useRequestEvent,
   useRuntimeConfig,
   useServerHead,
 } from '#imports'
+import { defineNuxtPlugin } from 'nuxt/app'
 
 export default defineNuxtPlugin({
   setup() {

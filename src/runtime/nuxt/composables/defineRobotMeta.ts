@@ -1,6 +1,6 @@
-import { getCurrentInstance } from 'vue'
-import { basename, dirname, join } from 'pathe'
 import { consola } from 'consola'
+import { basename, dirname, join } from 'pathe'
+import { getCurrentInstance } from 'vue'
 
 /**
  * @deprecated The robots meta tag is now enabled by default.

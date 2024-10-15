@@ -1,11 +1,11 @@
+import type { HookRobotsConfigContext, HookRobotsTxtContext } from '../../types'
+import { useRuntimeConfig } from '#imports'
+import { getSiteRobotConfig } from '#internal/nuxt-robots'
+import { withSiteUrl } from '#internal/nuxt-site-config'
 import { defineEventHandler, setHeader } from 'h3'
 import { useNitroApp } from 'nitropack/runtime'
 import { asArray, generateRobotsTxt } from '../../util'
 import { resolveRobotsTxtContext } from '../util'
-import type { HookRobotsConfigContext, HookRobotsTxtContext } from '../../types'
-import { useRuntimeConfig } from '#imports'
-import { withSiteUrl } from '#internal/nuxt-site-config'
-import { getSiteRobotConfig } from '#internal/nuxt-robots'
 
 export default defineEventHandler(async (e) => {
   const nitro = useNitroApp()

@@ -1,11 +1,11 @@
 import type { H3Event } from 'h3'
-import { withoutTrailingSlash } from 'ufo'
-import { useNitroApp } from 'nitropack/runtime'
-import { getRequestHeader } from 'h3'
-import { createNitroRouteRuleMatcher } from '../kit'
-import { matchPathToRule, normaliseRobotsRouteRule } from '../../util'
 import { useRuntimeConfig } from '#imports'
 import { getSiteRobotConfig } from '#internal/nuxt-robots'
+import { getRequestHeader } from 'h3'
+import { useNitroApp } from 'nitropack/runtime'
+import { withoutTrailingSlash } from 'ufo'
+import { matchPathToRule, normaliseRobotsRouteRule } from '../../util'
+import { createNitroRouteRuleMatcher } from '../kit'
 
 export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, skipSiteIndexable?: boolean, path?: string }): { rule: string, indexable: boolean, debug?: { source: string, line: string } } {
   // has already been resolved

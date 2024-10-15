@@ -1,8 +1,8 @@
 import type { NitroApp } from 'nitropack'
-import { withoutTrailingSlash } from 'ufo'
-import { resolveRobotsTxtContext } from '../util'
-import { logger } from '../logger'
 import { defineNitroPlugin, getRouteRules, useRuntimeConfig } from '#imports'
+import { withoutTrailingSlash } from 'ufo'
+import { logger } from '../logger'
+import { resolveRobotsTxtContext } from '../util'
 
 const PRERENDER_NO_SSR_ROUTES = new Set(['/index.html', '/200.html', '/404.html'])
 

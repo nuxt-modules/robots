@@ -1,5 +1,5 @@
-import { defineEventHandler } from 'h3'
 import type { ParsedContent } from '@nuxt/content'
+import { defineEventHandler } from 'h3'
 import { logger } from '../../logger'
 
 // @ts-expect-error alias module

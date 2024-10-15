@@ -1,5 +1,4 @@
 import type { MaybeRef } from 'vue'
-import { setHeader } from 'h3'
 import {
   computed,
   injectHead,
@@ -10,6 +9,7 @@ import {
   useRuntimeConfig,
   useServerHead,
 } from '#imports'
+import { setHeader } from 'h3'
 
 /**
  * Get and set the current robots rule.
