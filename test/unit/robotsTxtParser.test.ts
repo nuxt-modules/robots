@@ -245,7 +245,7 @@ describe('robotsTxtParser', () => {
   })
 
   it('yandex', async () => {
-    // read fixture yoastRobots.txt
+    // read fixture yandex.txt
     const robotsTxt = await fsp.readFile('./test/fixtures/yandex.txt', { encoding: 'utf-8' })
     expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
       {
@@ -278,6 +278,62 @@ describe('robotsTxtParser', () => {
         "sitemaps": [
           "https://yoast.com/sitemap_index.xml",
         ],
+      }
+    `)
+  })
+
+  it('case-insensitive startgroupline', async () => {
+    // read fixture startgroupRobots.txt
+    const robotsTxt = await fsp.readFile('./test/fixtures/startgroupRobots.txt', { encoding: 'utf-8' })
+    expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
+      {
+        "groups": [
+          {
+            "allow": [
+              "/bar",
+            ],
+            "comment": [],
+            "disallow": [
+              "/foo",
+            ],
+            "userAgent": [
+              "ExampleBot",
+            ],
+          },
+          {
+            "allow": [
+              "/boo",
+            ],
+            "comment": [],
+            "disallow": [
+              "/baz",
+            ],
+            "userAgent": [
+              "examplebot",
+            ],
+          },
+          {
+            "allow": [],
+            "comment": [],
+            "disallow": [
+              "/invalid",
+            ],
+            "userAgent": [
+              "",
+            ],
+          },
+          {
+            "allow": [],
+            "comment": [],
+            "disallow": [
+              "/star",
+            ],
+            "userAgent": [
+              "*",
+            ],
+          },
+        ],
+        "sitemaps": [],
       }
     `)
   })

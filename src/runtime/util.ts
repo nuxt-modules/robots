@@ -34,11 +34,11 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
     if (sepIndex === -1)
       continue
     // get the rule, pop before the first :
-    const rule = line.substring(0, sepIndex).trim()
+    const rule = line.substring(0, sepIndex).trim().toLowerCase()
     const val = line.substring(sepIndex + 1).trim()
 
     switch (rule) {
-      case 'User-agent':
+      case 'user-agent':
         if (createNewGroup) {
           groups.push({
             ...currentGroup,
@@ -53,21 +53,21 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
         }
         currentGroup.userAgent.push(val)
         break
-      case 'Allow':
+      case 'allow':
         currentGroup.allow.push(val)
         createNewGroup = true
         break
-      case 'Disallow':
+      case 'disallow':
         currentGroup.disallow.push(val)
         createNewGroup = true
         break
-      case 'Sitemap':
+      case 'sitemap':
         sitemaps.push(val)
         break
-      case 'Host':
+      case 'host':
         currentGroup.host = val
         break
-      case 'Clean-param':
+      case 'clean-param':
         if (currentGroup.userAgent.includes('Yandex')) {
           currentGroup.cleanParam = currentGroup.cleanParam || []
           currentGroup.cleanParam.push(val)
