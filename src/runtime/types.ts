@@ -5,6 +5,7 @@ export type Arrayable<T> = T | T[]
 export interface ParsedRobotsTxt {
   groups: RobotsGroupResolved[]
   sitemaps: string[]
+  errors: string[]
 }
 
 export type RobotsGroupInput = GoogleInput | YandexInput

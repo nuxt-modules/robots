@@ -3,7 +3,8 @@ import { validateRobots } from '../../src/runtime/util'
 
 describe('robotsTxtValidator', () => {
   it('basic', async () => {
-    const errors = validateRobots({
+    const { errors } = validateRobots({
+      errors: [],
       sitemaps: [],
       groups: [
         {

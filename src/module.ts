@@ -1,3 +1,5 @@
+import type { Preset } from 'unimport'
+import type { Arrayable, AutoI18nConfig, Robots3Rules, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
 import fsp from 'node:fs/promises'
 import {
   addComponent,
@@ -12,8 +14,12 @@ import {
 import { defu } from 'defu'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
 import { relative } from 'pathe'
-import type { Preset } from 'unimport'
 import { readPackageJSON } from 'pkg-types'
+import { NonHelpfulBots } from './const'
+import { setupDevToolsUI } from './devtools'
+import { resolveI18nConfig, splitPathForI18nLocales } from './i18n'
+import { extendTypes, isNuxtGenerate, resolveNitroPreset } from './kit'
+import { logger } from './logger'
 import {
   asArray,
   normaliseRobotsRouteRule,
@@ -21,12 +27,6 @@ import {
   parseRobotsTxt,
   validateRobots,
 } from './runtime/util'
-import { extendTypes, isNuxtGenerate, resolveNitroPreset } from './kit'
-import type { Arrayable, AutoI18nConfig, Robots3Rules, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
-import { NonHelpfulBots } from './const'
-import { resolveI18nConfig, splitPathForI18nLocales } from './i18n'
-import { setupDevToolsUI } from './devtools'
-import { logger } from './logger'
 
 export interface ModuleOptions {
   /**
@@ -301,7 +301,7 @@ export default defineNuxtModule<ModuleOptions>({
         const path = relative(nuxt.options.rootDir, usingRobotsTxtPath)
         logger.debug(`A robots.txt file was found at \`./${path}\`, merging config.`)
         const parsedRobotsTxt = parseRobotsTxt(robotsTxt)
-        const errors = validateRobots(parsedRobotsTxt)
+        const { errors } = validateRobots(parsedRobotsTxt)
         if (errors.length > 0) {
           logger.error(`The \`./${path}\` file contains errors:`)
           for (const error of errors)

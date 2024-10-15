@@ -8,6 +8,7 @@ describe('robotsTxtParser', () => {
     const robotsTxt = await fsp.readFile('./test/fixtures/yoastRobots.txt', { encoding: 'utf-8' })
     expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
       {
+        "errors": [],
         "groups": [
           {
             "allow": [],
@@ -58,6 +59,7 @@ describe('robotsTxtParser', () => {
     const robotsTxt = await fsp.readFile('./test/fixtures/squareSpace.txt', { encoding: 'utf-8' })
     expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
       {
+        "errors": [],
         "groups": [
           {
             "allow": [
@@ -224,6 +226,7 @@ describe('robotsTxtParser', () => {
     const robotsTxt = await fsp.readFile('./test/fixtures/issue36.txt', { encoding: 'utf-8' })
     expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
       {
+        "errors": [],
         "groups": [
           {
             "allow": [],
@@ -249,6 +252,7 @@ describe('robotsTxtParser', () => {
     const robotsTxt = await fsp.readFile('./test/fixtures/yandex.txt', { encoding: 'utf-8' })
     expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
       {
+        "errors": [],
         "groups": [
           {
             "allow": [],
@@ -287,6 +291,7 @@ describe('robotsTxtParser', () => {
     const robotsTxt = await fsp.readFile('./test/fixtures/startgroupRobots.txt', { encoding: 'utf-8' })
     expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
       {
+        "errors": [],
         "groups": [
           {
             "allow": [
@@ -335,6 +340,19 @@ describe('robotsTxtParser', () => {
         ],
         "sitemaps": [],
       }
+    `)
+  })
+
+  it('collects errors', async () => {
+    // read fixture startgroupRobots.txt
+    expect(parseRobotsTxt(`
+User-Agent: *
+Disallow: /foo
+Unknown: /bar
+    `).errors).toMatchInlineSnapshot(`
+      [
+        "L3: Unknown directive unknown ",
+      ]
     `)
   })
 })

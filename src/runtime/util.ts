@@ -1,7 +1,7 @@
-import { createDefu } from 'defu'
 import type { NitroRouteConfig } from 'nitropack'
-import { withoutLeadingSlash } from 'ufo'
 import type { ParsedRobotsTxt, RobotsGroupInput, RobotsGroupResolved } from './types'
+import { createDefu } from 'defu'
+import { withoutLeadingSlash } from 'ufo'
 
 /**
  * We're going to read the robots.txt and extract any disallow or sitemaps rules from it.
@@ -15,11 +15,13 @@ import type { ParsedRobotsTxt, RobotsGroupInput, RobotsGroupResolved } from './t
  * - host: the host name of the site, this is optional non-standard directive.
  *
  * @see https://developers.google.com/search/docs/crawling-indexing/robots/robots_txt
+ * @see https://github.com/google/robotstxt/blob/86d5836ba2d5a0b6b938ab49501be0e09d9c276c/robots.cc#L714C1-L720C2
  */
 export function parseRobotsTxt(s: string): ParsedRobotsTxt {
   // then we'll extract the disallow and sitemap rules
   const groups: RobotsGroupResolved[] = []
   const sitemaps: string[] = []
+  const errors: string[] = []
   let createNewGroup = false
   let currentGroup: RobotsGroupResolved = {
     comment: [], // comments are too hard to parse in a logical order, we'll just omit them
@@ -27,8 +29,10 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
     allow: [],
     userAgent: [],
   }
+  let ln = -1
   // read the contents
   for (const line of s.split('\n')) {
+    ln++
     const sepIndex = line.indexOf(':')
     // may not exist for comments
     if (sepIndex === -1)
@@ -39,6 +43,8 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
 
     switch (rule) {
       case 'user-agent':
+      case 'useragent':
+      case 'user agent':
         if (createNewGroup) {
           groups.push({
             ...currentGroup,
@@ -58,20 +64,32 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
         createNewGroup = true
         break
       case 'disallow':
+      case 'dissallow':
+      case 'dissalow':
+      case 'disalow':
+      case 'diasllow':
+      case 'disallaw':
         currentGroup.disallow.push(val)
         createNewGroup = true
         break
       case 'sitemap':
+      case 'site-map':
         sitemaps.push(val)
         break
       case 'host':
         currentGroup.host = val
         break
       case 'clean-param':
-        if (currentGroup.userAgent.includes('Yandex')) {
+        if (currentGroup.userAgent.some(u => u.toLowerCase().includes('yandex'))) {
           currentGroup.cleanParam = currentGroup.cleanParam || []
           currentGroup.cleanParam.push(val)
         }
+        else {
+          errors.push(`L${ln}: Clean-param directive is only when targeting Yandex user agent.`)
+        }
+        break
+      default:
+        errors.push(`L${ln}: Unknown directive ${rule} `)
         break
     }
   }
@@ -82,6 +100,7 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
   return {
     groups,
     sitemaps,
+    errors,
   }
 }
 
@@ -167,17 +186,16 @@ export function matchPathToRule(path: string, _rules: RobotsGroupResolved['_rule
 }
 
 export function validateRobots(robotsTxt: ParsedRobotsTxt) {
-  const errors: string[] = []
   // 1. check that the include / exclude is either empty or starts with a slash OR a wildcard
   robotsTxt.groups = robotsTxt.groups.filter((group) => {
     if (!group.allow.length && !group.disallow.length) {
-      errors.push(`Group "${group.userAgent.join(', ')}" has no allow or disallow rules. You must provide one of either.`)
+      robotsTxt.errors.push(`Group "${group.userAgent.join(', ')}" has no allow or disallow rules. You must provide one of either.`)
       return false
     }
-    validateGroupRules(group, errors)
+    validateGroupRules(group, robotsTxt.errors)
     return true
   })
-  return errors
+  return robotsTxt
 }
 
 export function asArray(v: any) {
