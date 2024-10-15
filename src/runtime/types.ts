@@ -48,8 +48,8 @@ export interface RobotsGroupResolved {
   // nuxt-simple-robots internals
   _skipI18n?: boolean
   // runtime optimization
-  _indexable: boolean
-  _rules: { pattern: string, allow: boolean }[]
+  _indexable?: boolean
+  _rules?: { pattern: string, allow: boolean }[]
 }
 
 export interface HookRobotsTxtContext {
