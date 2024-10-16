@@ -128,6 +128,12 @@ export interface ModuleOptions {
    */
   cacheControl?: string | false
   /**
+   * Whether the robots.txt file should be generated. Useful to disable when running your app with a base URL.
+   *
+   * @default false
+   */
+  robotsTxt?: boolean
+  /**
    * Enables debug logs and a debug endpoint.
    *
    * @default false
@@ -179,6 +185,7 @@ export default defineNuxtModule<ModuleOptions>({
     robotsEnabledValue: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
     robotsDisabledValue: 'noindex, nofollow',
     disallowNonIndexableRoutes: true,
+    robotsTxt: true,
   },
   async setup(config, nuxt) {
     const { resolve } = createResolver(import.meta.url)
@@ -202,6 +209,11 @@ export default defineNuxtModule<ModuleOptions>({
         ],
       })
       return
+    }
+
+    if (nuxt.options.app.baseURL?.length > 1 && config.robotsTxt) {
+      logger.error(`You are not allowed to generate a robots.txt with a base URL, please set \`{ robots: { robotsTxt: false } }\` in your nuxt.config.`)
+      config.robotsTxt = false
     }
 
     // TODO remove with v5
@@ -257,7 +269,7 @@ export default defineNuxtModule<ModuleOptions>({
     if (config.metaTag)
       addPlugin({ mode: 'server', src: resolve('./runtime/nuxt/plugins/robot-meta.server') })
 
-    if (config.mergeWithRobotsTxtPath !== false) {
+    if (config.robotsTxt && config.mergeWithRobotsTxtPath !== false) {
       let usingRobotsTxtPath = ''
       let robotsTxt: boolean | string = false
       const publicRobotsTxtPath = resolve(nuxt.options.rootDir, nuxt.options.dir.public, 'robots.txt')
@@ -266,6 +278,8 @@ export default defineNuxtModule<ModuleOptions>({
         publicRobotsTxtPath,
         // assets/robots.txt
         resolve(nuxt.options.rootDir, nuxt.options.dir.assets, 'robots.txt'),
+        // public/_robots.txt
+        resolve(nuxt.options.rootDir, nuxt.options.dir.public, '_robots.txt'),
         // public/_robots.txt
         resolve(nuxt.options.rootDir, nuxt.options.dir.public, '_robots.txt'),
         // public/_dir/robots.txt
@@ -478,7 +492,7 @@ declare module 'h3' {
     const nitroPreset = resolveNitroPreset(nuxt.options.nitro)
     // only prerender for `nuxi generate`
     const isFirebase = nitroPreset === 'firebase'
-    if (isNuxtGenerate() || (isFirebase && nuxt.options._build)) {
+    if ((isNuxtGenerate() || (isFirebase && nuxt.options._build)) && config.robotsTxt) {
       nuxt.options.generate = nuxt.options.generate || {}
       nuxt.options.generate.routes = asArray(nuxt.options.generate.routes || [])
       nuxt.options.generate.routes.push('/robots.txt')
@@ -504,11 +518,13 @@ declare module 'h3' {
       filePath: resolve('./runtime/nuxt/components/RobotMeta'),
     })
 
-    // add robots.txt server handler
-    addServerHandler({
-      route: '/robots.txt',
-      handler: resolve('./runtime/nitro/server/robots-txt'),
-    })
+    if (config.robotsTxt) {
+      // add robots.txt server handler
+      addServerHandler({
+        route: '/robots.txt',
+        handler: resolve('./runtime/nitro/server/robots-txt'),
+      })
+    }
     // add robots HTTP header handler
     addServerHandler({
       handler: resolve('./runtime/nitro/server/middleware'),
