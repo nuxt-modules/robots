@@ -355,4 +355,26 @@ Unknown: /bar
       ]
     `)
   })
+
+  it('comments do not error', async () => {
+    const robotsTxt = await fsp.readFile('./test/fixtures/comments.txt', { encoding: 'utf-8' })
+    expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
+      {
+        "errors": [],
+        "groups": [
+          {
+            "allow": [
+              "/",
+            ],
+            "comment": [],
+            "disallow": [],
+            "userAgent": [
+              "*",
+            ],
+          },
+        ],
+        "sitemaps": [],
+      }
+    `)
+  })
 })
