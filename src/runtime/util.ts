@@ -31,8 +31,9 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
   }
   let ln = -1
   // read the contents
-  for (const line of s.split('\n')) {
+  for (const _line of s.split('\n')) {
     ln++
+    const [line, comment] = _line.split('#').map(s => s.trim())
     const sepIndex = line.indexOf(':')
     // may not exist for comments
     if (sepIndex === -1)
