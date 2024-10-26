@@ -2,13 +2,13 @@
   "name": "@nuxtjs/robots-client",
   "private": true,
   "devDependencies": {
-    "@iconify-json/carbon": "^1.2.3",
+    "@iconify-json/carbon": "^1.2.4",
     "@nuxt/devtools-kit": "^1.6.0",
     "@nuxt/devtools-ui-kit": "latest",
     "@nuxt/kit": "^3.13.2",
     "floating-vue": "5.2.2",
     "nuxt": "latest",
-    "shiki": "^1.22.0",
+    "shiki": "^1.22.1",
     "vue": "3.5.12",
     "vue-router": "latest"
   }
