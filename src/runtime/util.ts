@@ -33,7 +33,7 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
   // read the contents
   for (const _line of s.split('\n')) {
     ln++
-    const [line, comment] = _line.split('#').map(s => s.trim())
+    const [line] = _line.split('#').map(s => s.trim())
     const sepIndex = line.indexOf(':')
     // may not exist for comments
     if (sepIndex === -1)
