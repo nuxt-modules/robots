@@ -26,7 +26,9 @@ export default defineNitroPlugin(async (nitroApp: NitroApp) => {
       urls.forEach((url: string) => nuxtContentUrls.add(withoutTrailingSlash(url)))
     }
   }
-  nitroApp._robots.nuxtContentUrls = nuxtContentUrls
+  if (nuxtContentUrls.size) {
+    nitroApp._robots.nuxtContentUrls = nuxtContentUrls
+  }
 
   if (import.meta.prerender) {
     // need to inject HTML if we have an SPA route

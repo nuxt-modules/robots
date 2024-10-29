@@ -10,6 +10,7 @@ import {
   createResolver,
   defineNuxtModule,
   hasNuxtModule,
+  hasNuxtModuleCompatibility,
 } from '@nuxt/kit'
 import { defu } from 'defu'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
@@ -127,6 +128,10 @@ export interface ModuleOptions {
    * @default max-age=14400, must-revalidate
    */
   cacheControl?: string | false
+  /**
+   * Disabled the Frontmatter Nuxt Content integration.
+   */
+  disableNuxtContentIntegration?: boolean
   /**
    * Whether the robots.txt file should be generated. Useful to disable when running your app with a base URL.
    *
@@ -353,6 +358,19 @@ export default defineNuxtModule<ModuleOptions>({
       }
     }
 
+    const nitroPreset = resolveNitroPreset(nuxt.options.nitro)
+    let usingNuxtContent = hasNuxtModule('@nuxt/content') && config.disableNuxtContentIntegration !== false
+    if (usingNuxtContent) {
+      if (await hasNuxtModuleCompatibility('@nuxt/content', '^3')) {
+        logger.warn('Nuxt Robots does not work with Nuxt Content v3 yet, the integration will be disabled. Learn more at: https://nuxtseo.com/docs/robots/guides/content')
+        usingNuxtContent = false
+      }
+      else if (nitroPreset.startsWith('cloudflare')) {
+        logger.warn('The Nuxt Robots, Nuxt Content integration does not work with CloudFlare yet, the integration will be disabled. Learn more at: https://nuxtseo.com/docs/robots/guides/content')
+        usingNuxtContent = false
+      }
+    }
+
     nuxt.hook('modules:done', async () => {
       config.sitemap = asArray(config.sitemap)
       config.disallow = asArray(config.disallow)
@@ -428,7 +446,7 @@ export default defineNuxtModule<ModuleOptions>({
 
       nuxt.options.runtimeConfig['nuxt-robots'] = {
         version: version || '',
-        usingNuxtContent: hasNuxtModule('@nuxt/content'),
+        usingNuxtContent,
         debug: config.debug,
         credits: config.credits,
         groups: config.groups,
@@ -449,7 +467,7 @@ declare module 'nitropack' {
   interface NitroApp {
     _robots: {
       ctx: import('${typesPath}').HookRobotsConfigContext
-      nuxtContentUrls: Set<string>
+      nuxtContentUrls?: Set<string>
     },
     _robotsRuleMactcher: (url: string) => string
   }
@@ -489,7 +507,6 @@ declare module 'h3' {
 `
     })
 
-    const nitroPreset = resolveNitroPreset(nuxt.options.nitro)
     // only prerender for `nuxi generate`
     const isFirebase = nitroPreset === 'firebase'
     if ((isNuxtGenerate() || (isFirebase && nuxt.options._build)) && config.robotsTxt) {
@@ -531,7 +548,7 @@ declare module 'h3' {
     })
     addServerPlugin(resolve('./runtime/nitro/plugins/initContext'))
 
-    if (hasNuxtModule('@nuxt/content')) {
+    if (usingNuxtContent) {
       addServerHandler({
         route: '/__robots__/nuxt-content.json',
         handler: resolve('./runtime/nitro/server/__robots__/nuxt-content'),
