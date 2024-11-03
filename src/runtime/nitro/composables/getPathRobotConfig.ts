@@ -1,9 +1,10 @@
 import type { H3Event } from 'h3'
-import { getSiteRobotConfig, useNitroApp, useRuntimeConfig } from '#imports'
+import { useNitroApp, useRuntimeConfig } from '#imports'
 import { getRequestHeader } from 'h3'
 import { withoutTrailingSlash } from 'ufo'
 import { matchPathToRule, normaliseRobotsRouteRule } from '../../util'
 import { createNitroRouteRuleMatcher } from '../kit'
+import { getSiteRobotConfig } from './getSiteRobotConfig'
 
 export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, skipSiteIndexable?: boolean, path?: string }): { rule: string, indexable: boolean, debug?: { source: string, line: string } } {
   // has already been resolved
