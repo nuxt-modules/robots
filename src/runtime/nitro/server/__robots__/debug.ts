@@ -1,6 +1,4 @@
-import { useRuntimeConfig } from '#imports'
-import { getSiteRobotConfig } from '#internal/nuxt-robots'
-import { useSiteConfig } from '#internal/nuxt-site-config'
+import { getSiteRobotConfig, useRuntimeConfig, useSiteConfig } from '#imports'
 import { defineEventHandler, getQuery } from 'h3'
 
 export default defineEventHandler(async (e) => {

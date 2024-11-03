@@ -1,4 +1,3 @@
-import type { Preset } from 'unimport'
 import type { Arrayable, AutoI18nConfig, Robots3Rules, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
 import fsp from 'node:fs/promises'
 import {
@@ -6,6 +5,7 @@ import {
   addImports,
   addPlugin,
   addServerHandler,
+  addServerImportsDir,
   addServerPlugin,
   createResolver,
   defineNuxtModule,
@@ -207,7 +207,7 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt.options.nitro.imports = nuxt.options.nitro.imports || {}
       nuxt.options.nitro.imports.presets = nuxt.options.nitro.imports.presets || []
       nuxt.options.nitro.imports.presets.push({
-        from: resolve('./runtime/nitro/composables/mock'),
+        from: resolve('./runtime/nitro/mock-composables'),
         imports: [
           'getPathRobotConfig',
           'getSiteRobotConfig',
@@ -569,20 +569,10 @@ declare module 'h3' {
     if (nuxt.options.dev)
       setupDevToolsUI(config, resolve)
 
-    const siteConfigPreset: Preset = {
-      from: '#internal/nuxt-robots',
-      imports: [
-        'getPathRobotConfig',
-        'getSiteRobotConfig',
-      ],
-    }
-    nuxt.options.nitro = nuxt.options.nitro || {}
-    nuxt.options.nitro.imports = nuxt.options.nitro.imports || {}
-    nuxt.options.nitro.imports.presets = nuxt.options.nitro.imports.presets || []
-    nuxt.options.nitro.imports.presets.push(siteConfigPreset)
+    addServerImportsDir('#robots/nitro/composables')
     nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
-    // TODO deprecated, avoid breaking changes for now
     nuxt.options.nitro.alias['#internal/nuxt-simple-robots'] = resolve('./runtime/nitro/composables')
     nuxt.options.nitro.alias['#internal/nuxt-robots'] = resolve('./runtime/nitro/composables')
+    nuxt.options.alias['#robots'] = resolve('./runtime')
   },
 })

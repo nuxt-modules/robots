@@ -1,5 +1,4 @@
-import { useRuntimeConfig } from '#imports'
-import { getPathRobotConfig } from '#internal/nuxt-robots'
+import { getPathRobotConfig, useRuntimeConfig } from '#imports'
 import { defineEventHandler, setHeader } from 'h3'
 
 export default defineEventHandler(async (e) => {

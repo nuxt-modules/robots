@@ -1,4 +1,4 @@
-import { getPathRobotConfig } from '#internal/nuxt-robots'
+import { getPathRobotConfig } from '#imports'
 import { defineEventHandler, getQuery } from 'h3'
 
 export default defineEventHandler(async (e) => {

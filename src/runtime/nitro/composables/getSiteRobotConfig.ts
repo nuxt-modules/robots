@@ -1,7 +1,6 @@
 import type { H3Event } from 'h3'
 import type { ParsedRobotsTxt } from '../../types'
-import { useRuntimeConfig } from '#imports'
-import { getSiteIndexable, useSiteConfig } from '#internal/nuxt-site-config'
+import { getSiteIndexable, useRuntimeConfig, useSiteConfig } from '#imports'
 import { getQuery } from 'h3'
 
 export function getSiteRobotConfig(e: H3Event): { indexable: boolean, hints: string[] } {
