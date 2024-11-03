@@ -1,4 +1,4 @@
-import { defineNitroPlugin } from 'nitropack/runtime/plugin'
+import { defineNitroPlugin } from '#imports'
 
 export default defineNitroPlugin((nitroApp) => {
   if (import.meta.dev) {
