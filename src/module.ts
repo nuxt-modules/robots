@@ -569,7 +569,7 @@ declare module 'h3' {
     if (nuxt.options.dev)
       setupDevToolsUI(config, resolve)
 
-    addServerImportsDir('#robots/nitro/composables')
+    addServerImportsDir(resolve('./runtime/nitro/composables'))
     nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
     nuxt.options.nitro.alias['#internal/nuxt-simple-robots'] = resolve('./runtime/nitro/composables')
     nuxt.options.nitro.alias['#internal/nuxt-robots'] = resolve('./runtime/nitro/composables')
