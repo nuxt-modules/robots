@@ -1,7 +1,8 @@
 import type { HookRobotsConfigContext, HookRobotsTxtContext } from '../../types'
-import { getSiteRobotConfig, useNitroApp, useRuntimeConfig, withSiteUrl } from '#imports'
+import { useNitroApp, useRuntimeConfig, withSiteUrl } from '#imports'
 import { defineEventHandler, setHeader } from 'h3'
 import { asArray, generateRobotsTxt } from '../../util'
+import { getSiteRobotConfig } from '../composables/getSiteRobotConfig'
 import { resolveRobotsTxtContext } from '../util'
 
 export default defineEventHandler(async (e) => {

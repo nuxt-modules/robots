@@ -1,9 +1,10 @@
-import { getSiteRobotConfig, useRuntimeConfig, useSiteConfig } from '#imports'
+import { useRuntimeConfig, useSiteConfig } from '#imports'
 import { defineEventHandler, getQuery } from 'h3'
+import { getSiteRobotConfig } from '../../composables/getSiteRobotConfig'
 
 export default defineEventHandler(async (e) => {
   const runtimeConfig = useRuntimeConfig(e)['nuxt-robots']
-  const { indexable, hints } = await getSiteRobotConfig(e)
+  const { indexable, hints } = getSiteRobotConfig(e)
   const siteConfig = useSiteConfig(e)
   const robotsTxt = await e.$fetch('/robots.txt', {
     query: getQuery(e),
