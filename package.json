@@ -2,7 +2,7 @@
   "name": "@nuxtjs/robots",
   "type": "module",
   "version": "4.1.11",
-  "packageManager": "pnpm@9.12.2",
+  "packageManager": "pnpm@9.12.3",
   "description": "Tame the robots crawling and indexing your Nuxt site with ease.",
   "author": {
     "name": "Harlan Wilton",
@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "@nuxt/devtools-kit": "^1.6.0",
-    "@nuxt/kit": "^3.13.2",
+    "@nuxt/kit": "^3.14.0",
     "consola": "^3.2.3",
     "defu": "^6.1.4",
     "nuxt-site-config": "^2.2.21",
@@ -82,25 +82,25 @@
     "@nuxtjs/color-mode": "^3.5.2",
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
     "@nuxtjs/i18n": "^8.5.6",
-    "@unocss/nuxt": "^0.63.6",
-    "@unocss/preset-icons": "^0.63.6",
-    "@unocss/preset-uno": "^0.63.6",
-    "@unocss/runtime": "^0.63.6",
+    "@unocss/nuxt": "^0.64.0",
+    "@unocss/preset-icons": "^0.64.0",
+    "@unocss/preset-uno": "^0.64.0",
+    "@unocss/runtime": "^0.64.0",
     "@vueuse/nuxt": "^11.2.0",
-    "bumpp": "^9.8.0",
+    "bumpp": "^9.8.1",
     "eslint": "^9.14.0",
     "execa": "^9.5.1",
     "firebase-functions": "^6.1.0",
-    "nuxt": "^3.13.2",
+    "nuxt": "^3.14.0",
     "typescript": "^5.6.3",
-    "unocss": "^0.63.6",
+    "unocss": "^0.64.0",
     "vitest": "^2.1.4",
     "vue": "3.5.12",
     "vue-router": "^4.4.5"
   },
   "resolutions": {
-    "@nuxt/schema": "3.13.2",
-    "nuxt": "^3.13.2"
+    "@nuxt/schema": "3.14.0",
+    "nuxt": "^3.14.0"
   },
   "build": {
     "externals": [
