@@ -1,13 +1,18 @@
-<h1 align='center'>@nuxtjs/robots</h1>
+<h1>@nuxtjs/robots</h1>
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
 [![License][license-src]][license-href]
 [![Nuxt][nuxt-src]][nuxt-href]
 
-<p align="center">
-Tame the robots crawling and indexing your Nuxt site with ease.
-</p>
+Nuxt Robots is a module for configuring the robots crawling your site with minimal config and best practice defaults.
+
+The core feature of the module is:
+- Telling [crawlers](https://nuxtseo.com/learn/controlling-crawlers) which paths they can and cannot access using a [robots.txt](https://nuxtseo.com/learn/controlling-crawlers/robots-txt) file.
+- Telling [search engine crawlers](https://developers.google.com/search/docs/crawling-indexing/googlebot) what they can show in search results from your site using a `<meta name="robots" content="index">` `X-Robots-Tag` HTTP header.
+
+New to robots or SEO? Check out the [Conquering Web Crawlers](https://nuxtseo.com/learn/controlling-crawlers) guide to learn more about why you might
+need these features.
 
 <p align="center">
 <table>
@@ -18,17 +23,6 @@ Tame the robots crawling and indexing your Nuxt site with ease.
 </tbody>
 </table>
 </p>
-
-## Introduction
-
-Nuxt Robots is a module for configuring the robots crawling your site with minimal config and best practice defaults.
-
-The core feature of the module is:
-- Telling [crawlers](https://nuxtseo.com/learn/controlling-crawlers) which paths they can and cannot access using a [robots.txt](https://nuxtseo.com/learn/controlling-crawlers/robots-txt) file.
-- Telling [search engine crawlers](https://developers.google.com/search/docs/crawling-indexing/googlebot) what they can show in search results from your site using a `<meta name="robots" content="index">` `X-Robots-Tag` HTTP header.
-
-New to robots or SEO? Check out the [Conquering Web Crawlers](https://nuxtseo.com/learn/controlling-crawlers) guide to learn more about why you might
-need these features.
 
 ## Features
 
