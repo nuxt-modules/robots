@@ -1,18 +1,13 @@
 <h1 align='center'>@nuxtjs/robots</h1>
 
-<p align="center">
-<a href='https://github.com/nuxt-modules/robots/actions/workflows/test.yml'>
-</a>
-<a href="https://www.npmjs.com/package/@nuxtjs/robots" target="__blank"><img src="https://img.shields.io/npm/v/@nuxtjs/robots?style=flat&colorA=002438&colorB=28CF8D" alt="NPM version"></a>
-<a href="https://www.npmjs.com/package/@nuxtjs/robots" target="__blank"><img alt="NPM Downloads" src="https://img.shields.io/npm/dm/@nuxtjs/robots?flat&colorA=002438&colorB=28CF8D"></a>
-<a href="https://github.com/nuxt-modules/robots" target="__blank"><img alt="GitHub stars" src="https://img.shields.io/github/stars/nuxt-modules/robots?flat&colorA=002438&colorB=28CF8D"></a>
-</p>
+[![npm version][npm-version-src]][npm-version-href]
+[![npm downloads][npm-downloads-src]][npm-downloads-href]
+[![License][license-src]][license-href]
+[![Nuxt][nuxt-src]][nuxt-href]
 
 <p align="center">
 Tame the robots crawling and indexing your Nuxt site with ease.
 </p>
-
-For `@nuxtjs/robots` v3.0 usage, please use the [v3.x](https://github.com/nuxt-modules/robots/tree/v3.x) tag.
 
 <p align="center">
 <table>
@@ -71,4 +66,17 @@ npx nuxi@latest module add robots
 
 ## License
 
-MIT License © 2022-PRESENT [Harlan Wilton](https://github.com/harlan-zw)
+Licensed under the [MIT license](https://github.com/nuxt-modules/robots/blob/main/LICENSE.md).
+
+<!-- Badges -->
+[npm-version-src]: https://img.shields.io/npm/v/@nuxtjs/robots/latest.svg?style=flat&colorA=18181B&colorB=28CF8D
+[npm-version-href]: https://npmjs.com/package/@nuxtjs/robots
+
+[npm-downloads-src]: https://img.shields.io/npm/dm/@nuxtjs/robots.svg?style=flat&colorA=18181B&colorB=28CF8D
+[npm-downloads-href]: https://npmjs.com/package/@nuxtjs/robots
+
+[license-src]: https://img.shields.io/github/license/nuxt-modules/robots.svg?style=flat&colorA=18181B&colorB=28CF8D
+[license-href]: https://github.com/nuxt-modules/robots/blob/main/LICENSE.md
+
+[nuxt-src]: https://img.shields.io/badge/Nuxt-18181B?logo=nuxt.js
+[nuxt-href]: https://nuxt.com
