@@ -18,15 +18,22 @@ For `@nuxtjs/robots` v3.0 usage, please use the [v3.x](https://github.com/nuxt-m
 <table>
 <tbody>
 <td align="center">
-<img width="800" height="0" /><br>
-<i>Status:</i> <a href="https://github.com/nuxt-modules/robots/releases/tag/v4.0.0">v4.0 Merged with <a href="https://github.com/nuxt-modules/robots/issues/116">Nuxt Simple Robots</a></a></b> <br>
-<sup> Please report any issues 🐛</sup><br>
 <sub>Made possible by my <a href="https://github.com/sponsors/harlan-zw">Sponsor Program 💖</a><br> Follow me <a href="https://twitter.com/harlan_zw">@harlan_zw</a> 🐦 • Join <a href="https://discord.gg/275MBUBvgP">Discord</a> for help</sub><br>
-<img width="800" height="0" />
 </td>
 </tbody>
 </table>
 </p>
+
+## Introduction
+
+Nuxt Robots is a module for configuring the robots crawling your site with minimal config and best practice defaults.
+
+The core feature of the module is:
+- Telling [crawlers](https://nuxtseo.com/learn/controlling-crawlers) which paths they can and cannot access using a [robots.txt](https://nuxtseo.com/learn/controlling-crawlers/robots-txt) file.
+- Telling [search engine crawlers](https://developers.google.com/search/docs/crawling-indexing/googlebot) what they can show in search results from your site using a `<meta name="robots" content="index">` `X-Robots-Tag` HTTP header.
+
+New to robots or SEO? Check out the [Conquering Web Crawlers](https://nuxtseo.com/learn/controlling-crawlers) guide to learn more about why you might
+need these features.
 
 ## Features
 
