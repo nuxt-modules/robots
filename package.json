@@ -2,7 +2,7 @@
   "name": "@nuxtjs/robots",
   "type": "module",
   "version": "4.1.11",
-  "packageManager": "pnpm@9.12.3",
+  "packageManager": "pnpm@9.13.0",
   "description": "Tame the robots crawling and indexing your Nuxt site with ease.",
   "author": {
     "name": "Harlan Wilton",
@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "@nuxt/devtools-kit": "^1.6.0",
-    "@nuxt/kit": "^3.14.0",
+    "@nuxt/kit": "^3.14.159",
     "consola": "^3.2.3",
     "defu": "^6.1.4",
     "nuxt-site-config": "^2.2.21",
@@ -65,7 +65,7 @@
     "pathe": "^1.1.2",
     "pkg-types": "^1.2.1",
     "sirv": "^3.0.0",
-    "std-env": "^3.7.0",
+    "std-env": "^3.8.0",
     "ufo": "^1.5.4"
   },
   "devDependencies": {
@@ -91,16 +91,16 @@
     "eslint": "^9.14.0",
     "execa": "^9.5.1",
     "firebase-functions": "^6.1.0",
-    "nuxt": "^3.14.0",
+    "nuxt": "^3.14.159",
     "typescript": "^5.6.3",
     "unocss": "^0.64.0",
-    "vitest": "^2.1.4",
+    "vitest": "^2.1.5",
     "vue": "3.5.12",
     "vue-router": "^4.4.5"
   },
   "resolutions": {
-    "@nuxt/schema": "3.14.0",
-    "nuxt": "^3.14.0"
+    "@nuxt/schema": "3.14.159",
+    "nuxt": "^3.14.159"
   },
   "build": {
     "externals": [
