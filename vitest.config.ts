@@ -1,10 +1,9 @@
 /// <reference types="vitest" />
 /// <reference types="vitest/globals" />
-
+import { defineVitestConfig } from '@nuxt/test-utils/config'
 import { isCI } from 'std-env'
-import { defineConfig } from 'vite'
 
-export default defineConfig({
+export default defineVitestConfig({
   test: {
     env: {
       // prod by default
