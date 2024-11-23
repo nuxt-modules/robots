@@ -11,7 +11,7 @@ The core feature of the module is:
 - Telling [crawlers](https://nuxtseo.com/learn/controlling-crawlers) which paths they can and cannot access using a [robots.txt](https://nuxtseo.com/learn/controlling-crawlers/robots-txt) file.
 - Telling [search engine crawlers](https://developers.google.com/search/docs/crawling-indexing/googlebot) what they can show in search results from your site using a `<meta name="robots" content="index">` `X-Robots-Tag` HTTP header.
 
-New to robots or SEO? Check out the [Conquering Web Crawlers](https://nuxtseo.com/learn/controlling-crawlers) guide to learn more about why you might
+New to robots or SEO? Check out the [Controlling Web Crawlers](https://nuxtseo.com/learn/controlling-crawlers) guide to learn more about why you might
 need these features.
 
 <p align="center">
@@ -34,13 +34,15 @@ need these features.
 
 ## Installation
 
-> For `@nuxtjs/robots` v3.0 usage, please use the [v3.x](https://github.com/nuxt-modules/robots/tree/v3.x) tag.
+💡 Using Nuxt 2? Please use the [v3.x](https://github.com/nuxt-modules/robots/tree/v3.x) tag.
 
 Install `@nuxtjs/robots` dependency to your project:
 
 ```bash
 npx nuxi@latest module add robots
 ```
+
+💡 Need a complete SEO solution for Nuxt? Check out [Nuxt SEO](https://nuxtseo.com).
 
 # Documentation
 
