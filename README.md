@@ -44,7 +44,7 @@ npx nuxi@latest module add robots
 
 💡 Need a complete SEO solution for Nuxt? Check out [Nuxt SEO](https://nuxtseo.com).
 
-# Documentation
+## Documentation
 
 [📖 Read the full documentation](https://nuxtseo.com/robots) for more information.
 
