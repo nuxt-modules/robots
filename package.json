@@ -61,7 +61,7 @@
     "consola": "^3.2.3",
     "defu": "^6.1.4",
     "nuxt-site-config": "^2.2.21",
-    "nuxt-site-config-kit": "^2.2.21",
+    "nuxt-site-config-kit": "^3.0.1",
     "pathe": "^1.1.2",
     "pkg-types": "^1.2.1",
     "sirv": "^3.0.0",
