@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "@nuxt/devtools-kit": "^1.6.0",
-    "@nuxt/kit": "^3.14.159",
+    "@nuxt/kit": "^3.14.1592",
     "consola": "^3.2.3",
     "defu": "^6.1.4",
     "nuxt-site-config": "^3.0.2",
@@ -90,7 +90,7 @@
     "eslint": "^9.15.0",
     "execa": "^9.5.1",
     "firebase-functions": "^6.1.0",
-    "nuxt": "^3.14.159",
+    "nuxt": "^3.14.1592",
     "typescript": "^5.6.3",
     "unocss": "^0.64.1",
     "vitest": "^2.1.5",
@@ -98,8 +98,8 @@
     "vue-router": "^4.4.5"
   },
   "resolutions": {
-    "@nuxt/schema": "3.14.159",
-    "nuxt": "^3.14.159"
+    "@nuxt/schema": "3.14.1592",
+    "nuxt": "^3.14.1592"
   },
   "build": {
     "externals": [
