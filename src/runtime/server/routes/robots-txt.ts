@@ -1,6 +1,7 @@
 import type { HookRobotsConfigContext, HookRobotsTxtContext } from '../../types'
-import { useNitroApp, useRuntimeConfig, withSiteUrl } from '#imports'
+import { withSiteUrl } from '#site-config/server/composables/utils'
 import { defineEventHandler, setHeader } from 'h3'
+import { useNitroApp, useRuntimeConfig } from 'nitropack/runtime'
 import { asArray, generateRobotsTxt } from '../../util'
 import { getSiteRobotConfig } from '../composables/getSiteRobotConfig'
 import { resolveRobotsTxtContext } from '../util'

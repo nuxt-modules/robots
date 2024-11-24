@@ -1,5 +1,6 @@
-import { getPathRobotConfig, useRuntimeConfig } from '#imports'
 import { defineEventHandler, setHeader } from 'h3'
+import { useRuntimeConfig } from 'nitropack/runtime'
+import { getPathRobotConfig } from '../composables/getPathRobotConfig'
 
 export default defineEventHandler(async (e) => {
   if (e.path === '/robots.txt' || e.path.startsWith('/__') || e.path.startsWith('/api') || e.path.startsWith('/_nuxt'))

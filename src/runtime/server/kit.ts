@@ -1,6 +1,6 @@
 import type { NitroRouteConfig } from 'nitropack'
-import { useRuntimeConfig } from '#imports'
 import { defu } from 'defu'
+import { useRuntimeConfig } from 'nitropack/runtime'
 import { createRouter as createRadixRouter, toRouteMatcher } from 'radix3'
 import { withoutBase, withoutTrailingSlash } from 'ufo'
 

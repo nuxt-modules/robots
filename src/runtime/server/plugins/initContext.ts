@@ -1,5 +1,5 @@
 import type { NitroApp } from 'nitropack'
-import { defineNitroPlugin, getRouteRules, useRuntimeConfig } from '#imports'
+import { defineNitroPlugin, getRouteRules, useRuntimeConfig } from 'nitropack/runtime'
 import { withoutTrailingSlash } from 'ufo'
 import { logger } from '../logger'
 import { resolveRobotsTxtContext } from '../util'

@@ -201,7 +201,7 @@ export default defineNuxtModule<ModuleOptions>({
       // need to mock the composables to allow module still to work when disabled
       ;['defineRobotMeta', 'useRobotsRule']
         .forEach((name) => {
-          addImports({ name, from: resolve(`./runtime/nuxt/composables/mock`) })
+          addImports({ name, from: resolve(`./runtime/app/composables/mock`) })
         })
       nuxt.options.nitro = nuxt.options.nitro || {}
       nuxt.options.nitro.imports = nuxt.options.nitro.imports || {}
@@ -272,7 +272,7 @@ export default defineNuxtModule<ModuleOptions>({
     await installNuxtSiteConfig()
 
     if (config.metaTag)
-      addPlugin({ mode: 'server', src: resolve('./runtime/nuxt/plugins/robot-meta.server') })
+      addPlugin({ mode: 'server', src: resolve('./runtime/app/plugins/robot-meta.server') })
 
     if (config.robotsTxt && config.mergeWithRobotsTxtPath !== false) {
       let usingRobotsTxtPath = ''
@@ -522,57 +522,58 @@ declare module 'h3' {
 
     addImports({
       name: 'defineRobotMeta',
-      from: resolve('./runtime/nuxt/composables/defineRobotMeta'),
+      from: resolve('./runtime/app/composables/defineRobotMeta'),
     })
 
     addImports({
       name: 'useRobotsRule',
-      from: resolve('./runtime/nuxt/composables/useRobotsRule'),
+      from: resolve('./runtime/app/composables/useRobotsRule'),
     })
 
     addComponent({
       name: 'RobotMeta',
-      filePath: resolve('./runtime/nuxt/components/RobotMeta'),
+      filePath: resolve('./runtime/app/components/RobotMeta'),
     })
 
     if (config.robotsTxt) {
       // add robots.txt server handler
       addServerHandler({
         route: '/robots.txt',
-        handler: resolve('./runtime/nitro/server/robots-txt'),
+        handler: resolve('./runtime/server/server/robots-txt'),
       })
     }
     // add robots HTTP header handler
     addServerHandler({
-      handler: resolve('./runtime/nitro/server/middleware'),
+      middleware: true,
+      handler: resolve('./runtime/server/middleware/injectContext'),
     })
-    addServerPlugin(resolve('./runtime/nitro/plugins/initContext'))
+    addServerPlugin(resolve('./runtime/server/plugins/initContext'))
 
     if (usingNuxtContent) {
       addServerHandler({
         route: '/__robots__/nuxt-content.json',
-        handler: resolve('./runtime/nitro/server/__robots__/nuxt-content'),
+        handler: resolve('./runtime/server/routes/__robots__/nuxt-content'),
       })
     }
 
     if (config.debug || nuxt.options.dev) {
       addServerHandler({
         route: '/__robots__/debug.json',
-        handler: resolve('./runtime/nitro/server/__robots__/debug'),
+        handler: resolve('./runtime/server/routes/__robots__/debug'),
       })
       addServerHandler({
         route: '/__robots__/debug-path.json',
-        handler: resolve('./runtime/nitro/server/__robots__/debug-path'),
+        handler: resolve('./runtime/server/routes/__robots__/debug-path'),
       })
     }
 
     if (nuxt.options.dev)
       setupDevToolsUI(config, resolve)
 
-    addServerImportsDir(resolve('./runtime/nitro/composables'))
+    addServerImportsDir(resolve('./runtime/server/composables'))
     nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
-    nuxt.options.nitro.alias['#internal/nuxt-simple-robots'] = resolve('./runtime/nitro/composables')
-    nuxt.options.nitro.alias['#internal/nuxt-robots'] = resolve('./runtime/nitro/composables')
+    nuxt.options.nitro.alias['#internal/nuxt-simple-robots'] = resolve('./runtime/server/composables')
+    nuxt.options.nitro.alias['#internal/nuxt-robots'] = resolve('./runtime/server/composables')
     nuxt.options.alias['#robots'] = resolve('./runtime')
   },
 })

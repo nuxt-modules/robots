@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
-import { useNitroApp, useRuntimeConfig } from '#imports'
 import { getRequestHeader } from 'h3'
+import { useNitroApp, useRuntimeConfig } from 'nitropack/runtime'
 import { withoutTrailingSlash } from 'ufo'
 import { matchPathToRule, normaliseRobotsRouteRule } from '../../util'
 import { createNitroRouteRuleMatcher } from '../kit'

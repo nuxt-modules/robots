@@ -1,4 +1,5 @@
-import { useRuntimeConfig, useSiteConfig } from '#imports'
+import { useRuntimeConfig } from '#imports'
+import { useSiteConfig } from '#site-config/server/composables/useSiteConfig'
 import { defineEventHandler, getQuery } from 'h3'
 import { getSiteRobotConfig } from '../../composables/getSiteRobotConfig'
 

@@ -1,9 +1,9 @@
 import type { H3Event } from 'h3'
 import type { ParsedRobotsTxt } from '../../types'
-import { useRuntimeConfig } from '#imports'
-import { getSiteIndexable } from '#site-config/nitro/composables/getSiteIndexable'
-import { useSiteConfig } from '#site-config/nitro/composables/useSiteConfig'
+import { getSiteIndexable } from '#site-config/server/composables/getSiteIndexable'
+import { useSiteConfig } from '#site-config/server/composables/useSiteConfig'
 import { getQuery } from 'h3'
+import { useRuntimeConfig } from 'nitropack/runtime'
 
 export function getSiteRobotConfig(e: H3Event): { indexable: boolean, hints: string[] } {
 // move towards deprecating indexable

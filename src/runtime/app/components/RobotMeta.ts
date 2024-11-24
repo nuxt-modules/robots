@@ -1,5 +1,5 @@
-import { defineRobotMeta } from '#imports'
 import { defineComponent } from 'vue'
+import { defineRobotMeta } from '../composables/defineRobotMeta'
 
 /**
  * @deprecated The robots meta tag is now enabled by default.

@@ -1,15 +1,11 @@
 import type { MaybeRef } from 'vue'
+import { injectHead, useServerHead } from '@unhead/vue'
+import { setHeader } from 'h3'
 import {
-  computed,
-  injectHead,
-  onBeforeUnmount,
-  ref,
-  toValue,
   useRequestEvent,
   useRuntimeConfig,
-  useServerHead,
-} from '#imports'
-import { setHeader } from 'h3'
+} from 'nuxt/app'
+import { computed, onBeforeUnmount, ref, toValue } from 'vue'
 
 /**
  * Get and set the current robots rule.

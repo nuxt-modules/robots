@@ -1,9 +1,5 @@
-import {
-  useRequestEvent,
-  useRuntimeConfig,
-  useServerHead,
-} from '#imports'
-import { defineNuxtPlugin } from 'nuxt/app'
+import { useServerHead } from '@unhead/vue'
+import { defineNuxtPlugin, useRequestEvent, useRuntimeConfig } from 'nuxt/app'
 
 export default defineNuxtPlugin({
   setup() {
