@@ -13,7 +13,7 @@ import {
   hasNuxtModuleCompatibility,
 } from '@nuxt/kit'
 import { defu } from 'defu'
-import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config-kit'
+import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config/kit'
 import { relative } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
 import { NonHelpfulBots } from './const'
