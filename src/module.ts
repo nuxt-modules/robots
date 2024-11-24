@@ -15,7 +15,7 @@ import { defu } from 'defu'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config/kit'
 import { relative } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
-import { NonHelpfulBots } from './const'
+import { AiBots, NonHelpfulBots } from './const'
 import { setupDevToolsUI } from './devtools'
 import { resolveI18nConfig, splitPathForI18nLocales } from './i18n'
 import { extendTypes, isNuxtGenerate, resolveNitroPreset } from './kit'
@@ -113,6 +113,12 @@ export interface ModuleOptions {
    * @default false
    */
   blockNonSeoBots: boolean
+  /**
+   * Blocks AI crawlers.
+   *
+   * @default false
+   */
+  blockAiBots: boolean
   /**
    * Override the auto i18n configuration.
    */
@@ -219,7 +225,15 @@ export default defineNuxtModule<ModuleOptions>({
       // credits to yoast.com/robots.txt
       config.groups.push({
         userAgent: NonHelpfulBots,
-        comment: ['Block bots that don\'t benefit us.'],
+        comment: ['Block non helpful bots'],
+        disallow: ['/'],
+      })
+    }
+
+    if (config.blockAiBots) {
+      config.groups.push({
+        userAgent: AiBots,
+        comment: ['Block AI Crawlers'],
         disallow: ['/'],
       })
     }
