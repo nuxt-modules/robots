@@ -25,7 +25,6 @@ describe('manualNoIndexing', () => {
   it('basic', async () => {
     const robotsTxt = await $fetch('/robots.txt')
     // the site.url should be appended
-    // site.indexable should be honoured
     expect(robotsTxt).toMatchInlineSnapshot(`
       "# START nuxt-robots (indexing disabled)
       User-agent: *

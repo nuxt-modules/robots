@@ -287,8 +287,6 @@ export function normaliseRobotsRouteRule(config: NitroRouteConfig) {
     allow = config.robots
   else if (typeof config.robots === 'object' && typeof config.robots.indexable !== 'undefined')
     allow = config.robots.indexable
-  else if (typeof config.index !== 'undefined')
-    allow = config.index
   // parse rule
   let rule: string | undefined
   if (typeof config.robots === 'object' && typeof config.robots.rule !== 'undefined')

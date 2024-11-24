@@ -24,7 +24,6 @@ await setup({
 describe('siteConfig', () => {
   it('basic', async () => {
     const robotsTxt = await $fetch('/robots.txt')
-    // site.indexable should be honoured
     expect(robotsTxt.includes('(indexable)')).toBe(true)
   })
 })

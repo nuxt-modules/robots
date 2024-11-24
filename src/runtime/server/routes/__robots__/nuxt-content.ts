@@ -17,7 +17,7 @@ export default defineEventHandler(async (e) => {
     if (c._draft || c._extension !== 'md' || c._partial)
       return false
     if (c.path) {
-      if (String(c.robots) === 'false' || String(c.indexable) === 'false' || String(c.index) === 'false')
+      if (String(c.robots) === 'false')
         return c.path
     }
     return false

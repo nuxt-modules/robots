@@ -1,7 +1,6 @@
-import type { Arrayable, AutoI18nConfig, Robots3Rules, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
+import type { Arrayable, AutoI18nConfig, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
 import fsp from 'node:fs/promises'
 import {
-  addComponent,
   addImports,
   addPlugin,
   addServerHandler,
@@ -80,10 +79,6 @@ export interface ModuleOptions {
    *  ]
    */
   groups: RobotsGroupInput[]
-  /**
-   * @deprecated backwards compatibility with Nuxt Robots v3
-   */
-  rules?: Robots3Rules | Robots3Rules[]
   /**
    * The value to use when the site is indexable.
    *
@@ -199,10 +194,7 @@ export default defineNuxtModule<ModuleOptions>({
     if (config.enabled === false) {
       logger.debug('The module is disabled, skipping setup.')
       // need to mock the composables to allow module still to work when disabled
-      ;['defineRobotMeta', 'useRobotsRule']
-        .forEach((name) => {
-          addImports({ name, from: resolve(`./runtime/app/composables/mock`) })
-        })
+      addImports({ name: 'useRobotsRule', from: resolve(`./runtime/app/composables/mock`) })
       nuxt.options.nitro = nuxt.options.nitro || {}
       nuxt.options.nitro.imports = nuxt.options.nitro.imports || {}
       nuxt.options.nitro.imports.presets = nuxt.options.nitro.imports.presets || []
@@ -219,43 +211,6 @@ export default defineNuxtModule<ModuleOptions>({
     if (nuxt.options.app.baseURL?.length > 1 && config.robotsTxt) {
       logger.error(`You are not allowed to generate a robots.txt with a base URL, please set \`{ robots: { robotsTxt: false } }\` in your nuxt.config.`)
       config.robotsTxt = false
-    }
-
-    // TODO remove with v5
-    if (config.rules) {
-      // warn v3 usage and convert to v4
-      logger.warn('The `rules` option is deprecated, please use the `groups` option instead.')
-      if (!config.groups?.length) {
-        const group: RobotsGroupInput = {}
-        const keyMap: Robots3Rules = {
-          UserAgent: 'userAgent',
-          Disallow: 'disallow',
-          Allow: 'allow',
-        } as const
-        const rules = asArray(config.rules)
-        for (const k in rules) {
-          // need to map all keys within the rules
-          const rule = rules[k]
-          for (const k2 in rule) {
-            const key = (keyMap[k2 as keyof Robots3Rules] || k2) as (keyof RobotsGroupInput | 'Sitemap')
-            if (key === 'Sitemap') {
-              config.sitemap = asArray(config.sitemap)
-              config.sitemap.push(rule[k2])
-            }
-            else if (keyMap[k2 as keyof Robots3Rules]) {
-              if (group[key]) {
-                // @ts-expect-error untyped
-                group[key] = asArray(group[key])
-                group[key].push(rule[k2])
-              }
-              else {
-                group[key] = rule[k2]
-              }
-            }
-          }
-        }
-        config.groups.push(group)
-      }
     }
 
     const resolvedAutoI18n = typeof config.autoI18n === 'boolean' ? false : (config.autoI18n || await resolveI18nConfig())
@@ -457,8 +412,6 @@ export default defineNuxtModule<ModuleOptions>({
         // @ts-expect-error untyped
         cacheControl: config.cacheControl,
       }
-      // TODO deprecated, backwards compatiblity
-      nuxt.options.runtimeConfig['nuxt-simple-robots'] = nuxt.options.runtimeConfig['nuxt-robots']
     })
 
     extendTypes('nuxt-robots', ({ typesPath }) => {
@@ -472,20 +425,12 @@ declare module 'nitropack' {
     _robotsRuleMactcher: (url: string) => string
   }
   interface NitroRouteRules {
-    /**
-     * @deprecated Use \`robots: <boolean>\` instead.
-     */
-    index?: boolean
     robots?: boolean | string | {
       indexable: boolean
       rule: string
     }
   }
   interface NitroRouteConfig {
-    /**
-     * @deprecated Use \`robots: <boolean>\` instead.
-     */
-    index?: boolean
     robots?: boolean | string | {
       indexable: boolean
       rule: string
@@ -517,22 +462,9 @@ declare module 'h3' {
         logger.info('Firebase does not support dynamic robots.txt files. Prerendering /robots.txt.')
     }
 
-    // defineRobotMeta is a server-only composable
-    nuxt.options.optimization.treeShake.composables.client['nuxt-robots'] = ['defineRobotMeta']
-
-    addImports({
-      name: 'defineRobotMeta',
-      from: resolve('./runtime/app/composables/defineRobotMeta'),
-    })
-
     addImports({
       name: 'useRobotsRule',
       from: resolve('./runtime/app/composables/useRobotsRule'),
-    })
-
-    addComponent({
-      name: 'RobotMeta',
-      filePath: resolve('./runtime/app/components/RobotMeta'),
     })
 
     if (config.robotsTxt) {

@@ -12,10 +12,10 @@ await setup({
     },
     routeRules: {
       '/hidden-route-rules': {
-        index: false,
+        robots: false,
       },
       '/hidden-route-rules/': {
-        index: false,
+        robots: false,
       },
     },
   },
