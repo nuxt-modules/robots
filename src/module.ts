@@ -539,7 +539,7 @@ declare module 'h3' {
       // add robots.txt server handler
       addServerHandler({
         route: '/robots.txt',
-        handler: resolve('./runtime/server/server/robots-txt'),
+        handler: resolve('./runtime/server/routes/robots-txt'),
       })
     }
     // add robots HTTP header handler
