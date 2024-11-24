@@ -18,3 +18,21 @@ export const NonHelpfulBots = [
   'BLEXBot',
   'magpie-crawler',
 ]
+
+export const AiBots = [
+  'GPTBot',
+  'ChatGPT-User',
+  'Claude-Web',
+  'anthropic-ai',
+  'Applebot-Extended',
+  'Bytespider',
+  'CCBot',
+  'cohere-ai',
+  'Diffbot',
+  'FacebookBot',
+  'Google-Extended',
+  'ImagesiftBot',
+  'PerplexityBot',
+  'OmigiliBot',
+  'Omigili',
+]
