@@ -14,7 +14,7 @@ await setup({
     },
     routeRules: {
       '/index-rule/*': {
-        index: false,
+        robots: false,
       },
       '/robots-rule/*': {
         robots: 'noindex',
@@ -28,7 +28,7 @@ await setup({
         robots: 'index, follow',
       },
       '/excluded/*': {
-        index: false,
+        robots: false,
       },
     },
   },
