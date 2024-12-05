@@ -328,7 +328,7 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     const nitroPreset = resolveNitroPreset(nuxt.options.nitro)
-    let usingNuxtContent = hasNuxtModule('@nuxt/content') && config.disableNuxtContentIntegration !== false
+    let usingNuxtContent = hasNuxtModule('@nuxt/content') && config.disableNuxtContentIntegration !== true
     if (usingNuxtContent) {
       if (await hasNuxtModuleCompatibility('@nuxt/content', '^3')) {
         logger.warn('Nuxt Robots does not work with Nuxt Content v3 yet, the integration will be disabled. Learn more at: https://nuxtseo.com/docs/robots/guides/content')
