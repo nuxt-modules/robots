@@ -33,7 +33,7 @@ export default defineEventHandler(async (e) => {
         .map(s => !s.startsWith('http') ? withSiteUrl(e, s, { withBase: true, absolute: true }) : s),
     )]
     if (usingNuxtContent) {
-      const contentWithRobotRules = await e.$fetch<string[]>('/__robots__/3nuxt-content.json', {
+      const contentWithRobotRules = await e.$fetch<string[]>('/__robots__/nuxt-content.json', {
         headers: {
           Accept: 'application/json',
         },
