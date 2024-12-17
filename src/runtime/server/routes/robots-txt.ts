@@ -1,4 +1,5 @@
 import type { HookRobotsConfigContext, HookRobotsTxtContext } from '../../types'
+import { logger } from '#robots/server/logger'
 import { withSiteUrl } from '#site-config/server/composables/utils'
 import { defineEventHandler, setHeader } from 'h3'
 import { useNitroApp, useRuntimeConfig } from 'nitropack/runtime'
@@ -32,17 +33,23 @@ export default defineEventHandler(async (e) => {
         .map(s => !s.startsWith('http') ? withSiteUrl(e, s, { withBase: true, absolute: true }) : s),
     )]
     if (usingNuxtContent) {
-      const contentWithRobotRules = await e.$fetch<string[]>('/__robots__/nuxt-content.json', {
+      const contentWithRobotRules = await e.$fetch<string[]>('/__robots__/3nuxt-content.json', {
         headers: {
           Accept: 'application/json',
         },
       })
-      // add to first '*' group
-      for (const group of robotsTxtCtx.groups) {
-        if (group.userAgent.includes('*')) {
-          group.disallow.push(...contentWithRobotRules)
-          // need to filter out empty strings since we now have some content
-          group.disallow = group.disallow.filter(Boolean)
+      // ensure it's valid json
+      if (String(contentWithRobotRules).trim().startsWith('<!DOCTYPE')) {
+        logger.error('Invalid HTML returned from /__robots__/nuxt-content.json, skipping.')
+      }
+      else {
+        // add to first '*' group
+        for (const group of robotsTxtCtx.groups) {
+          if (group.userAgent.includes('*')) {
+            group.disallow.push(...contentWithRobotRules)
+            // need to filter out empty strings since we now have some content
+            group.disallow = group.disallow.filter(Boolean)
+          }
         }
       }
     }
