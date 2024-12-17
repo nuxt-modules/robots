@@ -93,9 +93,11 @@ export interface ModuleOptions {
    */
   robotsDisabledValue: string
   /**
+   * @deprecated Explicitly add paths to your robots.txt with the `allow` and `disallow` options.
+   *
    * Should route rules which disallow indexing be added to the `/robots.txt` file.
    *
-   * @default true
+   * @default false
    */
   disallowNonIndexableRoutes: boolean
   /**
@@ -191,7 +193,7 @@ export default defineNuxtModule<ModuleOptions>({
     cacheControl: 'max-age=14400, must-revalidate',
     robotsEnabledValue: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
     robotsDisabledValue: 'noindex, nofollow',
-    disallowNonIndexableRoutes: true,
+    disallowNonIndexableRoutes: false,
     robotsTxt: true,
   },
   async setup(config, nuxt) {

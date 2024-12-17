@@ -6,8 +6,11 @@ export default defineNuxtConfig({
     NuxteRobots,
     '@nuxt/content',
   ],
+
   site: {
     url: 'https://nuxtseo.com',
   },
+
   debug: process.env.NODE_ENV === 'test',
+  compatibilityDate: '2024-12-18',
 })

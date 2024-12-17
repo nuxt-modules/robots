@@ -24,8 +24,6 @@ describe('default', () => {
       Disallow: /users/*/hidden
       Disallow: /?a=
       Disallow: /visible?*a=
-      Disallow: /*/account
-      Disallow: /sub/*
 
       Sitemap: https://nuxtseo.com/sitemap.xml
       # END nuxt-robots"

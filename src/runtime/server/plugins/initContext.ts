@@ -20,7 +20,6 @@ export default defineNitroPlugin(async (nitroApp: NitroApp) => {
     }
     catch (e) {
       logger.error('Failed to read robot rules from content files.', e)
-      // silently fail I suppose
     }
     if (urls && Array.isArray(urls) && urls.length) {
       urls.forEach((url: string) => nuxtContentUrls.add(withoutTrailingSlash(url)))
