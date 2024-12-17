@@ -15,7 +15,7 @@ import { defu } from 'defu'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config/kit'
 import { relative } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
-import { withTrailingSlash } from 'ufo'
+import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { AiBots, NonHelpfulBots } from './const'
 import { setupDevToolsUI } from './devtools'
 import { resolveI18nConfig, splitPathForI18nLocales } from './i18n'
@@ -373,6 +373,12 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt.options.routeRules = nuxt.options.routeRules || {}
       // convert robot routeRules to header routeRules for static hosting
       if (config.header) {
+        const noIndexPaths = [withoutTrailingSlash(nuxt.options.app.buildAssetsDir), `${nuxt.options.app.buildAssetsDir}**`]
+        for (const path of noIndexPaths) {
+          nuxt.options.routeRules[path] = defu({
+            robots: 'noindex',
+          }, nuxt.options.routeRules[path])
+        }
         Object.entries(nuxt.options.routeRules).forEach(([route, rules]) => {
           const robotRule = normaliseRobotsRouteRule(rules)
           // only if a rule has been specified as robots.txt will cover disallows
@@ -413,7 +419,12 @@ export default defineNuxtModule<ModuleOptions>({
       }
 
       const groups = config.groups.map(normalizeGroup)
-      const pathsToCheck = ['/_nuxt', '/_nuxt/', '/api', '/api/']
+      const pathsToCheck = [
+        withoutTrailingSlash(nuxt.options.app.buildAssetsDir),
+        nuxt.options.app.buildAssetsDir,
+        '/api',
+        '/api/',
+      ]
       for (const p of pathsToCheck) {
         if (groups.some(g => g.disallow.includes(p))) {
           logger.warn(`You have disallowed robots accessing \`${withTrailingSlash(p)}**\`, this may prevent your site from being indexed correctly.`)
