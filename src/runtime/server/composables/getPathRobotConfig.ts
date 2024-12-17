@@ -82,7 +82,7 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
   // 3. nitro route rules
   nitroApp._robotsRuleMactcher = nitroApp._robotsRuleMactcher || createNitroRouteRuleMatcher()
   const routeRules = normaliseRobotsRouteRule(nitroApp._robotsRuleMactcher(path))
-  if (routeRules && (routeRules.allow || routeRules.rule)) {
+  if (routeRules && (typeof routeRules.allow !== 'undefined' || typeof routeRules.rule !== 'undefined')) {
     return {
       indexable: routeRules.allow,
       rule: routeRules.rule || (routeRules.allow ? robotsEnabledValue : robotsDisabledValue),
