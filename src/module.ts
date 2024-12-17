@@ -15,6 +15,7 @@ import { defu } from 'defu'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config/kit'
 import { relative } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
+import { withTrailingSlash } from 'ufo'
 import { AiBots, NonHelpfulBots } from './const'
 import { setupDevToolsUI } from './devtools'
 import { resolveI18nConfig, splitPathForI18nLocales } from './i18n'
@@ -411,14 +412,20 @@ export default defineNuxtModule<ModuleOptions>({
         }
       }
 
-      config.groups = config.groups.map(normalizeGroup)
+      const groups = config.groups.map(normalizeGroup)
+      const pathsToCheck = ['/_nuxt', '/_nuxt/', '/api', '/api/']
+      for (const p of pathsToCheck) {
+        if (groups.some(g => g.disallow.includes(p))) {
+          logger.warn(`You have disallowed robots accessing \`${withTrailingSlash(p)}**\`, this may prevent your site from being indexed correctly.`)
+        }
+      }
 
       nuxt.options.runtimeConfig['nuxt-robots'] = {
         version: version || '',
         usingNuxtContent,
         debug: config.debug,
         credits: config.credits,
-        groups: config.groups,
+        groups,
         sitemap: config.sitemap,
         header: config.header,
         robotsEnabledValue: config.robotsEnabledValue,
