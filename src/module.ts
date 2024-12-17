@@ -328,11 +328,11 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     const nitroPreset = resolveNitroPreset(nuxt.options.nitro)
-    let usingNuxtContent = hasNuxtModule('@nuxt/content') && config.disableNuxtContentIntegration !== true
+    let usingNuxtContent = hasNuxtModule('@nuxt/content')
     if (usingNuxtContent) {
       if (await hasNuxtModuleCompatibility('@nuxt/content', '^3')) {
         logger.warn('Nuxt Robots does not work with Nuxt Content v3 yet, the integration will be disabled. Learn more at: https://nuxtseo.com/docs/robots/guides/content')
-        usingNuxtContent = false
+        // usingNuxtContent = false
       }
       else if (nitroPreset.startsWith('cloudflare')) {
         logger.warn('The Nuxt Robots, Nuxt Content integration does not work with CloudFlare yet, the integration will be disabled. Learn more at: https://nuxtseo.com/docs/robots/guides/content')
