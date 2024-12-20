@@ -1,3 +1,4 @@
 packages:
   - client
   - .playground
+  - test/fixtures/**
