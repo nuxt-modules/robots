@@ -1,5 +1,5 @@
 import type { MaybeRef } from 'vue'
-import { injectHead, useServerHead } from '@unhead/vue'
+import { injectHead, useHead } from '@unhead/vue'
 import { setHeader } from 'h3'
 import {
   useRequestEvent,
@@ -36,7 +36,7 @@ export function useRobotsRule(rule?: MaybeRef<boolean | string>) {
     if (config['nuxt-robots'].header) {
       setHeader(event, 'X-Robots-Tag', _rule)
     }
-    useServerHead({
+    useHead({
       meta: [
         {
           name: 'robots',
