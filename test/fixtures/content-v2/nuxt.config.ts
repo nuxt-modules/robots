@@ -11,6 +11,10 @@ export default defineNuxtConfig({
     url: 'https://nuxtseo.com',
   },
 
+  alias: {
+    '@nuxt/content': '@nuxt/content-v2',
+  },
+
   debug: process.env.NODE_ENV === 'test',
   compatibilityDate: '2024-12-18',
 })

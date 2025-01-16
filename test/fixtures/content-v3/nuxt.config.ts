@@ -1,7 +1,5 @@
+import { createResolver } from '@nuxt/kit'
 import NuxtRobots from '../../../src/module'
-import {createResolver} from "@nuxt/kit";
-import { visit } from 'unist-util-visit';
-import { parse } from 'yaml';
 
 const resolver = createResolver(import.meta.url)
 
@@ -18,10 +16,10 @@ export default defineNuxtConfig({
     build: {
       markdown: {
         remarkPlugins: {
-          [resolver.resolve('remarkRobots.mjs')]: {},
-        }
-      }
-    }
+          // [resolver.resolve('remarkRobots.mjs')]: {},
+        },
+      },
+    },
   },
 
   site: {
@@ -30,7 +28,7 @@ export default defineNuxtConfig({
 
   alias: {
     '@nuxt/content': nuxtContent3Resolved,
-    remarkRobots: resolver.resolve('remarkRobots.ts'),
+    'remarkRobots': resolver.resolve('remarkRobots.ts'),
   },
 
   debug: process.env.NODE_ENV === 'test',

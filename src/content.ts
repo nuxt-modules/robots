@@ -1,11 +1,20 @@
-import { z } from 'zod'
+import { z } from '@nuxt/content'
 
-export function asRobotsCollection (collection: any) {
-  // augment the schema
-  collection.schema = collection.schema || z.object()
-  collection.schema = collection.schema.extend({
-    robots: z.boolean().optional()
-  })
-  collection._withNuxtRobots = true
+export function asRobotsCollection(collection: any) {
+  if (collection.type !== 'page') {
+    return
+  }
+  if (!collection.schema) {
+    collection.schema = z.object({
+      robots: z.union([z.string(), z.boolean()]).optional(),
+    })
+  }
+  else {
+    collection.schema = collection.schema.extend({
+      robots: z.union([z.string(), z.boolean()]).optional(),
+    })
+  }
+  collection._integrations = collection._integrations || []
+  collection._integrations.push('robots')
   return collection
 }

@@ -1,6 +1,6 @@
 ---
 path: /bar
-robots: false
+robots: "test"
 ---
 
 # bar

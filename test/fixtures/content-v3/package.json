@@ -4,9 +4,9 @@
     "dev": "nuxi dev"
   },
   "dependencies": {
-    "nuxt": "^3.14.1592"
+    "nuxt": "^3.5.3"
   },
   "devDependencies": {
-    "@nuxt/content": "npm:@nuxt/content@next"
+    "@nuxt/content": "3.0.0-alpha.9"
   }
 }

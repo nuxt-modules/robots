@@ -1,9 +1,16 @@
-import { defineCollection } from '@nuxt/content'
-import {asRobotsCollection} from "../../../src/content";
+import { defineCollection, defineContentConfig, z } from '@nuxt/content'
+import { asRobotsCollection } from '@nuxtjs/robots'
 
-export const collections = {
-  content: asRobotsCollection(defineCollection({
-    type: 'page',
-    source: '**/*.md'
-  }))
-}
+export default defineContentConfig({
+  collections: {
+    content: defineCollection(
+      asRobotsCollection({
+        type: 'page',
+        source: '**/*.md',
+        schema: z.object({
+          date: z.string().optional(),
+        }),
+      }),
+    ),
+  },
+})

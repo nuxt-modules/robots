@@ -1,9 +1,9 @@
+// @ts-expect-error v3 installed
 import type { ParsedContent } from '@nuxt/content'
-import { defineEventHandler } from 'h3'
-import { logger } from '../../logger'
-
 // @ts-expect-error alias module
 import { serverQueryContent } from '#content/server'
+import { defineEventHandler } from 'h3'
+import { logger } from '../../logger'
 
 export default defineEventHandler(async (e) => {
   const content: ParsedContent[] = []
