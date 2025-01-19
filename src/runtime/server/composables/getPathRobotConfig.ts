@@ -8,7 +8,7 @@ import { getSiteRobotConfig } from './getSiteRobotConfig'
 
 export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, skipSiteIndexable?: boolean, path?: string }): { rule: string, indexable: boolean, debug?: { source: string, line: string } } {
   // has already been resolved
-  const { robotsDisabledValue, robotsEnabledValue, usingNuxtContent } = useRuntimeConfig()['nuxt-robots']
+  const { robotsDisabledValue, robotsEnabledValue, isNuxtContentV2 } = useRuntimeConfig()['nuxt-robots']
   if (!options?.skipSiteIndexable) {
     if (!getSiteRobotConfig(e).indexable) {
       return {
@@ -69,7 +69,7 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
   }
 
   // 2. nuxt content rules
-  if (usingNuxtContent && nitroApp._robots?.nuxtContentUrls?.has(withoutTrailingSlash(path))) {
+  if (isNuxtContentV2 && nitroApp._robots?.nuxtContentUrls?.has(withoutTrailingSlash(path))) {
     return {
       indexable: false,
       rule: robotsDisabledValue,

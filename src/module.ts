@@ -169,6 +169,8 @@ export interface ModulePublicRuntimeConfig {
   ['nuxt-robots']: ResolvedModuleOptions
 }
 
+export * from './content'
+
 export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: '@nuxtjs/robots',
@@ -331,16 +333,26 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     const nitroPreset = resolveNitroPreset(nuxt.options.nitro)
-    let usingNuxtContent = hasNuxtModule('@nuxt/content') && config.disableNuxtContentIntegration !== true
-    if (usingNuxtContent) {
-      if (await hasNuxtModuleCompatibility('@nuxt/content', '^3')) {
-        logger.warn('Nuxt Robots does not work with Nuxt Content v3 yet, the integration will be disabled. Learn more at: https://nuxtseo.com/docs/robots/guides/content')
-        usingNuxtContent = false
-      }
-      else if (nitroPreset.startsWith('cloudflare')) {
-        logger.warn('The Nuxt Robots, Nuxt Content integration does not work with CloudFlare yet, the integration will be disabled. Learn more at: https://nuxtseo.com/docs/robots/guides/content')
-        usingNuxtContent = false
-      }
+    const usingNuxtContent = hasNuxtModule('@nuxt/content')
+    const isNuxtContentV3 = usingNuxtContent && await hasNuxtModuleCompatibility('@nuxt/content', '^3')
+    let isNuxtContentV2 = usingNuxtContent && await hasNuxtModuleCompatibility('@nuxt/content', '^2')
+    if (isNuxtContentV3) {
+      // @ts-expect-error runtime type
+      nuxt.hooks.hook('content:file:afterParse', (ctx) => {
+        if (typeof ctx.content.robots !== 'undefined') {
+          let rule = ctx.content.robots
+          if (typeof rule === 'boolean' || !rule) {
+            rule = rule ? config.robotsEnabledValue : config.robotsDisabledValue
+          }
+          // add route rule for the path
+          ctx.content.seo = ctx.content.seo || {}
+          ctx.content.seo.robots = rule
+        }
+      })
+    }
+    else if (isNuxtContentV2 && nitroPreset.startsWith('cloudflare')) {
+      logger.warn('The Nuxt Robots, Nuxt Content integration does not work with CloudFlare yet, the integration will be disabled. Learn more at: https://nuxtseo.com/docs/robots/guides/content')
+      isNuxtContentV2 = false
     }
 
     nuxt.hook('modules:done', async () => {
@@ -435,7 +447,7 @@ export default defineNuxtModule<ModuleOptions>({
 
       nuxt.options.runtimeConfig['nuxt-robots'] = {
         version: version || '',
-        usingNuxtContent,
+        isNuxtContentV2,
         debug: config.debug,
         credits: config.credits,
         groups,
@@ -515,10 +527,10 @@ declare module 'h3' {
     })
     addServerPlugin(resolve('./runtime/server/plugins/initContext'))
 
-    if (usingNuxtContent) {
+    if (isNuxtContentV2) {
       addServerHandler({
         route: '/__robots__/nuxt-content.json',
-        handler: resolve('./runtime/server/routes/__robots__/nuxt-content'),
+        handler: resolve('./runtime/server/routes/__robots__/nuxt-content-v2'),
       })
     }
 

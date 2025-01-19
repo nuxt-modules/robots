@@ -1,3 +1,4 @@
+// @ts-expect-error v3 installed
 import type { ParsedContent } from '@nuxt/content'
 // @ts-expect-error alias module
 import { serverQueryContent } from '#content/server'

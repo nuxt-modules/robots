@@ -10,7 +10,7 @@ import { resolveRobotsTxtContext } from '../util'
 export default defineEventHandler(async (e) => {
   const nitro = useNitroApp()
   const { indexable, hints } = getSiteRobotConfig(e)
-  const { credits, usingNuxtContent, cacheControl } = useRuntimeConfig(e)['nuxt-robots']
+  const { credits, isNuxtContentV2, cacheControl } = useRuntimeConfig(e)['nuxt-robots']
   // move towards deprecating indexable
   let robotsTxtCtx: Omit<HookRobotsConfigContext, 'context' | 'event'> = {
     errors: [],
@@ -32,7 +32,7 @@ export default defineEventHandler(async (e) => {
         // validate sitemaps are absolute
         .map(s => !s.startsWith('http') ? withSiteUrl(e, s, { withBase: true, absolute: true }) : s),
     )]
-    if (usingNuxtContent) {
+    if (isNuxtContentV2) {
       const contentWithRobotRules = await e.$fetch<string[]>('/__robots__/nuxt-content.json', {
         headers: {
           Accept: 'application/json',
