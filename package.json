@@ -104,7 +104,8 @@
   "build": {
     "externals": [
       "h3",
-      "consola"
+      "consola",
+      "@nuxt/content"
     ]
   }
 }
