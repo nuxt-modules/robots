@@ -1,5 +1,5 @@
 import { defineCollection, defineContentConfig, z } from '@nuxt/content'
-import { asRobotsCollection } from '@nuxtjs/robots'
+import { asRobotsCollection } from '../../../src/module'
 
 export default defineContentConfig({
   collections: {
