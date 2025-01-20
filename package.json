@@ -36,12 +36,29 @@
     "./dist/runtime/util": {
       "types": "./dist/runtime/util.d.ts",
       "import": "./dist/runtime/util.js"
+    },
+    "./content": {
+      "types": "./dist/content.d.ts",
+      "import": "./dist/content.mjs",
+      "require": "./dist/content.cjs"
     }
   },
   "main": "./dist/module.cjs",
   "types": "./dist/types.d.ts",
+  "typesVersions": {
+    "*": {
+      "content": [
+        "dist/content"
+      ],
+      "utils": [
+        "dist/utils"
+      ]
+    }
+  },
   "files": [
-    "dist"
+    "content.d.ts",
+    "dist",
+    "util.d.ts"
   ],
   "scripts": {
     "lint": "eslint . --fix",
@@ -100,12 +117,5 @@
   },
   "resolutions": {
     "typescript": "5.6.3"
-  },
-  "build": {
-    "externals": [
-      "h3",
-      "consola",
-      "@nuxt/content"
-    ]
   }
 }

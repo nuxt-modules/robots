@@ -169,8 +169,6 @@ export interface ModulePublicRuntimeConfig {
   ['nuxt-robots']: ResolvedModuleOptions
 }
 
-export * from './content'
-
 export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: '@nuxtjs/robots',
