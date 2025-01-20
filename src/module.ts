@@ -335,6 +335,9 @@ export default defineNuxtModule<ModuleOptions>({
     const isNuxtContentV3 = usingNuxtContent && await hasNuxtModuleCompatibility('@nuxt/content', '^3')
     let isNuxtContentV2 = usingNuxtContent && await hasNuxtModuleCompatibility('@nuxt/content', '^2')
     if (isNuxtContentV3) {
+      if (nuxt.options._installedModules.some(m => m.meta.name === 'Content')) {
+        logger.warn('You have loaded `@nuxt/content` before `@nuxtjs/robots`, this may cause issues with the integration. Please ensure `@nuxtjs/robots` is loaded first.')
+      }
       // @ts-expect-error runtime type
       nuxt.hooks.hook('content:file:afterParse', (ctx) => {
         if (typeof ctx.content.robots !== 'undefined') {
