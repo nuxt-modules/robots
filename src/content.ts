@@ -11,7 +11,7 @@ export type RobotSchema = TypeOf<typeof schema>
 export function asRobotsCollection<T extends ZodRawShape>(collection: Collection<T>): Collection<T> {
   if (collection.type === 'page') {
     // @ts-expect-error untyped
-    collection.schema = collection.schema ? collection.schema.extend(schema) : schema
+    collection.schema = collection.schema ? schema.extend(collection.schema.shape) : schema
   }
   return collection
 }
