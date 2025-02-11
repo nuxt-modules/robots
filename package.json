@@ -104,7 +104,7 @@
     "@unocss/preset-uno": "^65.4.2",
     "@unocss/runtime": "^65.4.2",
     "@vueuse/nuxt": "^12.4.0",
-    "bumpp": "^9.10.1",
+    "bumpp": "^10.0.3",
     "eslint": "^9.18.0",
     "execa": "^9.5.2",
     "firebase-functions": "^6.2.0",
