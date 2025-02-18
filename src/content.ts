@@ -7,7 +7,6 @@ export const schema = z.object({
 
 export function asRobotsCollection<T extends Collection<any>>(collection: T): T {
   if (collection.type === 'page') {
-    // @ts-expect-error untyped
     collection.schema = collection.schema ? schema.extend(collection.schema.shape) : schema
   }
   return collection
