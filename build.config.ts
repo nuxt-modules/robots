@@ -14,6 +14,6 @@ export default defineBuildConfig({
     'nitropack',
     'consola',
     '@nuxt/content',
-    'zod'
+    'zod',
   ],
 })
