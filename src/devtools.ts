@@ -2,16 +2,7 @@ import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from 'nuxt/schema'
 import type { ModuleOptions } from './module'
 import { existsSync } from 'node:fs'
-import { extendServerRpc, onDevToolsInitialized } from '@nuxt/devtools-kit'
 import { useNuxt } from '@nuxt/kit'
-
-export interface ServerFunctions {}
-
-export interface ClientFunctions {
-  refresh: () => void
-  refreshRouteData: (path: string) => void
-  refreshGlobalData: () => void
-}
 
 const DEVTOOLS_UI_ROUTE = '/__nuxt-robots'
 const DEVTOOLS_UI_LOCAL_PORT = 3030
@@ -43,12 +34,6 @@ export function setupDevToolsUI(options: ModuleOptions, resolve: Resolver['resol
       }
     })
   }
-
-  // wait for DevTools to be initialized
-  onDevToolsInitialized(async () => {
-    /* const rpc = */
-    extendServerRpc<ClientFunctions, ServerFunctions>('nuxt-robots', {})
-  })
 
   nuxt.hook('devtools:customTabs', (tabs) => {
     tabs.push({

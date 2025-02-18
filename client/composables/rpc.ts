@@ -1,9 +1,8 @@
 import type { NuxtDevtoolsClient, NuxtDevtoolsIframeClient } from '@nuxt/devtools-kit/types'
 import type { $Fetch } from 'nitropack'
-import type { ClientFunctions, ServerFunctions } from '../../src/devtools'
 import { onDevtoolsClientConnected } from '@nuxt/devtools-kit/iframe-client'
 import { ref, watchEffect } from 'vue'
-import { globalRefreshTime, path, query, refreshSources } from '~/util/logic'
+import { path, query, refreshSources } from '~/util/logic'
 
 export const appFetch = ref<$Fetch>()
 
@@ -28,17 +27,4 @@ onDevtoolsClientConnected(async (client) => {
   })
   devtools.value = client.devtools
   devtoolsClient.value = client
-  client.devtools.extendClientRpc<ServerFunctions, ClientFunctions>('nuxt-robots', {
-    refreshRouteData(path) {
-      // if path matches
-      if (devtoolsClient.value?.host.nuxt.vueApp.config?.globalProperties?.$route.matched[0].components?.default.__file.includes(path))
-        refreshSources()
-    },
-    refresh() {
-      refreshSources()
-    },
-    refreshGlobalData() {
-      globalRefreshTime.value = Date.now()
-    },
-  })
 })
