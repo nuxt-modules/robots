@@ -16,6 +16,7 @@ export async function loadShiki() {
     langs: [
       'html',
       'json',
+      'bash',
       Object.freeze({
         displayName: 'robots.txt',
         name: 'robots-txt',

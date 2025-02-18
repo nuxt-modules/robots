@@ -1,4 +1,5 @@
 import type { H3Event } from 'h3'
+import type { RobotsContext } from '../../types'
 import { getRequestHeader } from 'h3'
 import { useNitroApp, useRuntimeConfig } from 'nitropack/runtime'
 import { withoutTrailingSlash } from 'ufo'
@@ -6,7 +7,7 @@ import { matchPathToRule, normaliseRobotsRouteRule } from '../../util'
 import { createNitroRouteRuleMatcher } from '../kit'
 import { getSiteRobotConfig } from './getSiteRobotConfig'
 
-export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, skipSiteIndexable?: boolean, path?: string }): { rule: string, indexable: boolean, debug?: { source: string, line: string } } {
+export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, skipSiteIndexable?: boolean, path?: string }): RobotsContext {
   // has already been resolved
   const { robotsDisabledValue, robotsEnabledValue, isNuxtContentV2 } = useRuntimeConfig()['nuxt-robots']
   if (!options?.skipSiteIndexable) {

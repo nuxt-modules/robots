@@ -216,17 +216,23 @@ const tab = useLocalStorage('nuxt-robots:tab', 'overview')
               <div v-else>
                 <div class="inline-flex gap-3 mb-5 items-center">
                   <div>
-                    <NIcon v-if="pathDebugData?.indexable" icon="carbon:checkmark-filled" class="text-green-300" />
+                    <NIcon v-if="pathDebugData?.indexable && pathDebugData.crawlable" icon="carbon:checkmark-filled" class="text-green-300" />
                     <NIcon v-else icon="carbon:warning-filled" class="text-red-300" />
                   </div>
-                  <div v-if="pathDebugData.indexable">
-                    Robots can crawl <code class="opacity-60 text-sm">{{ path }}</code>.
+                  <div v-if="!pathDebugData.crawlable">
+                    Robots are not allowed to access <code class="opacity-60 text-sm">{{ path }}</code>.
+                  </div>
+                  <div v-else-if="!pathDebugData.indexable">
+                    Robots are not allowed to index <code class="opacity-60 text-sm">{{ path }}</code>, however, they can access it.
                   </div>
                   <div v-else>
-                    Robots are blocked from crawling <code class="opacity-60 text-sm">{{ path }}</code>.
+                    Robots can access and crawl <code class="opacity-60 text-sm">{{ path }}</code>.
                   </div>
                 </div>
                 <OCodeBlock :code="metaTag" lang="html" />
+                <div v-if="pathDebugData.robotsHeader" class="mt-3">
+                  <OCodeBlock :code="`X-Robots-Tag: ${pathDebugData.robotsHeader}`" lang="bash" />
+                </div>
                 <div v-if="pathDebugData?.debug" class="mt-3 flex gap-2">
                   <div v-if="pathDebugData?.debug?.source" class="text-xs text-gray-300 mt-3 border-gray-600 rounded-xl border-1 px-2 py-1 inline-flex">
                     Source: {{ pathDebugData?.debug?.source }}

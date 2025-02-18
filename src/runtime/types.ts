@@ -56,3 +56,9 @@ export interface AutoI18nConfig {
   defaultLocale: string
   strategy: 'prefix' | 'prefix_except_default' | 'prefix_and_default' | 'no_prefix'
 }
+
+export interface RobotsContext {
+  rule: string
+  indexable: boolean
+  debug?: { source: string, line?: string }
+}

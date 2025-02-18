@@ -489,11 +489,9 @@ declare module 'nitropack' {
   }
 }
 declare module 'h3' {
+  import type { RobotsContext } from '#robots/types'
   interface H3EventContext {
-    robots: {
-      rule: string
-      indexable: boolean
-    }
+    robots: RobotsContext
   }
 }
 `

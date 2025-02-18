@@ -15,7 +15,7 @@ export default defineNuxtPlugin({
         {
           'name': 'robots',
           'content': () => ctx.rule || '',
-          'data-hint': () => config['nuxt-robots']?.debug ? ctx.debug?.source : undefined,
+          'data-hint': () => config['nuxt-robots']?.debug && ctx.debug?.source ? `${ctx.debug?.source},${ctx.debug?.line}` : undefined,
         },
       ],
     })

@@ -1,17 +1,20 @@
 import type { MaybeRef } from 'vue'
+// @ts-expect-error untyped
+import { devRootDir } from '#build/nuxt.config.mjs'
 import { injectHead, useHead } from '@unhead/vue'
 import { setHeader } from 'h3'
 import {
   useRequestEvent,
   useRuntimeConfig,
 } from 'nuxt/app'
-import { computed, onBeforeUnmount, ref, toValue } from 'vue'
+import { computed, getCurrentInstance, onBeforeUnmount, ref, toValue } from 'vue'
 
 /**
  * Get and set the current robots rule.
  */
 export function useRobotsRule(rule?: MaybeRef<boolean | string>) {
   const head = injectHead()
+  const vm = getCurrentInstance()
   if (import.meta.client) {
     // bit hacky but should work fine
     const robotsRef = ref(document.querySelector('meta[name="robots"]')?.getAttribute('content') || '')
@@ -39,8 +42,9 @@ export function useRobotsRule(rule?: MaybeRef<boolean | string>) {
     useHead({
       meta: [
         {
-          name: 'robots',
-          content: _rule,
+          'name': 'robots',
+          'content': _rule,
+          'data-hint': import.meta.dev ? `useRobotsRule,.${vm ? vm.type?.__file?.split(devRootDir)[1] : ''}` : undefined,
         },
       ],
     }, {
