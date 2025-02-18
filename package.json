@@ -114,12 +114,16 @@
     "vue": "3.5.13",
     "vue-router": "^4.5.0"
   },
-  "resolutions": {
-    "typescript": "5.6.3"
-  },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "esbuild"
+      "@parcel/watcher",
+      "better-sqlite3",
+      "esbuild",
+      "protobufjs",
+      "vue-demi"
     ]
+  },
+  "resolutions": {
+    "typescript": "5.6.3"
   }
 }
