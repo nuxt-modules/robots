@@ -1,7 +1,7 @@
 {
   "name": "@nuxtjs/robots",
   "type": "module",
-  "version": "5.2.3",
+  "version": "5.2.4",
   "packageManager": "pnpm@10.4.1",
   "description": "Tame the robots crawling and indexing your Nuxt site with ease.",
   "author": {
