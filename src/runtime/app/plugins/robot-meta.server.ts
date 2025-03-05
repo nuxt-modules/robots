@@ -1,4 +1,4 @@
-import { useServerHead } from '@unhead/vue'
+import { useHead } from '#imports'
 import { defineNuxtPlugin, useRequestEvent, useRuntimeConfig } from 'nuxt/app'
 
 export default defineNuxtPlugin({
@@ -10,7 +10,7 @@ export default defineNuxtPlugin({
       return
     const config = useRuntimeConfig()
 
-    useServerHead({
+    useHead({
       meta: [
         {
           'name': 'robots',

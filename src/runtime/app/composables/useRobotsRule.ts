@@ -1,7 +1,7 @@
 import type { MaybeRef } from 'vue'
 // @ts-expect-error untyped
 import { devRootDir } from '#build/nuxt.config.mjs'
-import { injectHead, useHead } from '@unhead/vue'
+import { injectHead, useHead } from '#imports'
 import { setHeader } from 'h3'
 import {
   useRequestEvent,
