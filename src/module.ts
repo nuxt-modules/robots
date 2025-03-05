@@ -338,7 +338,6 @@ export default defineNuxtModule<ModuleOptions>({
       if (nuxt.options._installedModules.some(m => m.meta.name === 'Content')) {
         logger.warn('You have loaded `@nuxt/content` before `@nuxtjs/robots`, this may cause issues with the integration. Please ensure `@nuxtjs/robots` is loaded first.')
       }
-      // @ts-expect-error runtime type
       nuxt.hooks.hook('content:file:afterParse', (ctx) => {
         if (typeof ctx.content.robots !== 'undefined') {
           let rule = ctx.content.robots
@@ -347,6 +346,7 @@ export default defineNuxtModule<ModuleOptions>({
           }
           // add route rule for the path
           ctx.content.seo = ctx.content.seo || {}
+          // @ts-expect-error runtime type
           ctx.content.seo.robots = rule
         }
       })
