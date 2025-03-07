@@ -97,7 +97,7 @@
     "@nuxt/test-utils": "^3.17.1",
     "@nuxtjs/color-mode": "^3.5.2",
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
-    "@nuxtjs/i18n": "^9.2.1",
+    "@nuxtjs/i18n": "npm:@nuxtjs/i18n-edge@9.2.1-29013776.4a8d7d5",
     "@unocss/nuxt": "^66.0.0",
     "@unocss/preset-icons": "^66.0.0",
     "@unocss/preset-uno": "^66.0.0",
