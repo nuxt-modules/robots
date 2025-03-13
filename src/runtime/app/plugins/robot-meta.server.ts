@@ -1,5 +1,5 @@
 import { useHead } from '#imports'
-import { defineNuxtPlugin, useRequestEvent, useRuntimeConfig } from 'nuxt/app'
+import { defineNuxtPlugin, useRequestEvent } from 'nuxt/app'
 
 export default defineNuxtPlugin({
   setup() {
@@ -8,14 +8,12 @@ export default defineNuxtPlugin({
     // set from nitro, not available for internal routes
     if (!ctx)
       return
-    const config = useRuntimeConfig()
-
     useHead({
       meta: [
         {
           'name': 'robots',
           'content': () => ctx.rule || '',
-          'data-hint': () => config['nuxt-robots']?.debug && ctx.debug?.source ? `${ctx.debug?.source},${ctx.debug?.line}` : undefined,
+          'data-hint': () => import.meta.dev && ctx.debug?.source ? `${ctx.debug?.source},${ctx.debug?.line}` : undefined,
         },
       ],
     })

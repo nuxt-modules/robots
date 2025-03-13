@@ -15,6 +15,9 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
       return {
         rule: robotsDisabledValue,
         indexable: false,
+        debug: {
+          source: 'Site Config',
+        },
       }
     }
   }
