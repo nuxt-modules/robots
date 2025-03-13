@@ -208,7 +208,7 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt.options.nitro.imports = nuxt.options.nitro.imports || {}
       nuxt.options.nitro.imports.presets = nuxt.options.nitro.imports.presets || []
       nuxt.options.nitro.imports.presets.push({
-        from: resolve('./runtime/nitro/mock-composables'),
+        from: resolve('./runtime/server/mock-composables'),
         imports: [
           'getPathRobotConfig',
           'getSiteRobotConfig',
