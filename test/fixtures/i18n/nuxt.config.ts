@@ -6,6 +6,7 @@ export default defineNuxtConfig({
     NuxteRobots,
     '@nuxtjs/i18n',
   ],
+
   site: {
     url: 'https://nuxtseo.com',
   },
@@ -15,6 +16,7 @@ export default defineNuxtConfig({
       ignore: ['/'],
     },
   },
+
   i18n: {
     baseUrl: 'https://nuxtseo.com',
     defaultLocale: 'en',
@@ -22,16 +24,18 @@ export default defineNuxtConfig({
     locales: [
       {
         code: 'en',
-        iso: 'en-US',
+        language: 'en-US',
       },
       {
         code: 'es',
-        iso: 'es-ES',
+        language: 'es-ES',
       },
       {
         code: 'fr',
-        iso: 'fr-FR',
+        language: 'fr-FR',
       },
     ],
   },
+
+  compatibilityDate: '2025-03-13',
 })
