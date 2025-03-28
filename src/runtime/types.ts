@@ -57,6 +57,20 @@ export interface AutoI18nConfig {
   strategy: 'prefix' | 'prefix_except_default' | 'prefix_and_default' | 'no_prefix'
 }
 
+export interface BotScoreData {
+  total: number
+  count: number
+  average: number
+}
+
+export interface DailyBotStats {
+  [date: string]: {
+    count: number
+    bots: Record<string, number>
+    scores?: Record<string, BotScoreData>
+  }
+}
+
 export interface RobotsContext {
   rule: string
   indexable: boolean

@@ -525,6 +525,7 @@ declare module 'h3' {
       handler: resolve('./runtime/server/middleware/injectContext'),
     })
     addServerPlugin(resolve('./runtime/server/plugins/initContext'))
+    addServerPlugin(resolve('./runtime/server/plugins/botTracker'))
 
     if (isNuxtContentV2) {
       addServerHandler({
