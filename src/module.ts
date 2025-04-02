@@ -156,6 +156,10 @@ export interface ModuleOptions {
   credits: boolean
 }
 
+export interface ModuleRuntimeHooks {
+  'robots:bot-detected': () => Promise<void> | void
+}
+
 export interface ResolvedModuleOptions extends ModuleOptions {
   sitemap: string[]
   disallow: string[]
@@ -245,6 +249,8 @@ export default defineNuxtModule<ModuleOptions>({
 
     if (config.metaTag)
       addPlugin({ mode: 'server', src: resolve('./runtime/app/plugins/robot-meta.server') })
+
+    addPlugin({ src: resolve('./runtime/app/plugins/botd') })
 
     if (config.robotsTxt && config.mergeWithRobotsTxtPath !== false) {
       let usingRobotsTxtPath = ''
@@ -525,7 +531,7 @@ declare module 'h3' {
       handler: resolve('./runtime/server/middleware/injectContext'),
     })
     addServerPlugin(resolve('./runtime/server/plugins/initContext'))
-    addServerPlugin(resolve('./runtime/server/plugins/botTracker'))
+    addServerPlugin(resolve('./runtime/server/plugins/botd'))
 
     if (isNuxtContentV2) {
       addServerHandler({

@@ -73,6 +73,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@fingerprintjs/botd": "^1.9.1",
     "@nuxt/kit": "^3.16.0",
     "consola": "^3.4.0",
     "defu": "^6.1.4",

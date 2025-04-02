@@ -68,6 +68,9 @@ export interface DailyBotStats {
     count: number
     bots: Record<string, number>
     scores?: Record<string, BotScoreData>
+    hourly?: number[] // 24 elements array for hourly distribution
+    paths?: Record<string, Record<string, number>> // Bot type -> path -> count
+    sources?: Record<string, number> // Detection source -> count
   }
 }
 

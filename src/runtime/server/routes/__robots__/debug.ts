@@ -20,6 +20,5 @@ export default defineEventHandler(async (e) => {
       env: siteConfig.env,
       indexable: siteConfig.indexable,
     },
-    botStats: e.context.nitro?.app?._botStats
   }
 })
