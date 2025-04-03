@@ -1,7 +1,7 @@
 // src/runtime/server/lib/botd.ts
-import type { getHeaders, H3Event } from 'h3'
+import type { H3Event } from 'h3'
 import { useRuntimeConfig } from '#imports'
-import { useSession } from 'h3'
+import { getHeaders, getQuery, getResponseStatus, useSession } from 'h3'
 
 // Common sensitive paths that bots target - expanded with more patterns
 export const SENSITIVE_PATHS = [
@@ -478,7 +478,33 @@ function detectSessionAnomaly(ipData: IPData, sessionData: SessionData, timestam
   return result
 }
 
-export async function analyzeBotBehavior({
+export interface BotAnalysisResult {
+  score: number
+  ipScore: number
+  isLikelyBot: boolean
+  factors: Record<string, number>
+  session: string
+  ip: string
+
+  // Optional properties based on different execution paths
+  whitelisted?: boolean
+  blacklisted?: boolean
+  skippedProcessing?: boolean
+  trafficType?: TrafficType
+  sensitivePaths?: string[]
+  requestEntropy?: number
+  legitActions?: number
+  sessionAge?: number
+  behaviorChanges?: number
+
+  // For debug/internal use
+  ipKey?: string
+  ipData?: IPData
+  sessionKey?: string
+  sessionData?: SessionData
+}
+
+export async function analyzeBehavior({
   ip,
   path,
   method,
@@ -494,7 +520,7 @@ export async function analyzeBotBehavior({
   session: { id: string }
   headers: ReturnType<typeof getHeaders>
   timestamp?: number
-}) {
+}): BotAnalysisResult {
   // Check if this is an HTML path - if not, skip extensive bot detection
   const isHtmlPath = isLikelyHtmlPath(path, { accept: headers.accept || '' })
 
@@ -614,9 +640,6 @@ export async function analyzeBotBehavior({
   if (!isHtmlPath && !isMaybeSensitive) {
     // Still save the request data for context
     sessionData.lastUpdated = now
-    // await storage.setItem(sessionKey, sessionData, {
-    //   ttl: 60 * 60 * 24, // 24 hour TTL
-    // })
 
     // Associate this session with the IP if not already tracked
     if (!ipData.activeSessions.includes(session.id)) {
@@ -635,10 +658,6 @@ export async function analyzeBotBehavior({
         }
       }
       ipData.lastSessionCreated = now
-
-      // await storage.setItem(ipKey, ipData, {
-      //   ttl: 60 * 60 * 24 * 7, // 7 day TTL for IP data
-      // })
     }
 
     // Return current scores without additional processing
@@ -843,10 +862,14 @@ export async function analyzeBotBehavior({
 // Enhanced bot detection with improved behavior analysis
 
 // Update bot score after request completion (to account for status codes)
-export async function updateBotScoreAfterRequest(event: H3Event, status: number, storage: any, session, any) {
-  const sessionData: SessionData | null = await kvStorage.getItem(sessionKey)
-  if (!sessionData)
-    return
+export async function updateBotScoreAfterRequest(
+  event: H3Event,
+  data: BotAnalysisResult,
+  kvStorage: any,
+) {
+  const sessionData = data.sessionData
+  const path = event.path
+  const status = getResponseStatus(event)
 
   // Update the last request with the status code
   if (sessionData.lastRequests.length > 0) {
@@ -856,10 +879,6 @@ export async function updateBotScoreAfterRequest(event: H3Event, status: number,
   // For non-HTML paths, just update the status code without scoring
   const headers = getHeaders(event)
   const acceptHeader = headers.accept || ''
-  if (!isLikelyHtmlPath(path, { accept: acceptHeader }) && !isMaybeSensitivePath(path)) {
-    await kvStorage.setItem(sessionKey, sessionData)
-    return
-  }
 
   // Count errors (404s, 403s, etc.)
   if (status >= 400) {
@@ -899,7 +918,7 @@ export async function updateBotScoreAfterRequest(event: H3Event, status: number,
         || path.includes('/images/')
         || path.includes('/assets/')
 
-      // Don't penalize 404s on common resource paths as much (could be stale cache or changed resource names)
+      // Don't penalize 404s on common resource paths as much
       if (!pathIsCommonResource) {
         sessionData.score += BEHAVIOR_WEIGHTS.NONEXISTENT_RESOURCES
       }
@@ -919,9 +938,6 @@ export async function updateBotScoreAfterRequest(event: H3Event, status: number,
     else if (sessionData.score >= BOT_SCORE_THRESHOLDS.LIKELY_BOT) {
       sessionData.trafficType = TrafficType.SUSPICIOUS
     }
-
-    // Save updated data
-    await kvStorage.setItem(sessionKey, sessionData)
   }
   else if (status >= 200 && status < 300) {
     // Successful requests may indicate legitimate use
@@ -930,29 +946,31 @@ export async function updateBotScoreAfterRequest(event: H3Event, status: number,
       // Slightly reduce score for successful HTML page views
       sessionData.score = Math.max(0, sessionData.score - 1)
       sessionData.knownGoodActions += 0.5
-      await kvStorage.setItem(sessionKey, sessionData)
     }
   }
 
   // Update IP storage if the score changed significantly
   if (Math.abs(sessionData.score - (sessionData.lastScore || 0)) > 10) {
-    const ip = getRequestIP(event)
-    const ipKey = `ip:${ip}`
-    const ipData: IPData | null = await kvStorage.getItem(ipKey)
-
-    if (ipData) {
+    if (data.ipData) {
       // If this session suddenly became very suspicious, update IP score immediately
       if (sessionData.score >= BOT_SCORE_THRESHOLDS.LIKELY_BOT
         && (sessionData.lastScore || 0) < BOT_SCORE_THRESHOLDS.SUSPICIOUS) {
-        ipData.suspiciousScore = Math.max(ipData.suspiciousScore, sessionData.score * 0.8)
-        await kvStorage.setItem(ipKey, ipData, {
-          ttl: 60 * 60 * 24 * 7, // 7 day TTL for IP data
-        })
+        data.ipData.suspiciousScore = Math.max(data.ipData.suspiciousScore, sessionData.score * 0.8)
       }
     }
 
     // Remember the last score for future comparisons
     sessionData.lastScore = sessionData.score
-    await kvStorage.setItem(sessionKey, sessionData)
   }
+
+  await Promise.all([
+    data.ipKey && data.ipData
+      ? kvStorage.setItem(data.ipKey, data.ipData, {
+          ttl: 60 * 60 * 24,
+        })
+      : Promise.resolve(),
+    kvStorage.setItem(data.sessionKey, sessionData, {
+      ttl: 60 * 60 * 24,
+    }),
+  ])
 }

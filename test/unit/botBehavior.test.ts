@@ -1,7 +1,7 @@
 import type { IPData, SessionData } from '../../src/runtime/server/lib/is-bot/behavior'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
-  analyzeBotBehavior,
+  analyzeBehavior,
   BEHAVIOR_WEIGHTS,
   BOT_SCORE_THRESHOLDS,
   TrafficType,
@@ -61,7 +61,7 @@ describe('bot Detection Analysis', () => {
     })
 
     // Test accessing a sensitive path
-    const result = await analyzeBotBehavior({
+    const result = await analyzeBehavior({
       ip: '1.2.3.4',
       path: '/wp-admin/index.php',
       method: 'GET',
@@ -101,7 +101,7 @@ describe('bot Detection Analysis', () => {
     })
 
     // Test accessing another sensitive path
-    const result = await analyzeBotBehavior({
+    const result = await analyzeBehavior({
       ip: '1.2.3.4',
       path: '/wp-admin/index.php',
       method: 'GET',
@@ -129,7 +129,7 @@ describe('bot Detection Analysis', () => {
     })
 
     // Test accessing a maybe-sensitive path
-    const result = await analyzeBotBehavior({
+    const result = await analyzeBehavior({
       ip: '1.2.3.4',
       path: '/admin',
       method: 'GET',
@@ -170,7 +170,7 @@ describe('bot Detection Analysis', () => {
     })
 
     // Test accessing another maybe-sensitive path
-    const result = await analyzeBotBehavior({
+    const result = await analyzeBehavior({
       ip: '1.2.3.4',
       path: '/admin',
       method: 'GET',
@@ -210,7 +210,7 @@ describe('bot Detection Analysis', () => {
     })
 
     // Test another request coming in
-    const result = await analyzeBotBehavior({
+    const result = await analyzeBehavior({
       ip: '1.2.3.4',
       path: '/another-page',
       method: 'GET',
@@ -249,7 +249,7 @@ describe('bot Detection Analysis', () => {
     })
 
     // Test another perfectly timed request
-    const result = await analyzeBotBehavior({
+    const result = await analyzeBehavior({
       ip: '1.2.3.4',
       path: '/another-page',
       method: 'GET',
@@ -289,7 +289,7 @@ describe('bot Detection Analysis', () => {
     })
 
     // Test continuing the pattern
-    const result = await analyzeBotBehavior({
+    const result = await analyzeBehavior({
       ip: '1.2.3.4',
       path: '/page6',
       method: 'GET',
@@ -317,7 +317,7 @@ describe('bot Detection Analysis', () => {
     })
 
     // Test a whitelisted IP
-    const result = await analyzeBotBehavior({
+    const result = await analyzeBehavior({
       ip: '1.2.3.4',
       path: '/wp-admin/index.php', // Sensitive path that would normally trigger
       method: 'GET',
@@ -348,7 +348,7 @@ describe('bot Detection Analysis', () => {
     })
 
     // Test a blacklisted IP with innocent path
-    const result = await analyzeBotBehavior({
+    const result = await analyzeBehavior({
       ip: '1.2.3.4',
       path: '/about-us', // Innocent path that would normally not trigger
       method: 'GET',
@@ -384,7 +384,7 @@ describe('bot Detection Analysis', () => {
     })
 
     // Test with a session from this IP
-    const result = await analyzeBotBehavior({
+    const result = await analyzeBehavior({
       ip: '1.2.3.4',
       path: '/some-page',
       method: 'GET',
@@ -427,7 +427,7 @@ describe('bot Detection Analysis', () => {
     })
 
     // Test normal browsing continuation
-    const result = await analyzeBotBehavior({
+    const result = await analyzeBehavior({
       ip: '1.2.3.4',
       path: '/contact',
       method: 'GET',
@@ -470,7 +470,7 @@ describe('bot Detection Analysis', () => {
     })
 
     // Hit another sensitive path to push over threshold
-    const result = await analyzeBotBehavior({
+    const result = await analyzeBehavior({
       ip: '1.2.3.4',
       path: '/xmlrpc.php',
       method: 'POST', // Suspicious POST to xmlrpc

@@ -218,6 +218,54 @@ export const GENERIC_BOTS = [
   },
 ]
 
+const BotMap = [
+  {
+    type: 'search-engine',
+    bots: KNOWN_SEARCH_BOTS,
+    trusted: true,
+  },
+  {
+    type: 'social',
+    bots: SOCIAL_BOTS,
+    trusted: true,
+  },
+  {
+    type: 'seo',
+    bots: SEO_BOTS,
+    trusted: true,
+  },
+  {
+    type: 'ai',
+    bots: AI_BOTS,
+    trusted: true,
+  },
+  {
+    type: 'generic',
+    bots: GENERIC_BOTS,
+    trusted: false,
+  },
+  {
+    type: 'automation',
+    bots: AUTOMATION_BOTS,
+    trusted: false,
+  },
+  {
+    type: 'http-tool',
+    bots: HTTP_TOOL_BOTS,
+    trusted: false,
+  },
+  {
+    type: 'security-scanner',
+    bots: SECURITY_SCANNING_BOTS,
+    trusted: false,
+  },
+  {
+    type: 'scraping',
+    bots: SCRAPING_BOTS,
+    trusted: false,
+  },
+]
+
 export function isBotFromHeaders(headers: ReturnType<typeof getHeaders>): {
   isBot: boolean
   data?: {
@@ -242,6 +290,23 @@ export function isBotFromHeaders(headers: ReturnType<typeof getHeaders>): {
   }
 
   const userAgentLower = userAgent.toLowerCase()
+  // Check for known bots (existing code)
+  for (const def of BotMap) {
+    for (const bot of def.bots) {
+      for (const pattern of [bot.pattern, ...(bot.secondaryPatterns || [])]) {
+        if (userAgentLower.includes(pattern)) {
+          return {
+            isBot: true,
+            data: {
+              botType: def.type,
+              botName: bot.name,
+              trusted: def.trusted,
+            },
+          }
+        }
+      }
+    }
+  }
 
   // Check for header inconsistencies
   const accept = headers.accept
@@ -274,53 +339,15 @@ export function isBotFromHeaders(headers: ReturnType<typeof getHeaders>): {
     suspiciousHeaders.push('chrome-ua-missing-client-hints')
   }
 
-  // Default values for bot detection
-  let botName = null
-  let botType = null
-
-  // Check for known bots (existing code)
-  const checks = {
-    'search-engine': KNOWN_SEARCH_BOTS,
-    'social': SOCIAL_BOTS,
-    'seo': SEO_BOTS,
-    'ai': AI_BOTS,
-    'generic': GENERIC_BOTS,
-    'automation': AUTOMATION_BOTS,
-    'http-tool': HTTP_TOOL_BOTS,
-    'security-scanner': SECURITY_SCANNING_BOTS,
-    'scraping': SCRAPING_BOTS,
-    'browser-automation': AUTOMATION_BOTS,
-  }
-
-  for (const check in checks) {
-    for (const bot of checks[check as keyof typeof checks]) {
-      if (userAgentLower.includes(bot.pattern)) {
-        botName = bot.name
-        botType = check
-        break
-      }
-      if (bot.secondaryPatterns) {
-        for (const pattern of bot.secondaryPatterns) {
-          if (userAgentLower.includes(pattern)) {
-            botName = bot.name
-            botType = check
-            break
-          }
-        }
-      }
-    }
-    if (botName)
-      break
-  }
-
   // Bot detected by user agent or suspicious headers
-  if (botName || suspiciousHeaders.length > 0) {
+  if (suspiciousHeaders.length > 0) {
     return {
       isBot: true,
       data: {
         botName: botName || 'suspicious-client',
         botType: botType || 'header-anomaly',
         suspiciousHeaders: suspiciousHeaders.length > 0 ? suspiciousHeaders : undefined,
+        trusted: false,
       },
     }
   }

@@ -531,7 +531,7 @@ declare module 'h3' {
       handler: resolve('./runtime/server/middleware/injectContext'),
     })
     addServerPlugin(resolve('./runtime/server/plugins/initContext'))
-    addServerPlugin(resolve('./runtime/server/plugins/botd'))
+    addServerPlugin(resolve('./runtime/server/plugins/botDetection'))
 
     if (isNuxtContentV2) {
       addServerHandler({
@@ -540,6 +540,10 @@ declare module 'h3' {
       })
     }
 
+    addServerHandler({
+      route: '/__robots__/beacon',
+      handler: resolve('./runtime/server/routes/__robots__/beacon'),
+    })
     if (config.debug || nuxt.options.dev) {
       addServerHandler({
         route: '/__robots__/debug.json',
