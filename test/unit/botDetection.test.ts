@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { identifyAndScoreBot } from '../../src/runtime/server/lib/botd'
+import { isBotFromHeaders } from '../../src/runtime/server/lib/is-bot/userAgent'
 
 const ValidHeaders = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',

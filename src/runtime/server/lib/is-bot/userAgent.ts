@@ -271,7 +271,7 @@ export function isBotFromHeaders(headers: ReturnType<typeof getHeaders>): {
   data?: {
     botType: string
     botName: string
-    suspiciousHeaders?: string[]
+    trusted: boolean
   }
 } {
   const userAgent = headers['user-agent']
@@ -284,7 +284,7 @@ export function isBotFromHeaders(headers: ReturnType<typeof getHeaders>): {
       data: {
         botType: 'unknown',
         botName: 'unknown',
-        suspiciousHeaders: ['missing-user-agent'],
+        trusted: false,
       },
     }
   }
@@ -344,9 +344,8 @@ export function isBotFromHeaders(headers: ReturnType<typeof getHeaders>): {
     return {
       isBot: true,
       data: {
-        botName: botName || 'suspicious-client',
-        botType: botType || 'header-anomaly',
-        suspiciousHeaders: suspiciousHeaders.length > 0 ? suspiciousHeaders : undefined,
+        botName: 'suspicious-client',
+        botType: 'header-anomaly',
         trusted: false,
       },
     }

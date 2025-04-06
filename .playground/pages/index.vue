@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import {useBotDetection} from "#robots/app/composables/useBotDetection";
+import { useBotDetection } from '#robots/app/composables/useBotDetection'
 
 const bot = useBotDetection()
 </script>
+
 <template>
   <div>
     <div>

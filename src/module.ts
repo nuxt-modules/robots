@@ -544,6 +544,10 @@ declare module 'h3' {
       route: '/__robots__/beacon',
       handler: resolve('./runtime/server/routes/__robots__/beacon'),
     })
+    addServerHandler({
+      route: '/__robots__/flag',
+      handler: resolve('./runtime/server/routes/__robots__/flag'),
+    })
     if (config.debug || nuxt.options.dev) {
       addServerHandler({
         route: '/__robots__/debug.json',

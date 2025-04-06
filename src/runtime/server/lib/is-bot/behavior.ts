@@ -1,7 +1,6 @@
 // src/runtime/server/lib/botd.ts
 import type { H3Event } from 'h3'
-import { useRuntimeConfig } from '#imports'
-import { getHeaders, getQuery, getResponseStatus, useSession } from 'h3'
+import { getHeaders, getResponseStatus } from 'h3'
 
 // Common sensitive paths that bots target - expanded with more patterns
 export const SENSITIVE_PATHS = [
@@ -95,6 +94,7 @@ export interface SessionData {
   uniqueSensitivePathsAccessed: string[] // Track unique sensitive paths accessed
   errorCount: number
   score: number
+  lastScore: number
   lastUpdated: number
   trafficType: TrafficType
   knownGoodActions: number // Count of actions that indicate human behavior
@@ -111,120 +111,13 @@ export interface IPData {
   activeSessions: string[] // Track active session IDs
   suspiciousScore: number
   lastUpdated: number
-  whitelisted: boolean
-  blacklisted: boolean
   legitSessionsCount: number // Count of sessions that passed human verification
   sessionsPerHour?: number // Rate of new sessions creation
-  lastSessionCreated?: number // Timestamp of the last session created
-}
-
-// More sophisticated HTML path detection
-export function isLikelyHtmlPath(path: string, headers?: Record<string, string>): boolean {
-  // Parse accept header properly with quality values
-  if (headers?.accept) {
-    // Check if HTML is explicitly in the accept header with priority
-    const acceptTypes = headers.accept.split(',')
-    for (const type of acceptTypes) {
-      const [mimeType, quality] = type.split(';')
-      const trimmedType = mimeType.trim()
-
-      // If html is explicitly requested with high quality value
-      if ((trimmedType === 'text/html' || trimmedType === 'application/xhtml+xml')
-        && (!quality || Number.parseFloat(quality.replace('q=', '')) > 0.5)) {
-        return true
-      }
-    }
-
-    // If accept header exists but doesn't prioritize HTML, check it against typical API/asset patterns
-    if (headers.accept.includes('application/json')
-      || headers.accept.includes('image/')
-      || headers.accept === '*/*') {
-      // Probably not an HTML request
-      return false
-    }
-  }
-
-  // Check common URL patterns that indicate non-HTML resources
-  // Skip common non-HTML file extensions
-  const nonHtmlExtensions = [
-    '.jpg',
-    '.jpeg',
-    '.png',
-    '.gif',
-    '.webp',
-    '.svg',
-    '.ico',
-    '.css',
-    '.js',
-    '.json',
-    '.map',
-    '.woff',
-    '.woff2',
-    '.ttf',
-    '.eot',
-    '.mp4',
-    '.webm',
-    '.mp3',
-    '.wav',
-    '.pdf',
-    '.xml',
-    '.zip',
-    '.gz',
-    '.tar',
-    '.wasm',
-    '.avif',
-    '.heic',
-    '.webmanifest',
-    '.txt',
-  ]
-
-  // Check if path ends with a non-HTML extension
-  const pathLower = path.toLowerCase()
-  if (nonHtmlExtensions.some(ext => pathLower.endsWith(ext))) {
-    return false
-  }
-
-  // Check for API endpoints or static asset paths which aren't typically HTML
-  const nonHtmlPatterns = [
-    '/api/',
-    '/_nuxt/',
-    '/_next/',
-    '/assets/',
-    '/static/',
-    '/img/',
-    '/images/',
-    '/media/',
-    '/fonts/',
-    '/dist/',
-    '/public/',
-    '/cdn/',
-    '/uploads/',
-    '/scripts/',
-    '/styles/',
-  ]
-
-  if (nonHtmlPatterns.some(pattern => pathLower.includes(pattern))) {
-    return false
-  }
-
-  // Look for query parameters that suggest non-HTML responses
-  if (path.includes('?')
-    && (path.includes('format=json')
-      || path.includes('output=json')
-      || path.includes('.json'))) {
-    return false
-  }
-
-  // Default to treating it as HTML if no specific non-HTML indicators are present
-  // especially paths with no extension or paths ending in / which are likely pages
-  return true
-}
-
-export async function useBotDetectionSession(event: H3Event) {
-  const config = useRuntimeConfig()
-  return await useSession(event, {
-    password: config.robots.botDetectionSecret || '80d42cfb-1cd2-462c-8f17-e3237d9027e9',
-  })
+  lastSessionCreated?: number // Timestamp of the last session created+
+  isBot?: boolean
+  isBotConfidence?: number
+  details?: { name: string, type: string, trusted?: boolean } | null
+  factores: string[] // List of factors that contributed to the score
 }
 
 // Helper to check if path is in the maybe-sensitive category
@@ -478,110 +371,33 @@ function detectSessionAnomaly(ipData: IPData, sessionData: SessionData, timestam
   return result
 }
 
-export interface BotAnalysisResult {
-  score: number
-  ipScore: number
-  isLikelyBot: boolean
-  factors: Record<string, number>
-  session: string
-  ip: string
-
-  // Optional properties based on different execution paths
-  whitelisted?: boolean
-  blacklisted?: boolean
-  skippedProcessing?: boolean
-  trafficType?: TrafficType
-  sensitivePaths?: string[]
-  requestEntropy?: number
-  legitActions?: number
-  sessionAge?: number
-  behaviorChanges?: number
-
-  // For debug/internal use
-  ipKey?: string
-  ipData?: IPData
-  sessionKey?: string
-  sessionData?: SessionData
+export interface BotDetectionBehavior {
+  id: string
+  session: SessionData
+  ip: IPData
+  dirty?: boolean
 }
 
-export async function analyzeBehavior({
-  ip,
-  path,
-  method,
-  storage,
-  session,
-  headers,
+export function analyzeSessionAndIpBehavior({
+  event,
+  behavior,
   timestamp = Date.now(),
 }: {
-  ip: string
-  path: string
-  method: string
-  storage: any // The kvStorage interface
-  session: { id: string }
-  headers: ReturnType<typeof getHeaders>
+  event: H3Event
+  behavior: BotDetectionBehavior
   timestamp?: number
-}): BotAnalysisResult {
-  // Check if this is an HTML path - if not, skip extensive bot detection
-  const isHtmlPath = isLikelyHtmlPath(path, { accept: headers.accept || '' })
-
+}) {
+  const path = event.path || ''
+  const method = event.method || 'GET'
   // Check if this is a maybe-sensitive path
   const isMaybeSensitive = isMaybeSensitivePath(path)
   const now = timestamp
-  const sessionKey = `session:${session.id}`
-  const ipKey = `ip:${ip}`
 
   // Initialize or get session data with improved defaults
-  const sessionData: SessionData = await storage.getItem(sessionKey) || {
-    lastRequests: [],
-    suspiciousPathHits: 0,
-    maybeSensitivePathHits: 0,
-    uniqueSensitivePathsAccessed: [],
-    errorCount: 0,
-    score: 0,
-    lastUpdated: now,
-    trafficType: TrafficType.UNKNOWN,
-    knownGoodActions: 0,
-    requestMethodVariety: [],
-    requestSequenceEntropy: 0,
-    firstSeenAt: now,
-  }
+  const sessionData: SessionData = behavior.session
 
   // Initialize or get IP data with improved defaults
-  const ipData: IPData = await storage.getItem(ipKey) || {
-    sessionCount: 0,
-    activeSessions: [],
-    suspiciousScore: 0,
-    lastUpdated: now,
-    whitelisted: false,
-    blacklisted: false,
-    legitSessionsCount: 0,
-    lastSessionCreated: now,
-  }
-
-  // Check for whitelist/blacklist
-  if (ipData.whitelisted) {
-    return {
-      score: 0,
-      ipScore: 0,
-      isLikelyBot: false,
-      factors: {},
-      session: session.id,
-      ip,
-      whitelisted: true,
-    }
-  }
-
-  if (ipData.blacklisted) {
-    return {
-      score: 100,
-      ipScore: 100,
-      isLikelyBot: true,
-      factors: { BLACKLISTED: 100 },
-      session: session.id,
-      ip,
-      blacklisted: true,
-    }
-  }
+  const ipData: IPData = behavior.ip
 
   // Calculate scoring factors
   const scoreFactors: Record<string, number> = {}
@@ -636,42 +452,6 @@ export async function analyzeBehavior({
     sessionData.lastRequests.shift()
   }
 
-  // For non-HTML paths, only do minimal processing
-  if (!isHtmlPath && !isMaybeSensitive) {
-    // Still save the request data for context
-    sessionData.lastUpdated = now
-
-    // Associate this session with the IP if not already tracked
-    if (!ipData.activeSessions.includes(session.id)) {
-      ipData.activeSessions.push(session.id)
-      ipData.sessionCount = ipData.activeSessions.length
-
-      // Calculate session creation rate
-      if (ipData.lastSessionCreated) {
-        const hoursSinceLastSession = (now - ipData.lastSessionCreated) / (1000 * 60 * 60)
-
-        if (hoursSinceLastSession < 1) {
-          // If creating sessions more than once per hour, track the rate
-          ipData.sessionsPerHour = ipData.sessionsPerHour
-            ? (ipData.sessionsPerHour * 0.7 + (1 / hoursSinceLastSession) * 0.3) // Weighted average
-            : (1 / hoursSinceLastSession)
-        }
-      }
-      ipData.lastSessionCreated = now
-    }
-
-    // Return current scores without additional processing
-    return {
-      score: sessionData.score,
-      ipScore: ipData.suspiciousScore,
-      isLikelyBot: sessionData.score >= BOT_SCORE_THRESHOLDS.LIKELY_BOT,
-      factors: {},
-      session: session.id,
-      ip,
-      skippedProcessing: true,
-    }
-  }
-
   // Apply time decay to previous scores (reduce by ~10% per hour)
   const hoursSinceLastUpdate = (now - sessionData.lastUpdated) / (1000 * 60 * 60)
   if (hoursSinceLastUpdate > 0) {
@@ -679,8 +459,8 @@ export async function analyzeBehavior({
   }
 
   // Associate this session with the IP if not already tracked
-  if (!ipData.activeSessions.includes(session.id)) {
-    ipData.activeSessions.push(session.id)
+  if (!ipData.activeSessions.includes(behavior.id)) {
+    ipData.activeSessions.push(behavior.id)
     ipData.sessionCount = ipData.activeSessions.length
 
     // Calculate session creation rate
@@ -809,7 +589,7 @@ export async function analyzeBehavior({
   else if (sessionData.score >= BOT_SCORE_THRESHOLDS.SUSPICIOUS) {
     sessionData.trafficType = TrafficType.SUSPICIOUS
   }
-  else if (sessionData.score <= BOT_SCORE_THRESHOLDS.PROBABLY_HUMAN) {
+  else {
     sessionData.trafficType = TrafficType.REGULAR_USER
   }
 
@@ -838,47 +618,27 @@ export async function analyzeBehavior({
   sessionData.lastUpdated = now
   ipData.lastUpdated = now
 
-  // Return enhanced bot detection result
-  return {
-    score: sessionData.score,
-    ipScore: ipData.suspiciousScore,
-    isLikelyBot: sessionData.score >= BOT_SCORE_THRESHOLDS.LIKELY_BOT,
-    factors: scoreFactors,
-    trafficType: sessionData.trafficType,
-    session: session.id,
-    ip,
-    sensitivePaths: sessionData.uniqueSensitivePathsAccessed || [],
-    requestEntropy: sessionData.requestSequenceEntropy,
-    legitActions: sessionData.knownGoodActions,
-    sessionAge: now - sessionData.firstSeenAt,
-    behaviorChanges: sessionData.behaviorChangePoints?.length || 0,
-    ipKey,
-    ipData,
-    sessionKey,
-    sessionData,
-  }
+  behavior.ip!.isBot = !behavior.ip!.isBot && sessionData.score >= BOT_SCORE_THRESHOLDS.LIKELY_BOT
+  behavior.ip!.isBotConfidence = (sessionData.score + ipData.suspiciousScore) / 2
+
+  behavior.session = sessionData
+  behavior.ip = ipData
 }
 
 // Enhanced bot detection with improved behavior analysis
 
 // Update bot score after request completion (to account for status codes)
-export async function updateBotScoreAfterRequest(
+export function applyBehaviorForErrorPages(
   event: H3Event,
-  data: BotAnalysisResult,
-  kvStorage: any,
+  behavior: BotDetectionBehavior,
 ) {
-  const sessionData = data.sessionData
-  const path = event.path
+  const sessionData = behavior.session!
   const status = getResponseStatus(event)
 
   // Update the last request with the status code
   if (sessionData.lastRequests.length > 0) {
     sessionData.lastRequests[sessionData.lastRequests.length - 1].status = status
   }
-
-  // For non-HTML paths, just update the status code without scoring
-  const headers = getHeaders(event)
-  const acceptHeader = headers.accept || ''
 
   // Count errors (404s, 403s, etc.)
   if (status >= 400) {
@@ -913,19 +673,8 @@ export async function updateBotScoreAfterRequest(
 
     // 404s might indicate scanning for vulnerabilities
     if (status === 404) {
-      const pathIsCommonResource = path.endsWith('.js')
-        || path.endsWith('.css')
-        || path.includes('/images/')
-        || path.includes('/assets/')
-
-      // Don't penalize 404s on common resource paths as much
-      if (!pathIsCommonResource) {
-        sessionData.score += BEHAVIOR_WEIGHTS.NONEXISTENT_RESOURCES
-      }
-      else {
-        // Apply smaller penalty for resource 404s
-        sessionData.score += BEHAVIOR_WEIGHTS.NONEXISTENT_RESOURCES * 0.3
-      }
+      // Apply smaller penalty for resource 404s
+      sessionData.score += BEHAVIOR_WEIGHTS.NONEXISTENT_RESOURCES * 0.3
     }
 
     // Cap score at 100
@@ -942,35 +691,22 @@ export async function updateBotScoreAfterRequest(
   else if (status >= 200 && status < 300) {
     // Successful requests may indicate legitimate use
     // Especially 2xx on HTML pages
-    if (isLikelyHtmlPath(path, { accept: acceptHeader })) {
-      // Slightly reduce score for successful HTML page views
-      sessionData.score = Math.max(0, sessionData.score - 1)
-      sessionData.knownGoodActions += 0.5
-    }
+    // Slightly reduce score for successful HTML page views
+    sessionData.score = Math.max(0, sessionData.score - 1)
+    sessionData.knownGoodActions += 0.5
   }
 
   // Update IP storage if the score changed significantly
   if (Math.abs(sessionData.score - (sessionData.lastScore || 0)) > 10) {
-    if (data.ipData) {
+    if (result.ipData) {
       // If this session suddenly became very suspicious, update IP score immediately
       if (sessionData.score >= BOT_SCORE_THRESHOLDS.LIKELY_BOT
         && (sessionData.lastScore || 0) < BOT_SCORE_THRESHOLDS.SUSPICIOUS) {
-        data.ipData.suspiciousScore = Math.max(data.ipData.suspiciousScore, sessionData.score * 0.8)
+        result.ipData.suspiciousScore = Math.max(result.ipData.suspiciousScore, sessionData.score * 0.8)
       }
     }
 
     // Remember the last score for future comparisons
     sessionData.lastScore = sessionData.score
   }
-
-  await Promise.all([
-    data.ipKey && data.ipData
-      ? kvStorage.setItem(data.ipKey, data.ipData, {
-          ttl: 60 * 60 * 24,
-        })
-      : Promise.resolve(),
-    kvStorage.setItem(data.sessionKey, sessionData, {
-      ttl: 60 * 60 * 24,
-    }),
-  ])
 }
