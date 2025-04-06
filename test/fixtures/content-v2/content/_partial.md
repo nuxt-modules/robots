@@ -1,5 +1,0 @@
----
-robots: false
----
-
-# bar
