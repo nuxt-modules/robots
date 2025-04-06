@@ -3,12 +3,9 @@ import NuxtRobots from '../../../src/module'
 
 const resolver = createResolver(import.meta.url)
 
-const nuxtContent3Resolved = resolver.resolve('node_modules/@nuxt/content/dist/module.mjs')
-
 export default defineNuxtConfig({
   modules: [
     NuxtRobots,
-    nuxtContent3Resolved,
     '@nuxt/content',
   ],
 
@@ -27,8 +24,7 @@ export default defineNuxtConfig({
   },
 
   alias: {
-    '@nuxt/content': nuxtContent3Resolved,
-    'remarkRobots': resolver.resolve('remarkRobots.ts'),
+    remarkRobots: resolver.resolve('remarkRobots.ts'),
   },
 
   debug: process.env.NODE_ENV === 'test',
