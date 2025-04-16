@@ -1,3 +1,4 @@
+import type { H3Event } from 'h3'
 import type { NitroRouteConfig } from 'nitropack'
 import { defu } from 'defu'
 import { useRuntimeConfig } from 'nitropack/runtime'
@@ -8,8 +9,8 @@ export function withoutQuery(path: string) {
   return path.split('?')[0]
 }
 
-export function createNitroRouteRuleMatcher(): (path: string) => NitroRouteConfig {
-  const { nitro, app } = useRuntimeConfig()
+export function createNitroRouteRuleMatcher(e?: H3Event): (path: string) => NitroRouteConfig {
+  const { nitro, app } = useRuntimeConfig(e)
   const _routeRulesMatcher = toRouteMatcher(
     createRadixRouter({
       routes: Object.fromEntries(

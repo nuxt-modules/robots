@@ -85,7 +85,7 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
   }
 
   // 3. nitro route rules
-  nitroApp._robotsRuleMactcher = nitroApp._robotsRuleMactcher || createNitroRouteRuleMatcher()
+  nitroApp._robotsRuleMactcher = nitroApp._robotsRuleMactcher || createNitroRouteRuleMatcher(e)
   let routeRulesPath = path
   // if we're using i18n we need to strip leading prefixes so the rule will match
   if (runtimeConfig.public?.i18n?.locales) {
