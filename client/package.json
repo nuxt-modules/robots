@@ -3,12 +3,12 @@
   "private": true,
   "devDependencies": {
     "@iconify-json/carbon": "^1.2.8",
-    "@nuxt/devtools-kit": "^2.3.2",
-    "@nuxt/devtools-ui-kit": "^2.3.2",
+    "@nuxt/devtools-kit": "^2.4.0",
+    "@nuxt/devtools-ui-kit": "^2.4.0",
     "@nuxt/kit": "^3.16.2",
     "floating-vue": "^5.2.2",
     "nuxt": "3.16.2",
-    "shiki": "^3.2.1",
+    "shiki": "^3.2.2",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   }
