@@ -39,12 +39,13 @@ export function useRobotsRule(rule?: MaybeRef<boolean | string>) {
     if (config['nuxt-robots'].header) {
       setHeader(event, 'X-Robots-Tag', _rule)
     }
+    const vmFile = vm?.type?.__file
     useHead({
       meta: [
         {
           'name': 'robots',
           'content': _rule,
-          'data-hint': import.meta.dev ? `useRobotsRule,.${vm ? vm.type?.__file?.split(devRootDir)[1] : ''}` : undefined,
+          'data-hint': import.meta.dev ? ['useRobotsRule', `.${vmFile ? vm.type?.__file?.split(devRootDir)[1] : ''}`].filter(Boolean).join(',') : undefined,
         },
       ],
     }, {

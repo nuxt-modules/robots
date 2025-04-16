@@ -13,7 +13,7 @@ export default defineNuxtPlugin({
         {
           'name': 'robots',
           'content': () => ctx.rule || '',
-          'data-hint': () => import.meta.dev && ctx.debug?.source ? `${ctx.debug?.source},${ctx.debug?.line}` : undefined,
+          'data-hint': () => import.meta.dev && ctx.debug?.source ? [ctx.debug?.source, ctx.debug?.line].filter(Boolean).join(',') : undefined,
         },
       ],
     })
