@@ -8,8 +8,9 @@ import { createNitroRouteRuleMatcher } from '../kit'
 import { getSiteRobotConfig } from './getSiteRobotConfig'
 
 export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, skipSiteIndexable?: boolean, path?: string }): RobotsContext {
+  const runtimeConfig = useRuntimeConfig(e)
   // has already been resolved
-  const { robotsDisabledValue, robotsEnabledValue, isNuxtContentV2 } = useRuntimeConfig()['nuxt-robots']
+  const { robotsDisabledValue, robotsEnabledValue, isNuxtContentV2 } = runtimeConfig['nuxt-robots']
   if (!options?.skipSiteIndexable) {
     if (!getSiteRobotConfig(e).indexable) {
       return {
@@ -85,7 +86,16 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
 
   // 3. nitro route rules
   nitroApp._robotsRuleMactcher = nitroApp._robotsRuleMactcher || createNitroRouteRuleMatcher()
-  const routeRules = normaliseRobotsRouteRule(nitroApp._robotsRuleMactcher(path))
+  let routeRulesPath = path
+  // if we're using i18n we need to strip leading prefixes so the rule will match
+  if (runtimeConfig.public?.i18n?.locales) {
+    const { locales } = runtimeConfig.public.i18n
+    const locale = locales.find(l => routeRulesPath.startsWith(`/${l.code}`))
+    if (locale) {
+      routeRulesPath = routeRulesPath.replace(`/${locale.code}`, '')
+    }
+  }
+  const routeRules = normaliseRobotsRouteRule(nitroApp._robotsRuleMactcher(routeRulesPath))
   if (routeRules && (typeof routeRules.allow !== 'undefined' || typeof routeRules.rule !== 'undefined')) {
     return {
       indexable: routeRules.allow,

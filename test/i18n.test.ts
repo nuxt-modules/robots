@@ -37,4 +37,7 @@ describe('i18n', () => {
       # END nuxt-robots"
     `)
   })
+  it('respects route rules', async () => {
+    expect((await $fetch('/en/route-rules/?mockProductionEnv=true')).match(/<meta name="robots" content="([^"]+)">/)[1]).toMatchInlineSnapshot(`"noindex, nofollow"`)
+  })
 })
