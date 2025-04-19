@@ -88,7 +88,7 @@
     "@unocss/runtime": "^66.0.0",
     "@vueuse/nuxt": "^13.1.0",
     "bumpp": "^10.1.0",
-    "eslint": "^9.24.0",
+    "eslint": "^9.25.0",
     "execa": "^9.5.2",
     "firebase-functions": "^6.3.2",
     "nuxt": "^3.16.2",
