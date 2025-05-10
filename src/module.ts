@@ -469,7 +469,7 @@ declare module 'nitropack' {
       ctx: import('${typesPath}').HookRobotsConfigContext
       nuxtContentUrls?: Set<string>
     },
-    _robotsRuleMactcher: (url: string) => string
+    _robotsRuleMatcher: (url: string) => string
   }
   interface NitroRouteRules {
     robots?: boolean | string | {
