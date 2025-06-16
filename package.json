@@ -55,7 +55,8 @@
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && nuxi prepare .playground",
     "release": "pnpm build && bumpp && pnpm -r publish",
     "test": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:attw": "attw --pack"
   },
   "dependencies": {
     "@nuxt/kit": "^3.17.5",
@@ -70,6 +71,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^4.14.1",
+    "@arethetypeswrong/cli": "^0.18.2",
     "@headlessui/vue": "^1.7.23",
     "@iconify-json/carbon": "^1.2.9",
     "@iconify-json/logos": "^1.2.4",
