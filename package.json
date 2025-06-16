@@ -89,6 +89,7 @@
     "@unocss/preset-uno": "^66.2.1",
     "@unocss/runtime": "^66.2.1",
     "@vueuse/nuxt": "^13.3.0",
+    "better-sqlite3": "^11.10.0",
     "bumpp": "^10.1.1",
     "eslint": "^9.29.0",
     "execa": "^9.6.0",
