@@ -2,6 +2,11 @@ import type { NitroRouteConfig } from 'nitropack'
 import type { ParsedRobotsTxt, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
 import { createDefu } from 'defu'
 import { withoutLeadingSlash } from 'ufo'
+import { AiBots, NonHelpfulBots } from './const'
+
+export type * from './runtime/types'
+
+export { AiBots, NonHelpfulBots }
 
 /**
  * We're going to read the robots.txt and extract any disallow or sitemaps rules from it.
