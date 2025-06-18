@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest'
 const { resolve } = createResolver(import.meta.url)
 
 await setup({
-  rootDir: resolve('./fixtures/content-v3'),
+  rootDir: resolve('../fixtures/content-v3'),
 })
 describe('nuxt/content default', () => {
   it('basic', async () => {

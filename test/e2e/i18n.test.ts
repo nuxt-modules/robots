@@ -7,7 +7,7 @@ const { resolve } = createResolver(import.meta.url)
 process.env.NODE_ENV = 'production'
 
 await setup({
-  rootDir: resolve('./fixtures/i18n'),
+  rootDir: resolve('../fixtures/i18n'),
   build: true,
   server: true,
   nuxtConfig: {

@@ -27,6 +27,5 @@ export default defineNuxtConfig({
     remarkRobots: resolver.resolve('remarkRobots.ts'),
   },
 
-  debug: process.env.NODE_ENV === 'test',
   compatibilityDate: '2024-12-06',
 })
