@@ -14,9 +14,7 @@ describe('bot Detection from Headers', () => {
   // Test empty user agent handling
   it('handles empty user agent properly', () => {
     const result = isBotFromHeaders({})
-    expect(result.isBot).toBe(true)
-    expect(result.data?.botName).toBe('unknown')
-    expect(result.data?.trusted).toBe(false)
+    expect(result.isBot).toBe(false)
   })
 
   // Test known search bots
@@ -111,30 +109,24 @@ describe('bot Detection from Headers', () => {
     expect(result.isBot).toBe(false)
   })
 
-  // Test header analysis
-  it('uses headers for enhanced detection', () => {
-    // Missing crucial headers should trigger detection
+  // Test normal browsers without all headers  
+  it('allows browsers with missing headers', () => {
+    // Missing headers should not trigger bot detection
     const result = isBotFromHeaders({
       'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
     })
 
-    expect(result.isBot).toBe(true)
-    expect(result.data?.botName).toBe('suspicious-client')
-    expect(result.data?.botType).toBe('header-anomaly')
-    expect(result.data?.trusted).toBe(false)
+    expect(result.isBot).toBe(false)
   })
 
-  // Test inconsistent user agents
-  it('detects inconsistent user agents', () => {
+  // Test mobile/desktop user agents are not flagged
+  it('allows inconsistent user agents', () => {
     const result = isBotFromHeaders({
       'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
       'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Android 10) AppleWebKit/537.36',
       'sec-ch-ua-mobile': '?0',
     })
 
-    expect(result.isBot).toBe(true)
-    expect(result.data?.botName).toBe('suspicious-client')
-    expect(result.data?.botType).toBe('header-anomaly')
-    expect(result.data?.trusted).toBe(false)
+    expect(result.isBot).toBe(false)
   })
 })

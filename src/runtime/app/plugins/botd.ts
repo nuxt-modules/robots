@@ -1,185 +1,139 @@
-import { defineNuxtPlugin, onNuxtReady, useRequestEvent } from 'nuxt/app'
-import { isBotFromHeaders } from '../../util'
-import { useBotDetection } from '../composables/useBotDetection'
+import type { BotDetectionContext } from '../composables/useBotDetection'
+import { useStorage } from '@vueuse/core'
+import { defineNuxtPlugin, onNuxtReady, useRequestEvent, useState } from 'nuxt/app'
+import { ref } from 'vue'
+import { isBotFromHeaders } from '../../../util'
+
+// BotD return types
+type BotDetectionResult
+  = | {
+    bot: true
+    botKind: string
+  }
+  | {
+    bot: false
+  }
+
+// Persistent storage for client-side fingerprint detection results only
+const botDetectionStorage = import.meta.client
+  ? useStorage<BotDetectionContext | null>('__nuxt_robots:botd', null, localStorage, {
+      serializer: {
+        read: (value: string) => {
+          try {
+            return JSON.parse(value)
+          }
+          catch {
+            return null
+          }
+        },
+        write: (value: any) => JSON.stringify(value),
+      },
+    })
+  : ref<BotDetectionContext | null>(null)
 
 export default defineNuxtPlugin({
-  setup() {
-    const { updateContext, storage } = useBotDetection()
+  setup(nuxtApp) {
+    // Use Nuxt's useState for server->client state transfer
+    const botContext = useState<BotDetectionContext | null>('robots:bot-context', () => null)
 
     if (import.meta.server) {
-      // Server-side detection using request headers
-      const event = useRequestEvent()
-      const headers = event?.node.req.headers || {}
-
-      // Perform server-side bot detection
-      const detection = isBotFromHeaders(headers)
-
-      if (detection.isBot && detection.data) {
-        updateContext({
-          isBot: true,
-          userAgent: headers['user-agent'] as string,
-          headers: {
-            accept: headers.accept as string,
-            acceptLanguage: headers['accept-language'] as string,
-            acceptEncoding: headers['accept-encoding'] as string,
-          },
-          detectionMethod: 'server',
-          confidence: detection.data.trusted ? 95 : 75,
-          botType: detection.data.botType,
-          botName: detection.data.botName,
-          trusted: detection.data.trusted,
-        })
-      }
-      else {
-        // Set as likely human on server-side
-        updateContext({
-          isBot: false,
-          userAgent: headers['user-agent'] as string,
-          headers: {
-            accept: headers.accept as string,
-            acceptLanguage: headers['accept-language'] as string,
-            acceptEncoding: headers['accept-encoding'] as string,
-          },
-          detectionMethod: 'server',
-          confidence: 60, // Lower confidence for "not bot" detection
-        })
-      }
+      handleServerDetection(botContext)
     }
 
     if (import.meta.client) {
-      // Client-side enhanced detection
-      onNuxtReady(async () => {
-        // Only run client-side detection if we haven't run it recently
-        const now = Date.now()
-        const lastDetection = storage.value.lastDetectionTime
-        const oneHour = 60 * 60 * 1000
+      handleClientDetection(nuxtApp, botContext)
+    }
 
-        if (storage.value.hasRun && (now - lastDetection) < oneHour) {
-          // Use cached result if available and recent
-          if (storage.value.clientDetectionResult) {
-            updateContext(storage.value.clientDetectionResult)
-          }
-          return
-        }
-
-        try {
-          // Perform client-side detection using browser characteristics
-          const clientDetection = await performClientSideBotDetection()
-
-          // Store the result
-          storage.value = {
-            hasRun: true,
-            lastDetectionTime: now,
-            clientDetectionResult: clientDetection,
-          }
-
-          // Update the context with client-side results
-          updateContext(clientDetection)
-        }
-        catch (error) {
-          console.debug('[Bot Detection] Client-side detection failed:', error)
-        }
-      })
+    return {
+      provide: {
+        robotsBotContext: botContext
+      }
     }
   },
 })
 
-/**
- * Performs client-side bot detection using browser characteristics
- */
-async function performClientSideBotDetection() {
-  const userAgent = navigator.userAgent
+function handleServerDetection(botContext: any) {
+  const event = useRequestEvent()
+  const headers = event?.node.req.headers || {}
+  const detection = isBotFromHeaders(headers)
 
-  // Start with server-side style detection
-  const basicDetection = isBotFromHeaders({
-    'user-agent': userAgent,
-    'accept': document.querySelector('html')?.getAttribute('data-accept') || '',
-    'accept-language': navigator.language,
-    'accept-encoding': 'gzip, deflate, br',
-  })
-
-  if (basicDetection.isBot) {
-    return {
+  if (detection.isBot && detection.data) {
+    botContext.value = {
       isBot: true,
-      userAgent,
-      detectionMethod: 'client' as const,
-      confidence: basicDetection.data?.trusted ? 90 : 70,
-      botType: basicDetection.data?.botType,
-      botName: basicDetection.data?.botName,
-      trusted: basicDetection.data?.trusted,
+      userAgent: headers['user-agent'] as string,
+      detectionMethod: 'server',
+      botType: detection.data.botType,
+      botName: detection.data.botName,
+      trusted: detection.data.trusted,
+      lastDetected: Date.now(),
+    }
+  } else {
+    // Only set if not already detected (don't override client detection)
+    if (!botContext.value) {
+      botContext.value = {
+        isBot: false,
+        userAgent: headers['user-agent'] as string,
+        detectionMethod: 'server',
+        lastDetected: Date.now(),
+      }
     }
   }
+}
 
-  // Enhanced client-side checks for bot characteristics
-  let botScore = 0
-  const checks: string[] = []
-
-  // Check for missing browser APIs that real browsers should have
-  if (typeof window.chrome === 'undefined' && userAgent.includes('Chrome')) {
-    botScore += 15
-    checks.push('missing-chrome-api')
+function handleClientDetection(nuxtApp: any, botContext: any) {
+  // Use cached fingerprint result if available
+  if (botDetectionStorage.value) {
+    botContext.value = botDetectionStorage.value
+    return
   }
 
-  if (typeof navigator.permissions === 'undefined') {
-    botScore += 10
-    checks.push('missing-permissions-api')
-  }
+  // Run fingerprint detection once
+  onNuxtReady(async () => {
+    try {
+      const { load } = await import('@fingerprintjs/botd').catch(() => ({
+        load: () => Promise.resolve({ detect: () => ({ bot: false }) }),
+      }))
 
-  if (typeof navigator.serviceWorker === 'undefined') {
-    botScore += 5
-    checks.push('missing-serviceworker')
-  }
+      // Initialize BotD agent
+      const botdAgent = await load().catch(() => ({
+        detect: () => ({ bot: false }),
+      }))
 
-  // Check for WebDriver (automation tools)
-  if (navigator.webdriver) {
-    botScore += 50
-    checks.push('webdriver-present')
-  }
+      // Perform detection
+      const result = botdAgent.detect() as BotDetectionResult
+      const isBot = result.bot
+      const botKind = result.bot ? result.botKind : undefined
 
-  if ((window as any).callPhantom || (window as any)._phantom) {
-    botScore += 50
-    checks.push('phantom-detected')
-  }
+      // Only store if bot detected
+      if (isBot) {
+        const fingerprintResult = {
+          isBot: true,
+          userAgent: navigator.userAgent,
+          detectionMethod: 'fingerprint' as const,
+          botType: 'automation',
+          botName: botKind,
+          trusted: false,
+          lastDetected: Date.now(),
+        }
 
-  // Check for headless browser indicators
-  if (navigator.plugins?.length === 0) {
-    botScore += 10
-    checks.push('no-plugins')
-  }
+        botDetectionStorage.value = fingerprintResult
+        botContext.value = fingerprintResult
 
-  if (screen.width === 0 || screen.height === 0) {
-    botScore += 20
-    checks.push('invalid-screen')
-  }
-
-  // Check for automation tools in user agent
-  const automationPatterns = ['headless', 'selenium', 'phantomjs', 'slimerjs']
-  const lowerUA = userAgent.toLowerCase()
-  for (const pattern of automationPatterns) {
-    if (lowerUA.includes(pattern)) {
-      botScore += 30
-      checks.push(`automation-${pattern}`)
+        // Fire Nuxt hook for bot detection
+        await nuxtApp.callHook('robots:bot-detected', {
+          method: 'fingerprint',
+          userAgent: navigator.userAgent,
+        })
+      }
     }
-  }
+    catch (error) {
+      // Handle errors gracefully
+      if (import.meta.dev) {
+        console.warn('[Bot Detection] Client-side detection failed:', error)
+      }
 
-  // Check for inconsistencies in navigator object
-  const languages = navigator.languages || []
-  if (languages.length === 0 && navigator.language) {
-    botScore += 5
-    checks.push('language-inconsistency')
-  }
-
-  // Determine if this is likely a bot based on score
-  const isBot = botScore >= 25
-
-  return {
-    isBot,
-    userAgent,
-    detectionMethod: 'client' as const,
-    confidence: isBot ? Math.min(95, 50 + botScore) : Math.max(20, 80 - botScore),
-    botType: isBot ? 'automation' : undefined,
-    botName: isBot ? 'client-detected' : undefined,
-    trusted: false,
-    lastDetected: Date.now(),
-  }
+      // Fire error hook
+      await nuxtApp.callHook('robots:bot-detection-error', { error })
+    }
+  })
 }

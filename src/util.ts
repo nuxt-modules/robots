@@ -17,6 +17,7 @@ import {
 } from './const-bots'
 
 export type * from './runtime/types'
+export type { BotDetectionContext } from './runtime/app/composables/useBotDetection'
 
 export { AiBots, NonHelpfulBots }
 
@@ -335,6 +336,7 @@ export {
   SOCIAL_BOTS,
 }
 
+
 /**
  * Detects bots based on HTTP headers analysis
  * @param headers - HTTP headers object (similar to h3's getHeaders result)
@@ -349,22 +351,15 @@ export function isBotFromHeaders(headers: Record<string, string | string[] | und
   }
 } {
   const userAgent = Array.isArray(headers['user-agent']) ? headers['user-agent'][0] : headers['user-agent']
-  const suspiciousHeaders: string[] = []
 
-  // Check for missing user-agent
+  // Only detect known bots, not suspicious patterns
   if (!userAgent) {
-    return {
-      isBot: true,
-      data: {
-        botType: 'unknown',
-        botName: 'unknown',
-        trusted: false,
-      },
-    }
+    return { isBot: false }
   }
 
   const userAgentLower = userAgent.toLowerCase()
-  // Check for known bots
+  
+  // Check for known bots only
   for (const def of BOT_MAP) {
     for (const bot of def.bots) {
       for (const pattern of [bot.pattern, ...(bot.secondaryPatterns || [])]) {
@@ -382,50 +377,5 @@ export function isBotFromHeaders(headers: Record<string, string | string[] | und
     }
   }
 
-  // Check for header inconsistencies
-  const accept = Array.isArray(headers.accept) ? headers.accept[0] : headers.accept
-  const acceptLanguage = Array.isArray(headers['accept-language']) ? headers['accept-language'][0] : headers['accept-language']
-  const acceptEncoding = Array.isArray(headers['accept-encoding']) ? headers['accept-encoding'][0] : headers['accept-encoding']
-
-  // Browsers typically send these headers
-  if (!accept)
-    suspiciousHeaders.push('missing-accept')
-  if (!acceptLanguage)
-    suspiciousHeaders.push('missing-accept-language')
-  if (!acceptEncoding)
-    suspiciousHeaders.push('missing-accept-encoding')
-
-  // Check for mobile/desktop inconsistencies
-  const isMobileUserAgent = /mobile|android|iphone|ipad|ipod/i.test(userAgentLower)
-  const hasSecChUa = Array.isArray(headers['sec-ch-ua']) ? headers['sec-ch-ua'][0] : headers['sec-ch-ua']
-  const hasSecChUaMobile = Array.isArray(headers['sec-ch-ua-mobile']) ? headers['sec-ch-ua-mobile'][0] : headers['sec-ch-ua-mobile']
-
-  if (isMobileUserAgent && hasSecChUaMobile === '?0') {
-    suspiciousHeaders.push('mobile-ua-desktop-client-hint')
-  }
-
-  if (!isMobileUserAgent && hasSecChUaMobile === '?1') {
-    suspiciousHeaders.push('desktop-ua-mobile-client-hint')
-  }
-
-  // Check for browser inconsistencies
-  if (userAgentLower.includes('chrome') && !hasSecChUa) {
-    suspiciousHeaders.push('chrome-ua-missing-client-hints')
-  }
-
-  // Bot detected by user agent or suspicious headers
-  if (suspiciousHeaders.length > 0) {
-    return {
-      isBot: true,
-      data: {
-        botName: 'suspicious-client',
-        botType: 'header-anomaly',
-        trusted: false,
-      },
-    }
-  }
-
-  return {
-    isBot: false,
-  }
+  return { isBot: false }
 }

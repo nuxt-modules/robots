@@ -29,6 +29,7 @@
       "import": "./dist/module.mjs"
     },
     "./util": "./dist/util.mjs",
+    "./nitro": "./dist/nitro.mjs",
     "./content": "./dist/content.mjs"
   },
   "main": "./dist/module.mjs",
@@ -39,6 +40,9 @@
       ],
       "util": [
         "dist/util"
+      ],
+      "nitro": [
+        "dist/nitro"
       ]
     }
   },
@@ -59,6 +63,7 @@
     "test:attw": "attw --pack"
   },
   "dependencies": {
+    "@fingerprintjs/botd": "^1.9.1",
     "@nuxt/kit": "^3.17.5",
     "consola": "^3.4.2",
     "defu": "^6.1.4",

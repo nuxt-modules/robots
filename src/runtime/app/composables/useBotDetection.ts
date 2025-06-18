@@ -1,75 +1,43 @@
-import { useStorage } from '@vueuse/core'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
+import { useState } from 'nuxt/app'
 
 export interface BotDetectionContext {
   isBot: boolean
   userAgent?: string
-  headers?: {
-    accept?: string
-    acceptLanguage?: string
-    acceptEncoding?: string
-  }
-  detectionMethod?: 'server' | 'client' | 'fingerprint'
-  confidence?: number
+  detectionMethod?: 'server' | 'fingerprint'
   lastDetected?: number
   botType?: string
   botName?: string
   trusted?: boolean
 }
 
-// Global state for bot detection
-const botContextState = ref<BotDetectionContext | null>(null)
-
-// Persistent storage for client-side detection results
-const botDetectionStorage = useStorage<{
-  hasRun: boolean
-  lastDetectionTime: number
-  clientDetectionResult?: BotDetectionContext
-}>('__nuxt_robots:botd', {
-  hasRun: false,
-  lastDetectionTime: 0,
-}, localStorage, {
-  serializer: {
-    read: (value: string) => {
-      try {
-        return JSON.parse(value)
-      }
-      catch {
-        return { hasRun: false, lastDetectionTime: 0 }
-      }
-    },
-    write: (value: any) => JSON.stringify(value),
-  },
-})
-
 export function useBotDetection() {
+  // Use the same useState key as the plugin
+  const botContext = useState<BotDetectionContext | null>('robots:bot-context', () => null)
+
   return {
     // Current bot detection context
-    context: computed(() => botContextState.value),
+    context: computed(() => botContext.value),
 
     // Whether we've detected a bot
-    isBot: computed(() => botContextState.value?.isBot ?? false),
+    isBot: computed(() => botContext.value?.isBot ?? false),
 
     // Bot details if available
     botInfo: computed(() => {
-      const ctx = botContextState.value
+      const ctx = botContext.value
       if (!ctx || !ctx.isBot)
         return null
       return {
         type: ctx.botType,
         name: ctx.botName,
         trusted: ctx.trusted,
-        confidence: ctx.confidence,
         method: ctx.detectionMethod,
       }
     }),
 
-    // Persistent storage state
-    storage: botDetectionStorage,
-
-    // Update the detection context
+    // Update the detection context (for manual updates)
     updateContext: (newContext: BotDetectionContext) => {
-      botContextState.value = {
+      botContext.value = {
         ...newContext,
         lastDetected: Date.now(),
       }
@@ -77,11 +45,7 @@ export function useBotDetection() {
 
     // Clear detection state
     reset: () => {
-      botContextState.value = null
-      botDetectionStorage.value = {
-        hasRun: false,
-        lastDetectionTime: 0,
-      }
+      botContext.value = null
     },
   }
 }
