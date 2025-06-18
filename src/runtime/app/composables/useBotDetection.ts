@@ -1,19 +1,26 @@
+import { useRequestEvent, useState } from 'nuxt/app'
 import { computed } from 'vue'
-import { useState } from 'nuxt/app'
+import { runFingerprinting } from '../utils/fingerprinting'
 
-export interface BotDetectionContext {
-  isBot: boolean
-  userAgent?: string
-  detectionMethod?: 'server' | 'fingerprint'
-  lastDetected?: number
-  botType?: string
-  botName?: string
-  trusted?: boolean
-}
+// Re-export types for users
+export type { BotDetectionContext, BotInfo, UseBotDetectionReturn } from '../../types'
+import type { BotDetectionContext, UseBotDetectionReturn } from '../../types'
+import { getHeaders } from 'h3'
+import { getBotDetection as getBotDetectionFromHeaders } from '../../../util'
 
-export function useBotDetection() {
-  // Use the same useState key as the plugin
-  const botContext = useState<BotDetectionContext | null>('robots:bot-context', () => null)
+export function useBotDetection(): UseBotDetectionReturn {
+  const botContext = useState<BotDetectionContext | null>('robots:bot-context', () => {
+    // Initialize server-side detection on first call
+    if (import.meta.server) {
+      const event = useRequestEvent()
+      if (event) {
+        const headers = getHeaders(event) || {}
+        return getBotDetectionFromHeaders(headers)
+      }
+    }
+
+    return null
+  })
 
   return {
     // Current bot detection context
@@ -46,6 +53,15 @@ export function useBotDetection() {
     // Clear detection state
     reset: () => {
       botContext.value = null
+    },
+
+    // Manually run fingerprinting detection
+    enableFingerprinting: async (): Promise<BotDetectionContext | false> => {
+      if (import.meta.client) {
+        return runFingerprinting(botContext)
+      }
+      // Fingerprinting is client-side only
+      return Promise.resolve(false)
     },
   }
 }

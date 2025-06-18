@@ -1,5 +1,6 @@
 import type { NitroRouteConfig } from 'nitropack'
 import type { ParsedRobotsTxt, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
+import type { BotDetectionContext } from './runtime/types'
 import { createDefu } from 'defu'
 import { withoutLeadingSlash } from 'ufo'
 import { AiBots, NonHelpfulBots } from './const'
@@ -17,7 +18,6 @@ import {
 } from './const-bots'
 
 export type * from './runtime/types'
-export type { BotDetectionContext } from './runtime/app/composables/useBotDetection'
 
 export { AiBots, NonHelpfulBots }
 
@@ -336,7 +336,6 @@ export {
   SOCIAL_BOTS,
 }
 
-
 /**
  * Detects bots based on HTTP headers analysis
  * @param headers - HTTP headers object (similar to h3's getHeaders result)
@@ -358,7 +357,7 @@ export function isBotFromHeaders(headers: Record<string, string | string[] | und
   }
 
   const userAgentLower = userAgent.toLowerCase()
-  
+
   // Check for known bots only
   for (const def of BOT_MAP) {
     for (const bot of def.bots) {
@@ -378,4 +377,63 @@ export function isBotFromHeaders(headers: Record<string, string | string[] | und
   }
 
   return { isBot: false }
+}
+
+/**
+ * Pure bot detection function using headers
+ * @param headers - HTTP headers object
+ * @returns Complete bot detection context
+ */
+export function getBotDetection(headers: Record<string, string | string[] | undefined>): BotDetectionContext {
+  const userAgent = Array.isArray(headers['user-agent']) ? headers['user-agent'][0] : headers['user-agent']
+  const detection = isBotFromHeaders(headers)
+
+  if (detection.isBot && detection.data) {
+    return {
+      isBot: true,
+      userAgent,
+      detectionMethod: 'server',
+      botType: detection.data.botType,
+      botName: detection.data.botName,
+      trusted: detection.data.trusted,
+      lastDetected: Date.now(),
+    }
+  }
+
+  return {
+    isBot: false,
+    userAgent,
+    detectionMethod: 'server',
+    lastDetected: Date.now(),
+  }
+}
+
+/**
+ * Check if headers indicate a bot
+ * @param headers - HTTP headers object
+ * @returns boolean indicating if request is from a bot
+ */
+export function isBot(headers: Record<string, string | string[] | undefined>): boolean {
+  const detection = getBotDetection(headers)
+  return detection.isBot
+}
+
+/**
+ * Get bot information if detected
+ * @param headers - HTTP headers object
+ * @returns Bot info object or null
+ */
+export function getBotInfo(headers: Record<string, string | string[] | undefined>) {
+  const detection = getBotDetection(headers)
+
+  if (!detection.isBot) {
+    return null
+  }
+
+  return {
+    type: detection.botType,
+    name: detection.botName,
+    trusted: detection.trusted,
+    method: detection.detectionMethod,
+  }
 }

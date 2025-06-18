@@ -1,4 +1,6 @@
+import type { BotDetectionResult } from '@fingerprintjs/botd'
 import type { H3Event } from 'h3'
+import type { ComputedRef } from 'vue'
 
 export type Arrayable<T> = T | T[]
 
@@ -49,6 +51,46 @@ export interface HookRobotsConfigContext extends ParsedRobotsTxt {
   context: 'robots.txt' | 'init'
 }
 
+// Bot Detection Types
+export interface BotDetectionContext {
+  isBot: boolean
+  userAgent?: string
+  detectionMethod?: 'server' | 'fingerprint'
+  lastDetected?: number
+  botType?: string
+  botName?: string
+  trusted?: boolean
+}
+
+// Hook payload for fingerprinting bot detection events
+export interface FingerprintingBotDetectedPayload {
+  method: 'fingerprint'
+  result: BotDetectionContext
+  fingerprint: BotDetectionResult
+}
+
+export interface FingerprintingErrorPayload {
+  error: any
+}
+
+// Simplified bot info interface for composable API
+export interface BotInfo {
+  type?: string
+  name?: string
+  trusted?: boolean
+  method?: 'server' | 'fingerprint'
+}
+
+// Return type for useBotDetection composable
+export interface UseBotDetectionReturn {
+  context: ComputedRef<BotDetectionContext | null>
+  isBot: ComputedRef<boolean>
+  botInfo: ComputedRef<BotInfo | null>
+  updateContext: (newContext: BotDetectionContext) => void
+  reset: () => void
+  enableFingerprinting: () => Promise<BotDetectionContext | false>
+}
+
 export type NormalisedLocales = { code: string, iso?: string, domain?: string }[]
 export interface AutoI18nConfig {
   differentDomains?: boolean
@@ -61,13 +103,4 @@ export interface RobotsContext {
   rule: string
   indexable: boolean
   debug?: { source: string, line?: string }
-}
-
-export interface BotDetectionResult {
-  isBot: boolean
-  data?: {
-    botType: string
-    botName: string
-    trusted: boolean
-  }
 }
