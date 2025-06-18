@@ -170,8 +170,6 @@ export interface ResolvedModuleOptions extends ModuleOptions {
 
 export interface ModuleHooks {
   'robots:config': (config: ResolvedModuleOptions) => Promise<void> | void
-  'robots:fingerprinting:bot-detected': (data: import('./util').FingerprintingBotDetectedPayload) => Promise<void> | void
-  'robots:fingerprinting:error': (data: import('./util').FingerprintingErrorPayload) => Promise<void> | void
 }
 
 export interface ModulePublicRuntimeConfig {
@@ -204,7 +202,6 @@ export default defineNuxtModule<ModuleOptions>({
     robotsDisabledValue: 'noindex, nofollow',
     disallowNonIndexableRoutes: false,
     robotsTxt: true,
-    botDetection: true,
   },
   async setup(config, nuxt) {
     const { resolve } = createResolver(import.meta.url)
@@ -255,9 +252,6 @@ export default defineNuxtModule<ModuleOptions>({
 
     if (config.metaTag)
       addPlugin({ mode: 'server', src: resolve('./runtime/app/plugins/robot-meta.server') })
-
-    // Add client-side bot detection plugin
-    addPlugin({ src: resolve('./runtime/app/plugins/botd') })
 
     if (config.robotsTxt && config.mergeWithRobotsTxtPath !== false) {
       let usingRobotsTxtPath = ''
@@ -469,7 +463,6 @@ export default defineNuxtModule<ModuleOptions>({
         header: config.header,
         robotsEnabledValue: config.robotsEnabledValue,
         robotsDisabledValue: config.robotsDisabledValue,
-        // @ts-expect-error untyped
         cacheControl: config.cacheControl,
       }
     })
@@ -501,12 +494,6 @@ declare module 'nitropack' {
     'robots:robots-txt': (ctx: import('${typesPath}').HookRobotsTxtContext) => void | Promise<void>
   }
 }
-declare module '#app' {
-  interface NuxtHooks {
-    'robots:fingerprinting:bot-detected': (data: import('${typesPath}').FingerprintingBotDetectedPayload) => void | Promise<void>
-    'robots:fingerprinting:error': (data: import('${typesPath}').FingerprintingErrorPayload) => void | Promise<void>
-  }
-}
 declare module 'h3' {
   import type { RobotsContext } from '#robots/types'
   interface H3EventContext {
@@ -531,12 +518,10 @@ declare module 'h3' {
       from: resolve('./runtime/app/composables/useRobotsRule'),
     })
 
-    if (config.botDetection) {
-      addImports({
-        name: 'useBotDetection',
-        from: resolve('./runtime/app/composables/useBotDetection'),
-      })
-    }
+    addImports({
+      name: 'useBotDetection',
+      from: resolve('./runtime/app/composables/useBotDetection'),
+    })
 
     if (config.robotsTxt) {
       // add robots.txt server handler

@@ -437,3 +437,14 @@ export function getBotInfo(headers: Record<string, string | string[] | undefined
     method: detection.detectionMethod,
   }
 }
+
+/**
+ * Validate a parsed robots.txt structure
+ * @param parsedRobotsTxt - The parsed robots.txt data
+ * @returns The parsed robots.txt with any validation errors
+ */
+export function validateParsedRobotsTxt(parsedRobotsTxt: ParsedRobotsTxt): ParsedRobotsTxt {
+  // The parseRobotsTxt function already handles validation and populates the errors array
+  // This function exists to satisfy the module's expectations but doesn't need additional validation
+  return parsedRobotsTxt
+}

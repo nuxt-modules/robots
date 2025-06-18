@@ -1,4 +1,3 @@
-import type { BotDetectionResult } from '@fingerprintjs/botd'
 import type { H3Event } from 'h3'
 import type { ComputedRef } from 'vue'
 
@@ -54,11 +53,7 @@ export interface HookRobotsConfigContext extends ParsedRobotsTxt {
 // Bot Detection Types
 export interface BotDetectionContext {
   isBot: boolean
-  userAgent?: string
-  detectionMethod?: 'server' | 'fingerprint'
-  lastDetected?: number
   botType?: string
-  botName?: string
   trusted?: boolean
 }
 
@@ -66,7 +61,7 @@ export interface BotDetectionContext {
 export interface FingerprintingBotDetectedPayload {
   method: 'fingerprint'
   result: BotDetectionContext
-  fingerprint: BotDetectionResult
+  fingerprint: BotDetectionData
 }
 
 export interface FingerprintingErrorPayload {
@@ -81,14 +76,18 @@ export interface BotInfo {
   method?: 'server' | 'fingerprint'
 }
 
+// Options for useBotDetection composable
+export interface UseBotDetectionOptions {
+  fingerprint?: boolean
+  onFingerprintError?: (error: Error) => void
+}
+
 // Return type for useBotDetection composable
 export interface UseBotDetectionReturn {
-  context: ComputedRef<BotDetectionContext | null>
   isBot: ComputedRef<boolean>
-  botInfo: ComputedRef<BotInfo | null>
-  updateContext: (newContext: BotDetectionContext) => void
+  botType: ComputedRef<string | undefined>
+  trusted: ComputedRef<boolean | undefined>
   reset: () => void
-  enableFingerprinting: () => Promise<BotDetectionContext | false>
 }
 
 export type NormalisedLocales = { code: string, iso?: string, domain?: string }[]
@@ -105,7 +104,7 @@ export interface RobotsContext {
   debug?: { source: string, line?: string }
 }
 
-export interface BotDetectionResult {
+export interface BotDetectionData {
   isBot: boolean
   data?: {
     botType: string

@@ -109,7 +109,7 @@ describe('bot Detection from Headers', () => {
     expect(result.isBot).toBe(false)
   })
 
-  // Test normal browsers without all headers  
+  // Test normal browsers without all headers
   it('allows browsers with missing headers', () => {
     // Missing headers should not trigger bot detection
     const result = isBotFromHeaders({

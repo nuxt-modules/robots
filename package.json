@@ -29,7 +29,6 @@
       "import": "./dist/module.mjs"
     },
     "./util": "./dist/util.mjs",
-    "./nitro": "./dist/nitro.mjs",
     "./content": "./dist/content.mjs"
   },
   "main": "./dist/module.mjs",
@@ -40,9 +39,6 @@
       ],
       "util": [
         "dist/util"
-      ],
-      "nitro": [
-        "dist/nitro"
       ]
     }
   },
