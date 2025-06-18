@@ -246,6 +246,9 @@ export default defineNuxtModule<ModuleOptions>({
     if (config.metaTag)
       addPlugin({ mode: 'server', src: resolve('./runtime/app/plugins/robot-meta.server') })
 
+    // Add client-side bot detection plugin
+    addPlugin({ src: resolve('./runtime/app/plugins/botd') })
+
     if (config.robotsTxt && config.mergeWithRobotsTxtPath !== false) {
       let usingRobotsTxtPath = ''
       let robotsTxt: boolean | string = false

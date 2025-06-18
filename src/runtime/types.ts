@@ -62,3 +62,12 @@ export interface RobotsContext {
   indexable: boolean
   debug?: { source: string, line?: string }
 }
+
+export interface BotDetectionResult {
+  isBot: boolean
+  data?: {
+    botType: string
+    botName: string
+    trusted: boolean
+  }
+}
