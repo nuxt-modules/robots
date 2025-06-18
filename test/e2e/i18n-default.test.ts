@@ -5,30 +5,24 @@ import { describe, expect, it } from 'vitest'
 const { resolve } = createResolver(import.meta.url)
 
 process.env.NODE_ENV = 'production'
-await setup({
-  rootDir: resolve('./fixtures/basic'),
-  build: true,
-  nuxtConfig: {
-    site: {
-      url: 'https://example.com',
-      trailingSlash: true,
-      indexable: false,
-    },
 
+await setup({
+  rootDir: resolve('../fixtures/i18n'),
+  build: true,
+  server: true,
+  nuxtConfig: {
     robots: {
-      debug: true,
+      credits: false,
     },
   },
 })
 
-describe('nonIndexable', () => {
+describe('i18n', () => {
   it('basic', async () => {
     expect(await $fetch('/robots.txt')).toMatchInlineSnapshot(`
-      "# START nuxt-robots (indexing disabled)
-      User-agent: *
-      Disallow: /
-
-      # END nuxt-robots"
+      "User-agent: *
+      Disallow: 
+      "
     `)
   })
 })

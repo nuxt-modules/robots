@@ -7,7 +7,7 @@ const { resolve } = createResolver(import.meta.url)
 process.env.NODE_ENV = 'production'
 
 await setup({
-  rootDir: resolve('./fixtures/basic'),
+  rootDir: resolve('../fixtures/basic'),
   build: true,
 })
 

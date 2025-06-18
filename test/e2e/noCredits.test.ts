@@ -4,21 +4,21 @@ import { describe, expect, it } from 'vitest'
 
 const { resolve } = createResolver(import.meta.url)
 
-process.env.NODE_ENV = 'production'
 await setup({
-  rootDir: resolve('../.playground'),
+  rootDir: resolve('../../.playground'),
   build: true,
+  server: true,
   nuxtConfig: {
     robots: {
-      debug: true,
-      header: false,
+      credits: false,
     },
   },
 })
 
-describe('noHeader', () => {
+describe('noCredits', () => {
   it('basic', async () => {
-    const { headers, _data } = await $fetch.raw('/')
-    expect(headers.get('X-Robots-Tag')).toBe(null)
+    const robotsTxt = await $fetch('/robots.txt')
+    // should not have any comments
+    expect(robotsTxt).not.includes('#')
   })
 })
