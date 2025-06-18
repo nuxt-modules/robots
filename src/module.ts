@@ -26,7 +26,7 @@ import {
   normaliseRobotsRouteRule,
   normalizeGroup,
   parseRobotsTxt,
-  validateRobots,
+  validateParsedRobotsTxt,
 } from './runtime/util'
 
 export interface ModuleOptions {
@@ -246,6 +246,9 @@ export default defineNuxtModule<ModuleOptions>({
     if (config.metaTag)
       addPlugin({ mode: 'server', src: resolve('./runtime/app/plugins/robot-meta.server') })
 
+    // Add client-side bot detection plugin
+    addPlugin({ src: resolve('./runtime/app/plugins/botd') })
+
     if (config.robotsTxt && config.mergeWithRobotsTxtPath !== false) {
       let usingRobotsTxtPath = ''
       let robotsTxt: boolean | string = false
@@ -292,7 +295,7 @@ export default defineNuxtModule<ModuleOptions>({
         const path = relative(nuxt.options.rootDir, usingRobotsTxtPath)
         logger.debug(`A robots.txt file was found at \`./${path}\`, merging config.`)
         const parsedRobotsTxt = parseRobotsTxt(robotsTxt)
-        const { errors } = validateRobots(parsedRobotsTxt)
+        const { errors } = validateParsedRobotsTxt(parsedRobotsTxt)
         if (errors.length > 0) {
           logger.error(`The \`./${path}\` file contains errors:`)
           for (const error of errors)
