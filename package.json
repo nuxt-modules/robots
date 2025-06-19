@@ -59,6 +59,7 @@
     "test:attw": "attw --pack"
   },
   "dependencies": {
+    "@fingerprintjs/botd": "^1.9.1",
     "@nuxt/kit": "^3.17.5",
     "consola": "^3.4.2",
     "defu": "^6.1.4",

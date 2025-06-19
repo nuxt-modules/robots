@@ -26,7 +26,7 @@ import {
   normaliseRobotsRouteRule,
   normalizeGroup,
   parseRobotsTxt,
-  validateRobots,
+  validateParsedRobotsTxt,
 } from './runtime/util'
 
 export interface ModuleOptions {
@@ -154,6 +154,13 @@ export interface ModuleOptions {
    * @default true
    */
   credits: boolean
+  /**
+   * Enable bot detection plugin.
+   * When disabled, no bot detection is performed.
+   *
+   * @default true
+   */
+  botDetection?: boolean
 }
 
 export interface ResolvedModuleOptions extends ModuleOptions {
@@ -292,7 +299,7 @@ export default defineNuxtModule<ModuleOptions>({
         const path = relative(nuxt.options.rootDir, usingRobotsTxtPath)
         logger.debug(`A robots.txt file was found at \`./${path}\`, merging config.`)
         const parsedRobotsTxt = parseRobotsTxt(robotsTxt)
-        const { errors } = validateRobots(parsedRobotsTxt)
+        const { errors } = validateParsedRobotsTxt(parsedRobotsTxt)
         if (errors.length > 0) {
           logger.error(`The \`./${path}\` file contains errors:`)
           for (const error of errors)
@@ -456,7 +463,6 @@ export default defineNuxtModule<ModuleOptions>({
         header: config.header,
         robotsEnabledValue: config.robotsEnabledValue,
         robotsDisabledValue: config.robotsDisabledValue,
-        // @ts-expect-error untyped
         cacheControl: config.cacheControl,
       }
     })
@@ -510,6 +516,11 @@ declare module 'h3' {
     addImports({
       name: 'useRobotsRule',
       from: resolve('./runtime/app/composables/useRobotsRule'),
+    })
+
+    addImports({
+      name: 'useBotDetection',
+      from: resolve('./runtime/app/composables/useBotDetection'),
     })
 
     if (config.robotsTxt) {

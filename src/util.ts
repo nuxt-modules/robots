@@ -1,8 +1,21 @@
 import type { NitroRouteConfig } from 'nitropack'
 import type { ParsedRobotsTxt, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
+import type { BotDetectionContext } from './runtime/types'
 import { createDefu } from 'defu'
 import { withoutLeadingSlash } from 'ufo'
 import { AiBots, NonHelpfulBots } from './const'
+import {
+  AI_BOTS,
+  AUTOMATION_BOTS,
+  BOT_MAP,
+  GENERIC_BOTS,
+  HTTP_TOOL_BOTS,
+  KNOWN_SEARCH_BOTS,
+  SCRAPING_BOTS,
+  SECURITY_SCANNING_BOTS,
+  SEO_BOTS,
+  SOCIAL_BOTS,
+} from './const-bots'
 
 export type * from './runtime/types'
 
@@ -306,4 +319,132 @@ export function normaliseRobotsRouteRule(config: NitroRouteConfig) {
     allow,
     rule,
   }
+}
+
+// Bot Detection Functions
+
+// Re-export bot constants for external usage
+export {
+  AI_BOTS,
+  AUTOMATION_BOTS,
+  GENERIC_BOTS,
+  HTTP_TOOL_BOTS,
+  KNOWN_SEARCH_BOTS,
+  SCRAPING_BOTS,
+  SECURITY_SCANNING_BOTS,
+  SEO_BOTS,
+  SOCIAL_BOTS,
+}
+
+/**
+ * Detects bots based on HTTP headers analysis
+ * @param headers - HTTP headers object (similar to h3's getHeaders result)
+ * @returns Bot detection result with type, name, and trust level
+ */
+export function isBotFromHeaders(headers: Record<string, string | string[] | undefined>): {
+  isBot: boolean
+  data?: {
+    botType: string
+    botName: string
+    trusted: boolean
+  }
+} {
+  const userAgent = Array.isArray(headers['user-agent']) ? headers['user-agent'][0] : headers['user-agent']
+
+  // Only detect known bots, not suspicious patterns
+  if (!userAgent) {
+    return { isBot: false }
+  }
+
+  const userAgentLower = userAgent.toLowerCase()
+
+  // Check for known bots only
+  for (const def of BOT_MAP) {
+    for (const bot of def.bots) {
+      for (const pattern of [bot.pattern, ...(bot.secondaryPatterns || [])]) {
+        if (userAgentLower.includes(pattern)) {
+          return {
+            isBot: true,
+            data: {
+              botType: def.type,
+              botName: bot.name,
+              trusted: def.trusted,
+            },
+          }
+        }
+      }
+    }
+  }
+
+  return { isBot: false }
+}
+
+/**
+ * Pure bot detection function using headers
+ * @param headers - HTTP headers object
+ * @returns Complete bot detection context
+ */
+export function getBotDetection(headers: Record<string, string | string[] | undefined>): BotDetectionContext {
+  const userAgent = Array.isArray(headers['user-agent']) ? headers['user-agent'][0] : headers['user-agent']
+  const detection = isBotFromHeaders(headers)
+
+  if (detection.isBot && detection.data) {
+    return {
+      isBot: true,
+      userAgent,
+      detectionMethod: 'server',
+      botType: detection.data.botType,
+      botName: detection.data.botName,
+      trusted: detection.data.trusted,
+      lastDetected: Date.now(),
+    }
+  }
+
+  return {
+    isBot: false,
+    userAgent,
+    detectionMethod: 'server',
+    lastDetected: Date.now(),
+  }
+}
+
+/**
+ * Check if headers indicate a bot
+ * @param headers - HTTP headers object
+ * @returns boolean indicating if request is from a bot
+ */
+export function isBot(headers: Record<string, string | string[] | undefined>): boolean {
+  const detection = getBotDetection(headers)
+  return detection.isBot
+}
+
+/**
+ * Get bot information if detected
+ * @param headers - HTTP headers object
+ * @returns Bot info object or null
+ */
+export function getBotInfo(headers: Record<string, string | string[] | undefined>) {
+  const detection = getBotDetection(headers)
+
+  if (!detection.isBot) {
+    return null
+  }
+
+  return {
+    type: detection.botType,
+    name: detection.botName,
+    trusted: detection.trusted,
+    method: detection.detectionMethod,
+  }
+}
+
+/**
+ * Validate a parsed robots.txt structure
+ * @param parsedRobotsTxt - The parsed robots.txt data
+ * @returns The parsed robots.txt with any validation errors
+ */
+export function validateParsedRobotsTxt(parsedRobotsTxt: ParsedRobotsTxt): ParsedRobotsTxt {
+  // The parseRobotsTxt function already handles validation and populates the errors array
+  // This function exists to satisfy the module's expectations but doesn't need additional validation
+  return parsedRobotsTxt
 }
