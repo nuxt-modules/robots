@@ -463,6 +463,31 @@ export default defineNuxtModule<ModuleOptions>({
 
     extendTypes('nuxt-robots', ({ typesPath }) => {
       return `
+declare module 'nitropack/types' {
+  interface NitroApp {
+    _robots: {
+      ctx: import('${typesPath}').HookRobotsConfigContext
+      nuxtContentUrls?: Set<string>
+    },
+    _robotsRuleMatcher: (url: string) => string
+  }
+  interface NitroRouteRules {
+    robots?: boolean | string | {
+      indexable: boolean
+      rule: string
+    }
+  }
+  interface NitroRouteConfig {
+    robots?: boolean | string | {
+      indexable: boolean
+      rule: string
+    }
+  }
+  interface NitroRuntimeHooks {
+    'robots:config': (ctx: import('${typesPath}').HookRobotsConfigContext) => void | Promise<void>
+    'robots:robots-txt': (ctx: import('${typesPath}').HookRobotsTxtContext) => void | Promise<void>
+  }
+}
 declare module 'nitropack' {
   interface NitroApp {
     _robots: {
