@@ -119,6 +119,7 @@ export interface NuxtRobotsRuntimeConfig {
   robotsEnabledValue: string
   robotsDisabledValue: string
   cacheControl: string | false
+  botDetection: boolean
 }
 
 export interface BotDetectionData {
@@ -128,4 +129,10 @@ export interface BotDetectionData {
     botName: string
     trusted: boolean
   }
+}
+
+export interface PatternMapValue {
+  botType: string
+  botName: string
+  trusted: boolean
 }
