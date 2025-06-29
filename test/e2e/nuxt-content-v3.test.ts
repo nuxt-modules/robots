@@ -11,7 +11,7 @@ describe('nuxt/content default', () => {
   it('basic', async () => {
     const barHtml = await $fetch('/bar')
     // extract robots tag
-    expect(barHtml.match(/<meta name="robots" content="([^"]+)">/)).toMatchInlineSnapshot(`
+    expect(String(barHtml).match(/<meta name="robots" content="([^"]+)">/)).toMatchInlineSnapshot(`
       [
         "<meta name="robots" content="test">",
         "test",
@@ -19,7 +19,7 @@ describe('nuxt/content default', () => {
     `)
 
     const fooHtml = await $fetch('/foo')
-    expect(fooHtml.match(/<meta name="robots" content="([^"]+)">/)).toMatchInlineSnapshot(`
+    expect(String(fooHtml).match(/<meta name="robots" content="([^"]+)">/)).toMatchInlineSnapshot(`
       [
         "<meta name="robots" content="noindex, nofollow">",
         "noindex, nofollow",

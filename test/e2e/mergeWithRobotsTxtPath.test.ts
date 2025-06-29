@@ -34,6 +34,6 @@ describe('mergeWithRobotsTxtPath', () => {
     const { headers, _data } = await $fetch.raw('/secret')
     expect(headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
     // check meta tag
-    expect(_data.includes('<meta name="robots" content="noindex, nofollow"')).toBe(true)
+    expect(String(_data).includes('<meta name="robots" content="noindex, nofollow"')).toBe(true)
   })
 })

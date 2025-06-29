@@ -13,7 +13,7 @@ await setup({
 
 describe('basic', () => {
   it('basic', async () => {
-    expect((await $fetch('/robots.txt')).split('\n').map(s => s.trim()).join('\n')).toMatchInlineSnapshot(`
+    expect((await $fetch('/robots.txt')).split('\n').map((s: string) => s.trim()).join('\n')).toMatchInlineSnapshot(`
       "# START nuxt-robots (indexable)
       User-agent: *
       Disallow:

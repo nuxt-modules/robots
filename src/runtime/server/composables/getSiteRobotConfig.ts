@@ -3,13 +3,13 @@ import type { ParsedRobotsTxt } from '../../types'
 import { getSiteIndexable } from '#site-config/server/composables/getSiteIndexable'
 import { useSiteConfig } from '#site-config/server/composables/useSiteConfig'
 import { getQuery } from 'h3'
-import { useRuntimeConfig } from 'nitropack/runtime'
+import { useRuntimeConfigNuxtRobots } from './useRuntimeConfigNuxtRobots'
 
 export function getSiteRobotConfig(e: H3Event): { indexable: boolean, hints: string[] } {
 // move towards deprecating indexable
   const query = getQuery(e)
   const hints: string[] = []
-  const { groups, debug } = useRuntimeConfig(e)['nuxt-robots']
+  const { groups, debug } = useRuntimeConfigNuxtRobots(e)
   let indexable = getSiteIndexable(e)
   // allow previewing with ?mockProductionEnv
   const queryIndexableEnabled = String(query.mockProductionEnv) === 'true' || query.mockProductionEnv === ''
