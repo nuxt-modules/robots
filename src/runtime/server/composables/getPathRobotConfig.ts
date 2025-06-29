@@ -3,8 +3,9 @@ import type { RobotsContext } from '../../types'
 import { getRequestHeader } from 'h3'
 import { useNitroApp, useRuntimeConfig } from 'nitropack/runtime'
 import { withoutTrailingSlash } from 'ufo'
-import { matchPathToRule, normaliseRobotsRouteRule } from '../../util'
+import { matchPathToRule } from '../../util'
 import { createNitroRouteRuleMatcher } from '../kit'
+import { normaliseRobotsRouteRule } from '../nitro'
 import { getSiteRobotConfig } from './getSiteRobotConfig'
 
 export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, skipSiteIndexable?: boolean, path?: string }): RobotsContext {
