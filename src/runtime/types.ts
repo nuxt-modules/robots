@@ -53,8 +53,12 @@ export interface HookRobotsConfigContext extends ParsedRobotsTxt {
 // Bot Detection Types
 export interface BotDetectionContext {
   isBot: boolean
+  userAgent?: string
+  detectionMethod?: 'server' | 'fingerprint'
   botType?: string
+  botName?: string
   trusted?: boolean
+  lastDetected?: number
 }
 
 // Hook payload for fingerprinting bot detection events

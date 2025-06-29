@@ -1,5 +1,4 @@
-import type { ParsedRobotsTxt, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
-import type { BotDetectionContext } from './runtime/types'
+import type { BotDetectionContext, ParsedRobotsTxt, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
 import { createDefu } from 'defu'
 import { withoutLeadingSlash } from 'ufo'
 import { AiBots, NonHelpfulBots } from './const'
