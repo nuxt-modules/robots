@@ -104,6 +104,19 @@ export interface RobotsContext {
   debug?: { source: string, line?: string }
 }
 
+export interface NuxtRobotsRuntimeConfig {
+  version: string
+  isNuxtContentV2: boolean
+  debug: boolean
+  credits: boolean
+  groups: RobotsGroupResolved[]
+  sitemap: string[]
+  header: boolean
+  robotsEnabledValue: string
+  robotsDisabledValue: string
+  cacheControl: string | false
+}
+
 export interface BotDetectionData {
   isBot: boolean
   data?: {

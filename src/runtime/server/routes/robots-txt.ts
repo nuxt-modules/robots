@@ -2,15 +2,16 @@ import type { HookRobotsConfigContext, HookRobotsTxtContext } from '../../types'
 import { logger } from '#robots/server/logger'
 import { withSiteUrl } from '#site-config/server/composables/utils'
 import { defineEventHandler, setHeader } from 'h3'
-import { useNitroApp, useRuntimeConfig } from 'nitropack/runtime'
+import { useNitroApp } from 'nitropack/runtime'
 import { asArray, generateRobotsTxt } from '../../util'
 import { getSiteRobotConfig } from '../composables/getSiteRobotConfig'
+import { useRuntimeConfigNuxtRobots } from '../composables/useRuntimeConfigNuxtRobots'
 import { resolveRobotsTxtContext } from '../util'
 
 export default defineEventHandler(async (e) => {
-  const nitro = useNitroApp()
+  const nitroApp = useNitroApp()
   const { indexable, hints } = getSiteRobotConfig(e)
-  const { credits, isNuxtContentV2, cacheControl } = useRuntimeConfig(e)['nuxt-robots']
+  const { credits, isNuxtContentV2, cacheControl } = useRuntimeConfigNuxtRobots(e)
   // move towards deprecating indexable
   let robotsTxtCtx: Omit<HookRobotsConfigContext, 'context' | 'event'> = {
     errors: [],
@@ -70,6 +71,6 @@ export default defineEventHandler(async (e) => {
   setHeader(e, 'Content-Type', 'text/plain; charset=utf-8')
   setHeader(e, 'Cache-Control', (import.meta.dev || import.meta.test || !cacheControl) ? 'no-store' : cacheControl)
   const hookCtx: HookRobotsTxtContext = { robotsTxt, e }
-  await nitro.hooks.callHook('robots:robots-txt', hookCtx)
+  await nitroApp.hooks.callHook('robots:robots-txt', hookCtx)
   return hookCtx.robotsTxt
 })

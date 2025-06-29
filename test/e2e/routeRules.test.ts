@@ -16,21 +16,21 @@ await setup({
     routeRules: {
       '/index-rule/*': {
         robots: false,
-      },
+      } as any,
       '/robots-rule/*': {
         robots: 'noindex',
-      },
+      } as any,
       '/secret/**': {
         // index: false,
         robots: 'noindex, nofollow',
-      },
+      } as any,
       '/secret/visible': {
         // index: true,
         robots: 'index, follow',
-      },
+      } as any,
       '/excluded/*': {
         robots: false,
-      },
+      } as any,
     },
   },
 })

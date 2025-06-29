@@ -1,5 +1,4 @@
 import type { MaybeRef } from 'vue'
-// @ts-expect-error untyped
 import { devRootDir } from '#build/nuxt.config.mjs'
 import { injectHead, useHead } from '#imports'
 import { setHeader } from 'h3'
@@ -45,7 +44,7 @@ export function useRobotsRule(rule?: MaybeRef<boolean | string>) {
         {
           'name': 'robots',
           'content': _rule,
-          'data-hint': import.meta.dev ? ['useRobotsRule', `.${vmFile ? vm.type?.__file?.split(devRootDir)[1] : ''}`].filter(Boolean).join(',') : undefined,
+          'data-hint': import.meta.dev ? ['useRobotsRule', `.${vmFile ? vm.type?.__file?.split(devRootDir || '')[1] || '' : ''}`].filter(Boolean).join(',') : undefined,
         },
       ],
     }, {
