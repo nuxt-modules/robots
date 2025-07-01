@@ -276,11 +276,11 @@ const merger = createDefu((obj, key, value) => {
   return obj[key]
 })
 
-export function mergeOnKey<T, K extends keyof T>(arr: T[], key: K) {
+export function mergeOnKey<T extends Record<string, any>, K extends keyof T>(arr: T[], key: K) {
   const res: Record<string, T> = {}
   arr.forEach((item) => {
     const k = item[key] as string
-    res[k] = merger(item, res[k] || {})
+    res[k] = merger(res[k] || {}, item) as T
   })
   return Object.values(res)
 }
