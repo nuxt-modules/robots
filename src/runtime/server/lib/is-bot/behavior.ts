@@ -49,7 +49,7 @@ export const MAYBE_SENSITIVE_PATHS = [
   '/dashboard',
 ]
 
-import { useRuntimeConfig } from '#imports'
+import { useRuntimeConfig } from 'nitropack/runtime'
 
 // Enhanced bot detection score thresholds with an intermediate level
 export let BOT_SCORE_THRESHOLDS = {
@@ -67,7 +67,7 @@ function initializeBehaviorConfig() {
   
   try {
     const config = useRuntimeConfig()
-    const botConfig = config.public?.robots?.botDetection
+    const botConfig = (config as any)?.robots?.botDetection
     
     if (botConfig && typeof botConfig === 'object' && botConfig.thresholds) {
       if (botConfig.thresholds.definitelyBot) {

@@ -1,5 +1,5 @@
 import { getHeaders } from 'h3'
-import { defineNitroPlugin } from 'nitropack/runtime'
+import { defineNitroPlugin, useRuntimeConfig } from 'nitropack/runtime'
 import { analyzeSessionAndIpBehavior, applyBehaviorForErrorPages } from '../lib/is-bot/behavior'
 import { getBotDetectionBehavior, updateBotSessionBehavior } from '../lib/is-bot/storage'
 import { isBotFromHeaders } from '../../../util'
@@ -7,7 +7,7 @@ import { isBotFromHeaders } from '../../../util'
 export default defineNitroPlugin((nitroApp) => {
   nitroApp.hooks.hook('request', async (event) => {
     const config = useRuntimeConfig()
-    const debugMode = config.public?.robots?.debug || false
+    const debugMode = (config as any)?.robots?.debug || false
     const behavior = await getBotDetectionBehavior(event)
     // if it's already a bot return early
     if (!behavior.ip?.isBot) {

@@ -4,7 +4,7 @@ import { useStorage } from 'nitropack/runtime'
 import { getRequestIP, useSession } from 'h3'
 import { TrafficType } from './behavior'
 
-import { useRuntimeConfig } from '#imports'
+import { useRuntimeConfig } from 'nitropack/runtime'
 
 // Performance optimization: Batch storage updates
 const pendingUpdates = new Map<string, BotDetectionBehavior>()
@@ -25,7 +25,7 @@ function initializeConfig() {
   
   try {
     const config = useRuntimeConfig()
-    const botConfig = config.public?.robots?.botDetection
+    const botConfig = (config as any)?.robots?.botDetection
     
     if (botConfig && typeof botConfig === 'object') {
       // Update session config
@@ -132,7 +132,7 @@ export async function initBotDetectionSession(event: H3Event) {
   let sessionPassword = '80d42cfb-1cd2-462c-8f17-e3237d9027e9' // fallback
   try {
     const config = useRuntimeConfig()
-    const botConfig = config.public?.robots?.botDetection
+    const botConfig = (config as any)?.robots?.botDetection
     if (botConfig && typeof botConfig === 'object' && botConfig.session?.password) {
       sessionPassword = botConfig.session.password
     }
@@ -161,7 +161,7 @@ export async function getBotDetectionBehavior(e: H3Event): Promise<BotDetectionB
   const ip = getRequestIP(e, { xForwardedFor: true })
   
   // Check IP allowlist/blocklist first
-  if (isIPTrusted(ip)) {
+  if (ip && isIPTrusted(ip)) {
     return {
       id: session.id,
       session: {
@@ -192,10 +192,10 @@ export async function getBotDetectionBehavior(e: H3Event): Promise<BotDetectionB
         details: { name: 'trusted', type: 'trusted', trusted: true }
       },
       trusted: true
-    } satisfies BotDetectionBehavior & { trusted: boolean }
+    } as BotDetectionBehavior
   }
   
-  if (isIPBlocked(ip)) {
+  if (ip && isIPBlocked(ip)) {
     return {
       id: session.id,
       session: {
@@ -226,7 +226,7 @@ export async function getBotDetectionBehavior(e: H3Event): Promise<BotDetectionB
         details: { name: 'blocked', type: 'blocked', trusted: false }
       },
       blocked: true
-    } satisfies BotDetectionBehavior & { blocked: boolean }
+    } as BotDetectionBehavior
   }
   
   const sessionData = storage.getItem<SessionData>(sessionKey)
@@ -275,7 +275,7 @@ export async function updateBotSessionBehavior(e: H3Event, behavior: BotDetectio
   pendingUpdates.set(compositeKey, behavior)
   
   // If malicious behavior detected, block IP temporarily
-  if (behavior.ip.isBot && behavior.ip.isBotConfidence > 80) {
+  if (ip && behavior.ip.isBot && (behavior.ip.isBotConfidence || 0) > 80) {
     blockIPTemporarily(ip, 60 * 60 * 1000) // 1 hour block
   }
   

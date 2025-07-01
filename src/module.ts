@@ -543,7 +543,7 @@ export default defineNuxtModule<ModuleOptions>({
         robotsEnabledValue: config.robotsEnabledValue,
         robotsDisabledValue: config.robotsDisabledValue,
         cacheControl: config.cacheControl ?? 'max-age=14400, must-revalidate',
-        botDetection: config.botDetection ?? true,
+        botDetection: typeof config.botDetection === 'object' ? true : (config.botDetection ?? true),
       }
       nuxt.options.runtimeConfig['nuxt-robots'] = robotsRuntimeConfig as any
     })
