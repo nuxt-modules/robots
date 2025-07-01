@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4.0.0
+        uses: pnpm/action-setup@v4.1.0
 
       - name: Use Node.js 22.x
         uses: actions/setup-node@v4
@@ -33,6 +33,15 @@ jobs:
 
       - name: Build
         run: pnpm run build
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Playwright Install
+        run: pnpm exec playwright-core install
 
       - name: Test
         run: pnpm run test

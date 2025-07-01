@@ -1,10 +1,11 @@
 import type { H3Event } from 'h3'
 import type { NitroApp } from 'nitropack'
 import type { HookRobotsConfigContext } from '../types'
-import { useNitroApp, useRuntimeConfig } from 'nitropack/runtime'
+import { useNitroApp } from 'nitropack/runtime'
+import { useRuntimeConfigNuxtRobots } from './composables/useRuntimeConfigNuxtRobots'
 
 export async function resolveRobotsTxtContext(e: H3Event | undefined, nitro: NitroApp = useNitroApp()) {
-  const { groups, sitemap: sitemaps } = useRuntimeConfig(e)['nuxt-robots']
+  const { groups, sitemap: sitemaps } = useRuntimeConfigNuxtRobots(e)
   // make the config writable
   const generateRobotsTxtCtx: HookRobotsConfigContext = {
     event: e,

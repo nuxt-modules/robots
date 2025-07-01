@@ -11,7 +11,7 @@ export default defineEventHandler(async (e) => {
   const robotsHeader = String(res.headers.get('x-robots-tag'))
   // get robots meta tag <meta name="robots" content="noindex, nofollow" data-hint="useRobotsRule">
   // <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-  const robotsMeta = html.match(/<meta[^>]+name=["']robots["'][^>]+content=["']([^"']+)["'](?:[^>]+data-hint=["']([^"']+)["'])?[^>]*>/i)
+  const robotsMeta = String(html).match(/<meta[^>]+name=["']robots["'][^>]+content=["']([^"']+)["'](?:[^>]+data-hint=["']([^"']+)["'])?[^>]*>/i)
   const [, robotsContent = null, robotsHint = null] = robotsMeta || []
   const [source, line] = robotsHint ? robotsHint.split(',') : [null, null]
   return {

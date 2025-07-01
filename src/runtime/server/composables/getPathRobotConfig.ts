@@ -3,13 +3,16 @@ import type { RobotsContext } from '../../types'
 import { getRequestHeader } from 'h3'
 import { useNitroApp, useRuntimeConfig } from 'nitropack/runtime'
 import { withoutTrailingSlash } from 'ufo'
-import { matchPathToRule, normaliseRobotsRouteRule } from '../../util'
+import { matchPathToRule } from '../../util'
 import { createNitroRouteRuleMatcher } from '../kit'
+import { normaliseRobotsRouteRule } from '../nitro'
 import { getSiteRobotConfig } from './getSiteRobotConfig'
+import { useRuntimeConfigNuxtRobots } from './useRuntimeConfigNuxtRobots'
 
 export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, skipSiteIndexable?: boolean, path?: string }): RobotsContext {
+  const runtimeConfig = useRuntimeConfig(e)
   // has already been resolved
-  const { robotsDisabledValue, robotsEnabledValue, isNuxtContentV2 } = useRuntimeConfig()['nuxt-robots']
+  const { robotsDisabledValue, robotsEnabledValue, isNuxtContentV2 } = useRuntimeConfigNuxtRobots(e)
   if (!options?.skipSiteIndexable) {
     if (!getSiteRobotConfig(e).indexable) {
       return {
@@ -55,7 +58,7 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
         },
       }
     }
-    const robotsTxtRule = matchPathToRule(path, group._rules)
+    const robotsTxtRule = matchPathToRule(path, group._rules || [])
     if (robotsTxtRule) {
       if (!robotsTxtRule.allow) {
         return {
@@ -84,11 +87,22 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
   }
 
   // 3. nitro route rules
-  nitroApp._robotsRuleMactcher = nitroApp._robotsRuleMactcher || createNitroRouteRuleMatcher()
-  const routeRules = normaliseRobotsRouteRule(nitroApp._robotsRuleMactcher(path))
+  nitroApp._robotsRuleMatcher = nitroApp._robotsRuleMatcher || createNitroRouteRuleMatcher(e)
+  let routeRulesPath = path
+  // if we're using i18n we need to strip leading prefixes so the rule will match
+  if (runtimeConfig.public?.i18n?.locales) {
+    const { locales } = runtimeConfig.public.i18n as {
+      locales: { code: string }[]
+    }
+    const locale = locales.find(l => routeRulesPath.startsWith(`/${l.code}`))
+    if (locale) {
+      routeRulesPath = routeRulesPath.replace(`/${locale.code}`, '')
+    }
+  }
+  const routeRules = normaliseRobotsRouteRule(nitroApp._robotsRuleMatcher(routeRulesPath))
   if (routeRules && (typeof routeRules.allow !== 'undefined' || typeof routeRules.rule !== 'undefined')) {
     return {
-      indexable: routeRules.allow,
+      indexable: routeRules.allow ?? false,
       rule: routeRules.rule || (routeRules.allow ? robotsEnabledValue : robotsDisabledValue),
       debug: {
         source: 'Route Rules',
