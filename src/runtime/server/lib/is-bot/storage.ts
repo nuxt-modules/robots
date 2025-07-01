@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import type { BotDetectionBehavior, IPData, SessionData } from './behavior'
-import { useStorage } from '#imports'
+import { createStorage } from 'unstorage'
 import { getRequestIP, useSession } from 'h3'
 import { TrafficType } from './behavior'
 

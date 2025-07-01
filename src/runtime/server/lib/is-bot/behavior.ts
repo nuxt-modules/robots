@@ -1,6 +1,6 @@
 // src/runtime/server/lib/botd.ts
 import type { H3Event } from 'h3'
-import { getHeaders, getResponseStatus } from 'h3'
+import { getResponseStatus } from 'h3'
 
 // Common sensitive paths that bots target - expanded with more patterns
 export const SENSITIVE_PATHS = [
@@ -618,8 +618,8 @@ export function analyzeSessionAndIpBehavior({
   sessionData.lastUpdated = now
   ipData.lastUpdated = now
 
-  behavior.ip!.isBot = !behavior.ip!.isBot && sessionData.score >= BOT_SCORE_THRESHOLDS.LIKELY_BOT
-  behavior.ip!.isBotConfidence = (sessionData.score + ipData.suspiciousScore) / 2
+  behavior.ip.isBot = sessionData.score >= BOT_SCORE_THRESHOLDS.LIKELY_BOT
+  behavior.ip.isBotConfidence = (sessionData.score + ipData.suspiciousScore) / 2
 
   behavior.session = sessionData
   behavior.ip = ipData
@@ -698,11 +698,11 @@ export function applyBehaviorForErrorPages(
 
   // Update IP storage if the score changed significantly
   if (Math.abs(sessionData.score - (sessionData.lastScore || 0)) > 10) {
-    if (result.ipData) {
+    if (behavior.ip) {
       // If this session suddenly became very suspicious, update IP score immediately
       if (sessionData.score >= BOT_SCORE_THRESHOLDS.LIKELY_BOT
         && (sessionData.lastScore || 0) < BOT_SCORE_THRESHOLDS.SUSPICIOUS) {
-        result.ipData.suspiciousScore = Math.max(result.ipData.suspiciousScore, sessionData.score * 0.8)
+        behavior.ip.suspiciousScore = Math.max(behavior.ip.suspiciousScore, sessionData.score * 0.8)
       }
     }
 

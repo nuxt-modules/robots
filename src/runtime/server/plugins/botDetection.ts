@@ -15,7 +15,11 @@ export default defineNitroPlugin((nitroApp) => {
     }
     const { isBot, data } = isBotFromHeaders(getHeaders(event))
     if (isBot) {
-      behavior.ip.details = data
+      behavior.ip.details = data ? {
+        name: data.botName,
+        type: data.botType,
+        trusted: data.trusted
+      } : null
       behavior.ip.isBot = isBot
       behavior.dirty = true
       behavior.ip.factores.push('user-agent')

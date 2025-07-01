@@ -293,7 +293,11 @@ export function isBotFromHeaders(headers: ReturnType<typeof getHeaders>): {
   // Check for known bots (existing code)
   for (const def of BotMap) {
     for (const bot of def.bots) {
-      for (const pattern of [bot.pattern, ...(bot.secondaryPatterns || [])]) {
+      const patterns = [bot.pattern]
+      if ('secondaryPatterns' in bot && bot.secondaryPatterns) {
+        patterns.push(...bot.secondaryPatterns)
+      }
+      for (const pattern of patterns) {
         if (userAgentLower.includes(pattern)) {
           return {
             isBot: true,
