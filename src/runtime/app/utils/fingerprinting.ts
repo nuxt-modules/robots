@@ -2,6 +2,7 @@ import type { BotDetectionResult } from '@fingerprintjs/botd'
 import type { BotDetectionContext } from '../../../util'
 import { useStorage } from '@vueuse/core'
 import { ref } from 'vue'
+import { mapBotKindToCategory } from '../../../const-bots'
 
 // Persistent storage for client-side fingerprint detection results only
 const botDetectionStorage = import.meta.client
@@ -41,8 +42,9 @@ export async function runFingerprinting(): Promise<[BotDetectionContext | false,
     const isBot = result.bot
 
     const fingerprintResult = {
-      isBot,
-      botType: isBot ? 'automation' : undefined,
+      isBot: result.bot,
+      botName: result.bot ? result.botKind : undefined,
+      botCategory: result.bot ? mapBotKindToCategory(result.botKind) : undefined,
       trusted: false,
     }
 

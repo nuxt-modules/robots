@@ -10,7 +10,8 @@ export function useRobotsRule(rule?: MaybeRef<boolean | string>) {
 export function useBotDetection(_options?: UseBotDetectionOptions): UseBotDetectionReturn {
   return {
     isBot: computed(() => false),
-    botType: computed(() => undefined),
+    botName: computed(() => undefined),
+    botCategory: computed(() => undefined),
     trusted: computed(() => undefined),
     reset: () => {},
   }

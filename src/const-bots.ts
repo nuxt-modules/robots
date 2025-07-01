@@ -11,10 +11,135 @@ export interface BotPattern {
   secondaryPatterns?: string[]
 }
 
-export interface BotCategory {
-  type: string
+// Bot categories (what type of service/purpose the bot serves)
+export type BotCategory = 'search-engine' | 'social' | 'seo' | 'ai' | 'generic' | 'automation' | 'http-tool' | 'security-scanner' | 'scraping'
+
+// BotD fingerprinting types (extended from @fingerprintjs/botd)
+export type BotKind
+  = | 'awesomium'
+    | 'cef'
+    | 'cefsharp'
+    | 'coachjs'
+    | 'electron'
+    | 'fminer'
+    | 'geb'
+    | 'nightmarejs'
+    | 'phantomas'
+    | 'phantomjs'
+    | 'rhino'
+    | 'selenium'
+    | 'sequentum'
+    | 'slimerjs'
+    | 'webdriverio'
+    | 'webdriver'
+    | 'headless_chrome'
+    | 'unknown'
+
+// Bot names (specific bot identities) with autocomplete but allowing any string
+export type BotName
+  // Search engine bots
+  = | 'googlebot'
+    | 'bingbot'
+    | 'yandexbot'
+    | 'baiduspider'
+    | 'duckduckbot'
+    | 'yahoo'
+  // Social media bots
+    | 'twitter'
+    | 'facebook'
+    | 'linkedin'
+    | 'pinterest'
+    | 'discord'
+  // SEO bots
+    | 'majestic12'
+    | 'ahrefs'
+    | 'semrush'
+    | 'screaming-frog'
+    | 'moz'
+  // AI bots
+    | 'anthropic'
+    | 'claude'
+    | 'gpt'
+    | 'google-news'
+    | 'cohere'
+    | 'commoncrawl'
+    | 'perplexity'
+  // HTTP tools
+    | 'requests'
+    | 'wget'
+    | 'curl'
+  // Security scanners
+    | 'zgrab'
+    | 'masscan'
+    | 'nmap'
+    | 'nikto'
+    | 'wpscan'
+  // Scraping tools
+    | 'scrapy'
+  // Automation tools
+    | 'phantomjs'
+    | 'headless-browser'
+    | 'playwright'
+    | 'selenium'
+    | 'puppeteer'
+  // Generic patterns
+    | 'generic-bot'
+    | 'generic-spider'
+    | 'generic-crawler'
+    | 'generic-scraper'
+  // BotD fingerprinting types
+    | BotKind
+  // Allow any string while keeping autocomplete for known values
+    | (string & Record<never, never>)
+
+export interface BotCategoryDefinition {
+  type: BotCategory
   bots: BotPattern[]
   trusted: boolean
+}
+
+/**
+ * Maps BotD fingerprinting kinds to appropriate bot categories
+ */
+export function mapBotKindToCategory(botKind: BotKind): BotCategory {
+  switch (botKind) {
+    // Browser automation tools
+    case 'selenium':
+    case 'webdriver':
+    case 'webdriverio':
+    case 'phantomjs':
+    case 'phantomas':
+    case 'nightmarejs':
+    case 'slimerjs':
+      return 'automation'
+
+    // Headless browsers
+    case 'headless_chrome':
+    case 'electron':
+    case 'cef':
+    case 'cefsharp':
+      return 'automation'
+
+    // Data collection/scraping tools
+    case 'fminer':
+    case 'sequentum':
+    case 'geb':
+      return 'scraping'
+
+    // Security/testing tools
+    case 'awesomium':
+    case 'coachjs':
+      return 'security-scanner'
+
+    // Script engines
+    case 'rhino':
+      return 'automation'
+
+    // Unknown/generic
+    case 'unknown':
+    default:
+      return 'generic'
+  }
 }
 
 export const KNOWN_SEARCH_BOTS: BotPattern[] = [
@@ -231,7 +356,7 @@ export const GENERIC_BOTS: BotPattern[] = [
   },
 ]
 
-export const BOT_MAP: BotCategory[] = [
+export const BOT_MAP: BotCategoryDefinition[] = [
   {
     type: 'search-engine',
     bots: KNOWN_SEARCH_BOTS,
@@ -277,4 +402,4 @@ export const BOT_MAP: BotCategory[] = [
     bots: SCRAPING_BOTS,
     trusted: false,
   },
-]
+] as const

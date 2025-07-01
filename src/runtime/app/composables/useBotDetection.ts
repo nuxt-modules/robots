@@ -39,6 +39,8 @@ export function useBotDetection(options: UseBotDetectionOptions = {}): UseBotDet
               trusted: false,
             }
           }
+          // Call the result callback with the final context
+          options?.onFingerprintResult?.(botContext.value)
         }
       })
     }
@@ -48,8 +50,11 @@ export function useBotDetection(options: UseBotDetectionOptions = {}): UseBotDet
     // Whether we've detected a bot
     isBot: computed(() => botContext.value?.isBot ?? false),
 
-    // Bot type
-    botType: computed(() => botContext.value?.botType),
+    // Bot name
+    botName: computed(() => botContext.value?.botName),
+
+    // Bot category
+    botCategory: computed(() => botContext.value?.botCategory),
 
     // Whether the bot is trusted
     trusted: computed(() => botContext.value?.trusted),

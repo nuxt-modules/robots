@@ -97,6 +97,7 @@
     "firebase-functions": "^6.3.2",
     "happy-dom": "^18.0.1",
     "nuxt": "^3.17.5",
+    "playwright-core": "^1.53.1",
     "typescript": "^5.8.3",
     "unocss": "^66.3.2",
     "vitest": "^3.2.4",

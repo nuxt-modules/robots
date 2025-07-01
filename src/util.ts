@@ -1,3 +1,4 @@
+import type { BotCategory, BotName } from './const-bots'
 import type { BotDetectionContext, ParsedRobotsTxt, PatternMapValue, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
 import { createDefu } from 'defu'
 import { withoutLeadingSlash } from 'ufo'
@@ -6,6 +7,7 @@ import {
   AI_BOTS,
   AUTOMATION_BOTS,
   BOT_MAP,
+
   GENERIC_BOTS,
   HTTP_TOOL_BOTS,
   KNOWN_SEARCH_BOTS,
@@ -15,8 +17,7 @@ import {
   SOCIAL_BOTS,
 } from './const-bots'
 
-export type * from './runtime/types'
-
+export * from './const-bots'
 export { AiBots, NonHelpfulBots }
 
 /**
@@ -279,7 +280,6 @@ export function mergeOnKey<T, K extends keyof T>(arr: T[], key: K) {
   const res: Record<string, T> = {}
   arr.forEach((item) => {
     const k = item[key] as string
-    // @ts-expect-error untyped
     res[k] = merger(item, res[k] || {})
   })
   return Object.values(res)
@@ -308,6 +308,8 @@ export {
   SOCIAL_BOTS,
 }
 
+export type * from './runtime/types'
+
 // Create pattern map for bot detection
 export function createPatternMap(): Map<string, PatternMapValue> {
   const patternMap = new Map()
@@ -316,8 +318,8 @@ export function createPatternMap(): Map<string, PatternMapValue> {
       const patterns = [bot.pattern, ...(bot.secondaryPatterns || [])]
       for (const pattern of patterns) {
         patternMap.set(pattern.toLowerCase(), {
-          botType: def.type,
-          botName: bot.name,
+          botName: bot.name as BotName,
+          botCategory: def.type,
           trusted: def.trusted,
         })
       }
@@ -338,8 +340,8 @@ export function isBotFromHeaders(
 ): {
     isBot: boolean
     data?: {
-      botType: string
-      botName: string
+      botName: BotName
+      botCategory: BotCategory
       trusted: boolean
     }
   } {
@@ -361,8 +363,8 @@ export function isBotFromHeaders(
       return {
         isBot: true,
         data: {
-          botType: botData.botType,
           botName: botData.botName,
+          botCategory: botData.botCategory,
           trusted: botData.trusted,
         },
       }
@@ -374,8 +376,6 @@ export function isBotFromHeaders(
 
 /**
  * Pure bot detection function using headers
- * @param headers - HTTP headers object
- * @returns Complete bot detection context
  */
 export function getBotDetection(
   headers: Record<string, string | string[] | undefined>,
@@ -388,26 +388,21 @@ export function getBotDetection(
     return {
       isBot: true,
       userAgent,
-      detectionMethod: 'server',
-      botType: detection.data.botType,
+      detectionMethod: 'headers',
       botName: detection.data.botName,
+      botCategory: detection.data.botCategory,
       trusted: detection.data.trusted,
-      lastDetected: Date.now(),
     }
   }
 
   return {
     isBot: false,
     userAgent,
-    detectionMethod: 'server',
-    lastDetected: Date.now(),
   }
 }
 
 /**
  * Check if headers indicate a bot
- * @param headers - HTTP headers object
- * @returns boolean indicating if request is from a bot
  */
 export function isBot(
   headers: Record<string, string | string[] | undefined>,
@@ -419,8 +414,6 @@ export function isBot(
 
 /**
  * Get bot information if detected
- * @param headers - HTTP headers object
- * @returns Bot info object or null
  */
 export function getBotInfo(
   headers: Record<string, string | string[] | undefined>,
@@ -433,8 +426,8 @@ export function getBotInfo(
   }
 
   return {
-    type: detection.botType,
     name: detection.botName,
+    category: detection.botCategory,
     trusted: detection.trusted,
     method: detection.detectionMethod,
   }
@@ -442,8 +435,6 @@ export function getBotInfo(
 
 /**
  * Validate a parsed robots.txt structure
- * @param parsedRobotsTxt - The parsed robots.txt data
- * @returns The parsed robots.txt with any validation errors
  */
 export function validateParsedRobotsTxt(parsedRobotsTxt: ParsedRobotsTxt): ParsedRobotsTxt {
   // The parseRobotsTxt function already handles validation and populates the errors array

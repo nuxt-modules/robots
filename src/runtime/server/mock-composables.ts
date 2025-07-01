@@ -22,7 +22,6 @@ export function getSiteRobotConfig(e: H3Event): { indexable: boolean, hints: str
 export function getBotDetection(e: H3Event): BotDetectionContext {
   return {
     isBot: false,
-    lastDetected: Date.now(),
   }
 }
 

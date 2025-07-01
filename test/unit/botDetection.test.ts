@@ -24,7 +24,7 @@ describe('bot Detection from Headers', () => {
     })
     expect(result.isBot).toBe(true)
     expect(result.data?.botName).toBe('googlebot')
-    expect(result.data?.botType).toBe('search-engine')
+    expect(result.data?.botCategory).toBe('search-engine')
     expect(result.data?.trusted).toBe(true)
   })
 
@@ -34,7 +34,7 @@ describe('bot Detection from Headers', () => {
     })
     expect(result.isBot).toBe(true)
     expect(result.data?.botName).toBe('bingbot')
-    expect(result.data?.botType).toBe('search-engine')
+    expect(result.data?.botCategory).toBe('search-engine')
     expect(result.data?.trusted).toBe(true)
   })
 
@@ -45,7 +45,7 @@ describe('bot Detection from Headers', () => {
     })
     expect(result.isBot).toBe(true)
     expect(result.data?.botName).toBe('twitter')
-    expect(result.data?.botType).toBe('social')
+    expect(result.data?.botCategory).toBe('social')
     expect(result.data?.trusted).toBe(true)
   })
 
@@ -56,7 +56,7 @@ describe('bot Detection from Headers', () => {
     })
     expect(result.isBot).toBe(true)
     expect(result.data?.botName).toBe('ahrefs')
-    expect(result.data?.botType).toBe('seo')
+    expect(result.data?.botCategory).toBe('seo')
     expect(result.data?.trusted).toBe(true)
   })
 
@@ -67,7 +67,7 @@ describe('bot Detection from Headers', () => {
     })
     expect(result.isBot).toBe(true)
     expect(result.data?.botName).toBe('anthropic')
-    expect(result.data?.botType).toBe('ai')
+    expect(result.data?.botCategory).toBe('ai')
     expect(result.data?.trusted).toBe(true)
   })
 
@@ -78,7 +78,7 @@ describe('bot Detection from Headers', () => {
     })
     expect(result.isBot).toBe(true)
     expect(result.data?.botName).toBe('requests')
-    expect(result.data?.botType).toBe('http-tool')
+    expect(result.data?.botCategory).toBe('http-tool')
     expect(result.data?.trusted).toBe(false)
   })
 
@@ -88,7 +88,7 @@ describe('bot Detection from Headers', () => {
     })
     expect(result.isBot).toBe(true)
     expect(result.data?.botName).toBe('zgrab')
-    expect(result.data?.botType).toBe('security-scanner')
+    expect(result.data?.botCategory).toBe('security-scanner')
     expect(result.data?.trusted).toBe(false)
   })
 
@@ -99,7 +99,7 @@ describe('bot Detection from Headers', () => {
     })
     expect(result.isBot).toBe(true)
     expect(result.data?.botName).toBe('generic-bot')
-    expect(result.data?.botType).toBe('generic')
+    expect(result.data?.botCategory).toBe('generic')
     expect(result.data?.trusted).toBe(false)
   })
 

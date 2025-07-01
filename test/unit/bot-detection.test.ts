@@ -1,4 +1,5 @@
 import type { UseBotDetectionOptions, UseBotDetectionReturn } from '../../src/runtime/types'
+import type { BotCategory, BotName } from '../../src/util'
 import { describe, expect, it, vi } from 'vitest'
 import { computed, ref } from 'vue'
 
@@ -9,7 +10,8 @@ function createMockUseBotDetection(initialState: any = null) {
   return (_options: UseBotDetectionOptions = {}): UseBotDetectionReturn => {
     return {
       isBot: computed(() => botContext.value?.isBot ?? false),
-      botType: computed(() => botContext.value?.botType),
+      botName: computed(() => botContext.value?.botName),
+      botCategory: computed(() => botContext.value?.botCategory),
       trusted: computed(() => botContext.value?.trusted),
       reset: () => {
         botContext.value = null
@@ -25,7 +27,7 @@ describe('useBotDetection composable behavior', () => {
       const result = mockUseBotDetection()
 
       expect(result).toHaveProperty('isBot')
-      expect(result).toHaveProperty('botType')
+      expect(result).toHaveProperty('botName')
       expect(result).toHaveProperty('trusted')
       expect(result).toHaveProperty('reset')
       expect(typeof result.reset).toBe('function')
@@ -37,7 +39,7 @@ describe('useBotDetection composable behavior', () => {
 
       // Test that these are computed refs by checking their behavior
       expect(result.isBot.value).toBe(false) // default when no context
-      expect(result.botType.value).toBeUndefined()
+      expect(result.botName.value).toBeUndefined()
       expect(result.trusted.value).toBeUndefined()
     })
   })
@@ -46,14 +48,16 @@ describe('useBotDetection composable behavior', () => {
     it('should correctly reflect bot detection state', () => {
       const botContext = {
         isBot: true,
-        botType: 'search-engine',
+        botName: 'googlebot',
+        botCategory: 'search-engine',
         trusted: true,
       }
       const mockUseBotDetection = createMockUseBotDetection(botContext)
       const result = mockUseBotDetection()
 
       expect(result.isBot.value).toBe(true)
-      expect(result.botType.value).toBe('search-engine')
+      expect(result.botName.value).toBe('googlebot')
+      expect(result.botCategory.value).toBe('search-engine')
       expect(result.trusted.value).toBe(true)
     })
 
@@ -62,21 +66,23 @@ describe('useBotDetection composable behavior', () => {
       const result = mockUseBotDetection()
 
       expect(result.isBot.value).toBe(false)
-      expect(result.botType.value).toBeUndefined()
+      expect(result.botName.value).toBeUndefined()
       expect(result.trusted.value).toBeUndefined()
     })
 
     it('should handle untrusted bot detection', () => {
       const botContext = {
         isBot: true,
-        botType: 'automation',
+        botName: 'selenium',
+        botCategory: 'automation',
         trusted: false,
       }
       const mockUseBotDetection = createMockUseBotDetection(botContext)
       const result = mockUseBotDetection()
 
       expect(result.isBot.value).toBe(true)
-      expect(result.botType.value).toBe('automation')
+      expect(result.botName.value).toBe('selenium')
+      expect(result.botCategory.value).toBe('automation')
       expect(result.trusted.value).toBe(false)
     })
   })
@@ -106,18 +112,21 @@ describe('useBotDetection composable behavior', () => {
     it('should provide a reset function that clears state', () => {
       const botContext = ref<{
         isBot: boolean
-        botType: string
+        botName: BotName
+        botCategory: BotCategory
         trusted: boolean
       } | null>({
         isBot: true,
-        botType: 'search-engine',
+        botName: 'googlebot' as const,
+        botCategory: 'search-engine' as const,
         trusted: true,
       })
 
       const mockUseBotDetection = (_options: UseBotDetectionOptions = {}): UseBotDetectionReturn => {
         return {
           isBot: computed(() => botContext.value?.isBot ?? false),
-          botType: computed(() => botContext.value?.botType),
+          botName: computed(() => botContext.value?.botName),
+          botCategory: computed(() => botContext.value?.botCategory),
           trusted: computed(() => botContext.value?.trusted),
           reset: () => {
             botContext.value = null
@@ -133,7 +142,7 @@ describe('useBotDetection composable behavior', () => {
       // After reset should be cleared
       result.reset()
       expect(result.isBot.value).toBe(false)
-      expect(result.botType.value).toBeUndefined()
+      expect(result.botName.value).toBeUndefined()
       expect(result.trusted.value).toBeUndefined()
     })
   })
@@ -171,21 +180,19 @@ describe('useBotDetection integration tests', () => {
         isBot: false,
         userAgent,
         detectionMethod: 'server' as const,
-        lastDetected: Date.now(),
       },
     },
   })
 
-  const createBotEvent = (userAgent: string, botType: string, botName: string, trusted: boolean) => ({
+  const createBotEvent = (userAgent: string, botCategory: string, botName: string, trusted: boolean) => ({
     context: {
       robots: {
         isBot: true,
         userAgent,
         detectionMethod: 'server' as const,
-        botType,
+        botCategory,
         botName,
         trusted,
-        lastDetected: Date.now(),
       },
     },
   })
@@ -218,7 +225,7 @@ describe('useBotDetection integration tests', () => {
       // Test that the composable would work with real bot context
       const botContext = mockContext.context.robots
       expect(botContext.isBot).toBe(true)
-      expect(botContext.botType).toBe('search-engine')
+      expect(botContext.botCategory).toBe('search-engine')
       expect(botContext.botName).toBe('googlebot')
       expect(botContext.trusted).toBe(true)
     })
@@ -244,7 +251,7 @@ describe('useBotDetection integration tests', () => {
 
       const botContext = mockContext.context.robots
       expect(botContext.isBot).toBe(true)
-      expect(botContext.botType).toBe('seo')
+      expect(botContext.botCategory).toBe('seo')
       expect(botContext.trusted).toBe(false)
     })
   })
