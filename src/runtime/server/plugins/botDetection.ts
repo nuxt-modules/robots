@@ -2,7 +2,7 @@ import { getHeaders } from 'h3'
 import { defineNitroPlugin } from 'nitropack/runtime'
 import { analyzeSessionAndIpBehavior, applyBehaviorForErrorPages } from '../lib/is-bot/behavior'
 import { getBotDetectionBehavior, updateBotSessionBehavior } from '../lib/is-bot/storage'
-import { isBotFromHeaders } from '../lib/is-bot/userAgent'
+import { isBotFromHeaders } from '../../../util'
 
 export default defineNitroPlugin((nitroApp) => {
   nitroApp.hooks.hook('request', async (event) => {
@@ -17,7 +17,7 @@ export default defineNitroPlugin((nitroApp) => {
     if (isBot) {
       behavior.ip.details = data ? {
         name: data.botName,
-        type: data.botType,
+        type: data.botCategory,
         trusted: data.trusted
       } : null
       behavior.ip.isBot = isBot
