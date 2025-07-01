@@ -49,13 +49,48 @@ export const MAYBE_SENSITIVE_PATHS = [
   '/dashboard',
 ]
 
+import { useRuntimeConfig } from '#imports'
+
 // Enhanced bot detection score thresholds with an intermediate level
-export const BOT_SCORE_THRESHOLDS = {
+export let BOT_SCORE_THRESHOLDS = {
   DEFINITELY_BOT: 90,
   LIKELY_BOT: 70,
   SUSPICIOUS: 40,
   PROBABLY_HUMAN: 20,
   DEFINITELY_HUMAN: 5,
+}
+
+// Configuration initialization
+let behaviorConfigInitialized = false
+function initializeBehaviorConfig() {
+  if (behaviorConfigInitialized) return
+  
+  try {
+    const config = useRuntimeConfig()
+    const botConfig = config.public?.robots?.botDetection
+    
+    if (botConfig && typeof botConfig === 'object' && botConfig.thresholds) {
+      if (botConfig.thresholds.definitelyBot) {
+        BOT_SCORE_THRESHOLDS.DEFINITELY_BOT = botConfig.thresholds.definitelyBot
+      }
+      if (botConfig.thresholds.likelyBot) {
+        BOT_SCORE_THRESHOLDS.LIKELY_BOT = botConfig.thresholds.likelyBot
+      }
+      if (botConfig.thresholds.suspicious) {
+        BOT_SCORE_THRESHOLDS.SUSPICIOUS = botConfig.thresholds.suspicious
+      }
+      
+      // Add custom sensitive paths
+      if (botConfig.customSensitivePaths) {
+        SENSITIVE_PATHS.push(...botConfig.customSensitivePaths)
+      }
+    }
+    
+    behaviorConfigInitialized = true
+  } catch (error) {
+    // Fallback to defaults if config is not available
+    behaviorConfigInitialized = true
+  }
 }
 
 // Updated behavior weights with increased penalties for timing issues
@@ -371,22 +406,55 @@ function detectSessionAnomaly(ipData: IPData, sessionData: SessionData, timestam
   return result
 }
 
+export interface DetectionFactor {
+  type: string
+  weight: number
+  evidence: any
+  timestamp: number
+  description: string
+}
+
+export interface DebugInfo {
+  sessionAge: number
+  requestCount: number
+  pathHistory: string[]
+  timingAnalysis: {
+    avgInterval: number
+    consistency: number
+    entropy: number
+  }
+  factors: DetectionFactor[]
+  ipInfo: {
+    sessionCount: number
+    totalScore: number
+    isBlocked: boolean
+    isTrusted: boolean
+  }
+  confidence: number
+  reasoning: string[]
+}
+
 export interface BotDetectionBehavior {
   id: string
   session: SessionData
   ip: IPData
   dirty?: boolean
+  debug?: DebugInfo
 }
 
 export function analyzeSessionAndIpBehavior({
   event,
   behavior,
   timestamp = Date.now(),
+  debug = false,
 }: {
   event: H3Event
   behavior: BotDetectionBehavior
   timestamp?: number
+  debug?: boolean
 }) {
+  initializeBehaviorConfig()
+  
   const path = event.path || ''
   const method = event.method || 'GET'
   // Check if this is a maybe-sensitive path
@@ -398,6 +466,25 @@ export function analyzeSessionAndIpBehavior({
 
   // Initialize or get IP data with improved defaults
   const ipData: IPData = behavior.ip
+
+  // Initialize debug tracking
+  const detectionFactors: DetectionFactor[] = []
+  const reasoning: string[] = []
+  
+  function addFactor(type: string, weight: number, evidence: any, description: string) {
+    const factor: DetectionFactor = {
+      type,
+      weight,
+      evidence,
+      timestamp: now,
+      description
+    }
+    detectionFactors.push(factor)
+    if (debug) {
+      reasoning.push(`${type}: ${description} (weight: ${weight})`)
+    }
+    return weight
+  }
 
   // Calculate scoring factors
   const scoreFactors: Record<string, number> = {}
@@ -414,16 +501,31 @@ export function analyzeSessionAndIpBehavior({
 
     // Apply score - smaller penalty for first hit, larger for repeated behavior
     if (sessionData.maybeSensitivePathHits === 1) {
-      scoreFactors.MAYBE_SENSITIVE_PATH = BEHAVIOR_WEIGHTS.MAYBE_SENSITIVE_PATH
+      scoreFactors.MAYBE_SENSITIVE_PATH = addFactor(
+        'MAYBE_SENSITIVE_PATH', 
+        BEHAVIOR_WEIGHTS.MAYBE_SENSITIVE_PATH,
+        { path, hitCount: 1 },
+        `First access to potentially sensitive path: ${path}`
+      )
     }
     else if (sessionData.maybeSensitivePathHits > 1) {
       // Multiple hits to sensitive paths is more suspicious
-      scoreFactors.MAYBE_SENSITIVE_PATH = BEHAVIOR_WEIGHTS.MAYBE_SENSITIVE_PATH
-        * Math.min(3, sessionData.maybeSensitivePathHits)
+      const weight = BEHAVIOR_WEIGHTS.MAYBE_SENSITIVE_PATH * Math.min(3, sessionData.maybeSensitivePathHits)
+      scoreFactors.MAYBE_SENSITIVE_PATH = addFactor(
+        'MAYBE_SENSITIVE_PATH',
+        weight,
+        { path, hitCount: sessionData.maybeSensitivePathHits },
+        `Multiple access to sensitive paths (${sessionData.maybeSensitivePathHits} hits)`
+      )
 
       // If they hit multiple different sensitive paths, that's even more suspicious
       if (sessionData.uniqueSensitivePathsAccessed.length >= 2) {
-        scoreFactors.MULTIPLE_SENSITIVE_HITS = BEHAVIOR_WEIGHTS.MULTIPLE_SENSITIVE_HITS
+        scoreFactors.MULTIPLE_SENSITIVE_HITS = addFactor(
+          'MULTIPLE_SENSITIVE_HITS',
+          BEHAVIOR_WEIGHTS.MULTIPLE_SENSITIVE_HITS,
+          { uniquePaths: sessionData.uniqueSensitivePathsAccessed },
+          `Scanning behavior: ${sessionData.uniqueSensitivePathsAccessed.length} different sensitive paths`
+        )
       }
     }
   }
@@ -480,7 +582,12 @@ export function analyzeSessionAndIpBehavior({
   // 1. Check for sensitive path access
   if (SENSITIVE_PATHS.some(sensitivePath => path.includes(sensitivePath))) {
     sessionData.suspiciousPathHits++
-    scoreFactors.SENSITIVE_PATH = BEHAVIOR_WEIGHTS.SENSITIVE_PATH
+    scoreFactors.SENSITIVE_PATH = addFactor(
+      'SENSITIVE_PATH',
+      BEHAVIOR_WEIGHTS.SENSITIVE_PATH,
+      { path, hitCount: sessionData.suspiciousPathHits },
+      `Access to highly sensitive path: ${path}`
+    )
   }
 
   // 2. Check for rapid requests with adaptive rate limiting
@@ -491,9 +598,15 @@ export function analyzeSessionAndIpBehavior({
   if (requestsLastMinute > adaptiveRateLimit) {
     // Apply score proportional to how much the limit was exceeded
     const overageRatio = requestsLastMinute / adaptiveRateLimit
-    scoreFactors.RAPID_REQUESTS = Math.min(
+    const weight = Math.min(
       BEHAVIOR_WEIGHTS.RAPID_REQUESTS * overageRatio,
       BEHAVIOR_WEIGHTS.RAPID_REQUESTS * 2, // Cap at double the weight
+    )
+    scoreFactors.RAPID_REQUESTS = addFactor(
+      'RAPID_REQUESTS',
+      weight,
+      { requestsLastMinute, rateLimit: adaptiveRateLimit, overageRatio },
+      `Too many requests: ${requestsLastMinute}/${adaptiveRateLimit} (${Math.round(overageRatio * 100)}% over limit)`
     )
   }
 
@@ -624,6 +737,37 @@ export function analyzeSessionAndIpBehavior({
 
   behavior.session = sessionData
   behavior.ip = ipData
+  
+  // Add debug information if requested
+  if (debug) {
+    const sessionAge = now - sessionData.firstSeenAt
+    const avgInterval = sessionData.lastRequests.length > 1 
+      ? sessionData.lastRequests.reduce((sum, req, i) => {
+          if (i === 0) return 0
+          return sum + (req.timestamp - sessionData.lastRequests[i-1].timestamp)
+        }, 0) / (sessionData.lastRequests.length - 1)
+      : 0
+    
+    behavior.debug = {
+      sessionAge,
+      requestCount: sessionData.lastRequests.length,
+      pathHistory: sessionData.lastRequests.map(r => r.path),
+      timingAnalysis: {
+        avgInterval,
+        consistency: sessionData.requestSequenceEntropy,
+        entropy: sessionData.requestSequenceEntropy
+      },
+      factors: detectionFactors,
+      ipInfo: {
+        sessionCount: ipData.sessionCount,
+        totalScore: ipData.suspiciousScore,
+        isBlocked: false, // TODO: get from IP checking
+        isTrusted: false  // TODO: get from IP checking
+      },
+      confidence: behavior.ip.isBotConfidence || 0,
+      reasoning
+    }
+  }
 }
 
 // Enhanced bot detection with improved behavior analysis

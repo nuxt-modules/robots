@@ -158,12 +158,81 @@ export interface ModuleOptions {
    */
   credits: boolean
   /**
-   * Enable bot detection plugin.
-   * When disabled, no bot detection is performed.
-   *
+   * Bot detection and behavioral analysis configuration
+   * @default false (can be boolean for simple enable/disable or object for advanced config)
+   */
+  botDetection?: boolean | BotDetectionConfig
+}
+
+export interface BotDetectionConfig {
+  /**
+   * Whether bot detection is enabled
    * @default true
    */
-  botDetection?: boolean
+  enabled?: boolean
+  /**
+   * Session configuration
+   */
+  session?: {
+    /**
+     * Session encryption password (auto-generated if not provided)
+     */
+    password?: string
+    /**
+     * Session TTL in milliseconds
+     * @default 86400000 (24 hours)
+     */
+    ttl?: number
+    /**
+     * Maximum sessions per IP
+     * @default 10
+     */
+    maxSessionsPerIP?: number
+  }
+  /**
+   * Detection thresholds
+   */
+  thresholds?: {
+    /**
+     * Score threshold for definite bot classification
+     * @default 90
+     */
+    definitelyBot?: number
+    /**
+     * Score threshold for likely bot classification  
+     * @default 70
+     */
+    likelyBot?: number
+    /**
+     * Score threshold for suspicious behavior
+     * @default 40
+     */
+    suspicious?: number
+  }
+  /**
+   * Custom sensitive paths to monitor
+   */
+  customSensitivePaths?: string[]
+  /**
+   * IP allowlist/blocklist configuration
+   */
+  ipFilter?: {
+    /**
+     * Trusted IP addresses (always allowed)
+     * @default ['127.0.0.1', '::1']
+     */
+    trustedIPs?: string[]
+    /**
+     * Permanently blocked IP addresses
+     * @default []
+     */
+    blockedIPs?: string[]
+  }
+  /**
+   * Whether to enable detailed debug information
+   * @default false
+   */
+  debug?: boolean
 }
 
 export interface ModuleRuntimeHooks {
@@ -592,6 +661,10 @@ export {}
     addServerHandler({
       route: '/__robots__/flag',
       handler: resolve('./runtime/server/routes/__robots__/flag'),
+    })
+    addServerHandler({
+      route: '/__robots__/debug-bot-detection',
+      handler: resolve('./runtime/server/routes/__robots__/debug-bot-detection'),
     })
     if (config.debug || nuxt.options.dev) {
       addServerHandler({

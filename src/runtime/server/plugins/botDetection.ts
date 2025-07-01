@@ -6,7 +6,8 @@ import { isBotFromHeaders } from '../../../util'
 
 export default defineNitroPlugin((nitroApp) => {
   nitroApp.hooks.hook('request', async (event) => {
-    // const config = useRuntimeConfig()
+    const config = useRuntimeConfig()
+    const debugMode = config.public?.robots?.debug || false
     const behavior = await getBotDetectionBehavior(event)
     // if it's already a bot return early
     if (!behavior.ip?.isBot) {
@@ -30,6 +31,7 @@ export default defineNitroPlugin((nitroApp) => {
       analyzeSessionAndIpBehavior({
         event,
         behavior,
+        debug: debugMode,
       })
     }
     event.context.botDetectionBehavior = behavior
