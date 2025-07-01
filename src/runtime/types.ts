@@ -1,4 +1,6 @@
 import type { H3Event } from 'h3'
+import type { ComputedRef } from 'vue'
+import type { BotCategory, BotName } from '../const-bots'
 
 export type Arrayable<T> = T | T[]
 
@@ -49,6 +51,51 @@ export interface HookRobotsConfigContext extends ParsedRobotsTxt {
   context: 'robots.txt' | 'init'
 }
 
+// Bot Detection Types
+export interface BotDetectionContext {
+  isBot: boolean
+  userAgent?: string
+  detectionMethod?: 'headers' | 'fingerprint'
+  botName?: BotName
+  botCategory?: BotCategory
+  trusted?: boolean
+}
+
+// Hook payload for fingerprinting bot detection events
+export interface FingerprintingBotDetectedPayload {
+  method: 'fingerprint'
+  result: BotDetectionContext
+  fingerprint: BotDetectionData
+}
+
+export interface FingerprintingErrorPayload {
+  error: any
+}
+
+// Simplified bot info interface for composable API
+export interface BotInfo {
+  name?: BotName
+  category?: BotCategory
+  trusted?: boolean
+  method?: 'server' | 'fingerprint'
+}
+
+// Options for useBotDetection composable
+export interface UseBotDetectionOptions {
+  fingerprint?: boolean
+  onFingerprintError?: (error: Error) => void
+  onFingerprintResult?: (result: BotDetectionContext | null) => void
+}
+
+// Return type for useBotDetection composable
+export interface UseBotDetectionReturn {
+  isBot: ComputedRef<boolean>
+  botName: ComputedRef<BotName | undefined>
+  botCategory: ComputedRef<BotCategory | undefined>
+  trusted: ComputedRef<boolean | undefined>
+  reset: () => void
+}
+
 export type NormalisedLocales = { code: string, iso?: string, domain?: string }[]
 export interface AutoI18nConfig {
   differentDomains?: boolean
@@ -74,4 +121,20 @@ export interface NuxtRobotsRuntimeConfig {
   robotsEnabledValue: string
   robotsDisabledValue: string
   cacheControl: string | false
+  botDetection: boolean
+}
+
+export interface BotDetectionData {
+  isBot: boolean
+  data?: {
+    botName: BotName
+    botCategory: BotCategory
+    trusted: boolean
+  }
+}
+
+export interface PatternMapValue {
+  botName: BotName
+  botCategory: BotCategory
+  trusted: boolean
 }

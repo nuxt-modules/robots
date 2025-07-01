@@ -1,6 +1,7 @@
 import type { NitroApp } from 'nitropack/types'
 import { defineNitroPlugin, getRouteRules } from 'nitropack/runtime'
 import { withoutTrailingSlash } from 'ufo'
+import { createPatternMap } from '../../../util'
 import { useRuntimeConfigNuxtRobots } from '../composables/useRuntimeConfigNuxtRobots'
 import { logger } from '../logger'
 import { resolveRobotsTxtContext } from '../util'
@@ -10,7 +11,13 @@ const PRERENDER_NO_SSR_ROUTES = new Set(['/index.html', '/200.html', '/404.html'
 // we need to init our state using a nitro plugin so the user doesn't throttle the resolve context hook
 // important when we integrate with nuxt-simple-sitemap and we're checking thousands of URLs
 export default defineNitroPlugin(async (nitroApp: NitroApp) => {
-  const { isNuxtContentV2, robotsDisabledValue } = useRuntimeConfigNuxtRobots()
+  const { isNuxtContentV2, robotsDisabledValue, botDetection } = useRuntimeConfigNuxtRobots()
+
+  // Initialize bot detection pattern map if enabled
+  if (botDetection !== false) {
+    nitroApp._robotsPatternMap = createPatternMap()
+  }
+
   nitroApp._robots = {} as typeof nitroApp._robots
   await resolveRobotsTxtContext(undefined, nitroApp)
   const nuxtContentUrls = new Set<string>()

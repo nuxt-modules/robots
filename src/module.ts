@@ -157,6 +157,13 @@ export interface ModuleOptions {
    * @default true
    */
   credits: boolean
+  /**
+   * Enable bot detection plugin.
+   * When disabled, no bot detection is performed.
+   *
+   * @default true
+   */
+  botDetection?: boolean
 }
 
 export interface ResolvedModuleOptions extends ModuleOptions {
@@ -198,6 +205,7 @@ export default defineNuxtModule<ModuleOptions>({
     robotsDisabledValue: 'noindex, nofollow',
     disallowNonIndexableRoutes: false,
     robotsTxt: true,
+    botDetection: true,
   },
   async setup(config, nuxt) {
     const { resolve } = createResolver(import.meta.url)
@@ -460,6 +468,7 @@ export default defineNuxtModule<ModuleOptions>({
         robotsEnabledValue: config.robotsEnabledValue,
         robotsDisabledValue: config.robotsDisabledValue,
         cacheControl: config.cacheControl ?? 'max-age=14400, must-revalidate',
+        botDetection: config.botDetection ?? true,
       }
       nuxt.options.runtimeConfig['nuxt-robots'] = robotsRuntimeConfig as any
     })
@@ -474,6 +483,7 @@ export default defineNuxtModule<ModuleOptions>({
       nuxtContentUrls?: Set<string>
     },
     _robotsRuleMatcher: (url: string) => any
+    _robotsPatternMap?: Map<string, import('${typesPath}').PatternMapValue>
   }
   interface NitroRouteRules {
     robots?: boolean | string | {
@@ -532,6 +542,21 @@ export {}
       from: resolve('./runtime/app/composables/useRobotsRule'),
     })
 
+    // Only add bot detection composable if enabled
+    if (config.botDetection) {
+      addImports({
+        name: 'useBotDetection',
+        from: resolve('./runtime/app/composables/useBotDetection'),
+      })
+    }
+    else {
+      // Provide a mock implementation when disabled
+      addImports({
+        name: 'useBotDetection',
+        from: resolve('./runtime/app/composables/mock'),
+      })
+    }
+
     if (config.robotsTxt) {
       // add robots.txt server handler
       addServerHandler({
@@ -568,6 +593,22 @@ export {}
       setupDevToolsUI(config, resolve)
 
     addServerImportsDir(resolve('./runtime/server/composables'))
+
+    // Conditionally provide bot detection server composables
+    if (!config.botDetection) {
+      // Override bot detection imports with mock implementations when disabled
+      nuxt.options.nitro.imports = nuxt.options.nitro.imports || {}
+      nuxt.options.nitro.imports.presets = nuxt.options.nitro.imports.presets || []
+      nuxt.options.nitro.imports.presets.push({
+        from: resolve('./runtime/server/mock-composables'),
+        imports: [
+          'getBotDetection',
+          'isBot',
+          'getBotInfo',
+        ],
+      })
+    }
+
     nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
     nuxt.options.nitro.alias['#internal/nuxt-simple-robots'] = resolve('./runtime/server/composables')
     nuxt.options.nitro.alias['#internal/nuxt-robots'] = resolve('./runtime/server/composables')

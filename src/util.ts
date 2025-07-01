@@ -1,10 +1,23 @@
-import type { ParsedRobotsTxt, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
+import type { BotCategory, BotName } from './const-bots'
+import type { BotDetectionContext, ParsedRobotsTxt, PatternMapValue, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
 import { createDefu } from 'defu'
 import { withoutLeadingSlash } from 'ufo'
 import { AiBots, NonHelpfulBots } from './const'
+import {
+  AI_BOTS,
+  AUTOMATION_BOTS,
+  BOT_MAP,
 
-export type * from './runtime/types'
+  GENERIC_BOTS,
+  HTTP_TOOL_BOTS,
+  KNOWN_SEARCH_BOTS,
+  SCRAPING_BOTS,
+  SECURITY_SCANNING_BOTS,
+  SEO_BOTS,
+  SOCIAL_BOTS,
+} from './const-bots'
 
+export * from './const-bots'
 export { AiBots, NonHelpfulBots }
 
 /**
@@ -263,12 +276,11 @@ const merger = createDefu((obj, key, value) => {
   return obj[key]
 })
 
-export function mergeOnKey<T, K extends keyof T>(arr: T[], key: K) {
+export function mergeOnKey<T extends Record<string, any>, K extends keyof T>(arr: T[], key: K) {
   const res: Record<string, T> = {}
   arr.forEach((item) => {
     const k = item[key] as string
-    // @ts-expect-error untyped
-    res[k] = merger(item, res[k] || {})
+    res[k] = merger(res[k] || {}, item) as T
   })
   return Object.values(res)
 }
@@ -283,3 +295,141 @@ export function isInternalRoute(_path: string) {
   const lastSegment = path.split('/').pop() || path
   return lastSegment.includes('.') || path.startsWith('@')
 }
+
+export {
+  AI_BOTS,
+  AUTOMATION_BOTS,
+  GENERIC_BOTS,
+  HTTP_TOOL_BOTS,
+  KNOWN_SEARCH_BOTS,
+  SCRAPING_BOTS,
+  SECURITY_SCANNING_BOTS,
+  SEO_BOTS,
+  SOCIAL_BOTS,
+}
+
+export type * from './runtime/types'
+
+// Create pattern map for bot detection
+export function createPatternMap(): Map<string, PatternMapValue> {
+  const patternMap = new Map()
+  for (const def of BOT_MAP) {
+    for (const bot of def.bots) {
+      const patterns = [bot.pattern, ...(bot.secondaryPatterns || [])]
+      for (const pattern of patterns) {
+        patternMap.set(pattern.toLowerCase(), {
+          botName: bot.name as BotName,
+          botCategory: def.type,
+          trusted: def.trusted,
+        })
+      }
+    }
+  }
+  return patternMap
+}
+
+/**
+ * Detects bots based on HTTP headers analysis
+ * @param headers - HTTP headers object (similar to h3's getHeaders result)
+ * @param patternMap - Optional precomputed pattern map for performance optimization
+ * @returns Bot detection result with type, name, and trust level
+ */
+export function isBotFromHeaders(
+  headers: Record<string, string | string[] | undefined>,
+  patternMap?: Map<string, PatternMapValue>,
+): {
+    isBot: boolean
+    data?: {
+      botName: BotName
+      botCategory: BotCategory
+      trusted: boolean
+    }
+  } {
+  const userAgent = Array.isArray(headers['user-agent']) ? headers['user-agent'][0] : headers['user-agent']
+
+  // Only detect known bots, not suspicious patterns
+  if (!userAgent) {
+    return { isBot: false }
+  }
+
+  const userAgentLower = userAgent.toLowerCase()
+
+  // Use provided pattern map or create on demand for standalone usage
+  const resolvedPatternMap = patternMap || createPatternMap()
+
+  // Use optimized pattern lookup - O(n) instead of O(n³)
+  for (const [pattern, botData] of resolvedPatternMap) {
+    if (userAgentLower.includes(pattern)) {
+      return {
+        isBot: true,
+        data: {
+          botName: botData.botName,
+          botCategory: botData.botCategory,
+          trusted: botData.trusted,
+        },
+      }
+    }
+  }
+
+  return { isBot: false }
+}
+
+/**
+ * Pure bot detection function using headers
+ */
+export function getBotDetection(
+  headers: Record<string, string | string[] | undefined>,
+  patternMap?: Map<string, PatternMapValue>,
+): BotDetectionContext {
+  const userAgent = Array.isArray(headers['user-agent']) ? headers['user-agent'][0] : headers['user-agent']
+  const detection = isBotFromHeaders(headers, patternMap)
+
+  if (detection.isBot && detection.data) {
+    return {
+      isBot: true,
+      userAgent,
+      detectionMethod: 'headers',
+      botName: detection.data.botName,
+      botCategory: detection.data.botCategory,
+      trusted: detection.data.trusted,
+    }
+  }
+
+  return {
+    isBot: false,
+    userAgent,
+  }
+}
+
+/**
+ * Check if headers indicate a bot
+ */
+export function isBot(
+  headers: Record<string, string | string[] | undefined>,
+  patternMap?: Map<string, PatternMapValue>,
+): boolean {
+  const detection = getBotDetection(headers, patternMap)
+  return detection.isBot
+}
+
+/**
+ * Get bot information if detected
+ */
+export function getBotInfo(
+  headers: Record<string, string | string[] | undefined>,
+  patternMap?: Map<string, PatternMapValue>,
+) {
+  const detection = getBotDetection(headers, patternMap)
+
+  if (!detection.isBot) {
+    return null
+  }
+
+  return {
+    name: detection.botName,
+    category: detection.botCategory,
+    trusted: detection.trusted,
+    method: detection.detectionMethod,
+  }
+}
+
