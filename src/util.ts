@@ -433,11 +433,3 @@ export function getBotInfo(
   }
 }
 
-/**
- * Validate a parsed robots.txt structure
- */
-export function validateParsedRobotsTxt(parsedRobotsTxt: ParsedRobotsTxt): ParsedRobotsTxt {
-  // The parseRobotsTxt function already handles validation and populates the errors array
-  // This function exists to satisfy the module's expectations but doesn't need additional validation
-  return parsedRobotsTxt
-}

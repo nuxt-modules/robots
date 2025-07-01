@@ -29,7 +29,7 @@ import {
   asArray,
   normalizeGroup,
   parseRobotsTxt,
-  validateParsedRobotsTxt,
+  validateRobots,
 } from './runtime/util'
 
 export interface ModuleOptions {
@@ -303,7 +303,7 @@ export default defineNuxtModule<ModuleOptions>({
         const path = relative(nuxt.options.rootDir, usingRobotsTxtPath)
         logger.debug(`A robots.txt file was found at \`./${path}\`, merging config.`)
         const parsedRobotsTxt = parseRobotsTxt(robotsTxt)
-        const { errors } = validateParsedRobotsTxt(parsedRobotsTxt)
+        const { errors } = validateRobots(parsedRobotsTxt)
         if (errors.length > 0) {
           logger.error(`The \`./${path}\` file contains errors:`)
           for (const error of errors)
