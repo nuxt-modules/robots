@@ -530,10 +530,11 @@ export function analyzeSessionAndIpBehavior({
     const existingRequests = sessionData.lastRequests.slice(0, -1)
 
     // Extract intervals only from requests that have a valid timeSincePrevious value
-    const intervals = []
+    const intervals: number[] = []
     for (let i = 0; i < existingRequests.length; i++) {
-      if (existingRequests[i].timeSincePrevious && existingRequests[i].timeSincePrevious > 0) {
-        intervals.push(existingRequests[i].timeSincePrevious)
+      const timeSincePrevious = existingRequests[i]?.timeSincePrevious
+      if (timeSincePrevious && timeSincePrevious > 0) {
+        intervals.push(timeSincePrevious)
       }
     }
 

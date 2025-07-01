@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import type { BotDetectionBehavior, IPData, SessionData } from './behavior'
-import { useStorage } from '#imports'
+import { useStorage } from 'nitropack/runtime'
 import { getRequestIP, useSession } from 'h3'
 import { TrafficType } from './behavior'
 
