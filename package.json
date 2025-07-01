@@ -60,7 +60,7 @@
   },
   "dependencies": {
     "@fingerprintjs/botd": "^1.9.1",
-    "@nuxt/kit": "^3.17.5",
+    "@nuxt/kit": "^3.17.6",
     "consola": "^3.4.2",
     "defu": "^6.1.4",
     "nuxt-site-config": "^3.2.2",
@@ -96,7 +96,7 @@
     "execa": "^9.6.0",
     "firebase-functions": "^6.3.2",
     "happy-dom": "^18.0.1",
-    "nuxt": "^3.17.5",
+    "nuxt": "^3.17.6",
     "playwright-core": "^1.53.1",
     "typescript": "^5.8.3",
     "unocss": "^66.3.2",
