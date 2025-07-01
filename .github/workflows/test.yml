@@ -40,5 +40,8 @@ jobs:
       - name: Typecheck
         run: pnpm run typecheck
 
+      - name: Playwright Install
+        run: pnpm exec playwright install
+
       - name: Test
         run: pnpm run test
