@@ -3,8 +3,8 @@
   "private": true,
   "devDependencies": {
     "@iconify-json/carbon": "^1.2.10",
-    "@nuxt/devtools-kit": "^2.5.0",
-    "@nuxt/devtools-ui-kit": "^2.5.0",
+    "@nuxt/devtools-kit": "^2.6.2",
+    "@nuxt/devtools-ui-kit": "^2.6.2",
     "@nuxt/kit": "^3.17.5",
     "floating-vue": "^5.2.2",
     "nuxt": "^3.17.5",
