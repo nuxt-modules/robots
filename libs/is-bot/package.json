@@ -1,0 +1,70 @@
+{
+  "name": "@nuxtjs/robots-bot-detection",
+  "version": "1.0.0",
+  "description": "Framework-agnostic bot detection library",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./h3": {
+      "types": "./dist/drivers/h3.d.ts",
+      "import": "./dist/drivers/h3.js",
+      "require": "./dist/drivers/h3.cjs"
+    },
+    "./behaviors": {
+      "types": "./dist/behaviors/index.d.ts",
+      "import": "./dist/behaviors/index.js",
+      "require": "./dist/behaviors/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src test --ext .ts,.js",
+    "lint:fix": "eslint src test --ext .ts,.js --fix"
+  },
+  "keywords": [
+    "bot-detection",
+    "security",
+    "web-scraping",
+    "rate-limiting",
+    "h3",
+    "nuxt",
+    "nitro"
+  ],
+  "author": "Nuxt Team",
+  "license": "MIT",
+  "dependencies": {
+    "unstorage": "^1.16.0"
+  },
+  "peerDependencies": {
+    "h3": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.4",
+    "eslint": "^9.30.1",
+    "h3": "^1.15.3",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nuxt-modules/robots.git",
+    "directory": "libs/is-bot"
+  }
+}

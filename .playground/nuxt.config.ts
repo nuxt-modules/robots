@@ -14,6 +14,13 @@ export default defineNuxtConfig({
      */
     defineNuxtModule({
       setup(_, nuxt) {
+        nuxt.hooks.hook('robots:config', (config) => {
+          const catchAll = config.groups.find(g => g.userAgent.includes('*'))
+          if (catchAll) {
+            catchAll.disallow.push('/__link-checker__/')
+          }
+          console.log({ catchAll, groups: config.groups })
+        })
         if (!nuxt.options.dev)
           return
 

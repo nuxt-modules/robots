@@ -432,4 +432,3 @@ export function getBotInfo(
     method: detection.detectionMethod,
   }
 }
-
