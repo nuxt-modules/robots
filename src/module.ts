@@ -184,7 +184,6 @@ export default defineNuxtModule<ModuleOptions>({
     name: '@nuxtjs/robots',
     compatibility: {
       nuxt: '>=3.6.1',
-      bridge: false,
     },
     configKey: 'robots',
   },
