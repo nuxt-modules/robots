@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 // Import constants directly to avoid runtime dependencies
 const SENSITIVE_PATHS = [
   '/wp-login',
-  '/xmlrpc.php', 
+  '/xmlrpc.php',
   '/.env',
   '/phpmyadmin',
 ]

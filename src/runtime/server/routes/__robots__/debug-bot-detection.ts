@@ -1,6 +1,6 @@
 import { defineEventHandler, getQuery } from 'h3'
-import { getBotDetectionBehavior } from '../../lib/is-bot/storage'
-import { analyzeSessionAndIpBehavior } from '../../lib/is-bot/behavior'
+import { analyzeSessionAndIpBehavior } from '../../../libs/is-bot/src/behavior'
+import { getBotDetectionBehavior } from '../../../libs/is-bot/src/storage'
 
 /**
  * Debug endpoint for bot detection analysis
@@ -10,17 +10,17 @@ export default defineEventHandler(async (event) => {
   try {
     const query = getQuery(event)
     const detailed = query.detailed === 'true'
-    
+
     // Get current behavior analysis
     const behavior = await getBotDetectionBehavior(event)
-    
+
     // Run analysis with debug enabled to get detailed info
     analyzeSessionAndIpBehavior({
       event,
       behavior,
       debug: true,
     })
-    
+
     const response = {
       timestamp: Date.now(),
       session: {
@@ -41,20 +41,20 @@ export default defineEventHandler(async (event) => {
       },
       debug: behavior.debug,
     }
-    
+
     // Include detailed information if requested
     if (detailed) {
       return {
         ...response,
         rawBehavior: behavior,
         constants: {
-          BOT_SCORE_THRESHOLDS: await import('../../lib/is-bot/behavior').then(m => m.BOT_SCORE_THRESHOLDS),
-          BEHAVIOR_WEIGHTS: await import('../../lib/is-bot/behavior').then(m => m.BEHAVIOR_WEIGHTS),
-          SENSITIVE_PATHS: await import('../../lib/is-bot/behavior').then(m => m.SENSITIVE_PATHS),
-        }
+          BOT_SCORE_THRESHOLDS: await import('../../../libs/is-bot/src/behavior').then(m => m.BOT_SCORE_THRESHOLDS),
+          BEHAVIOR_WEIGHTS: await import('../../../libs/is-bot/src/behavior').then(m => m.BEHAVIOR_WEIGHTS),
+          SENSITIVE_PATHS: await import('../../../libs/is-bot/src/behavior').then(m => m.SENSITIVE_PATHS),
+        },
       }
     }
-    
+
     return response
   }
   catch (error) {

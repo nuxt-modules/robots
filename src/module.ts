@@ -199,7 +199,7 @@ export interface BotDetectionConfig {
      */
     definitelyBot?: number
     /**
-     * Score threshold for likely bot classification  
+     * Score threshold for likely bot classification
      * @default 70
      */
     likelyBot?: number
