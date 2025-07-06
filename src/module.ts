@@ -22,6 +22,7 @@ import { setupDevToolsUI } from './devtools'
 import { resolveI18nConfig, splitPathForI18nLocales } from './i18n'
 import { isNuxtGenerate, resolveNitroPreset } from './kit'
 import { logger } from './logger'
+import { formatMaxImagePreview, formatMaxSnippet, formatMaxVideoPreview, ROBOT_DIRECTIVE_VALUES } from './runtime/const'
 import {
   normaliseRobotsRouteRule,
 } from './runtime/server/nitro'
@@ -200,8 +201,8 @@ export default defineNuxtModule<ModuleOptions>({
     header: true,
     metaTag: true,
     cacheControl: 'max-age=14400, must-revalidate',
-    robotsEnabledValue: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
-    robotsDisabledValue: 'noindex, nofollow',
+    robotsEnabledValue: ROBOT_DIRECTIVE_VALUES.enabled,
+    robotsDisabledValue: ROBOT_DIRECTIVE_VALUES.disabled,
     disallowNonIndexableRoutes: false,
     robotsTxt: true,
     botDetection: true,
@@ -351,8 +352,33 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt.hooks.hook('content:file:afterParse', (ctx) => {
         if (typeof ctx.content.robots !== 'undefined') {
           let rule = ctx.content.robots
-          if (typeof rule === 'boolean' || !rule) {
+          if (typeof rule === 'boolean') {
             rule = rule ? config.robotsEnabledValue : config.robotsDisabledValue
+          }
+          else if (typeof rule === 'object' && rule !== null) {
+            const directives: string[] = []
+            for (const [key, value] of Object.entries(rule)) {
+              if (value === false || value === null || value === undefined)
+                continue
+
+              // Handle boolean directives
+              if (key in ROBOT_DIRECTIVE_VALUES && typeof value === 'boolean' && value) {
+                directives.push(ROBOT_DIRECTIVE_VALUES[key as keyof typeof ROBOT_DIRECTIVE_VALUES])
+              }
+              // Handle max-image-preview
+              else if (key === 'max-image-preview' && typeof value === 'string') {
+                directives.push(formatMaxImagePreview(value as 'none' | 'standard' | 'large'))
+              }
+              // Handle max-snippet
+              else if (key === 'max-snippet' && typeof value === 'number') {
+                directives.push(formatMaxSnippet(value))
+              }
+              // Handle max-video-preview
+              else if (key === 'max-video-preview' && typeof value === 'number') {
+                directives.push(formatMaxVideoPreview(value))
+              }
+            }
+            rule = directives.join(', ') || config.robotsEnabledValue
           }
           // add route rule for the path
           ctx.content.seo = ctx.content.seo || {}
@@ -485,13 +511,13 @@ export default defineNuxtModule<ModuleOptions>({
     _robotsPatternMap?: Map<string, import('${typesPath}').PatternMapValue>
   }
   interface NitroRouteRules {
-    robots?: boolean | string | {
+    robots?: import('${typesPath}').RobotsValue | {
       indexable: boolean
       rule: string
     }
   }
   interface NitroRouteConfig {
-    robots?: boolean | string | {
+    robots?: import('${typesPath}').RobotsValue | {
       indexable: boolean
       rule: string
     }
