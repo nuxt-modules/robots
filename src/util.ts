@@ -338,13 +338,13 @@ export function isBotFromHeaders(
   headers: Record<string, string | string[] | undefined>,
   patternMap?: Map<string, PatternMapValue>,
 ): {
-    isBot: boolean
-    data?: {
-      botName: BotName
-      botCategory: BotCategory
-      trusted: boolean
-    }
-  } {
+  isBot: boolean
+  data?: {
+    botName: BotName
+    botCategory: BotCategory
+    trusted: boolean
+  }
+} {
   const userAgent = Array.isArray(headers['user-agent']) ? headers['user-agent'][0] : headers['user-agent']
 
   // Only detect known bots, not suspicious patterns
@@ -432,4 +432,3 @@ export function getBotInfo(
     method: detection.detectionMethod,
   }
 }
-
