@@ -38,7 +38,6 @@ await setup({
 
 describe('stack', () => {
   it('basic', async () => {
-    // @ts-expect-error untyped
     expect(await $fetch('/robots.txt')).toMatchInlineSnapshot(`
       "# START nuxt-robots (indexable)
       User-agent: Googlebot
