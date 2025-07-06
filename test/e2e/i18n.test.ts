@@ -38,6 +38,7 @@ describe('i18n', () => {
     `)
   })
   it('respects route rules', async () => {
+    // @ts-expect-error untyped
     expect((await $fetch('/en/route-rules/?mockProductionEnv=true')).match(/<meta name="robots" content="([^"]+)">/)[1]).toMatchInlineSnapshot(`"noindex, nofollow"`)
   })
 })

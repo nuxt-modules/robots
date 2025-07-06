@@ -14,7 +14,8 @@ await setup({
 
 describe('default', () => {
   it('basic', async () => {
-    expect(await $fetch('/robots.txt')).toMatchInlineSnapshot(`
+    const robots = await $fetch('/robots.txt')
+    expect(robots).toMatchInlineSnapshot(`
       "# START nuxt-robots (indexable)
       User-agent: *
       Allow: /secret/exception

@@ -44,7 +44,6 @@ export default defineNitroPlugin(async (nitroApp: NitroApp) => {
       const isIsland = (process.env.NUXT_COMPONENT_ISLANDS && event.path.startsWith('/__nuxt_island'))
       const noSSR = !!(process.env.NUXT_NO_SSR)
         || event.context.nuxt?.noSSR
-        // @ts-expect-error upstream type issue
         || (routeOptions.ssr === false && !isIsland)
         || (import.meta.prerender ? PRERENDER_NO_SSR_ROUTES.has(event.path) : false)
       if (noSSR) {

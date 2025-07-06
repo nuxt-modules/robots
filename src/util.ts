@@ -50,7 +50,8 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
   // read the contents
   for (const _line of s.split('\n')) {
     ln++
-    const [line] = _line.split('#').map(s => s.trim())
+    const [preComment] = _line.split('#').map(s => s.trim())
+    const line = String(preComment)
     const sepIndex = line.indexOf(':')
     // may not exist for comments
     if (sepIndex === -1)
@@ -151,15 +152,17 @@ function matches(pattern: string, path: string): boolean {
     }
 
     if (pattern[p] === '*') {
+      // @ts-expect-error untyped
       numMatchingLengths = pathLength - matchingLengths[0] + 1
       for (let i = 1; i < numMatchingLengths; i++) {
+        // @ts-expect-error untyped
         matchingLengths[i] = matchingLengths[i - 1] + 1
       }
     }
     else {
       let numMatches = 0
       for (let i = 0; i < numMatchingLengths; i++) {
-        const matchLength = matchingLengths[i]
+        const matchLength = matchingLengths[i] as number
         if (matchLength < pathLength && path[matchLength] === pattern[p]) {
           matchingLengths[numMatches++] = matchLength + 1
         }
@@ -182,7 +185,7 @@ export function matchPathToRule(path: string, _rules: Required<RobotsGroupResolv
   let i = 0
   while (i < rulesLength) {
     const rule = rules[i]
-    if (!matches(rule.pattern, path)) {
+    if (!rule || !matches(rule.pattern, path)) {
       i++
       continue
     }
