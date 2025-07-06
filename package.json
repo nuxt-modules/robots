@@ -51,10 +51,11 @@
     "client:dev": "nuxi dev client --port 3300",
     "build": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && npm run client:build",
     "dev": "nuxi dev .playground",
+    "prepare:fixtures": "nuxi prepare test/fixtures/basic && nuxi prepare test/fixtures/i18n && nuxi prepare test/fixtures/content-v3",
     "dev:build": "nuxi build .playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && nuxi prepare .playground",
     "release": "pnpm build && bumpp && pnpm -r publish",
-    "test": "vitest",
+    "test": "prepare:fixtures && vitest",
     "typecheck": "tsc --noEmit",
     "test:attw": "attw --pack"
   },
