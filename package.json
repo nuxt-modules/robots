@@ -89,7 +89,7 @@
     "@unocss/nuxt": "^66.3.3",
     "@unocss/preset-icons": "^66.3.3",
     "@unocss/preset-uno": "^66.3.3",
-    "@unocss/runtime": "^66.3.2",
+    "@unocss/runtime": "^66.3.3",
     "@vueuse/nuxt": "^13.5.0",
     "better-sqlite3": "^12.2.0",
     "bumpp": "^10.2.0",
