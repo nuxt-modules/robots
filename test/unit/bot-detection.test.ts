@@ -316,11 +316,11 @@ describe('useBotDetection integration tests', () => {
       expect(duration).toBeLessThan(10)
 
       // Verify results
-      expect(results[0].isBot).toBe(true) // Googlebot
-      expect(results[1].isBot).toBe(true) // Bingbot
-      expect(results[2].isBot).toBe(false) // Human
-      expect(results[3].isBot).toBe(true) // AhrefsBot
-      expect(results[4].isBot).toBe(true) // Facebook
+      expect(results[0]?.isBot).toBe(true) // Googlebot
+      expect(results[1]?.isBot).toBe(true) // Bingbot
+      expect(results[2]?.isBot).toBe(false) // Human
+      expect(results[3]?.isBot).toBe(true) // AhrefsBot
+      expect(results[4]?.isBot).toBe(true) // Facebook
     })
   })
 })

@@ -554,10 +554,11 @@ export {}
 
     // only prerender for `nuxi generate`
     const isFirebase = nitroPreset === 'firebase'
-    if ((isNuxtGenerate() || (isFirebase && nuxt.options._build)) && config.robotsTxt) {
-      nuxt.options.generate = nuxt.options.generate || {}
-      nuxt.options.generate.routes = asArray(nuxt.options.generate.routes || [])
-      nuxt.options.generate.routes.push('/robots.txt')
+    // @ts-expected-error nuxt 3
+    if ((isNuxtGenerate() || isFirebase) && config.robotsTxt) {
+      nuxt.options.nitro.prerender = nuxt.options.nitro.prerender || {}
+      nuxt.options.nitro.prerender.routes = nuxt.options.nitro.prerender.routes || []
+      nuxt.options.nitro.prerender.routes.push('/robots.txt')
       if (isFirebase)
         logger.info('Firebase does not support dynamic robots.txt files. Prerendering /robots.txt.')
     }

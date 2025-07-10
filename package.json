@@ -2,7 +2,7 @@
   "name": "@nuxtjs/robots",
   "type": "module",
   "version": "5.3.0",
-  "packageManager": "pnpm@10.12.4",
+  "packageManager": "pnpm@10.13.1",
   "description": "Tame the robots crawling and indexing your Nuxt site with ease.",
   "author": {
     "name": "Harlan Wilton",
@@ -51,10 +51,11 @@
     "client:dev": "nuxi dev client --port 3300",
     "build": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && npm run client:build",
     "dev": "nuxi dev .playground",
+    "prepare:fixtures": "nuxi prepare test/fixtures/basic && nuxi prepare test/fixtures/i18n && nuxi prepare test/fixtures/content-v3",
     "dev:build": "nuxi build .playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && nuxi prepare .playground",
     "release": "pnpm build && bumpp && pnpm -r publish",
-    "test": "vitest",
+    "test": "pnpm run prepare:fixtures && vitest",
     "typecheck": "tsc --noEmit",
     "test:attw": "attw --pack"
   },
@@ -85,10 +86,10 @@
     "@nuxtjs/color-mode": "^3.5.2",
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
     "@nuxtjs/i18n": "^9.5.6",
-    "@unocss/nuxt": "^66.3.2",
-    "@unocss/preset-icons": "^66.3.2",
-    "@unocss/preset-uno": "^66.3.2",
-    "@unocss/runtime": "^66.3.2",
+    "@unocss/nuxt": "^66.3.3",
+    "@unocss/preset-icons": "^66.3.3",
+    "@unocss/preset-uno": "^66.3.3",
+    "@unocss/runtime": "^66.3.3",
     "@vueuse/nuxt": "^13.5.0",
     "better-sqlite3": "^12.2.0",
     "bumpp": "^10.2.0",
@@ -99,7 +100,7 @@
     "nuxt": "^3.17.6",
     "playwright-core": "^1.53.2",
     "typescript": "^5.8.3",
-    "unocss": "^66.3.2",
+    "unocss": "^66.3.3",
     "vitest": "^3.2.4",
     "vue": "^3.5.17",
     "vue-router": "^4.5.1"
@@ -113,6 +114,14 @@
       "protobufjs",
       "unrs-resolver",
       "vue-demi"
-    ]
+    ],
+    "patchedDependencies": {
+      "@nuxtjs/mdc": "patches/@nuxtjs__mdc.patch"
+    }
+  },
+  "resolutions": {
+    "@nuxt/kit": "npm:@nuxt/kit-nightly@4.0.0-29199395.45d26c48",
+    "@nuxt/schema": "npm:@nuxt/schema-nightly@4.0.0-29199395.45d26c48",
+    "nuxt": "npm:nuxt-nightly@4.0.0-29199395.45d26c48"
   }
 }

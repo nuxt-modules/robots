@@ -17,7 +17,7 @@ describe('bot detection', () => {
       headers: {
         'user-agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)',
       },
-    })
+    }) as any
 
     expect(botResult.isBot).toBe(true)
     expect(botResult.botName).toBe('googlebot')
@@ -29,7 +29,7 @@ describe('bot detection', () => {
       headers: {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
       },
-    })
+    }) as any
 
     expect(humanResult.isBot).toBe(false)
     expect(humanResult.botName).toBeUndefined()
@@ -53,7 +53,7 @@ describe('bot detection', () => {
 
   it('compares browser fingerprinting vs server-side detection', async () => {
     // Server-side detection (should not detect browser as bot)
-    const serverResult = await $fetch('/api/bot-detection')
+    const serverResult = await $fetch('/api/bot-detection') as any
     expect(serverResult.isBot).toBe(false)
 
     // Client-side fingerprinting (should detect automation)

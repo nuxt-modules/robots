@@ -1,0 +1,13 @@
+diff --git a/dist/module.mjs b/dist/module.mjs
+index e028b1a7fba50c413a0e5e40fd545d998917620a..a74d8a45a98dced151f1fc141f24c16746e0ab25 100644
+--- a/dist/module.mjs
++++ b/dist/module.mjs
+@@ -350,7 +350,7 @@ const module = defineNuxtModule({
+       filename: "mdc-image-component.mjs",
+       write: true,
+       getContents: ({ app }) => {
+-        const image = app.components.find((c) => c.pascalName === "NuxtImg" && !c.filePath.includes("nuxt/dist/app"));
++        const image = app.components.find((c) => c.pascalName === "NuxtImg" && !c.filePath.includes("nuxt/dist/app") && !c.filePath.includes("nuxt-nightly/dist/app"));
+         return image ? `export { default } from "${image.filePath}"` : 'export default "img"';
+       }
+     });
