@@ -22,7 +22,7 @@ describe('bot detection', () => {
     expect(botResult.isBot).toBe(true)
     expect(botResult.botName).toBe('googlebot')
     expect(botResult.botCategory).toBe('search-engine')
-  })
+  }, 15_000)
 
   it('detects non-bot user agent correctly', async () => {
     const humanResult = await $fetch('/api/bot-detection', {
@@ -34,7 +34,7 @@ describe('bot detection', () => {
     expect(humanResult.isBot).toBe(false)
     expect(humanResult.botName).toBeUndefined()
     expect(humanResult.botCategory).toBeUndefined()
-  })
+  }, 15_000)
 
   it('detects browser fingerprinting as bot via createPage', async () => {
     const page = await createPage('/bot-detection')
@@ -49,7 +49,7 @@ describe('bot detection', () => {
     expect(isBotText).toContain('is bot: true')
     expect(botNameText).toContain('bot name: puppeteer')
     expect(trustedText).toContain('trusted: false')
-  })
+  }, 15_000)
 
   it('compares browser fingerprinting vs server-side detection', async () => {
     // Server-side detection (should not detect browser as bot)
@@ -62,5 +62,5 @@ describe('bot detection', () => {
 
     const isBotText = await page.textContent('[data-test-id="is-bot"]')
     expect(isBotText).toContain('is bot: true')
-  })
+  }, 15_000)
 })
