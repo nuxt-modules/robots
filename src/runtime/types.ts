@@ -4,6 +4,43 @@ import type { BotCategory, BotName } from '../const-bots'
 
 export type Arrayable<T> = T | T[]
 
+/**
+ * Robot directive presets with their corresponding values
+ */
+export interface RobotDirectives {
+  /** Allows indexing and following links with maximum preview settings */
+  'enabled': boolean
+  /** Prevents indexing and following links */
+  'disabled': boolean
+  /** Allows search engines to index the page */
+  'index': boolean
+  /** Prevents search engines from indexing the page */
+  'noindex': boolean
+  /** Allows search engines to follow links on the page */
+  'follow': boolean
+  /** Prevents search engines from following links on the page */
+  'nofollow': boolean
+  /** Prevents all indexing and following (equivalent to noindex, nofollow) */
+  'none': boolean
+  /** Allows all indexing and following (equivalent to index, follow) */
+  'all': boolean
+  /** Non-standard: Requests AI crawlers not to use content for training */
+  'noai': boolean
+  /** Non-standard: Requests AI crawlers not to use images for training */
+  'noimageai': boolean
+  /** Controls the size of image previews in search results */
+  'max-image-preview': 'none' | 'standard' | 'large'
+  /** Controls the maximum text snippet length in search results (-1 for no limit) */
+  'max-snippet': number
+  /** Controls the maximum video preview length in seconds (-1 for no limit) */
+  'max-video-preview': number
+}
+
+/**
+ * Base type for robot directive values
+ */
+export type RobotsValue = boolean | string | Partial<RobotDirectives>
+
 export interface ParsedRobotsTxt {
   groups: RobotsGroupResolved[]
   sitemaps: string[]
