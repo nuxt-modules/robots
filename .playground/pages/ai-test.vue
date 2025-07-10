@@ -1,4 +1,6 @@
-<script setup>
+<script setup lang="ts">
+import { useRobotsRule } from '#robots/app/composables/useRobotsRule'
+
 const robotRule = useRobotsRule()
 
 function blockAI() {

@@ -6,37 +6,37 @@ const { resolve } = createResolver(import.meta.url)
 
 process.env.NODE_ENV = 'production'
 
-await setup({
-  rootDir: resolve('../../.playground'),
-  build: true,
-  server: true,
-  nuxtConfig: {
-    robots: {
-      groups: [
-        {
-          userAgent: [
-            'Googlebot',
-          ],
-          disallow: [
-            '/test/',
-            '/test3',
-          ],
-        },
-        {
-          userAgent: [
-            'Bingbot',
-            'Yandex',
-          ],
-          disallow: [
-            '/test2/',
-          ],
-        },
-      ],
+describe('stack', async () => {
+  await setup({
+    rootDir: resolve('../../.playground'),
+    build: true,
+    server: true,
+    nuxtConfig: {
+      robots: {
+        groups: [
+          {
+            userAgent: [
+              'Googlebot',
+            ],
+            disallow: [
+              '/test/',
+              '/test3',
+            ],
+          },
+          {
+            userAgent: [
+              'Bingbot',
+              'Yandex',
+            ],
+            disallow: [
+              '/test2/',
+            ],
+          },
+        ],
+      },
     },
-  },
-})
+  })
 
-describe('stack', () => {
   it('basic', async () => {
     expect(await $fetch('/robots.txt')).toMatchInlineSnapshot(`
       "# START nuxt-robots (indexable)
