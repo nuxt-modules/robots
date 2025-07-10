@@ -1,2 +1,3 @@
 imports.autoImport=false
 typescript.includeWorkspace=true
+modules[]=@nuxtjs/robots

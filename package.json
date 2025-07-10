@@ -89,7 +89,7 @@
     "@unocss/nuxt": "^66.3.3",
     "@unocss/preset-icons": "^66.3.3",
     "@unocss/preset-uno": "^66.3.3",
-    "@unocss/runtime": "^66.3.2",
+    "@unocss/runtime": "^66.3.3",
     "@vueuse/nuxt": "^13.5.0",
     "better-sqlite3": "^12.2.0",
     "bumpp": "^10.2.0",
@@ -114,14 +114,14 @@
       "protobufjs",
       "unrs-resolver",
       "vue-demi"
-    ]
+    ],
+    "patchedDependencies": {
+      "@nuxtjs/mdc": "patches/@nuxtjs__mdc.patch"
+    }
   },
   "resolutions": {
     "@nuxt/kit": "npm:@nuxt/kit-nightly@4.0.0-29199395.45d26c48",
     "@nuxt/schema": "npm:@nuxt/schema-nightly@4.0.0-29199395.45d26c48",
     "nuxt": "npm:nuxt-nightly@4.0.0-29199395.45d26c48"
-  },
-  "patchedDependencies": {
-    "@nuxtjs/mdc": "patches/@nuxtjs__mdc.patch"
   }
 }
