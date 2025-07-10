@@ -1,9 +1,7 @@
 ---
-title: Nuxt Hooks
+title: "Hook: robots:config"
 description: Learn how to use Nuxt hooks to modify the robots config.
 ---
-
-## `'robots:config'`{lang="ts"}
 
 **Type:** `(config: ResolvedModuleOptions) => void | Promise<void>`{lang="ts"}
 
