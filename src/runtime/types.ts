@@ -141,6 +141,23 @@ export interface AutoI18nConfig {
   strategy: 'prefix' | 'prefix_except_default' | 'prefix_and_default' | 'no_prefix'
 }
 
+export interface BotScoreData {
+  total: number
+  count: number
+  average: number
+}
+
+export interface DailyBotStats {
+  [date: string]: {
+    count: number
+    bots: Record<string, number>
+    scores?: Record<string, BotScoreData>
+    hourly?: number[] // 24 elements array for hourly distribution
+    paths?: Record<string, Record<string, number>> // Bot type -> path -> count
+    sources?: Record<string, number> // Detection source -> count
+  }
+}
+
 export interface RobotsContext {
   rule: string
   indexable: boolean

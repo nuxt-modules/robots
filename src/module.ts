@@ -159,12 +159,85 @@ export interface ModuleOptions {
    */
   credits: boolean
   /**
-   * Enable bot detection plugin.
-   * When disabled, no bot detection is performed.
-   *
+   * Bot detection and behavioral analysis configuration
+   * @default false (can be boolean for simple enable/disable or object for advanced config)
+   */
+  botDetection?: boolean | BotDetectionConfig
+}
+
+export interface BotDetectionConfig {
+  /**
+   * Whether bot detection is enabled
    * @default true
    */
-  botDetection?: boolean
+  enabled?: boolean
+  /**
+   * Session configuration
+   */
+  session?: {
+    /**
+     * Session encryption password (auto-generated if not provided)
+     */
+    password?: string
+    /**
+     * Session TTL in milliseconds
+     * @default 86400000 (24 hours)
+     */
+    ttl?: number
+    /**
+     * Maximum sessions per IP
+     * @default 10
+     */
+    maxSessionsPerIP?: number
+  }
+  /**
+   * Detection thresholds
+   */
+  thresholds?: {
+    /**
+     * Score threshold for definite bot classification
+     * @default 90
+     */
+    definitelyBot?: number
+    /**
+     * Score threshold for likely bot classification
+     * @default 70
+     */
+    likelyBot?: number
+    /**
+     * Score threshold for suspicious behavior
+     * @default 40
+     */
+    suspicious?: number
+  }
+  /**
+   * Custom sensitive paths to monitor
+   */
+  customSensitivePaths?: string[]
+  /**
+   * IP allowlist/blocklist configuration
+   */
+  ipFilter?: {
+    /**
+     * Trusted IP addresses (always allowed)
+     * @default ['127.0.0.1', '::1']
+     */
+    trustedIPs?: string[]
+    /**
+     * Permanently blocked IP addresses
+     * @default []
+     */
+    blockedIPs?: string[]
+  }
+  /**
+   * Whether to enable detailed debug information
+   * @default false
+   */
+  debug?: boolean
+}
+
+export interface ModuleRuntimeHooks {
+  'robots:bot-detected': () => Promise<void> | void
 }
 
 export interface ResolvedModuleOptions extends ModuleOptions {
@@ -256,6 +329,8 @@ export default defineNuxtModule<ModuleOptions>({
 
     if (config.metaTag)
       addPlugin({ mode: 'server', src: resolve('./runtime/app/plugins/robot-meta.server') })
+
+    addPlugin({ src: resolve('./runtime/app/plugins/botd') })
 
     if (config.robotsTxt && config.mergeWithRobotsTxtPath !== false) {
       let usingRobotsTxtPath = ''
@@ -493,7 +568,7 @@ export default defineNuxtModule<ModuleOptions>({
         robotsEnabledValue: config.robotsEnabledValue,
         robotsDisabledValue: config.robotsDisabledValue,
         cacheControl: config.cacheControl ?? 'max-age=14400, must-revalidate',
-        botDetection: config.botDetection ?? true,
+        botDetection: typeof config.botDetection === 'object' ? true : (config.botDetection ?? true),
       }
       nuxt.options.runtimeConfig['nuxt-robots'] = robotsRuntimeConfig as any
     })
@@ -596,6 +671,7 @@ export {}
       handler: resolve('./runtime/server/middleware/injectContext'),
     })
     addServerPlugin(resolve('./runtime/server/plugins/initContext'))
+    addServerPlugin(resolve('./runtime/server/plugins/botDetection'))
 
     if (isNuxtContentV2) {
       addServerHandler({
@@ -604,6 +680,18 @@ export {}
       })
     }
 
+    addServerHandler({
+      route: '/__robots__/beacon',
+      handler: resolve('./runtime/server/routes/__robots__/beacon'),
+    })
+    addServerHandler({
+      route: '/__robots__/flag',
+      handler: resolve('./runtime/server/routes/__robots__/flag'),
+    })
+    addServerHandler({
+      route: '/__robots__/debug-bot-detection',
+      handler: resolve('./runtime/server/routes/__robots__/debug-bot-detection'),
+    })
     if (config.debug || nuxt.options.dev) {
       addServerHandler({
         route: '/__robots__/debug.json',
