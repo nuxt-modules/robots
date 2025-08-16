@@ -55,6 +55,7 @@ export interface GoogleInput {
   disallow?: Arrayable<string>
   allow?: Arrayable<string>
   userAgent?: Arrayable<string>
+  contentUsage?: Arrayable<string>
   // nuxt-simple-robots internals
   _skipI18n?: boolean
 }
@@ -71,6 +72,8 @@ export interface RobotsGroupResolved {
   host?: string
   // yandex only
   cleanParam?: string[]
+  // content signals / AI preferences
+  contentUsage?: string[]
   // nuxt-simple-robots internals
   _skipI18n?: boolean
   // runtime optimization

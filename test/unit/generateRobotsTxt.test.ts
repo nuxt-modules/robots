@@ -43,4 +43,34 @@ describe('generateRobotsTxt', () => {
     const generated = generateRobotsTxt(parsed)
     expect(robotsTxt.trim()).toEqual(generated.trim())
   })
+
+  it('content-usage generation', () => {
+    const robotsData = {
+      groups: [
+        {
+          userAgent: ['*'],
+          allow: ['/'],
+          disallow: [],
+          comment: [],
+          contentUsage: [
+            'ai=n',
+            '/public/ train-ai=y',
+            '/restricted/ ai=n train-ai=n',
+          ],
+        },
+      ],
+      sitemaps: ['https://example.com/sitemap.xml'],
+    }
+
+    const generated = generateRobotsTxt(robotsData)
+    expect(generated).toMatchInlineSnapshot(`
+      "User-agent: *
+      Allow: /
+      Content-Usage: ai=n
+      Content-Usage: /public/ train-ai=y
+      Content-Usage: /restricted/ ai=n train-ai=n
+
+      Sitemap: https://example.com/sitemap.xml"
+    `)
+  })
 })
