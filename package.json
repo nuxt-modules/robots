@@ -61,7 +61,7 @@
   },
   "dependencies": {
     "@fingerprintjs/botd": "^1.9.1",
-    "@nuxt/kit": "^3.17.6",
+    "@nuxt/kit": "^4.0.3",
     "consola": "^3.4.2",
     "defu": "^6.1.4",
     "nuxt-site-config": "^3.2.2",
@@ -97,7 +97,7 @@
     "execa": "^9.6.0",
     "firebase-functions": "^6.3.2",
     "happy-dom": "^18.0.1",
-    "nuxt": "^3.17.6",
+    "nuxt": "^4.0.3",
     "playwright-core": "^1.53.2",
     "typescript": "^5.8.3",
     "unocss": "^66.3.3",
@@ -120,8 +120,8 @@
     }
   },
   "resolutions": {
-    "@nuxt/kit": "npm:@nuxt/kit-nightly@4.0.0-29199395.45d26c48",
+    "@nuxt/kit": "^4.0.3",
     "@nuxt/schema": "npm:@nuxt/schema-nightly@4.0.0-29199395.45d26c48",
-    "nuxt": "npm:nuxt-nightly@4.0.0-29199395.45d26c48"
+    "nuxt": "^4.0.3"
   }
 }
