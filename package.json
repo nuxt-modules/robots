@@ -120,8 +120,8 @@
     }
   },
   "resolutions": {
-    "@nuxt/kit": "npm:@nuxt/kit-nightly@4.0.0-29199395.45d26c48",
-    "@nuxt/schema": "npm:@nuxt/schema-nightly@4.0.0-29199395.45d26c48",
-    "nuxt": "npm:nuxt-nightly@4.0.0-29199395.45d26c48"
+    "@nuxt/kit": "npm:@nuxt/kit-nightly@4.0.0-29210101.a4500793",
+    "@nuxt/schema": "npm:@nuxt/schema-nightly@4.0.0-29210101.a4500793",
+    "nuxt": "npm:nuxt-nightly@4.0.0-29210101.a4500793"
   }
 }
