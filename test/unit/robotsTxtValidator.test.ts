@@ -48,4 +48,33 @@ describe('robotsTxtValidator', () => {
       ]
     `)
   })
+
+  it('content-usage validation', () => {
+    const { errors } = validateRobots({
+      errors: [],
+      sitemaps: [],
+      groups: [
+        {
+          allow: ['/'],
+          comment: [],
+          disallow: [],
+          userAgent: ['*'],
+          contentUsage: [
+            'ai=n',
+            '/public/ train-ai=y',
+            'invalid-preference',
+            'invalid-path ai=n',
+            '',
+          ],
+        },
+      ],
+    })
+    expect(errors).toMatchInlineSnapshot(`
+      [
+        "Content-Usage rule "invalid-preference" must contain a preference assignment (e.g., "ai=n").",
+        "Content-Usage path "invalid-path" must start with a \`/\`.",
+        "Content-Usage rule cannot be empty.",
+      ]
+    `)
+  })
 })

@@ -45,6 +45,7 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
     disallow: [],
     allow: [],
     userAgent: [],
+    contentUsage: [],
   }
   let ln = -1
   // read the contents
@@ -73,6 +74,7 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
             disallow: [],
             allow: [],
             userAgent: [],
+            contentUsage: [],
           }
           createNewGroup = false
         }
@@ -107,6 +109,10 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
           errors.push(`L${ln}: Clean-param directive is only when targeting Yandex user agent.`)
         }
         break
+      case 'content-usage':
+        currentGroup.contentUsage = currentGroup.contentUsage || []
+        currentGroup.contentUsage.push(val)
+        break
       default:
         errors.push(`L${ln}: Unknown directive ${rule} `)
         break
@@ -137,6 +143,39 @@ function validateGroupRules(group: ParsedRobotsTxt['groups'][number], errors: st
       return true
     })
   })
+
+  // Validate Content-Usage directives
+  if (group.contentUsage) {
+    group.contentUsage.forEach((rule) => {
+      if (rule === '') {
+        errors.push(`Content-Usage rule cannot be empty.`)
+        return
+      }
+
+      // Basic validation for Content-Usage format
+      // Format can be: "preference" or "/path preference"
+      const parts = rule.trim().split(/\s+/)
+
+      if (parts.length === 1) {
+        // Global preference like "ai=n" or "train-ai=n"
+        if (!parts[0]?.includes('=')) {
+          errors.push(`Content-Usage rule "${rule}" must contain a preference assignment (e.g., "ai=n").`)
+        }
+      }
+      else if (parts.length >= 2) {
+        // Path-specific preference like "/path ai=n"
+        const path = parts[0]
+        const preference = parts.slice(1).join(' ')
+
+        if (!path?.startsWith('/')) {
+          errors.push(`Content-Usage path "${path}" must start with a \`/\`.`)
+        }
+        if (!preference.includes('=')) {
+          errors.push(`Content-Usage preference "${preference}" must contain an assignment (e.g., "ai=n").`)
+        }
+      }
+    })
+  }
 }
 
 function matches(pattern: string, path: string): boolean {
@@ -226,11 +265,13 @@ export function asArray(v: any) {
 export function normalizeGroup(group: RobotsGroupInput): RobotsGroupResolved {
   const disallow = asArray(group.disallow) // we can have empty disallow
   const allow = asArray(group.allow).filter(rule => Boolean(rule))
+  const contentUsage = asArray(group.contentUsage).filter(rule => Boolean(rule))
   return <RobotsGroupResolved> {
     ...group,
     userAgent: group.userAgent ? asArray(group.userAgent) : ['*'],
     disallow,
     allow,
+    contentUsage,
     _indexable: !disallow.includes((rule: string) => rule === '/'),
     _rules: [
       ...disallow.filter(Boolean).map(r => ({ pattern: r, allow: false })),
@@ -261,6 +302,10 @@ export function generateRobotsTxt({ groups, sitemaps }: { groups: RobotsGroupRes
     // yandex only (see https://yandex.com/support/webmaster/robot-workings/clean-param.html)
     for (const cleanParam of group.cleanParam || [])
       lines.push(`Clean-param: ${cleanParam}`)
+
+    // content signals / AI preferences (see https://datatracker.ietf.org/doc/draft-ietf-aipref-attach/)
+    for (const contentUsage of group.contentUsage || [])
+      lines.push(`Content-Usage: ${contentUsage}`)
 
     lines.push('') // seperator
   }

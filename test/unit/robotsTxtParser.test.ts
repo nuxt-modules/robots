@@ -13,6 +13,7 @@ describe('robotsTxtParser', () => {
           {
             "allow": [],
             "comment": [],
+            "contentUsage": [],
             "disallow": [
               "/wp-json/",
               "/?s=*",
@@ -27,6 +28,7 @@ describe('robotsTxtParser', () => {
           {
             "allow": [],
             "comment": [],
+            "contentUsage": [],
             "disallow": [
               "/",
             ],
@@ -66,6 +68,7 @@ describe('robotsTxtParser', () => {
               "/api/ui-extensions/",
             ],
             "comment": [],
+            "contentUsage": [],
             "disallow": [
               "/config",
               "/search",
@@ -104,6 +107,7 @@ describe('robotsTxtParser', () => {
               "/api/ui-extensions/",
             ],
             "comment": [],
+            "contentUsage": [],
             "disallow": [
               "/config",
               "/search",
@@ -142,6 +146,7 @@ describe('robotsTxtParser', () => {
               "/api/ui-extensions/",
             ],
             "comment": [],
+            "contentUsage": [],
             "disallow": [
               "/config",
               "/search",
@@ -180,6 +185,7 @@ describe('robotsTxtParser', () => {
               "/api/ui-extensions/",
             ],
             "comment": [],
+            "contentUsage": [],
             "disallow": [
               "/config",
               "/search",
@@ -231,6 +237,7 @@ describe('robotsTxtParser', () => {
           {
             "allow": [],
             "comment": [],
+            "contentUsage": [],
             "disallow": [
               "",
             ],
@@ -257,6 +264,7 @@ describe('robotsTxtParser', () => {
           {
             "allow": [],
             "comment": [],
+            "contentUsage": [],
             "disallow": [
               "/cdn-cgi/challenge-platform/",
             ],
@@ -271,6 +279,7 @@ describe('robotsTxtParser', () => {
               "s /forum/showthread.php",
             ],
             "comment": [],
+            "contentUsage": [],
             "disallow": [
               "",
             ],
@@ -298,6 +307,7 @@ describe('robotsTxtParser', () => {
               "/bar",
             ],
             "comment": [],
+            "contentUsage": [],
             "disallow": [
               "/foo",
             ],
@@ -310,6 +320,7 @@ describe('robotsTxtParser', () => {
               "/boo",
             ],
             "comment": [],
+            "contentUsage": [],
             "disallow": [
               "/baz",
             ],
@@ -320,6 +331,7 @@ describe('robotsTxtParser', () => {
           {
             "allow": [],
             "comment": [],
+            "contentUsage": [],
             "disallow": [
               "/invalid",
             ],
@@ -330,6 +342,7 @@ describe('robotsTxtParser', () => {
           {
             "allow": [],
             "comment": [],
+            "contentUsage": [],
             "disallow": [
               "/star",
             ],
@@ -367,6 +380,7 @@ Unknown: /bar
               "/",
             ],
             "comment": [],
+            "contentUsage": [],
             "disallow": [],
             "userAgent": [
               "*",
@@ -376,5 +390,48 @@ Unknown: /bar
         "sitemaps": [],
       }
     `)
+  })
+
+  it('content-usage directive parsing', () => {
+    const robotsTxt = `
+User-Agent: *
+Allow: /
+Content-Usage: ai=n
+Content-Usage: /public/ train-ai=y
+Content-Usage: /restricted/ ai=n train-ai=n
+    `
+    expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
+      {
+        "errors": [],
+        "groups": [
+          {
+            "allow": [
+              "/",
+            ],
+            "comment": [],
+            "contentUsage": [
+              "ai=n",
+              "/public/ train-ai=y",
+              "/restricted/ ai=n train-ai=n",
+            ],
+            "disallow": [],
+            "userAgent": [
+              "*",
+            ],
+          },
+        ],
+        "sitemaps": [],
+      }
+    `)
+  })
+
+  it('content-usage validation errors', () => {
+    const robotsTxt = `
+User-Agent: *
+Content-Usage: invalid-preference
+Content-Usage: invalid-path ai=n
+Content-Usage: 
+    `
+    expect(parseRobotsTxt(robotsTxt).errors).toEqual([])
   })
 })
