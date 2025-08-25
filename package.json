@@ -105,6 +105,9 @@
     "vue": "^3.5.18",
     "vue-router": "^4.5.1"
   },
+  "resolutions": {
+    "@nuxtjs/robots": "workspace:*"
+  },
   "pnpm": {
     "onlyBuiltDependencies": [
       "@firebase/util",

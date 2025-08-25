@@ -1,8 +1,8 @@
 import type { BotDetectionResult } from '@fingerprintjs/botd'
-import type { BotDetectionContext } from '../../../util'
+import type { BotDetectionContext } from '@nuxtjs/robots/util'
+import { mapBotKindToCategory } from '@nuxtjs/robots/util'
 import { useStorage } from '@vueuse/core'
 import { ref } from 'vue'
-import { mapBotKindToCategory } from '../../../const-bots'
 
 // Persistent storage for client-side fingerprint detection results only
 const botDetectionStorage = import.meta.client
