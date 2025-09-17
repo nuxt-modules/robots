@@ -2,7 +2,7 @@
   "name": "@nuxtjs/robots",
   "type": "module",
   "version": "5.5.1",
-  "packageManager": "pnpm@10.15.0",
+  "packageManager": "pnpm@10.16.1",
   "description": "Tame the robots crawling and indexing your Nuxt site with ease.",
   "author": {
     "name": "Harlan Wilton",
@@ -61,52 +61,49 @@
   },
   "dependencies": {
     "@fingerprintjs/botd": "^1.9.1",
-    "@nuxt/kit": "^4.0.3",
+    "@nuxt/kit": "^4.1.2",
     "consola": "^3.4.2",
     "defu": "^6.1.4",
-    "nuxt-site-config": "^3.2.2",
+    "nuxt-site-config": "^3.2.5",
     "pathe": "^2.0.3",
     "pkg-types": "^2.3.0",
-    "sirv": "^3.0.1",
+    "sirv": "^3.0.2",
     "std-env": "^3.9.0",
     "ufo": "^1.6.1"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^5.2.1",
+    "@antfu/eslint-config": "^5.3.0",
     "@arethetypeswrong/cli": "^0.18.2",
     "@headlessui/vue": "^1.7.23",
     "@iconify-json/carbon": "^1.2.13",
     "@iconify-json/logos": "^1.2.9",
     "@iconify-json/ri": "^1.2.5",
     "@iconify-json/tabler": "^1.2.22",
-    "@nuxt/content": "^3.6.3",
+    "@nuxt/content": "^3.7.1",
     "@nuxt/devtools-ui-kit": "^2.6.3",
     "@nuxt/module-builder": "^1.0.2",
     "@nuxt/test-utils": "^3.19.2",
     "@nuxtjs/color-mode": "^3.5.2",
     "@nuxtjs/eslint-config-typescript": "^12.1.0",
-    "@nuxtjs/i18n": "^10.0.6",
-    "@unocss/nuxt": "^66.4.2",
-    "@unocss/preset-icons": "^66.4.2",
-    "@unocss/preset-uno": "^66.4.2",
-    "@unocss/runtime": "^66.4.2",
-    "@vueuse/nuxt": "^13.7.0",
+    "@nuxtjs/i18n": "^10.1.0",
+    "@unocss/nuxt": "^66.5.1",
+    "@unocss/preset-icons": "^66.5.1",
+    "@unocss/preset-uno": "^66.5.1",
+    "@unocss/runtime": "^66.5.1",
+    "@vueuse/nuxt": "^13.9.0",
     "better-sqlite3": "^12.2.0",
     "bumpp": "^10.2.3",
-    "eslint": "^9.34.0",
+    "eslint": "^9.35.0",
     "execa": "^9.6.0",
     "firebase-functions": "^6.4.0",
     "happy-dom": "^18.0.1",
-    "nuxt": "^4.0.3",
+    "nuxt": "^4.1.2",
     "playwright-core": "^1.55.0",
     "typescript": "^5.9.2",
-    "unocss": "^66.4.2",
+    "unocss": "^66.5.1",
     "vitest": "^3.2.4",
-    "vue": "^3.5.20",
+    "vue": "^3.5.21",
     "vue-router": "^4.5.1"
-  },
-  "resolutions": {
-    "@nuxtjs/robots": "workspace:*"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -118,5 +115,8 @@
       "unrs-resolver",
       "vue-demi"
     ]
+  },
+  "resolutions": {
+    "@nuxtjs/robots": "workspace:*"
   }
 }
