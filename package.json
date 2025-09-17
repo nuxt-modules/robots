@@ -54,7 +54,7 @@
     "prepare:fixtures": "nuxi prepare .playground && nuxi prepare test/fixtures/basic && nuxi prepare test/fixtures/i18n && nuxi prepare test/fixtures/content-v3",
     "dev:build": "nuxi build .playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && nuxi prepare .playground",
-    "release": "pnpm build && bumpp && pnpm -r publish",
+    "release": "pnpm build && bumpp -x \"npx changelogen --output=CHANGELOG.md\"",
     "test": "pnpm run prepare:fixtures && vitest",
     "typecheck": "tsc --noEmit",
     "test:attw": "attw --pack"
