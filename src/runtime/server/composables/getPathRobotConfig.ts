@@ -88,18 +88,22 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
 
   // 3. nitro route rules
   nitroApp._robotsRuleMatcher = nitroApp._robotsRuleMatcher || createNitroRouteRuleMatcher(e)
+  let robotRouteRules = nitroApp._robotsRuleMatcher(path)
   let routeRulesPath = path
   // if we're using i18n we need to strip leading prefixes so the rule will match
-  if (runtimeConfig.public?.i18n?.locales) {
+  // note this is for < v10 i18n behavior as it now handles route rules itself
+  // TODO we may consider checking the version explicitly rather than the presence of the rules
+  if (runtimeConfig.public?.i18n?.locales && typeof robotRouteRules.robots === 'undefined') {
     const { locales } = runtimeConfig.public.i18n as {
       locales: { code: string }[]
     }
     const locale = locales.find(l => routeRulesPath.startsWith(`/${l.code}`))
     if (locale) {
       routeRulesPath = routeRulesPath.replace(`/${locale.code}`, '')
+      robotRouteRules = nitroApp._robotsRuleMatcher(routeRulesPath)
     }
   }
-  const routeRules = normaliseRobotsRouteRule(nitroApp._robotsRuleMatcher(routeRulesPath))
+  const routeRules = normaliseRobotsRouteRule(robotRouteRules)
   if (routeRules && (typeof routeRules.allow !== 'undefined' || typeof routeRules.rule !== 'undefined')) {
     return {
       indexable: routeRules.allow ?? false,
