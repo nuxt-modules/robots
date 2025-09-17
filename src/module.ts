@@ -188,6 +188,23 @@ export default defineNuxtModule<ModuleOptions>({
     },
     configKey: 'robots',
   },
+  moduleDependencies: {
+    '@nuxtjs/i18n': {
+      version: '>=8',
+      optional: true,
+    },
+    'nuxt-i18n-micro': {
+      version: '>=1',
+      optional: true,
+    },
+    'nuxt-site-config': {
+      version: '>=3',
+    },
+    '@nuxt/content': {
+      version: '>=2',
+      optional: true,
+    },
+  },
   defaults: {
     enabled: true,
     credits: true,
