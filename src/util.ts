@@ -272,7 +272,7 @@ export function normalizeGroup(group: RobotsGroupInput): RobotsGroupResolved {
     disallow,
     allow,
     contentUsage,
-    _indexable: !disallow.includes((rule: string) => rule === '/'),
+    _indexable: !disallow.includes('/'),
     _rules: [
       ...disallow.filter(Boolean).map(r => ({ pattern: r, allow: false })),
       ...allow.map(r => ({ pattern: r, allow: true })),
