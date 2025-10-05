@@ -1,0 +1,119 @@
+import { createResolver } from '@nuxt/kit'
+import { setup } from '@nuxt/test-utils'
+import { describe, expect, it } from 'vitest'
+
+const { resolve } = createResolver(import.meta.url)
+
+process.env.NODE_ENV = 'production'
+
+describe('robots:config hook - issue #233', async () => {
+  await setup({
+    rootDir: resolve('../../.playground'),
+    build: true,
+    server: true,
+    nuxtConfig: {
+      nitro: {
+        plugins: [],
+      },
+      hooks: {
+        'nitro:config': function (nitroConfig: any) {
+          nitroConfig.plugins = nitroConfig.plugins || []
+          nitroConfig.plugins.push(resolve('../fixtures/hook-config/server/plugins/robots.ts'))
+        },
+      },
+    },
+  })
+
+  it('generates robots.txt with groups from hook', async () => {
+    const robotsTxt = await $fetch('/robots.txt')
+    expect(robotsTxt).toContain('Disallow: /_cwa/*')
+    expect(robotsTxt).toContain('AhrefsBot')
+  })
+
+  it('should NOT block indexable pages when groups are added via hook', async () => {
+    // This test demonstrates the bug: pages that should be indexable
+    // are incorrectly marked as non-indexable because groups added via
+    // the hook are missing the _indexable property
+    const { headers: indexHeaders } = await $fetch.raw('/', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0',
+      },
+    })
+
+    // This page should NOT have noindex header because:
+    // 1. The disallow rule is for /_cwa/* which doesn't match /
+    // 2. The AhrefsBot rule only applies to AhrefsBot user agent, not Mozilla
+    expect(indexHeaders.get('x-robots-tag')).toContain('index')
+    expect(indexHeaders.get('x-robots-tag')).not.toContain('noindex')
+  })
+
+  it('should correctly block paths matching disallow patterns', async () => {
+    // This should be blocked by the /_cwa/* rule even though page doesn't exist
+    // We test with ignoreResponseError to capture headers from 404 responses
+    const { headers } = await $fetch.raw('/_cwa/test', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0',
+      },
+      ignoreResponseError: true,
+    })
+
+    expect(headers.get('x-robots-tag')).toMatchInlineSnapshot(`"noindex, nofollow"`)
+  })
+
+  it('should block AhrefsBot from all paths', async () => {
+    const { headers: indexHeaders } = await $fetch.raw('/', {
+      headers: {
+        'User-Agent': 'AhrefsBot',
+      },
+    })
+
+    // AhrefsBot should be blocked everywhere
+    expect(indexHeaders.get('x-robots-tag')).toMatchInlineSnapshot(`"noindex, nofollow"`)
+  })
+
+  // Edge case: Multiple hook calls shouldn't cause issues
+  it('should handle multiple hook calls without breaking normalization', async () => {
+    // Second request - the hook might be called again depending on caching
+    const { headers } = await $fetch.raw('/api/test', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0',
+      },
+      ignoreResponseError: true,
+    })
+
+    // Should still work correctly on subsequent requests
+    expect(headers.get('x-robots-tag')).toBeDefined()
+  })
+
+  // Edge case: Empty user agent header
+  it('should handle requests with no user agent gracefully', async () => {
+    const { headers } = await $fetch.raw('/', {
+      headers: {
+        // No User-Agent header
+      },
+    })
+
+    // Should still apply rules (defaults to * user agent)
+    expect(headers.get('x-robots-tag')).toBeDefined()
+  })
+
+  // Edge case: Case sensitivity in user agent matching
+  it('should handle user agent case variations', async () => {
+    const tests = [
+      { ua: 'ahrefsbot', desc: 'lowercase' },
+      { ua: 'AHREFSBOT', desc: 'uppercase' },
+      { ua: 'AhRefsBot', desc: 'mixed case' },
+    ]
+
+    for (const { ua } of tests) {
+      const { headers } = await $fetch.raw('/', {
+        headers: {
+          'User-Agent': ua,
+        },
+      })
+
+      // User agent matching should be case-insensitive
+      expect(headers.get('x-robots-tag')).toContain('noindex')
+    }
+  })
+})

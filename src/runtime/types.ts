@@ -79,6 +79,7 @@ export interface RobotsGroupResolved {
   // runtime optimization
   _indexable?: boolean
   _rules?: { pattern: string, allow: boolean }[]
+  _normalized?: boolean
 }
 
 export interface HookRobotsTxtContext {

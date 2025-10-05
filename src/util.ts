@@ -262,7 +262,18 @@ export function asArray(v: any) {
   return typeof v === 'undefined' ? [] : (Array.isArray(v) ? v : [v])
 }
 
-export function normalizeGroup(group: RobotsGroupInput): RobotsGroupResolved {
+export function normalizeGroup(group: RobotsGroupInput | RobotsGroupResolved): RobotsGroupResolved {
+  // quick renormalization check
+  if ((group as RobotsGroupResolved)._normalized) {
+    const resolvedGroup = group as RobotsGroupResolved
+    const disallow = asArray(resolvedGroup.disallow) // we can have empty disallow
+    resolvedGroup._indexable = !disallow.includes('/')
+    resolvedGroup._rules = [
+      ...resolvedGroup.disallow.filter(Boolean).map(r => ({ pattern: r, allow: false })),
+      ...resolvedGroup.allow.map(r => ({ pattern: r, allow: true })),
+    ]
+    return resolvedGroup
+  }
   const disallow = asArray(group.disallow) // we can have empty disallow
   const allow = asArray(group.allow).filter(rule => Boolean(rule))
   const contentUsage = asArray(group.contentUsage).filter(rule => Boolean(rule))
@@ -272,11 +283,12 @@ export function normalizeGroup(group: RobotsGroupInput): RobotsGroupResolved {
     disallow,
     allow,
     contentUsage,
-    _indexable: !disallow.includes((rule: string) => rule === '/'),
+    _indexable: !disallow.includes('/'),
     _rules: [
       ...disallow.filter(Boolean).map(r => ({ pattern: r, allow: false })),
       ...allow.map(r => ({ pattern: r, allow: true })),
     ],
+    _normalized: true,
   }
 }
 

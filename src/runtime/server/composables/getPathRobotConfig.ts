@@ -48,13 +48,13 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
     ...nitroApp._robots.ctx.groups.filter(g => g.userAgent.includes('*')),
   ]
   for (const group of groups) {
-    if (!group._indexable) {
+    if (group._indexable === false) {
       return {
         indexable: false,
         rule: robotsDisabledValue,
         debug: {
           source: '/robots.txt',
-          line: `Disallow: /`,
+          line: JSON.stringify(group),
         },
       }
     }
