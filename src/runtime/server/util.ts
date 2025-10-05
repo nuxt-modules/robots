@@ -14,6 +14,7 @@ export async function resolveRobotsTxtContext(e: H3Event | undefined, nitro: Nit
     ...JSON.parse(JSON.stringify({ groups, sitemaps })),
   }
   await nitro.hooks.callHook('robots:config', generateRobotsTxtCtx)
+  generateRobotsTxtCtx.groups = generateRobotsTxtCtx.groups.map(normalizeGroup)
   nitro._robots.ctx = generateRobotsTxtCtx
   return generateRobotsTxtCtx
 }
