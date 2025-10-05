@@ -39,6 +39,9 @@ describe('hook system (robots:robots-txt:input)', async () => {
   })
 
   it('should NOT block indexable pages when groups are added via hook', async () => {
+    // This test demonstrates the bug: pages that should be indexable
+    // are incorrectly marked as non-indexable because groups added via
+    // the hook are missing the _indexable property
     const { headers: indexHeaders } = await $fetch.raw('/', {
       headers: {
         'User-Agent': 'Mozilla/5.0',
