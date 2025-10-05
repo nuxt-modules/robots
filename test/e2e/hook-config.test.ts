@@ -40,18 +40,9 @@ describe('robots:config hook - issue #233', async () => {
       },
     })
 
-    // BUG: This page should NOT have noindex header because:
+    // This page should NOT have noindex header because:
     // 1. The disallow rule is for /_cwa/* which doesn't match /
     // 2. The AhrefsBot rule only applies to AhrefsBot user agent, not Mozilla
-    // However, because the groups added via hook lack _indexable property,
-    // getPathRobotConfig() incorrectly treats them as non-indexable at line 51
-
-    // BUG DEMONSTRATION: Currently this page is marked as non-indexable
-    // The actual value is "noindex, nofollow" which is WRONG
-    // It should contain "index" because:
-    //   - The * user-agent group has disallow: /_cwa/* which doesn't match /
-    //   - The AhrefsBot group doesn't apply to Mozilla user agent
-    // This test will FAIL until the bug is fixed
     expect(indexHeaders.get('x-robots-tag')).toContain('index')
     expect(indexHeaders.get('x-robots-tag')).not.toContain('noindex')
   })

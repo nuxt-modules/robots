@@ -1,7 +1,7 @@
 import type { H3Event } from 'h3'
 import type { ParsedRobotsTxt } from '../../types'
+import { getSiteConfig } from '#site-config/server/composables'
 import { getSiteIndexable } from '#site-config/server/composables/getSiteIndexable'
-import { useSiteConfig } from '#site-config/server/composables/useSiteConfig'
 import { getQuery } from 'h3'
 import { useRuntimeConfigNuxtRobots } from './useRuntimeConfigNuxtRobots'
 
@@ -14,7 +14,7 @@ export function getSiteRobotConfig(e: H3Event): { indexable: boolean, hints: str
   // allow previewing with ?mockProductionEnv
   const queryIndexableEnabled = String(query.mockProductionEnv) === 'true' || query.mockProductionEnv === ''
   if ((debug || import.meta.dev)) {
-    const { _context } = useSiteConfig(e, { debug: debug || import.meta.dev })
+    const { _context } = getSiteConfig(e, { debug: debug || import.meta.dev })
     if (queryIndexableEnabled) {
       indexable = true
       hints.push('You are mocking a production enviroment with ?mockProductionEnv query.')

@@ -8,9 +8,6 @@ describe('normalizeGroup', () => {
       disallow: ['/'],
     })
 
-    // BUG: This test currently FAILS
-    // The bug is at src/util.ts:275 which uses .includes() instead of .some()
-    // .includes() with a callback always returns false, so _indexable is always true
     expect(group._indexable).toBe(false)
   })
 
@@ -38,7 +35,6 @@ describe('normalizeGroup', () => {
       disallow: ['/', '/other'],
     })
 
-    // BUG: This test currently FAILS due to the .includes() bug
     expect(group._indexable).toBe(false)
   })
 
@@ -77,6 +73,7 @@ describe('normalizeGroup', () => {
     const group = normalizeGroup({
       userAgent: ['*'],
       disallow: ['/admin'],
+      // @ts-expect-error untyped
       allow: ['', '/allowed', null, undefined],
     })
 
@@ -117,6 +114,7 @@ describe('normalizeGroup', () => {
   // Edge case: empty disallow values mixed in
   it('should filter out empty disallow rules from _rules but keep them for _indexable check', () => {
     const group = normalizeGroup({
+      // @ts-expect-error untyped
       disallow: ['', '/admin', null, undefined, '/'],
     })
 
@@ -155,6 +153,7 @@ describe('normalizeGroup', () => {
       contentUsage: 'noai',
     })
     const group2 = normalizeGroup({
+      // @ts-expect-error untyped
       contentUsage: ['noai', 'noimageai', '', null, undefined],
     })
 
