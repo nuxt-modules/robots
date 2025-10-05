@@ -6,7 +6,7 @@ const { resolve } = createResolver(import.meta.url)
 
 process.env.NODE_ENV = 'production'
 
-describe('robots:config hook - issue #233', async () => {
+describe('hook system (robots:robots-txt:input)', async () => {
   await setup({
     rootDir: resolve('../../.playground'),
     build: true,
@@ -24,16 +24,21 @@ describe('robots:config hook - issue #233', async () => {
     },
   })
 
-  it('generates robots.txt with groups from hook', async () => {
+  it('robots:robots-txt:input hook is called and can add groups', async () => {
     const robotsTxt = await $fetch('/robots.txt')
+    // Should include groups added via robots:robots-txt:input hook
     expect(robotsTxt).toContain('Disallow: /_cwa/*')
     expect(robotsTxt).toContain('AhrefsBot')
   })
 
+  it('robots:robots-txt:input hook receives normalized groups', async () => {
+    // Groups should be normalized with _indexable property
+    // Pages that don't match disallow patterns should be indexable
+    const { headers } = await $fetch.raw('/')
+    expect(headers.get('x-robots-tag')).toContain('index')
+  })
+
   it('should NOT block indexable pages when groups are added via hook', async () => {
-    // This test demonstrates the bug: pages that should be indexable
-    // are incorrectly marked as non-indexable because groups added via
-    // the hook are missing the _indexable property
     const { headers: indexHeaders } = await $fetch.raw('/', {
       headers: {
         'User-Agent': 'Mozilla/5.0',

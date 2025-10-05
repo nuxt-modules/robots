@@ -1,20 +1,22 @@
-import type { H3Event } from 'h3'
-import type { NitroApp } from 'nitropack'
-import type { HookRobotsConfigContext } from '../types'
-import { useNitroApp } from 'nitropack/runtime'
-import { normalizeGroup } from '../../util'
-import { useRuntimeConfigNuxtRobots } from './composables/useRuntimeConfigNuxtRobots'
+import type { ParsedRobotsTxt, RobotsGroupInput } from '../types'
+import { asArray, normalizeGroup } from '../../util'
 
-export async function resolveRobotsTxtContext(e: H3Event | undefined, nitro: NitroApp = useNitroApp()) {
-  const { groups, sitemap: sitemaps } = useRuntimeConfigNuxtRobots(e)
-  // make the config writable
-  const generateRobotsTxtCtx: HookRobotsConfigContext = {
-    event: e,
-    context: e ? 'robots.txt' : 'init',
-    ...JSON.parse(JSON.stringify({ groups, sitemaps })),
+/**
+ * Pure normalization function for robots context
+ * - Groups are normalized with _indexable and _rules
+ * - Sitemaps are converted to array, deduplicated, and filtered for valid strings
+ * - Errors are converted to array and filtered for valid strings
+ *
+ * Note: URL absolutization (withSiteUrl) happens separately in robots-txt.ts since it requires H3Event
+ */
+export function normalizeRobotsContext(input: Partial<ParsedRobotsTxt>): ParsedRobotsTxt {
+  return {
+    groups: asArray(input.groups).map(g => normalizeGroup(g as RobotsGroupInput)),
+    sitemaps: [...new Set(
+      asArray(input.sitemaps)
+        .filter(s => typeof s === 'string' && s.trim().length > 0),
+    )],
+    errors: asArray(input.errors)
+      .filter(e => typeof e === 'string' && e.trim().length > 0),
   }
-  await nitro.hooks.callHook('robots:config', generateRobotsTxtCtx)
-  generateRobotsTxtCtx.groups = generateRobotsTxtCtx.groups.map(normalizeGroup)
-  nitro._robots.ctx = generateRobotsTxtCtx
-  return generateRobotsTxtCtx
 }

@@ -92,6 +92,21 @@ export interface HookRobotsConfigContext extends ParsedRobotsTxt {
   context: 'robots.txt' | 'init'
 }
 
+/**
+ * Hook context for robots:init
+ * Called once during Nitro initialization
+ */
+export interface HookRobotsInitContext extends ParsedRobotsTxt {
+}
+
+/**
+ * Hook context for robots:robots-txt:input
+ * Called on each robots.txt request
+ */
+export interface HookRobotsTxtInputContext extends ParsedRobotsTxt {
+  event: H3Event
+}
+
 // Bot Detection Types
 export interface BotDetectionContext {
   isBot: boolean
