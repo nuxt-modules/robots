@@ -12,6 +12,10 @@ export default defineNuxtConfig({
     enabled: false,
   },
 
+  robots: {
+    enabled: false,
+  },
+
   nitro: {
     output: {
       publicDir: resolve(__dirname, '../dist/client'),
