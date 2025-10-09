@@ -1,12 +1,15 @@
-import NuxteRobots from '../../../src/module'
+import { createResolver } from '@nuxt/kit'
+import NuxtRobots from '../../../src/module'
+
+const { resolve } = createResolver(import.meta.url)
 
 export default defineNuxtConfig({
-  modules: [NuxteRobots],
+  modules: [NuxtRobots],
   compatibilityDate: '2024-04-03',
   site: {
     url: 'https://example.com',
   },
   nitro: {
-    plugins: ['~/server/plugins/robots.ts'],
+    plugins: [resolve('./server/plugins/robots.ts')],
   },
 })
