@@ -6,4 +6,7 @@ export default defineNuxtConfig({
   site: {
     url: 'https://example.com',
   },
+  nitro: {
+    plugins: ['plugins/robots.ts'],
+  },
 })
