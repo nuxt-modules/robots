@@ -11,6 +11,11 @@ describe('hook system (robots:robots-txt:input)', async () => {
     rootDir: resolve('../fixtures/hook-config'),
     build: true,
     server: true,
+    nuxtConfig: {
+      nitro: {
+        plugins: ['plugins/robots.ts'],
+      },
+    },
   })
 
   it('robots:robots-txt:input hook is called and can add groups', async () => {
