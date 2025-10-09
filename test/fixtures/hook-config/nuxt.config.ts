@@ -1,0 +1,12 @@
+import NuxtRobots from '../../../src/module'
+
+export default defineNuxtConfig({
+  modules: [NuxtRobots],
+  compatibilityDate: '2024-04-03',
+  site: {
+    url: 'https://example.com',
+  },
+  nitro: {
+    plugins: ['plugins/robots.ts'],
+  },
+})

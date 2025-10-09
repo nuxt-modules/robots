@@ -1,10 +1,11 @@
 import type { NitroApp } from 'nitropack/types'
+import type { HookRobotsConfigContext, HookRobotsInitContext } from '../../types'
 import { defineNitroPlugin, getRouteRules } from 'nitropack/runtime'
 import { withoutTrailingSlash } from 'ufo'
-import { createPatternMap } from '../../../util'
+import { createPatternMap, normalizeGroup } from '../../../util'
 import { useRuntimeConfigNuxtRobots } from '../composables/useRuntimeConfigNuxtRobots'
 import { logger } from '../logger'
-import { resolveRobotsTxtContext } from '../util'
+import { normalizeRobotsContext } from '../util'
 
 const PRERENDER_NO_SSR_ROUTES = new Set(['/index.html', '/200.html', '/404.html'])
 
@@ -19,7 +20,35 @@ export default defineNitroPlugin(async (nitroApp: NitroApp) => {
   }
 
   nitroApp._robots = {} as typeof nitroApp._robots
-  await resolveRobotsTxtContext(undefined, nitroApp)
+
+  // Get and normalize base context from runtime config
+  const { groups, sitemap: sitemaps } = useRuntimeConfigNuxtRobots()
+  const baseCtx = normalizeRobotsContext({
+    groups: JSON.parse(JSON.stringify(groups)),
+    sitemaps: JSON.parse(JSON.stringify(sitemaps)),
+  })
+
+  // Call robots:init hook
+  const initCtx: HookRobotsInitContext = {
+    ...baseCtx,
+  }
+  await nitroApp.hooks.callHook('robots:init', initCtx)
+
+  // Backwards compatibility: also call deprecated robots:config hook
+  const deprecatedCtx: HookRobotsConfigContext = {
+    ...initCtx,
+    event: undefined,
+    context: 'init',
+  }
+  await nitroApp.hooks.callHook('robots:config', deprecatedCtx)
+
+  // Sync changes back and re-normalize
+  initCtx.groups = deprecatedCtx.groups.map(normalizeGroup)
+  initCtx.sitemaps = deprecatedCtx.sitemaps
+  initCtx.errors = deprecatedCtx.errors
+
+  // Store in nitro app
+  nitroApp._robots.ctx = { ...initCtx, context: 'init', event: undefined }
   const nuxtContentUrls = new Set<string>()
   if (isNuxtContentV2) {
     let urls: string[] | undefined
