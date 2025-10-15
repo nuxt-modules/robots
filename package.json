@@ -97,7 +97,7 @@
     "eslint": "^9.35.0",
     "execa": "^9.6.0",
     "firebase-functions": "^6.4.0",
-    "happy-dom": "^18.0.1",
+    "happy-dom": "^20.0.0",
     "nuxt": "^4.1.2",
     "playwright-core": "^1.55.0",
     "typescript": "^5.9.2",
