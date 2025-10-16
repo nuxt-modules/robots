@@ -430,8 +430,37 @@ Content-Usage: /restricted/ ai=n train-ai=n
 User-Agent: *
 Content-Usage: invalid-preference
 Content-Usage: invalid-path ai=n
-Content-Usage: 
+Content-Usage:
     `
     expect(parseRobotsTxt(robotsTxt).errors).toEqual([])
+  })
+
+  it('content-signal directive parsing', () => {
+    const robotsTxt = `
+User-Agent: *
+Allow: /
+Content-Signal: ai-train=no, search=yes, ai-input=yes
+    `
+    expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
+      {
+        "errors": [],
+        "groups": [
+          {
+            "allow": [
+              "/",
+            ],
+            "comment": [],
+            "contentUsage": [
+              "ai-train=no, search=yes, ai-input=yes",
+            ],
+            "disallow": [],
+            "userAgent": [
+              "*",
+            ],
+          },
+        ],
+        "sitemaps": [],
+      }
+    `)
   })
 })

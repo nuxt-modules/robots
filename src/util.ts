@@ -30,6 +30,7 @@ export { AiBots, NonHelpfulBots }
  * - disallow: a URL path that may not be crawled.
  * - sitemap: the complete URL of a sitemap.
  * - host: the host name of the site, this is optional non-standard directive.
+ * - content-usage / content-signal: AI content usage preferences (IETF spec / Cloudflare implementation).
  *
  * @see https://developers.google.com/search/docs/crawling-indexing/robots/robots_txt
  * @see https://github.com/google/robotstxt/blob/86d5836ba2d5a0b6b938ab49501be0e09d9c276c/robots.cc#L714C1-L720C2
@@ -110,6 +111,7 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
         }
         break
       case 'content-usage':
+      case 'content-signal':
         currentGroup.contentUsage = currentGroup.contentUsage || []
         currentGroup.contentUsage.push(val)
         break
@@ -315,7 +317,9 @@ export function generateRobotsTxt({ groups, sitemaps }: { groups: RobotsGroupRes
     for (const cleanParam of group.cleanParam || [])
       lines.push(`Clean-param: ${cleanParam}`)
 
-    // content signals / AI preferences (see https://datatracker.ietf.org/doc/draft-ietf-aipref-attach/)
+    // content signals / AI preferences
+    // Both Content-Usage (IETF) and Content-Signal (Cloudflare) are accepted as input, output as Content-Usage
+    // See: https://datatracker.ietf.org/doc/draft-ietf-aipref-attach/
     for (const contentUsage of group.contentUsage || [])
       lines.push(`Content-Usage: ${contentUsage}`)
 
