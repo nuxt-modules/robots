@@ -102,7 +102,7 @@
     "playwright-core": "^1.56.0",
     "typescript": "^5.9.3",
     "unocss": "^66.5.4",
-    "vitest": "^3.2.4",
+    "vitest": "^4.0.14",
     "vue": "^3.5.22",
     "vue-router": "^4.6.3"
   },
