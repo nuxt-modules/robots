@@ -91,7 +91,7 @@
     "@unocss/preset-icons": "^66.5.4",
     "@unocss/preset-uno": "^66.5.4",
     "@unocss/runtime": "^66.5.4",
-    "@vueuse/nuxt": "^13.9.0",
+    "@vueuse/nuxt": "^14.1.0",
     "better-sqlite3": "^12.4.1",
     "bumpp": "^10.3.1",
     "eslint": "^9.37.0",
