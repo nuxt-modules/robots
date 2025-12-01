@@ -60,20 +60,57 @@ describe('robotsTxtValidator', () => {
           disallow: [],
           userAgent: ['*'],
           contentUsage: [
-            'ai=n',
+            'bots=y',
             '/public/ train-ai=y',
             'invalid-preference',
-            'invalid-path ai=n',
+            'invalid-path train-ai=n',
             '',
+            'invalid-cat=y',
+            'train-ai=maybe',
           ],
         },
       ],
     })
     expect(errors).toMatchInlineSnapshot(`
       [
-        "Content-Usage rule "invalid-preference" must contain a preference assignment (e.g., "ai=n").",
+        "Content-Usage rule "invalid-preference" must contain a preference assignment (e.g., "train-ai=n").",
         "Content-Usage path "invalid-path" must start with a \`/\`.",
         "Content-Usage rule cannot be empty.",
+        "Content-Usage category "invalid-cat" is invalid. Valid categories: bots, train-ai, ai-output, search.",
+        "Content-Usage value "maybe" for "train-ai" is invalid. Valid values: y, n.",
+      ]
+    `)
+  })
+
+  it('content-signal validation', () => {
+    const { errors } = validateRobots({
+      errors: [],
+      sitemaps: [],
+      groups: [
+        {
+          allow: ['/'],
+          comment: [],
+          disallow: [],
+          userAgent: ['*'],
+          contentSignal: [
+            'ai-train=no',
+            '/public/ search=yes, ai-input=yes',
+            'invalid-preference',
+            'invalid-path ai-train=no',
+            '',
+            'invalid-cat=yes',
+            'ai-train=maybe',
+          ],
+        },
+      ],
+    })
+    expect(errors).toMatchInlineSnapshot(`
+      [
+        "Content-Signal rule "invalid-preference" must contain a preference assignment (e.g., "ai-train=no").",
+        "Content-Signal path "invalid-path" must start with a \`/\`.",
+        "Content-Signal rule cannot be empty.",
+        "Content-Signal category "invalid-cat" is invalid. Valid categories: search, ai-input, ai-train.",
+        "Content-Signal value "maybe" for "ai-train" is invalid. Valid values: yes, no.",
       ]
     `)
   })

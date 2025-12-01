@@ -53,9 +53,9 @@ describe('generateRobotsTxt', () => {
           disallow: [],
           comment: [],
           contentUsage: [
-            'ai=n',
+            'bots=y',
             '/public/ train-ai=y',
-            '/restricted/ ai=n train-ai=n',
+            '/restricted/ train-ai=n, ai-output=n',
           ],
         },
       ],
@@ -66,9 +66,73 @@ describe('generateRobotsTxt', () => {
     expect(generated).toMatchInlineSnapshot(`
       "User-agent: *
       Allow: /
-      Content-Usage: ai=n
+      Content-Usage: bots=y
       Content-Usage: /public/ train-ai=y
-      Content-Usage: /restricted/ ai=n train-ai=n
+      Content-Usage: /restricted/ train-ai=n, ai-output=n
+
+      Sitemap: https://example.com/sitemap.xml"
+    `)
+  })
+
+  it('content-signal generation', () => {
+    const robotsData = {
+      groups: [
+        {
+          userAgent: ['*'],
+          allow: ['/'],
+          disallow: [],
+          comment: [],
+          contentSignal: [
+            'ai-train=no',
+            '/public/ search=yes, ai-input=yes',
+            '/restricted/ ai-train=no, ai-input=no',
+          ],
+        },
+      ],
+      sitemaps: ['https://example.com/sitemap.xml'],
+    }
+
+    const generated = generateRobotsTxt(robotsData)
+    expect(generated).toMatchInlineSnapshot(`
+      "User-agent: *
+      Allow: /
+      Content-Signal: ai-train=no
+      Content-Signal: /public/ search=yes, ai-input=yes
+      Content-Signal: /restricted/ ai-train=no, ai-input=no
+
+      Sitemap: https://example.com/sitemap.xml"
+    `)
+  })
+
+  it('mixed content-usage and content-signal generation', () => {
+    const robotsData = {
+      groups: [
+        {
+          userAgent: ['*'],
+          allow: ['/'],
+          disallow: [],
+          comment: [],
+          contentUsage: [
+            'bots=y',
+            'train-ai=n',
+          ],
+          contentSignal: [
+            'ai-train=no',
+            'search=yes',
+          ],
+        },
+      ],
+      sitemaps: ['https://example.com/sitemap.xml'],
+    }
+
+    const generated = generateRobotsTxt(robotsData)
+    expect(generated).toMatchInlineSnapshot(`
+      "User-agent: *
+      Allow: /
+      Content-Usage: bots=y
+      Content-Usage: train-ai=n
+      Content-Signal: ai-train=no
+      Content-Signal: search=yes
 
       Sitemap: https://example.com/sitemap.xml"
     `)
