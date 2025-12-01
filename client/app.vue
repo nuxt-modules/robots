@@ -67,7 +67,8 @@ const version = computed(() => {
 })
 
 const metaTag = computed(() => {
-  return `<meta name="robots" content="${pathDebugData.value?.rule}">`
+  const content = pathDebugData.value?.rule || ''
+  return `<meta name="robots" content="${content}">`
 })
 
 const tab = useLocalStorage('nuxt-robots:tab', 'overview')

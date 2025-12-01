@@ -558,6 +558,7 @@ ${types}
 declare module 'h3' {
   interface H3EventContext {
     robots: RobotsContext
+    robotsProduction?: RobotsContext
   }
 }
 

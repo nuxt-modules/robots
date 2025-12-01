@@ -13,5 +13,12 @@ export default defineEventHandler(async (e) => {
       setHeader(e, 'X-Robots-Tag', robotConfig.rule)
     }
     e.context.robots = robotConfig
+
+    // also compute production config for devtools
+    if (import.meta.dev) {
+      const productionRobotConfig = getPathRobotConfig(e, { skipSiteIndexable: true })
+      setHeader(e, 'X-Robots-Production', productionRobotConfig.rule)
+      e.context.robotsProduction = productionRobotConfig
+    }
   }
 })
