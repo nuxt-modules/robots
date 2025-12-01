@@ -30,6 +30,7 @@ need these features.
 - 🗿 Automatic `X-Robots-Tag` header and `<meta name="robots" ...>` meta tag
 - 🕵️ [Bot detection](https://nuxtseo.com/docs/robots/guides/bot-detection) with optional fingerprinting
 - 🔒 Disables non-production environments from being indexed
+- 🤠 Control AI crawlers using the `Content-Signal` and `Content-Usage` directives
 
 ## Installation
 
