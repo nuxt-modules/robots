@@ -234,8 +234,7 @@ CONTENT-SIGNAL: ai-input=no
         comment: [],
         contentSignal: 'ai-train=no',
       }
-      // @ts-expect-error - testing runtime normalization
-      const normalized = normalizeGroup(group)
+      const normalized = normalizeGroup(group as any)
       expect(normalized.contentSignal).toEqual(['ai-train=no'])
     })
 
@@ -246,9 +245,9 @@ CONTENT-SIGNAL: ai-input=no
         disallow: [],
         comment: [],
         contentSignal: {
-          'ai-train': 'no',
-          'search': 'yes',
-          'ai-input': 'no',
+          'ai-train': 'no' as const,
+          'search': 'yes' as const,
+          'ai-input': 'no' as const,
         },
       }
       const normalized = normalizeGroup(group)
@@ -262,8 +261,8 @@ CONTENT-SIGNAL: ai-input=no
         disallow: [],
         comment: [],
         contentUsage: {
-          'bots': 'y',
-          'train-ai': 'n',
+          'bots': 'y' as const,
+          'train-ai': 'n' as const,
         },
       }
       const normalized = normalizeGroup(group)
@@ -277,7 +276,7 @@ CONTENT-SIGNAL: ai-input=no
         disallow: [],
         comment: [],
         contentSignal: {
-          'ai-train': 'no',
+          'ai-train': 'no' as const,
         },
       }
       const normalized = normalizeGroup(group)
@@ -392,19 +391,19 @@ CONTENT-SIGNAL: ai-input=no
             disallow: [],
             comment: [],
             contentUsage: {
-              'bots': 'y',
-              'train-ai': 'n',
+              'bots': 'y' as const,
+              'train-ai': 'n' as const,
             },
             contentSignal: {
-              'ai-train': 'no',
-              'search': 'yes',
+              'ai-train': 'no' as const,
+              'search': 'yes' as const,
             },
           },
         ],
         sitemaps: [],
       }
 
-      const normalized = normalizeGroup(robotsData.groups[0])
+      const normalized = normalizeGroup(robotsData.groups[0]!)
       const generated = generateRobotsTxt({ groups: [normalized], sitemaps: [] })
       expect(generated).toContain('Content-Usage: bots=y, train-ai=n')
       expect(generated).toContain('Content-Signal: ai-train=no, search=yes')
