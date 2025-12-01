@@ -56,6 +56,7 @@ export default defineNuxtConfig({
       routes: [
         '/',
       ],
+      ignore: ['/admin'],
     },
   },
 
