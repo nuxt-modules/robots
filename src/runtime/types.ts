@@ -41,6 +41,46 @@ export interface RobotDirectives {
  */
 export type RobotsValue = boolean | string | Partial<RobotDirectives>
 
+/**
+ * Content-Usage preference value (y = allow, n = disallow)
+ * @see https://datatracker.ietf.org/doc/draft-ietf-aipref-vocab/
+ */
+export type ContentUsageValue = 'y' | 'n'
+
+/**
+ * Content-Signal preference value (yes = allow, no = disallow)
+ * @see https://www.ietf.org/archive/id/draft-romm-aipref-contentsignals-00.html
+ */
+export type ContentSignalValue = 'yes' | 'no'
+
+/**
+ * Content-Usage categories (IETF aipref-vocab)
+ * @see https://ietf-wg-aipref.github.io/drafts/draft-ietf-aipref-vocab.html
+ */
+export interface ContentUsagePreferences {
+  /** Automated Processing */
+  'bots'?: ContentUsageValue
+  /** Foundation Model Production */
+  'train-ai'?: ContentUsageValue
+  /** AI Output */
+  'ai-output'?: ContentUsageValue
+  /** Search */
+  'search'?: ContentUsageValue
+}
+
+/**
+ * Content-Signal categories (IETF aipref-contentsignals)
+ * @see https://www.ietf.org/archive/id/draft-romm-aipref-contentsignals-00.html
+ */
+export interface ContentSignalPreferences {
+  /** Search */
+  'search'?: ContentSignalValue
+  /** AI Input (RAG, grounding, generative AI search) */
+  'ai-input'?: ContentSignalValue
+  /** AI Training (training or fine-tuning models) */
+  'ai-train'?: ContentSignalValue
+}
+
 export interface ParsedRobotsTxt {
   groups: RobotsGroupResolved[]
   sitemaps: string[]
@@ -55,7 +95,8 @@ export interface GoogleInput {
   disallow?: Arrayable<string>
   allow?: Arrayable<string>
   userAgent?: Arrayable<string>
-  contentUsage?: Arrayable<string>
+  contentUsage?: Arrayable<string> | Partial<ContentUsagePreferences>
+  contentSignal?: Arrayable<string> | Partial<ContentSignalPreferences>
   // nuxt-simple-robots internals
   _skipI18n?: boolean
 }
@@ -72,8 +113,10 @@ export interface RobotsGroupResolved {
   host?: string
   // yandex only
   cleanParam?: string[]
-  // content signals / AI preferences
+  // https://datatracker.ietf.org/doc/draft-ietf-aipref-attach/
   contentUsage?: string[]
+  // https://contentsignals.org/
+  contentSignal?: string[]
   // nuxt-simple-robots internals
   _skipI18n?: boolean
   // runtime optimization

@@ -13,6 +13,7 @@ describe('robotsTxtParser', () => {
           {
             "allow": [],
             "comment": [],
+            "contentSignal": [],
             "contentUsage": [],
             "disallow": [
               "/wp-json/",
@@ -28,6 +29,7 @@ describe('robotsTxtParser', () => {
           {
             "allow": [],
             "comment": [],
+            "contentSignal": [],
             "contentUsage": [],
             "disallow": [
               "/",
@@ -68,6 +70,7 @@ describe('robotsTxtParser', () => {
               "/api/ui-extensions/",
             ],
             "comment": [],
+            "contentSignal": [],
             "contentUsage": [],
             "disallow": [
               "/config",
@@ -107,6 +110,7 @@ describe('robotsTxtParser', () => {
               "/api/ui-extensions/",
             ],
             "comment": [],
+            "contentSignal": [],
             "contentUsage": [],
             "disallow": [
               "/config",
@@ -146,6 +150,7 @@ describe('robotsTxtParser', () => {
               "/api/ui-extensions/",
             ],
             "comment": [],
+            "contentSignal": [],
             "contentUsage": [],
             "disallow": [
               "/config",
@@ -185,6 +190,7 @@ describe('robotsTxtParser', () => {
               "/api/ui-extensions/",
             ],
             "comment": [],
+            "contentSignal": [],
             "contentUsage": [],
             "disallow": [
               "/config",
@@ -237,6 +243,7 @@ describe('robotsTxtParser', () => {
           {
             "allow": [],
             "comment": [],
+            "contentSignal": [],
             "contentUsage": [],
             "disallow": [
               "",
@@ -264,6 +271,7 @@ describe('robotsTxtParser', () => {
           {
             "allow": [],
             "comment": [],
+            "contentSignal": [],
             "contentUsage": [],
             "disallow": [
               "/cdn-cgi/challenge-platform/",
@@ -279,6 +287,7 @@ describe('robotsTxtParser', () => {
               "s /forum/showthread.php",
             ],
             "comment": [],
+            "contentSignal": [],
             "contentUsage": [],
             "disallow": [
               "",
@@ -307,6 +316,7 @@ describe('robotsTxtParser', () => {
               "/bar",
             ],
             "comment": [],
+            "contentSignal": [],
             "contentUsage": [],
             "disallow": [
               "/foo",
@@ -320,6 +330,7 @@ describe('robotsTxtParser', () => {
               "/boo",
             ],
             "comment": [],
+            "contentSignal": [],
             "contentUsage": [],
             "disallow": [
               "/baz",
@@ -331,6 +342,7 @@ describe('robotsTxtParser', () => {
           {
             "allow": [],
             "comment": [],
+            "contentSignal": [],
             "contentUsage": [],
             "disallow": [
               "/invalid",
@@ -342,6 +354,7 @@ describe('robotsTxtParser', () => {
           {
             "allow": [],
             "comment": [],
+            "contentSignal": [],
             "contentUsage": [],
             "disallow": [
               "/star",
@@ -380,6 +393,7 @@ Unknown: /bar
               "/",
             ],
             "comment": [],
+            "contentSignal": [],
             "contentUsage": [],
             "disallow": [],
             "userAgent": [
@@ -396,9 +410,9 @@ Unknown: /bar
     const robotsTxt = `
 User-Agent: *
 Allow: /
-Content-Usage: ai=n
+Content-Usage: bots=y
 Content-Usage: /public/ train-ai=y
-Content-Usage: /restricted/ ai=n train-ai=n
+Content-Usage: /restricted/ train-ai=n, ai-output=n
     `
     expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
       {
@@ -409,10 +423,11 @@ Content-Usage: /restricted/ ai=n train-ai=n
               "/",
             ],
             "comment": [],
+            "contentSignal": [],
             "contentUsage": [
-              "ai=n",
+              "bots=y",
               "/public/ train-ai=y",
-              "/restricted/ ai=n train-ai=n",
+              "/restricted/ train-ai=n, ai-output=n",
             ],
             "disallow": [],
             "userAgent": [
@@ -439,7 +454,9 @@ Content-Usage:
     const robotsTxt = `
 User-Agent: *
 Allow: /
-Content-Signal: ai-train=no, search=yes, ai-input=yes
+Content-Signal: ai-train=no
+Content-Signal: /public/ search=yes, ai-input=yes
+Content-Signal: /restricted/ ai-train=no, ai-input=no
     `
     expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
       {
@@ -450,9 +467,12 @@ Content-Signal: ai-train=no, search=yes, ai-input=yes
               "/",
             ],
             "comment": [],
-            "contentUsage": [
-              "ai-train=no, search=yes, ai-input=yes",
+            "contentSignal": [
+              "ai-train=no",
+              "/public/ search=yes, ai-input=yes",
+              "/restricted/ ai-train=no, ai-input=no",
             ],
+            "contentUsage": [],
             "disallow": [],
             "userAgent": [
               "*",

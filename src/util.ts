@@ -47,6 +47,7 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
     allow: [],
     userAgent: [],
     contentUsage: [],
+    contentSignal: [],
   }
   let ln = -1
   // read the contents
@@ -76,6 +77,7 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
             allow: [],
             userAgent: [],
             contentUsage: [],
+            contentSignal: [],
           }
           createNewGroup = false
         }
@@ -111,9 +113,12 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
         }
         break
       case 'content-usage':
-      case 'content-signal':
         currentGroup.contentUsage = currentGroup.contentUsage || []
         currentGroup.contentUsage.push(val)
+        break
+      case 'content-signal':
+        currentGroup.contentSignal = currentGroup.contentSignal || []
+        currentGroup.contentSignal.push(val)
         break
       default:
         errors.push(`L${ln}: Unknown directive ${rule} `)
@@ -148,24 +153,39 @@ function validateGroupRules(group: ParsedRobotsTxt['groups'][number], errors: st
 
   // Validate Content-Usage directives
   if (group.contentUsage) {
+    const validCategories = ['bots', 'train-ai', 'ai-output', 'search']
+    const validValues = ['y', 'n']
+
     group.contentUsage.forEach((rule) => {
       if (rule === '') {
         errors.push(`Content-Usage rule cannot be empty.`)
         return
       }
 
-      // Basic validation for Content-Usage format
       // Format can be: "preference" or "/path preference"
       const parts = rule.trim().split(/\s+/)
 
       if (parts.length === 1) {
-        // Global preference like "ai=n" or "train-ai=n"
+        // Global preference like "bots=y" or "train-ai=n"
         if (!parts[0]?.includes('=')) {
-          errors.push(`Content-Usage rule "${rule}" must contain a preference assignment (e.g., "ai=n").`)
+          errors.push(`Content-Usage rule "${rule}" must contain a preference assignment (e.g., "train-ai=n").`)
+          return
         }
+
+        // Validate category and value
+        const preferences = parts[0].split(',').map(p => p.trim())
+        preferences.forEach((pref) => {
+          const [category, value] = pref.split('=').map(s => s.trim())
+          if (!validCategories.includes(category || '')) {
+            errors.push(`Content-Usage category "${category}" is invalid. Valid categories: ${validCategories.join(', ')}.`)
+          }
+          if (!validValues.includes(value || '')) {
+            errors.push(`Content-Usage value "${value}" for "${category}" is invalid. Valid values: y, n.`)
+          }
+        })
       }
       else if (parts.length >= 2) {
-        // Path-specific preference like "/path ai=n"
+        // Path-specific preference like "/path train-ai=n"
         const path = parts[0]
         const preference = parts.slice(1).join(' ')
 
@@ -173,7 +193,81 @@ function validateGroupRules(group: ParsedRobotsTxt['groups'][number], errors: st
           errors.push(`Content-Usage path "${path}" must start with a \`/\`.`)
         }
         if (!preference.includes('=')) {
-          errors.push(`Content-Usage preference "${preference}" must contain an assignment (e.g., "ai=n").`)
+          errors.push(`Content-Usage preference "${preference}" must contain an assignment (e.g., "train-ai=n").`)
+        }
+        else {
+          // Validate category and value in path-specific rules
+          const preferences = preference.split(',').map(p => p.trim())
+          preferences.forEach((pref) => {
+            const [category, value] = pref.split('=').map(s => s.trim())
+            if (!validCategories.includes(category || '')) {
+              errors.push(`Content-Usage category "${category}" is invalid. Valid categories: ${validCategories.join(', ')}.`)
+            }
+            if (!validValues.includes(value || '')) {
+              errors.push(`Content-Usage value "${value}" for "${category}" is invalid. Valid values: y, n.`)
+            }
+          })
+        }
+      }
+    })
+  }
+
+  // Validate Content-Signal directives
+  if (group.contentSignal) {
+    const validCategories = ['search', 'ai-input', 'ai-train']
+    const validValues = ['yes', 'no']
+
+    group.contentSignal.forEach((rule) => {
+      if (rule === '') {
+        errors.push(`Content-Signal rule cannot be empty.`)
+        return
+      }
+
+      // Format can be: "preference" or "/path preference"
+      const parts = rule.trim().split(/\s+/)
+
+      if (parts.length === 1) {
+        // Global preference like "ai-train=no" or "search=yes"
+        if (!parts[0]?.includes('=')) {
+          errors.push(`Content-Signal rule "${rule}" must contain a preference assignment (e.g., "ai-train=no").`)
+          return
+        }
+
+        // Validate category and value
+        const preferences = parts[0].split(',').map(p => p.trim())
+        preferences.forEach((pref) => {
+          const [category, value] = pref.split('=').map(s => s.trim())
+          if (!validCategories.includes(category || '')) {
+            errors.push(`Content-Signal category "${category}" is invalid. Valid categories: ${validCategories.join(', ')}.`)
+          }
+          if (!validValues.includes(value || '')) {
+            errors.push(`Content-Signal value "${value}" for "${category}" is invalid. Valid values: yes, no.`)
+          }
+        })
+      }
+      else if (parts.length >= 2) {
+        // Path-specific preference like "/path ai-train=no"
+        const path = parts[0]
+        const preference = parts.slice(1).join(' ')
+
+        if (!path?.startsWith('/')) {
+          errors.push(`Content-Signal path "${path}" must start with a \`/\`.`)
+        }
+        if (!preference.includes('=')) {
+          errors.push(`Content-Signal preference "${preference}" must contain an assignment (e.g., "ai-train=no").`)
+        }
+        else {
+          // Validate category and value in path-specific rules
+          const preferences = preference.split(',').map(p => p.trim())
+          preferences.forEach((pref) => {
+            const [category, value] = pref.split('=').map(s => s.trim())
+            if (!validCategories.includes(category || '')) {
+              errors.push(`Content-Signal category "${category}" is invalid. Valid categories: ${validCategories.join(', ')}.`)
+            }
+            if (!validValues.includes(value || '')) {
+              errors.push(`Content-Signal value "${value}" for "${category}" is invalid. Valid values: yes, no.`)
+            }
+          })
         }
       }
     })
@@ -264,6 +358,40 @@ export function asArray(v: any) {
   return typeof v === 'undefined' ? [] : (Array.isArray(v) ? v : [v])
 }
 
+/**
+ * Convert ContentUsagePreferences object to string format
+ */
+function contentUsageToString(prefs: Record<string, string>): string {
+  return Object.entries(prefs)
+    .filter(([_, value]) => value !== undefined)
+    .map(([key, value]) => `${key}=${value}`)
+    .join(', ')
+}
+
+/**
+ * Normalize contentUsage/contentSignal to string array format
+ */
+function normalizeContentPreferences(value: any): string[] {
+  if (!value)
+    return []
+
+  // If it's already an array of strings, filter and return
+  if (Array.isArray(value))
+    return value.filter(rule => Boolean(rule))
+
+  // If it's an object (ContentUsagePreferences or ContentSignalPreferences)
+  if (typeof value === 'object' && !Array.isArray(value)) {
+    const str = contentUsageToString(value)
+    return str ? [str] : []
+  }
+
+  // If it's a single string
+  if (typeof value === 'string')
+    return value ? [value] : []
+
+  return []
+}
+
 export function normalizeGroup(group: RobotsGroupInput | RobotsGroupResolved): RobotsGroupResolved {
   // quick renormalization check
   if ((group as RobotsGroupResolved)._normalized) {
@@ -278,13 +406,15 @@ export function normalizeGroup(group: RobotsGroupInput | RobotsGroupResolved): R
   }
   const disallow = asArray(group.disallow) // we can have empty disallow
   const allow = asArray(group.allow).filter(rule => Boolean(rule))
-  const contentUsage = asArray(group.contentUsage).filter(rule => Boolean(rule))
+  const contentUsage = normalizeContentPreferences(group.contentUsage)
+  const contentSignal = normalizeContentPreferences(group.contentSignal)
   return <RobotsGroupResolved> {
     ...group,
     userAgent: group.userAgent ? asArray(group.userAgent) : ['*'],
     disallow,
     allow,
     contentUsage,
+    contentSignal,
     _indexable: !disallow.includes('/'),
     _rules: [
       ...disallow.filter(Boolean).map(r => ({ pattern: r, allow: false })),
@@ -317,11 +447,15 @@ export function generateRobotsTxt({ groups, sitemaps }: { groups: RobotsGroupRes
     for (const cleanParam of group.cleanParam || [])
       lines.push(`Clean-param: ${cleanParam}`)
 
-    // content signals / AI preferences
-    // Both Content-Usage (IETF) and Content-Signal (Cloudflare) are accepted as input, output as Content-Usage
+    // AI preferences - IETF aipref-vocab
     // See: https://datatracker.ietf.org/doc/draft-ietf-aipref-attach/
     for (const contentUsage of group.contentUsage || [])
       lines.push(`Content-Usage: ${contentUsage}`)
+
+    // AI preferences - IETF aipref-contentsignals
+    // See: https://www.ietf.org/archive/id/draft-romm-aipref-contentsignals-00.html
+    for (const contentSignal of group.contentSignal || [])
+      lines.push(`Content-Signal: ${contentSignal}`)
 
     lines.push('') // seperator
   }
