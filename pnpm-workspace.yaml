@@ -1,11 +1,7 @@
-onlyBuiltDependencies:
-  - '@firebase/util'
-  - '@parcel/watcher'
-  - better-sqlite3
-  - esbuild
-  - protobufjs
-  - unrs-resolver
-  - vue-demi
+catalogMode: prefer
+cleanupUnusedCatalogs: true
+shellEmulator: true
+trustPolicy: no-downgrade
 packages:
   - client
 catalog:
@@ -54,3 +50,11 @@ catalog:
   vitest: ^4.0.15
   vue: ^3.5.25
   vue-router: ^4.6.3
+onlyBuiltDependencies:
+  - '@firebase/util'
+  - '@parcel/watcher'
+  - better-sqlite3
+  - esbuild
+  - protobufjs
+  - unrs-resolver
+  - vue-demi
