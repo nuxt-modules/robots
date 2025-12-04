@@ -232,6 +232,7 @@ export default defineNuxtModule<ModuleOptions>({
       logger.debug('The module is disabled, skipping setup.')
       // need to mock the composables to allow module still to work when disabled
       addImports({ name: 'useRobotsRule', from: resolve(`./runtime/app/composables/mock`) })
+      addImports({ name: 'useBotDetection', from: resolve(`./runtime/app/composables/mock`) })
       nuxt.options.nitro = nuxt.options.nitro || {}
       nuxt.options.nitro.imports = nuxt.options.nitro.imports || {}
       nuxt.options.nitro.imports.presets = nuxt.options.nitro.imports.presets || []
@@ -240,6 +241,9 @@ export default defineNuxtModule<ModuleOptions>({
         imports: [
           'getPathRobotConfig',
           'getSiteRobotConfig',
+          'getBotDetection',
+          'isBot',
+          'getBotInfo',
         ],
       })
       return
