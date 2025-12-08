@@ -246,6 +246,8 @@ export default defineNuxtModule<ModuleOptions>({
           'getBotInfo',
         ],
       })
+      nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
+      nuxt.options.nitro.alias['#internal/nuxt-robots'] = resolve('./runtime/server/mock-composables')
       return
     }
 
@@ -656,10 +658,5 @@ export {}
         ],
       })
     }
-
-    nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
-    nuxt.options.nitro.alias['#internal/nuxt-simple-robots'] = resolve('./runtime/server/composables')
-    nuxt.options.nitro.alias['#internal/nuxt-robots'] = resolve('./runtime/server/composables')
-    nuxt.options.alias['#robots'] = resolve('./runtime')
   },
 })
