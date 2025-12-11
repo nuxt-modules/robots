@@ -180,7 +180,7 @@ importers:
         specifier: 'catalog:'
         version: 1.6.1
       zod:
-        specifier: ^3.0.0 || ^4.0.0
+        specifier: '>=3'
         version: 3.25.76
     devDependencies:
       '@antfu/eslint-config':
