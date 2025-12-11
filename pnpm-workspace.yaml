@@ -1,7 +1,6 @@
 catalogMode: prefer
 cleanupUnusedCatalogs: true
 shellEmulator: true
-trustPolicy: no-downgrade
 packages:
   - client
 catalog:
@@ -49,7 +48,7 @@ catalog:
   unocss: ^66.5.10
   vitest: ^4.0.15
   vue: ^3.5.25
-  vue-router: ^4.6.3
+  vue-router: ^4.6.4
 onlyBuiltDependencies:
   - '@firebase/util'
   - '@parcel/watcher'

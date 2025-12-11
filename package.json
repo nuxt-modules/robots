@@ -72,6 +72,14 @@
     "std-env": "catalog:",
     "ufo": "catalog:"
   },
+  "peerDependencies": {
+    "zod": ">=3"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
     "@arethetypeswrong/cli": "catalog:",
