@@ -31,7 +31,7 @@ import {
   normalizeGroup,
   parseRobotsTxt,
   validateRobots,
-} from './runtime/util'
+} from './util'
 
 export interface ModuleOptions {
   /**
