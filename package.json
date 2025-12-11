@@ -60,6 +60,14 @@
     "typecheck": "tsc --noEmit",
     "test:attw": "attw --pack"
   },
+  "peerDependencies": {
+    "zod": ">=3"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": true
+    }
+  },
   "dependencies": {
     "@fingerprintjs/botd": "catalog:",
     "@nuxt/kit": "catalog:",
@@ -71,14 +79,6 @@
     "sirv": "catalog:",
     "std-env": "catalog:",
     "ufo": "catalog:"
-  },
-  "peerDependencies": {
-    "zod": ">=3"
-  },
-  "peerDependenciesMeta": {
-    "zod": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
