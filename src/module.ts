@@ -662,9 +662,6 @@ export {}
     nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
     nuxt.options.nitro.alias['#internal/nuxt-simple-robots'] = resolve('./runtime/server/composables')
     nuxt.options.nitro.alias['#internal/nuxt-robots'] = resolve('./runtime/server/composables')
-    nuxt.options.nitro.alias['@nuxtjs/robots/util'] = resolve('./util')
     nuxt.options.alias['#robots'] = resolve('./runtime')
-    nuxt.options.alias['@nuxtjs/robots/util'] = resolve('./util')
-    console.log('UTIL', resolve('./util'))
   },
 })
