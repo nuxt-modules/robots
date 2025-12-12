@@ -1,5 +1,5 @@
 import type { ModuleOptions as NuxtI18nOptions } from '@nuxtjs/i18n'
-import type { AutoI18nConfig, NormalisedLocales } from './runtime/types'
+import type { AutoI18nConfig, NormalisedLocales } from './util'
 import { getNuxtModuleVersion, hasNuxtModule, hasNuxtModuleCompatibility } from '@nuxt/kit'
 import { getNuxtModuleOptions } from './kit'
 import { logger } from './logger'

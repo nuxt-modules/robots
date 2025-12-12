@@ -1,4 +1,4 @@
-import type { Arrayable, AutoI18nConfig, NuxtRobotsRuntimeConfig, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
+import type { Arrayable, AutoI18nConfig, NuxtRobotsRuntimeConfig, RobotsGroupInput, RobotsGroupResolved } from './util'
 import fsp from 'node:fs/promises'
 import {
   addImports,
@@ -22,14 +22,15 @@ import { setupDevToolsUI } from './devtools'
 import { resolveI18nConfig, splitPathForI18nLocales } from './i18n'
 import { isNuxtGenerate, resolveNitroPreset } from './kit'
 import { logger } from './logger'
-import { formatMaxImagePreview, formatMaxSnippet, formatMaxVideoPreview, ROBOT_DIRECTIVE_VALUES } from './runtime/const'
-import {
-  normaliseRobotsRouteRule,
-} from './runtime/server/nitro'
 import {
   asArray,
+  formatMaxImagePreview,
+  formatMaxSnippet,
+  formatMaxVideoPreview,
+  normaliseRobotsRouteRule,
   normalizeGroup,
   parseRobotsTxt,
+  ROBOT_DIRECTIVE_VALUES,
   validateRobots,
 } from './util'
 
@@ -661,6 +662,9 @@ export {}
     nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
     nuxt.options.nitro.alias['#internal/nuxt-simple-robots'] = resolve('./runtime/server/composables')
     nuxt.options.nitro.alias['#internal/nuxt-robots'] = resolve('./runtime/server/composables')
+    nuxt.options.nitro.alias['@nuxtjs/robots/util'] = resolve('./util')
     nuxt.options.alias['#robots'] = resolve('./runtime')
+    nuxt.options.alias['@nuxtjs/robots/util'] = resolve('./util')
+    console.log('UTIL', resolve('./util'))
   },
 })

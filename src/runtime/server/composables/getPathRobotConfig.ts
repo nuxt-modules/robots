@@ -1,11 +1,10 @@
 import type { H3Event } from 'h3'
 import type { RobotsContext } from '../../types'
+import { matchPathToRule, normaliseRobotsRouteRule } from '@nuxtjs/robots/util'
 import { getRequestHeader } from 'h3'
 import { useNitroApp, useRuntimeConfig } from 'nitropack/runtime'
 import { withoutTrailingSlash } from 'ufo'
-import { matchPathToRule } from '../../util'
 import { createNitroRouteRuleMatcher } from '../kit'
-import { normaliseRobotsRouteRule } from '../nitro'
 import { getSiteRobotConfig } from './getSiteRobotConfig'
 import { useRuntimeConfigNuxtRobots } from './useRuntimeConfigNuxtRobots'
 

@@ -1,8 +1,8 @@
 import type { H3Event } from 'h3'
 import type { NitroApp } from 'nitropack'
 import type { HookRobotsConfigContext } from '../types'
+import { normalizeGroup } from '@nuxtjs/robots/util'
 import { useNitroApp } from 'nitropack/runtime'
-import { normalizeGroup } from '../../util'
 import { useRuntimeConfigNuxtRobots } from './composables/useRuntimeConfigNuxtRobots'
 
 export async function resolveRobotsTxtContext(e: H3Event | undefined, nitro: NitroApp = useNitroApp()) {

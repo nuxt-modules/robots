@@ -1,10 +1,10 @@
 import type { H3Event } from 'h3'
+import { getBotDetection as getBotDetectionFromHeaders, getBotInfo as getBotInfoFromHeaders, isBot as isBotFromHeaders } from '@nuxtjs/robots/util'
 import { getHeaders } from 'h3'
 import { useNitroApp } from 'nitropack/runtime'
-import { getBotDetection as getBotDetectionFromHeaders, getBotInfo as getBotInfoFromHeaders, isBot as isBotFromHeaders } from '../../../util'
 
 // Re-export the interface from util
-export type { BotDetectionContext } from '../../../util'
+export type { BotDetectionContext } from '@nuxtjs/robots/util'
 
 /**
  * Server-side bot detection using request headers

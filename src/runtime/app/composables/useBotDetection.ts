@@ -1,8 +1,8 @@
 import type { BotDetectionContext, UseBotDetectionOptions, UseBotDetectionReturn } from '../../types'
+import { getBotDetection as getBotDetectionFromHeaders } from '@nuxtjs/robots/util'
 import { getHeaders } from 'h3'
 import { useRequestEvent, useState } from 'nuxt/app'
 import { computed } from 'vue'
-import { getBotDetection as getBotDetectionFromHeaders } from '../../../util'
 import { runFingerprinting } from '../utils/fingerprinting'
 
 export function useBotDetection(options: UseBotDetectionOptions = {}): UseBotDetectionReturn {

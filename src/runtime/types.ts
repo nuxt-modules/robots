@@ -1,6 +1,6 @@
+import type { BotCategory, BotName } from '@nuxtjs/robots/util'
 import type { H3Event } from 'h3'
 import type { ComputedRef } from 'vue'
-import type { BotCategory, BotName } from '../const-bots'
 
 export type Arrayable<T> = T | T[]
 

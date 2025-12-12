@@ -2,13 +2,13 @@ import type { MaybeRef } from 'vue'
 import type { RobotsValue } from '../../types'
 import { devRootDir } from '#build/nuxt.config.mjs'
 import { injectHead, useHead } from '#imports'
+import { formatMaxImagePreview, formatMaxSnippet, formatMaxVideoPreview, ROBOT_DIRECTIVE_VALUES } from '@nuxtjs/robots/util'
 import { setHeader } from 'h3'
 import {
   useRequestEvent,
   useRuntimeConfig,
 } from 'nuxt/app'
 import { computed, getCurrentInstance, onBeforeUnmount, ref, toValue } from 'vue'
-import { formatMaxImagePreview, formatMaxSnippet, formatMaxVideoPreview, ROBOT_DIRECTIVE_VALUES } from '../../const'
 
 /**
  * Reactive robot directive value type

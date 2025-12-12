@@ -1,11 +1,11 @@
 import type { HookRobotsConfigContext, HookRobotsTxtContext } from '../../types'
-import { logger } from '#robots/server/logger'
 import { withSiteUrl } from '#site-config/server/composables/utils'
+import { asArray, generateRobotsTxt } from '@nuxtjs/robots/util'
 import { defineEventHandler, setHeader } from 'h3'
 import { useNitroApp } from 'nitropack/runtime'
-import { asArray, generateRobotsTxt } from '../../util'
 import { getSiteRobotConfig } from '../composables/getSiteRobotConfig'
 import { useRuntimeConfigNuxtRobots } from '../composables/useRuntimeConfigNuxtRobots'
+import { logger } from '../logger'
 import { resolveRobotsTxtContext } from '../util'
 
 export default defineEventHandler(async (e) => {

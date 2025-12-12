@@ -1,7 +1,7 @@
 import type { NitroApp } from 'nitropack/types'
+import { createPatternMap } from '@nuxtjs/robots/util'
 import { defineNitroPlugin, getRouteRules } from 'nitropack/runtime'
 import { withoutTrailingSlash } from 'ufo'
-import { createPatternMap } from '../../../util'
 import { useRuntimeConfigNuxtRobots } from '../composables/useRuntimeConfigNuxtRobots'
 import { logger } from '../logger'
 import { resolveRobotsTxtContext } from '../util'
