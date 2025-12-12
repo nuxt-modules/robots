@@ -1,8 +1,38 @@
 import type { BotDetectionResult } from '@fingerprintjs/botd'
-import type { BotDetectionContext } from '@nuxtjs/robots/util'
-import { mapBotKindToCategory } from '@nuxtjs/robots/util'
+import type { BotDetectionContext } from '../../types'
 import { useStorage } from '@vueuse/core'
 import { ref } from 'vue'
+
+// TODO: import from @nuxtjs/robots/util once CI import issues resolved
+type BotCategory = 'search-engine' | 'social' | 'seo' | 'ai' | 'generic' | 'automation' | 'http-tool' | 'security-scanner' | 'scraping'
+type BotKind = 'awesomium' | 'cef' | 'cefsharp' | 'coachjs' | 'electron' | 'fminer' | 'geb' | 'nightmarejs' | 'phantomas' | 'phantomjs' | 'rhino' | 'selenium' | 'sequentum' | 'slimerjs' | 'webdriverio' | 'webdriver' | 'headless_chrome' | 'unknown'
+function mapBotKindToCategory(botKind: BotKind): BotCategory {
+  switch (botKind) {
+    case 'selenium':
+    case 'webdriver':
+    case 'webdriverio':
+    case 'phantomjs':
+    case 'phantomas':
+    case 'nightmarejs':
+    case 'slimerjs':
+    case 'headless_chrome':
+    case 'electron':
+    case 'cef':
+    case 'cefsharp':
+    case 'rhino':
+      return 'automation'
+    case 'fminer':
+    case 'sequentum':
+    case 'geb':
+      return 'scraping'
+    case 'awesomium':
+    case 'coachjs':
+      return 'security-scanner'
+    case 'unknown':
+    default:
+      return 'generic'
+  }
+}
 
 // Persistent storage for client-side fingerprint detection results only
 const botDetectionStorage = import.meta.client
