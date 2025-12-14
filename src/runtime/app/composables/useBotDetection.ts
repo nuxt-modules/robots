@@ -16,6 +16,11 @@ export function useBotDetection(options: UseBotDetectionOptions = {}): UseBotDet
       }
     }
 
+    // SPA fallback: use navigator.userAgent
+    if (import.meta.client) {
+      return getBotDetectionFromHeaders({ 'user-agent': navigator.userAgent })
+    }
+
     return null
   })
 
