@@ -2,14 +2,14 @@
   "name": "@nuxtjs/robots-client",
   "private": true,
   "devDependencies": {
-    "@iconify-json/carbon": "catalog:",
-    "@nuxt/devtools-kit": "catalog:",
-    "@nuxt/devtools-ui-kit": "catalog:",
+    "@iconify-json/carbon": "catalog:dev",
+    "@nuxt/devtools-kit": "catalog:dev",
+    "@nuxt/devtools-ui-kit": "catalog:dev",
     "@nuxt/kit": "catalog:",
-    "floating-vue": "catalog:",
-    "nuxt": "catalog:",
-    "shiki": "catalog:",
-    "vue": "catalog:",
-    "vue-router": "catalog:"
+    "floating-vue": "catalog:dev",
+    "nuxt": "catalog:dev",
+    "shiki": "catalog:dev",
+    "vue": "catalog:dev",
+    "vue-router": "catalog:dev"
   }
 }
