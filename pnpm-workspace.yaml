@@ -20,7 +20,7 @@ catalog:
 
 catalogs:
   dev:
-    '@antfu/eslint-config': ^6.7.3
+    '@antfu/eslint-config': ^7.2.0
     '@arethetypeswrong/cli': ^0.18.2
     '@headlessui/vue': ^1.7.23
     '@iconify-json/carbon': ^1.2.15
