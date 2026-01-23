@@ -8,7 +8,7 @@ packages:
 
 catalog:
   '@fingerprintjs/botd': ^2.0.0
-  '@nuxt/kit': ^4.2.2
+  '@nuxt/kit': ^4.3.0
   consola: ^3.4.2
   defu: ^6.1.4
   nuxt-site-config: ^3.2.17
@@ -47,7 +47,7 @@ catalogs:
     firebase-functions: ^7.0.3
     floating-vue: ^5.2.2
     happy-dom: ^20.1.0
-    nuxt: ^4.2.2
+    nuxt: ^4.3.0
     playwright-core: ^1.57.0
     shiki: ^3.21.0
     typescript: ^5.9.3
