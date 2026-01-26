@@ -54,6 +54,7 @@ describe('route rule merging', () => {
       Disallow: /robots-rule/*
       Disallow: /secret/*
       Disallow: /excluded/*
+      Disallow: /__nuxt_content/*
       Disallow: /_nuxt
       Disallow: /_nuxt/*
 
