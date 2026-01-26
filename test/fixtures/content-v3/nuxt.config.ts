@@ -9,7 +9,6 @@ export default defineNuxtConfig({
     '@nuxt/content',
   ],
 
-  // @ts-expect-error untyped
   content: {
     build: {
       markdown: {
