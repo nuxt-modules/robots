@@ -114,4 +114,48 @@ describe('robotsTxtValidator', () => {
       ]
     `)
   })
+
+  it('content-usage with comma-separated values and spaces', () => {
+    // Regression test: "search=y, train-ai=y" should not be treated as path-based
+    const { errors } = validateRobots({
+      errors: [],
+      sitemaps: [],
+      groups: [
+        {
+          allow: ['/'],
+          comment: [],
+          disallow: [],
+          userAgent: ['*'],
+          contentUsage: [
+            'search=y, train-ai=y', // space after comma - should be valid
+            'search=y,train-ai=n', // no space - should be valid
+            'bots=y, ai-output=n, search=y', // multiple with spaces
+          ],
+        },
+      ],
+    })
+    expect(errors).toEqual([])
+  })
+
+  it('content-signal with comma-separated values and spaces', () => {
+    // Regression test: "search=yes, ai-train=no" should not be treated as path-based
+    const { errors } = validateRobots({
+      errors: [],
+      sitemaps: [],
+      groups: [
+        {
+          allow: ['/'],
+          comment: [],
+          disallow: [],
+          userAgent: ['*'],
+          contentSignal: [
+            'search=yes, ai-train=no', // space after comma - should be valid
+            'search=yes,ai-input=no', // no space - should be valid
+            'search=yes, ai-input=no, ai-train=yes', // multiple with spaces
+          ],
+        },
+      ],
+    })
+    expect(errors).toEqual([])
+  })
 })

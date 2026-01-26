@@ -215,20 +215,17 @@ function validateGroupRules(group: ParsedRobotsTxt['groups'][number], errors: st
         })
       }
       else if (parts.length >= 2) {
-        // Path-specific preference like "/path train-ai=n"
-        const path = parts[0]
-        const preference = parts.slice(1).join(' ')
-
-        if (!path?.startsWith('/')) {
-          errors.push(`Content-Usage path "${path}" must start with a \`/\`.`)
-        }
-        if (!preference.includes('=')) {
-          errors.push(`Content-Usage preference "${preference}" must contain an assignment (e.g., "train-ai=n").`)
-        }
-        else {
-          // Validate category and value in path-specific rules
-          const preferences = preference.split(',').map(p => p.trim())
-          preferences.forEach((pref) => {
+        const firstPart = parts[0]
+        // Check if first part is a preference (contains =) vs a path (starts with /)
+        // This handles comma-separated values with spaces like "search=y, train-ai=n"
+        if (firstPart?.includes('=')) {
+          // Global preferences with spaces around commas - validate each preference
+          const allPreferences = rule.split(',').map(p => p.trim())
+          allPreferences.forEach((pref) => {
+            if (!pref.includes('=')) {
+              errors.push(`Content-Usage rule "${pref}" must contain a preference assignment (e.g., "train-ai=n").`)
+              return
+            }
             const [category, value] = pref.split('=').map(s => s.trim())
             if (!validCategories.includes(category || '')) {
               errors.push(`Content-Usage category "${category}" is invalid. Valid categories: ${validCategories.join(', ')}.`)
@@ -237,6 +234,31 @@ function validateGroupRules(group: ParsedRobotsTxt['groups'][number], errors: st
               errors.push(`Content-Usage value "${value}" for "${category}" is invalid. Valid values: y, n.`)
             }
           })
+        }
+        else {
+          // Path-specific preference like "/path train-ai=n"
+          const path = firstPart
+          const preference = parts.slice(1).join(' ')
+
+          if (!path?.startsWith('/')) {
+            errors.push(`Content-Usage path "${path}" must start with a \`/\`.`)
+          }
+          if (!preference.includes('=')) {
+            errors.push(`Content-Usage preference "${preference}" must contain an assignment (e.g., "train-ai=n").`)
+          }
+          else {
+            // Validate category and value in path-specific rules
+            const preferences = preference.split(',').map(p => p.trim())
+            preferences.forEach((pref) => {
+              const [category, value] = pref.split('=').map(s => s.trim())
+              if (!validCategories.includes(category || '')) {
+                errors.push(`Content-Usage category "${category}" is invalid. Valid categories: ${validCategories.join(', ')}.`)
+              }
+              if (!validValues.includes(value || '')) {
+                errors.push(`Content-Usage value "${value}" for "${category}" is invalid. Valid values: y, n.`)
+              }
+            })
+          }
         }
       }
     })
@@ -276,20 +298,17 @@ function validateGroupRules(group: ParsedRobotsTxt['groups'][number], errors: st
         })
       }
       else if (parts.length >= 2) {
-        // Path-specific preference like "/path ai-train=no"
-        const path = parts[0]
-        const preference = parts.slice(1).join(' ')
-
-        if (!path?.startsWith('/')) {
-          errors.push(`Content-Signal path "${path}" must start with a \`/\`.`)
-        }
-        if (!preference.includes('=')) {
-          errors.push(`Content-Signal preference "${preference}" must contain an assignment (e.g., "ai-train=no").`)
-        }
-        else {
-          // Validate category and value in path-specific rules
-          const preferences = preference.split(',').map(p => p.trim())
-          preferences.forEach((pref) => {
+        const firstPart = parts[0]
+        // Check if first part is a preference (contains =) vs a path (starts with /)
+        // This handles comma-separated values with spaces like "search=yes, ai-train=no"
+        if (firstPart?.includes('=')) {
+          // Global preferences with spaces around commas - validate each preference
+          const allPreferences = rule.split(',').map(p => p.trim())
+          allPreferences.forEach((pref) => {
+            if (!pref.includes('=')) {
+              errors.push(`Content-Signal rule "${pref}" must contain a preference assignment (e.g., "ai-train=no").`)
+              return
+            }
             const [category, value] = pref.split('=').map(s => s.trim())
             if (!validCategories.includes(category || '')) {
               errors.push(`Content-Signal category "${category}" is invalid. Valid categories: ${validCategories.join(', ')}.`)
@@ -298,6 +317,31 @@ function validateGroupRules(group: ParsedRobotsTxt['groups'][number], errors: st
               errors.push(`Content-Signal value "${value}" for "${category}" is invalid. Valid values: yes, no.`)
             }
           })
+        }
+        else {
+          // Path-specific preference like "/path ai-train=no"
+          const path = firstPart
+          const preference = parts.slice(1).join(' ')
+
+          if (!path?.startsWith('/')) {
+            errors.push(`Content-Signal path "${path}" must start with a \`/\`.`)
+          }
+          if (!preference.includes('=')) {
+            errors.push(`Content-Signal preference "${preference}" must contain an assignment (e.g., "ai-train=no").`)
+          }
+          else {
+            // Validate category and value in path-specific rules
+            const preferences = preference.split(',').map(p => p.trim())
+            preferences.forEach((pref) => {
+              const [category, value] = pref.split('=').map(s => s.trim())
+              if (!validCategories.includes(category || '')) {
+                errors.push(`Content-Signal category "${category}" is invalid. Valid categories: ${validCategories.join(', ')}.`)
+              }
+              if (!validValues.includes(value || '')) {
+                errors.push(`Content-Signal value "${value}" for "${category}" is invalid. Valid values: yes, no.`)
+              }
+            })
+          }
         }
       }
     })
