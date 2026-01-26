@@ -70,9 +70,11 @@
   },
   "dependencies": {
     "@fingerprintjs/botd": "catalog:",
+    "@nuxt/devtools-kit": "catalog:dev",
     "@nuxt/kit": "catalog:",
     "consola": "catalog:",
     "defu": "catalog:",
+    "h3": "catalog:",
     "nuxt-site-config": "catalog:",
     "pathe": "catalog:",
     "pkg-types": "catalog:",

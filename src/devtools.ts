@@ -2,6 +2,7 @@ import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from 'nuxt/schema'
 import type { ModuleOptions } from './module'
 import { existsSync } from 'node:fs'
+import { addCustomTab } from '@nuxt/devtools-kit'
 import { useNuxt } from '@nuxt/kit'
 
 const DEVTOOLS_UI_ROUTE = '/__nuxt-robots'
@@ -36,19 +37,13 @@ export function setupDevToolsUI(options: ModuleOptions, resolve: Resolver['resol
     })
   }
 
-  nuxt.hook('devtools:customTabs', (tabs) => {
-    tabs.push({
-      // unique identifier
-      name: 'nuxt-robots',
-      // title to display in the tab
-      title: 'Robots',
-      // any icon from Iconify, or a URL to an image
-      icon: 'carbon:bot',
-      // iframe view
-      view: {
-        type: 'iframe',
-        src: DEVTOOLS_UI_ROUTE,
-      },
-    })
+  addCustomTab({
+    name: 'nuxt-robots',
+    title: 'Robots',
+    icon: 'carbon:bot',
+    view: {
+      type: 'iframe',
+      src: DEVTOOLS_UI_ROUTE,
+    },
   })
 }
