@@ -25,7 +25,7 @@ export function useRobotsRule(rule?: ReactiveRobotsValue) {
   const vm = getCurrentInstance()
   if (import.meta.client) {
     // bit hacky but should work fine
-    const robotsRef = ref(document.querySelector('meta[name="robots"]')?.getAttribute('content') || '')
+    const robotsRef = ref<RobotsValue>(document.querySelector('meta[name="robots"]')?.getAttribute('content') || '')
     const _ = head.hooks.hook('dom:rendered', () => {
       robotsRef.value = document.querySelector('meta[name="robots"]')?.getAttribute('content') || ''
     })
@@ -100,7 +100,7 @@ export function useRobotsRule(rule?: ReactiveRobotsValue) {
   }
 
   setRobotsRule(rule)
-  return computed<string | undefined>({
+  return computed<RobotsValue | undefined>({
     set(val) {
       setRobotsRule(val)
     },
