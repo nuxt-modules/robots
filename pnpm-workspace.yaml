@@ -7,7 +7,7 @@ catalog:
   consola: ^3.4.2
   defu: ^6.1.4
   h3: ^1.15.5
-  nuxt-site-config: ^3.2.18
+  nuxt-site-config: ^3.2.19
   pathe: ^2.0.3
   pkg-types: ^2.3.0
   sirv: ^3.0.2
@@ -46,7 +46,7 @@ catalogs:
     bumpp: ^10.4.0
     eslint: ^9.39.2
     execa: ^9.6.1
-    firebase-functions: ^7.0.4
+    firebase-functions: ^7.0.5
     happy-dom: ^20.4.0
     nuxt: ^4.3.0
     playwright-core: ^1.58.0
@@ -69,4 +69,3 @@ onlyBuiltDependencies:
   - vue-demi
 
 shellEmulator: true
-
