@@ -32,29 +32,39 @@ export function mapPathForI18nPages(path: string, autoI18n: AutoI18nConfig): str
 
   const withoutSlashes = withoutTrailingSlash(withoutLeadingSlash(path)).replace('/index', '')
 
+  function resolveForAllLocales(pageName: string, pageLocales: Record<string, string | false>): string[] {
+    return autoI18n.locales
+      .filter((l) => {
+        // skip disabled locales
+        if (l.code in pageLocales && pageLocales[l.code] === false)
+          return false
+        // skip default locale for prefix_except_default
+        if (autoI18n.strategy === 'prefix_except_default' && l.code === autoI18n.defaultLocale)
+          return false
+        return true
+      })
+      .map((l) => {
+        // use custom path if defined, otherwise fall back to page name as path
+        const localePath = (l.code in pageLocales && pageLocales[l.code] !== false)
+          ? pageLocales[l.code] as string
+          : `/${pageName}`
+        return withLeadingSlash(generatePathForI18nPages(l.code, localePath, autoI18n.defaultLocale, autoI18n.strategy))
+      })
+  }
+
   // direct match: path matches a page name in i18n pages config
   if (withoutSlashes in pages) {
     const pageLocales = pages[withoutSlashes]
-    if (pageLocales) {
-      return Object.entries(pageLocales)
-        .filter(([, v]) => v !== false)
-        .map(([localeCode, localePath]) =>
-          withLeadingSlash(generatePathForI18nPages(localeCode, localePath as string, autoI18n.defaultLocale, autoI18n.strategy)),
-        )
-    }
+    if (pageLocales)
+      return resolveForAllLocales(withoutSlashes, pageLocales)
   }
 
   // reverse match: path matches a custom locale path (e.g. user specified '/autre-page' which is fr custom path)
-  for (const pageLocales of Object.values(pages)) {
+  for (const [pageName, pageLocales] of Object.entries(pages)) {
     if (!pageLocales)
       continue
-    if (autoI18n.defaultLocale in pageLocales && pageLocales[autoI18n.defaultLocale] === path) {
-      return Object.entries(pageLocales)
-        .filter(([, v]) => v !== false)
-        .map(([localeCode, localePath]) =>
-          withLeadingSlash(generatePathForI18nPages(localeCode, localePath as string, autoI18n.defaultLocale, autoI18n.strategy)),
-        )
-    }
+    if (autoI18n.defaultLocale in pageLocales && pageLocales[autoI18n.defaultLocale] === path)
+      return resolveForAllLocales(pageName, pageLocales)
   }
 
   return false
