@@ -7,7 +7,7 @@ const { resolve } = createResolver(import.meta.url)
 // would normally not be indexable
 process.env.NODE_ENV = 'production'
 await setup({
-  rootDir: resolve('../../.playground'),
+  rootDir: resolve('../../playground'),
   build: true,
   server: true,
   nuxtConfig: {

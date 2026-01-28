@@ -1,396 +1,554 @@
-<script lang="ts" setup>
-import {
-  appFetch,
-  colorMode,
-  computed,
-  useAsyncData,
-  useHead,
-} from '#imports'
+<script setup lang="ts">
+import { useAsyncData, useHead } from '#imports'
 import { useLocalStorage } from '@vueuse/core'
-import { loadShiki } from '~/composables/shiki'
-import {
-  envTab,
-  path,
-  refreshSources,
-} from './util/logic'
-import 'floating-vue/dist/style.css'
+import { computed, ref } from 'vue'
+import { appFetch, colorMode } from './composables/rpc'
+import { loadShiki } from './composables/shiki'
+import { envTab, path, refreshSources } from './util/logic'
 
-useHead({
-  title: 'Nuxt Robots',
-})
 await loadShiki()
 
-const globalDebugFetch = useAsyncData<{ indexable: boolean, hints: string[], runtimeConfig: { version: string } }>(() => {
-  if (!appFetch.value || typeof appFetch.value !== 'function') {
+const loading = ref(false)
+const refreshing = ref(false)
+
+async function refresh() {
+  if (refreshing.value)
+    return
+  refreshing.value = true
+  loading.value = true
+  refreshSources()
+  setTimeout(() => {
+    loading.value = false
+    refreshing.value = false
+  }, 300)
+}
+
+const globalDebugFetch = useAsyncData<{ indexable: boolean, hints: string[], runtimeConfig: { version: string }, robotsTxt: string }>(() => {
+  if (!appFetch.value || typeof appFetch.value !== 'function')
     return null
-  }
   const query: Record<string, any> = {}
   if (envTab.value === 'Production')
     query.mockProductionEnv = true
-  return appFetch.value('/__robots__/debug.json', {
-    query,
-  })
+  return appFetch.value('/__robots__/debug.json', { query })
 }, {
   watch: [envTab, appFetch],
 })
 const { data: globalDebug } = globalDebugFetch
 
 const pathDebug = useAsyncData<any>(() => {
-  if (!appFetch.value || typeof appFetch.value !== 'function') {
+  if (!appFetch.value || typeof appFetch.value !== 'function')
     return null
-  }
-  const req: Record<string, any> = {
-    path: path.value,
-  }
+  const req: Record<string, any> = { path: path.value }
   if (envTab.value === 'Production')
     req.mockProductionEnv = true
-  return appFetch.value('/__robots__/debug-path.json', {
-    query: req,
-  })
+  return appFetch.value('/__robots__/debug-path.json', { query: req })
 }, {
   watch: [envTab, path, appFetch],
 })
 
 const pathDebugData = computed(() => pathDebug.data?.value)
-
-const isDark = computed(() => colorMode.value === 'dark')
-useHead({
-  htmlAttrs: {
-    class: isDark.value ? 'dark' : '',
-  },
-})
-
 const globalDebugData = computed(() => globalDebug.value || {})
-
-const version = computed(() => {
-  return globalDebugData.value?.runtimeConfig?.version || ''
-})
+const version = computed(() => globalDebugData.value?.runtimeConfig?.version || '')
 
 const metaTag = computed(() => {
   const content = pathDebugData.value?.rule || ''
   return `<meta name="robots" content="${content}">`
 })
 
+const isDark = computed(() => colorMode.value === 'dark')
+useHead({
+  title: 'Nuxt Robots',
+  htmlAttrs: {
+    class: () => isDark.value ? 'dark' : '',
+  },
+})
+
 const tab = useLocalStorage('nuxt-robots:tab', 'overview')
+
+const navItems = [
+  { value: 'overview', icon: 'carbon:dashboard-reference', label: 'Overview' },
+  { value: 'debug', icon: 'carbon:debug', label: 'Debug' },
+  { value: 'docs', icon: 'carbon:book', label: 'Docs' },
+]
 </script>
 
 <template>
-  <div class="relative n-bg-base flex flex-col">
-    <header class="sticky top-0 z-2 px-4 pt-4">
-      <div class="flex justify-between items-start" mb2>
-        <div class="flex space-x-5">
-          <h1 text-xl flex items-center gap-2>
-            <NIcon icon="carbon:bot" class="text-blue-300" />
-            Robots <NBadge class="text-sm">
-              {{ version }}
-            </NBadge>
-          </h1>
-        </div>
-        <div class="flex items-center space-x-3 text-xl">
-          <fieldset
-            class="n-select-tabs flex flex-inline flex-wrap items-center border n-border-base rounded-lg n-bg-base"
-          >
-            <label
-              v-for="(value, idx) of ['overview', 'debug', 'docs']"
-              :key="idx"
-              class="relative n-border-base hover:n-bg-active cursor-pointer"
-              :class="[
-                idx ? 'border-l n-border-base ml--1px' : '',
-                value === tab ? 'n-bg-active' : '',
-              ]"
-            >
-              <div v-if="value === 'overview'" :class="[value === tab ? '' : 'op35']">
-                <VTooltip>
-                  <div class="px-5 py-2">
-                    <h2 text-lg flex items-center>
-                      <NIcon icon="carbon:dashboard-reference opacity-50" />
-                    </h2>
-                  </div>
-                  <template #popper>
-                    Overview
-                  </template>
-                </VTooltip>
-              </div>
-              <div v-else-if="value === 'debug'" :class="[value === tab ? '' : 'op35']">
-                <VTooltip>
-                  <div class="px-5 py-2">
-                    <h2 text-lg flex items-center>
-                      <NIcon icon="carbon:debug opacity-50" />
-                    </h2>
-                  </div>
-                  <template #popper>
-                    Debug
-                  </template>
-                </VTooltip>
-              </div>
-              <div v-else-if="value === 'docs'" :class="[value === tab ? '' : 'op35']">
-                <VTooltip>
-                  <div class="px-5 py-2">
-                    <h2 text-lg flex items-center>
-                      <NIcon icon="carbon:book opacity-50" />
-                    </h2>
-                  </div>
-                  <template #popper>
-                    Documentation
-                  </template>
-                </VTooltip>
-              </div>
-              <input
-                v-model="tab"
-                type="radio"
-                :value="value"
-                :title="value"
-                class="absolute cursor-pointer pointer-events-none inset-0 op-0.1"
-              >
-            </label>
-          </fieldset>
-          <VTooltip>
-            <button text-lg="" type="button" class="n-icon-button n-button n-transition n-disabled:n-disabled" @click="refreshSources">
-              <NIcon icon="carbon:reset" class="group-hover:text-green-500" />
-            </button>
-            <template #popper>
-              Refresh
-            </template>
-          </VTooltip>
-        </div>
-        <div class="items-center space-x-3 hidden lg:flex">
-          <div class="opacity-80 text-sm">
-            <NLink href="https://github.com/sponsors/harlan-zw" target="_blank">
-              <NIcon icon="carbon:favorite" class="mr-[2px]" />
-              Sponsor
-            </NLink>
-          </div>
-          <div class="opacity-80 text-sm">
-            <NLink href="https://github.com/nuxt-modules/robots" target="_blank">
-              <NIcon icon="logos:github-icon" class="mr-[2px]" />
-              Submit an issue
-            </NLink>
-          </div>
-          <a href="https://nuxtseo.com" target="_blank" class="flex items-end gap-1.5 font-semibold text-xl dark:text-white font-title">
-            <NuxtSeoLogo />
-          </a>
-        </div>
-      </div>
-    </header>
-    <div class="flex-row flex p4 h-full" style="min-height: calc(100vh - 64px);">
-      <main class="mx-auto flex flex-col w-full bg-white dark:bg-black dark:bg-dark-700 bg-light-200 ">
-        <div v-if="!globalDebug || globalDebugFetch.status.value === 'pending'">
-          <NLoading />
-        </div>
-        <div v-else-if="globalDebugFetch.error.value">
-          {{ globalDebugFetch.error.value }}
-        </div>
-        <div v-else-if="tab === 'overview'" class="h-full relative max-h-full">
-          <fieldset
-            class="mb-7 n-select-tabs flex flex-inline flex-wrap items-center border n-border-base rounded-lg n-bg-base"
-          >
-            <label
-              v-for="(value, idx) of ['Production', 'Development']"
-              :key="idx"
-              class="relative n-border-base hover:n-bg-active cursor-pointer"
-              :class="[
-                idx ? 'border-l n-border-base ml--1px' : '',
-                value === envTab ? 'n-bg-active' : '',
-              ]"
-            >
-              <div :class="value === envTab ? '' : 'op35'" class="px-3 py-[1.5] text-lg">{{ value }}</div>
-              <input
-                v-model="envTab"
-                type="radio"
-                :value="value"
-                :title="value"
-                class="absolute cursor-pointer pointer-events-none inset-0 op-0.1"
-              >
-            </label>
-          </fieldset>
+  <UApp>
+    <div class="relative bg-base flex flex-col min-h-screen">
+      <div class="gradient-bg" />
 
-          <OSectionBlock>
-            <template #text>
-              <h3 class="opacity-80 text-base mb-1">
-                Page Indexable
-              </h3>
-            </template>
-            <div class="px-3 py-2 space-y-5">
-              <div v-if="!pathDebugData">
-                <NLoading />
+      <!-- Header -->
+      <header class="header glass sticky top-0 z-50">
+        <div class="header-content">
+          <!-- Logo & Brand -->
+          <div class="flex items-center gap-3 sm:gap-4">
+            <a
+              href="https://nuxtseo.com"
+              target="_blank"
+              class="flex items-center opacity-90 hover:opacity-100 transition-opacity"
+            >
+              <NuxtSeoLogo class="h-6 sm:h-7" />
+            </a>
+
+            <div class="divider" />
+
+            <div class="flex items-center gap-2">
+              <div class="brand-icon">
+                <UIcon
+                  name="carbon:bot"
+                  class="text-base sm:text-lg"
+                />
               </div>
-              <div v-else>
-                <div class="inline-flex gap-3 mb-5 items-center">
-                  <div>
-                    <NIcon v-if="pathDebugData?.indexable && pathDebugData.crawlable" icon="carbon:checkmark-filled" class="text-green-300" />
-                    <NIcon v-else icon="carbon:warning-filled" class="text-red-300" />
-                  </div>
-                  <div v-if="!pathDebugData.crawlable">
-                    Robots are not allowed to access <code class="opacity-60 text-sm">{{ path }}</code>.
-                  </div>
-                  <div v-else-if="!pathDebugData.indexable">
-                    Robots are not allowed to index <code class="opacity-60 text-sm">{{ path }}</code>, however, they can access it.
-                  </div>
-                  <div v-else>
-                    Robots can access and crawl <code class="opacity-60 text-sm">{{ path }}</code>.
-                  </div>
-                </div>
-                <OCodeBlock :code="metaTag" lang="html" />
-                <div v-if="pathDebugData.robotsHeader" class="mt-3">
-                  <OCodeBlock :code="`X-Robots-Tag: ${pathDebugData.robotsHeader}`" lang="bash" />
-                </div>
-                <div v-if="pathDebugData?.debug" class="mt-3 flex gap-2">
-                  <div v-if="pathDebugData?.debug?.source" class="text-xs text-gray-300 mt-3 border-gray-600 rounded-xl border-1 px-2 py-1 inline-flex">
-                    Source: {{ pathDebugData?.debug?.source }}
-                  </div>
-                  <div v-if="pathDebugData?.debug?.line" class="text-xs text-gray-300 mt-3 border-gray-600 rounded-xl border-1 px-2 py-1 inline-flex">
-                    {{ pathDebugData?.debug?.line }}
-                  </div>
-                </div>
-              </div>
+              <h1 class="text-sm sm:text-base font-semibold tracking-tight text-[var(--color-text)]">
+                Robots
+              </h1>
+              <UBadge
+                color="neutral"
+                variant="subtle"
+                size="xs"
+                class="font-mono text-[10px] sm:text-xs hidden sm:inline-flex"
+              >
+                {{ version }}
+              </UBadge>
             </div>
-          </OSectionBlock>
-          <OSectionBlock>
-            <template #text>
-              <h3 class="opacity-80 text-base mb-1">
-                Site Indexable
-              </h3>
-            </template>
-            <div class="px-3 py-2 space-y-5">
-              <div class="inline-flex gap-3 items-center">
+          </div>
+
+          <!-- Navigation -->
+          <nav class="flex items-center gap-1 sm:gap-2">
+            <!-- Nav Tabs -->
+            <div class="nav-tabs">
+              <button
+                v-for="item of navItems"
+                :key="item.value"
+                type="button"
+                class="nav-tab"
+                :class="[
+                  tab === item.value ? 'active' : '',
+                  loading ? 'opacity-50 pointer-events-none' : '',
+                ]"
+                @click="tab = item.value"
+              >
+                <UTooltip
+                  :text="item.label"
+                  :delay-duration="300"
+                >
+                  <div class="nav-tab-inner">
+                    <UIcon
+                      :name="item.icon"
+                      class="text-base sm:text-lg"
+                      :class="tab === item.value ? 'text-[var(--seo-green)]' : ''"
+                    />
+                    <span class="nav-label">{{ item.label }}</span>
+                  </div>
+                </UTooltip>
+              </button>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-1">
+              <UTooltip
+                text="Refresh"
+                :delay-duration="300"
+              >
+                <UButton
+                  square
+                  variant="ghost"
+                  color="neutral"
+                  size="sm"
+                  icon="carbon:reset"
+                  class="nav-action"
+                  :class="{ 'refresh-spinning': refreshing }"
+                  :disabled="refreshing"
+                  @click="refresh"
+                />
+              </UTooltip>
+
+              <UTooltip
+                text="GitHub"
+                :delay-duration="300"
+              >
+                <UButton
+                  square
+                  variant="ghost"
+                  color="neutral"
+                  size="sm"
+                  icon="simple-icons:github"
+                  to="https://github.com/nuxt-modules/robots"
+                  target="_blank"
+                  class="nav-action hidden sm:flex"
+                />
+              </UTooltip>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <div
+        class="flex-1 flex flex-col p-3 sm:p-4"
+        style="min-height: calc(100vh - 60px);"
+      >
+        <main class="mx-auto flex flex-col w-full max-w-7xl">
+          <div
+            v-if="!globalDebug || globalDebugFetch.status.value === 'pending' || loading"
+            class="flex items-center justify-center py-20"
+          >
+            <UIcon
+              name="carbon:circle-dash"
+              class="animate-spin text-3xl text-[var(--color-text-muted)]"
+            />
+          </div>
+          <template v-else-if="globalDebugFetch.error.value">
+            <div class="empty-state card">
+              <UIcon
+                name="carbon:warning"
+                class="empty-state-icon text-red-500"
+              />
+              <p class="text-sm font-medium mb-1">
+                Error loading debug data
+              </p>
+              <p class="text-xs opacity-70 max-w-xs">
+                {{ globalDebugFetch.error.value }}
+              </p>
+            </div>
+          </template>
+          <template v-else>
+            <!-- Overview Tab -->
+            <div
+              v-if="tab === 'overview'"
+              class="space-y-5 animate-fade-up"
+            >
+              <div class="flex items-center justify-between">
                 <div>
-                  <NIcon v-if="globalDebugData?.indexable" icon="carbon:checkmark-filled" class="text-green-300" />
-                  <NIcon v-else icon="carbon:warning-filled" class="text-red-300" />
+                  <h2 class="text-lg font-semibold mb-1">
+                    Overview
+                  </h2>
+                  <p class="text-xs text-[var(--color-text-muted)]">
+                    Page and site indexability status.
+                  </p>
                 </div>
-                <div v-if="globalDebugData?.indexable">
-                  Robots can crawl your site.
-                </div>
-                <div v-else>
-                  Robots are blocked from crawling your site.
+
+                <!-- Environment Toggle -->
+                <div class="nav-tabs">
+                  <button
+                    v-for="env of ['Production', 'Development']"
+                    :key="env"
+                    type="button"
+                    class="nav-tab"
+                    :class="env === envTab ? 'active' : ''"
+                    @click="envTab = env"
+                  >
+                    <div class="nav-tab-inner">
+                      <span class="text-xs sm:text-sm">{{ env }}</span>
+                    </div>
+                  </button>
                 </div>
               </div>
-              <ul>
-                <li v-for="(hint, key) in globalDebugData?.hints" :key="key">
-                  <p class="opacity-70 text-sm">
-                    {{ hint.replace(' with ?mockProductionEnv query.', '.') }}
-                  </p>
-                </li>
-              </ul>
+
+              <!-- Page Indexable -->
+              <OSectionBlock
+                icon="carbon:document"
+                text="Page Indexable"
+              >
+                <div v-if="!pathDebugData" class="flex items-center justify-center py-6">
+                  <UIcon
+                    name="carbon:circle-dash"
+                    class="animate-spin text-xl text-[var(--color-text-muted)]"
+                  />
+                </div>
+                <div v-else class="space-y-4">
+                  <div class="flex items-center gap-3">
+                    <div v-if="pathDebugData?.indexable && pathDebugData.crawlable" class="status-enabled">
+                      <UIcon name="carbon:checkmark" class="text-sm" />
+                      <span>Indexable</span>
+                    </div>
+                    <div v-else class="status-disabled">
+                      <UIcon name="carbon:warning" class="text-sm" />
+                      <span>Not Indexable</span>
+                    </div>
+                    <span class="text-sm text-[var(--color-text-muted)]">
+                      <template v-if="!pathDebugData.crawlable">
+                        Robots are not allowed to access <code class="px-1 py-0.5 rounded bg-[var(--color-surface-sunken)] text-xs">{{ path }}</code>.
+                      </template>
+                      <template v-else-if="!pathDebugData.indexable">
+                        Robots can access but not index <code class="px-1 py-0.5 rounded bg-[var(--color-surface-sunken)] text-xs">{{ path }}</code>.
+                      </template>
+                      <template v-else>
+                        Robots can access and crawl <code class="px-1 py-0.5 rounded bg-[var(--color-surface-sunken)] text-xs">{{ path }}</code>.
+                      </template>
+                    </span>
+                  </div>
+                  <OCodeBlock :code="metaTag" lang="html" />
+                  <OCodeBlock
+                    v-if="pathDebugData.robotsHeader"
+                    :code="`X-Robots-Tag: ${pathDebugData.robotsHeader}`"
+                    lang="bash"
+                  />
+                  <div
+                    v-if="pathDebugData?.debug"
+                    class="flex gap-2 flex-wrap"
+                  >
+                    <UBadge
+                      v-if="pathDebugData?.debug?.source"
+                      color="neutral"
+                      variant="subtle"
+                      size="xs"
+                    >
+                      Source: {{ pathDebugData?.debug?.source }}
+                    </UBadge>
+                    <UBadge
+                      v-if="pathDebugData?.debug?.line"
+                      color="neutral"
+                      variant="subtle"
+                      size="xs"
+                    >
+                      {{ pathDebugData?.debug?.line }}
+                    </UBadge>
+                  </div>
+                </div>
+              </OSectionBlock>
+
+              <!-- Site Indexable -->
+              <OSectionBlock
+                icon="carbon:earth"
+                text="Site Indexable"
+              >
+                <div class="space-y-4">
+                  <div class="flex items-center gap-3">
+                    <div v-if="globalDebugData?.indexable" class="status-enabled">
+                      <UIcon name="carbon:checkmark" class="text-sm" />
+                      <span>Crawlable</span>
+                    </div>
+                    <div v-else class="status-disabled">
+                      <UIcon name="carbon:warning" class="text-sm" />
+                      <span>Blocked</span>
+                    </div>
+                    <span class="text-sm text-[var(--color-text-muted)]">
+                      <template v-if="globalDebugData?.indexable">
+                        Robots can crawl your site.
+                      </template>
+                      <template v-else>
+                        Robots are blocked from crawling your site.
+                      </template>
+                    </span>
+                  </div>
+                  <div
+                    v-if="globalDebugData?.hints?.length"
+                    class="hint-callout"
+                  >
+                    <UIcon
+                      name="carbon:information"
+                      class="hint-callout-icon text-lg flex-shrink-0 mt-0.5"
+                    />
+                    <ul class="text-sm text-[var(--color-text-muted)] space-y-1">
+                      <li v-for="(hint, key) in globalDebugData?.hints" :key="key">
+                        {{ hint.replace(' with ?mockProductionEnv query.', '.') }}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </OSectionBlock>
+
+              <!-- robots.txt -->
+              <OSectionBlock
+                icon="carbon:document-blank"
+                text="/robots.txt"
+              >
+                <OCodeBlock :code="globalDebugData.robotsTxt" lang="robots-txt" />
+              </OSectionBlock>
             </div>
-          </OSectionBlock>
-          <OSectionBlock>
-            <template #text>
-              <h3 class="opacity-80 text-base mb-1">
-                /robots.txt
-              </h3>
-            </template>
-            <div class="px-3 py-2 space-y-5">
-              <OCodeBlock :code="globalDebugData.robotsTxt" lang="robots-txt" />
+
+            <!-- Debug Tab -->
+            <div
+              v-else-if="tab === 'debug'"
+              class="space-y-5 animate-fade-up"
+            >
+              <OSectionBlock
+                icon="carbon:settings"
+                text="Runtime Config"
+              >
+                <OCodeBlock
+                  :code="JSON.stringify(globalDebugData?.runtimeConfig || {}, null, 2)"
+                  lang="json"
+                />
+              </OSectionBlock>
             </div>
-          </OSectionBlock>
-        </div>
-        <div v-else-if="tab === 'debug'" class="h-full max-h-full overflow-hidden">
-          <OSectionBlock>
-            <template #text>
-              <h3 class="opacity-80 text-base mb-1">
-                <NIcon icon="carbon:settings" class="mr-1" />
-                Runtime Config
-              </h3>
-            </template>
-            <div class="px-3 py-2 space-y-5">
-              <OCodeBlock :code="JSON.stringify(globalDebugData?.runtimeConfig || {}, null, 2)" lang="json" />
+
+            <!-- Docs Tab -->
+            <div
+              v-else-if="tab === 'docs'"
+              class="h-full animate-fade-up"
+            >
+              <iframe
+                src="https://nuxtseo.com/robots"
+                class="w-full h-full border-none rounded-lg"
+                style="min-height: calc(100vh - 100px);"
+              />
             </div>
-          </OSectionBlock>
-        </div>
-        <div v-else-if="tab === 'docs'" class="h-full max-h-full overflow-hidden">
-          <iframe src="https://nuxtseo.com/robots" class="w-full h-full border-none" style="min-height: calc(100vh - 100px);" />
-        </div>
-      </main>
+          </template>
+        </main>
+      </div>
     </div>
-  </div>
+  </UApp>
 </template>
 
 <style>
-.tab-panels {
-  width: 100%;
+/* Header */
+.header {
+  border-bottom: 1px solid var(--color-border);
 }
-div[role="tabpanel"] {
-  width: 100%;
+
+.header-content {
   display: flex;
-}
-.splitpanes.default-theme .splitpanes__pane {
-  background-color: transparent !important;
-}
-.dark .splitpanes.default-theme .splitpanes__splitter {
-  background-color: transparent !important;
-  border-left: 1px solid rgba(156, 163, 175, 0.05);
-  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.05) 50%, rgba(0, 0, 0, 0));
-}
-.dark .splitpanes.default-theme .splitpanes__splitter:before, .splitpanes.default-theme .splitpanes__splitter:after {
-  background-color: rgba(156, 163, 175, 0.3) !important;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.625rem 1rem;
+  max-width: 80rem;
+  margin: 0 auto;
+  width: 100%;
 }
 
-header {
-  -webkit-backdrop-filter: blur(2px);
-  backdrop-filter: blur(2px);
-  background-color: #fffc;
+@media (min-width: 640px) {
+  .header-content {
+    padding: 0.75rem 1.25rem;
+  }
 }
 
-.dark header {
-  background-color: #111c;
+.divider {
+  width: 1px;
+  height: 1.25rem;
+  background: var(--color-border);
 }
 
-html {
-  --at-apply: font-sans;
-  overflow-y: scroll;
-  overscroll-behavior: none;
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+.brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--radius-sm);
+  background: oklch(65% 0.2 145 / 0.12);
+  color: var(--seo-green);
 }
-body::-webkit-scrollbar {
+
+/* Navigation tabs */
+.nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.25rem;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken);
+  border: 1px solid var(--color-border-subtle);
+}
+
+.nav-tab {
+  position: relative;
+  border-radius: var(--radius-sm);
+  transition: all 150ms cubic-bezier(0.22, 1, 0.36, 1);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.nav-tab-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.5rem;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+@media (min-width: 640px) {
+  .nav-tab-inner {
+    padding: 0.375rem 0.75rem;
+  }
+}
+
+.nav-tab:hover .nav-tab-inner {
+  color: var(--color-text);
+}
+
+.nav-tab.active {
+  background: var(--color-surface-elevated);
+  box-shadow: 0 1px 3px oklch(0% 0 0 / 0.08);
+}
+
+.dark .nav-tab.active {
+  box-shadow: 0 1px 3px oklch(0% 0 0 / 0.3);
+}
+
+.nav-tab.active .nav-tab-inner {
+  color: var(--color-text);
+}
+
+.nav-label {
   display: none;
 }
+
+@media (min-width: 640px) {
+  .nav-label {
+    display: inline;
+  }
+}
+
+.nav-action {
+  color: var(--color-text-muted) !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-action:hover {
+  color: var(--color-text) !important;
+  background: var(--color-surface-sunken) !important;
+}
+
+/* Base HTML */
+html {
+  font-family: var(--font-sans);
+  overflow-y: scroll;
+  overscroll-behavior: none;
+}
+
 body {
-  /* trap scroll inside iframe */
-  height: calc(100vh + 1px);
+  min-height: 100vh;
 }
 
 html.dark {
-  background: #111;
   color-scheme: dark;
 }
 
-/* Markdown */
-.n-markdown a {
-  --at-apply: text-primary hover:underline;
-}
-.prose a {
-  --uno: hover:text-primary;
-}
-.prose code::before {
-  content: ""
-}
-.prose code::after {
-  content: ""
-}
-.prose hr {
-  --uno: border-solid border-1 border-b border-base h-1px w-full block my-2 op50;
-}
-
-/* JSON Editor */
+/* Textarea */
 textarea {
-  background: #8881
+  background: var(--color-surface-sunken);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
 }
 
+textarea:focus {
+  border-color: var(--seo-green);
+  outline: none;
+}
+
+/* JSON Editor theme */
 :root {
-  --jse-theme-color: #fff !important;
-  --jse-text-color-inverse: #777 !important;
-  --jse-theme-color-highlight: #eee !important;
-  --jse-panel-background: #fff !important;
+  --jse-theme-color: var(--color-surface-elevated) !important;
+  --jse-text-color-inverse: var(--color-text-muted) !important;
+  --jse-theme-color-highlight: var(--color-surface-sunken) !important;
+  --jse-panel-background: var(--color-surface-elevated) !important;
   --jse-background-color: var(--jse-panel-background) !important;
-  --jse-error-color: #ee534150 !important;
+  --jse-error-color: oklch(65% 0.2 25 / 0.3) !important;
   --jse-main-border: none !important;
 }
 
-.dark, .jse-theme-dark {
-  --jse-panel-background: #111 !important;
-  --jse-theme-color: #111 !important;
-  --jse-text-color-inverse: #fff !important;
+.dark,
+.jse-theme-dark {
+  --jse-panel-background: var(--color-neutral-900) !important;
+  --jse-theme-color: var(--color-neutral-900) !important;
+  --jse-text-color-inverse: var(--color-neutral-300) !important;
   --jse-main-border: none !important;
 }
 
@@ -404,40 +562,17 @@ textarea {
 
 .jse-contents {
   border-width: 0 !important;
-  border-radius: 5px !important;
+  border-radius: var(--radius-md) !important;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar:horizontal {
-  height: 6px;
-}
-
-::-webkit-scrollbar-corner {
-  background: transparent;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--c-border);
-  border-radius: 1px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #8881;
-  transition: background 0.2s ease;
-  border-radius: 1px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #8885;
-}
-
+/* Hide scrollbar utility */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
   width: 0 !important;
   height: 0 !important;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
 }
 </style>

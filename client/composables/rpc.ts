@@ -1,4 +1,4 @@
-import type { NuxtDevtoolsClient, NuxtDevtoolsIframeClient } from '@nuxt/devtools-kit/types'
+import type { NuxtDevtoolsClient } from '@nuxt/devtools-kit/types'
 import type { $Fetch } from 'nitropack'
 import { onDevtoolsClientConnected } from '@nuxt/devtools-kit/iframe-client'
 import { ref, watchEffect } from 'vue'
@@ -8,9 +8,7 @@ export const appFetch = ref<$Fetch>()
 
 export const devtools = ref<NuxtDevtoolsClient>()
 
-export const devtoolsClient = ref<NuxtDevtoolsIframeClient>()
-
-export const colorMode = ref<'dark' | 'light'>('dark')
+export const colorMode = ref<'dark' | 'light'>()
 
 onDevtoolsClientConnected(async (client) => {
   appFetch.value = client.host.app.$fetch as $Fetch
@@ -26,5 +24,4 @@ onDevtoolsClientConnected(async (client) => {
     refreshSources()
   })
   devtools.value = client.devtools
-  devtoolsClient.value = client
 })

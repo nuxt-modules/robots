@@ -1,20 +1,23 @@
-import DevtoolsUIKit from '@nuxt/devtools-ui-kit'
 import { resolve } from 'pathe'
 
 export default defineNuxtConfig({
+  modules: [
+    '@nuxt/fonts',
+    '@nuxt/ui',
+  ],
   ssr: false,
 
-  modules: [
-    DevtoolsUIKit,
-  ],
+  content: false,
+  robots: false,
+  devtools: false,
 
-  devtools: {
-    enabled: false,
+  app: {
+    baseURL: '/__nuxt-robots',
   },
 
-  robots: {
-    enabled: false,
-  },
+  css: ['~/assets/css/global.css'],
+
+  compatibilityDate: '2025-03-13',
 
   nitro: {
     output: {
@@ -22,9 +25,33 @@ export default defineNuxtConfig({
     },
   },
 
-  app: {
-    baseURL: '/__nuxt-robots',
+  routeRules: {
+    '/**': {
+      headers: {
+        'x-frame-options': 'SAMEORIGIN',
+      },
+    },
   },
 
-  compatibilityDate: '2025-03-13',
+  fonts: {
+    families: [
+      { name: 'Hubot Sans' },
+    ],
+  },
+
+  vite: {
+    optimizeDeps: {
+      include: [
+        'shiki/core',
+        'shiki/engine/javascript',
+        '@shikijs/themes/vitesse-light',
+        '@shikijs/themes/vitesse-dark',
+        '@shikijs/langs/json',
+        '@shikijs/langs/html',
+        '@shikijs/langs/bash',
+        '@vueuse/core',
+        '@nuxt/devtools-kit/iframe-client',
+      ],
+    },
+  },
 })

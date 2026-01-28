@@ -44,6 +44,7 @@ export type BotName
     | 'baiduspider'
     | 'duckduckbot'
     | 'yahoo'
+    | 'applebot'
   // Social media bots
     | 'twitter'
     | 'facebook'
@@ -60,6 +61,10 @@ export type BotName
     | 'anthropic'
     | 'claude'
     | 'gpt'
+    | 'google-extended'
+    | 'applebot-extended'
+    | 'bytespider'
+    | 'diffbot'
     | 'google-news'
     | 'cohere'
     | 'commoncrawl'
@@ -171,6 +176,11 @@ export const KNOWN_SEARCH_BOTS: BotPattern[] = [
     pattern: 'slurp',
     name: 'yahoo',
   },
+  {
+    pattern: 'applebot',
+    name: 'applebot',
+    secondaryPatterns: ['apple.com/go/applebot'],
+  },
 ]
 
 export const SOCIAL_BOTS: BotPattern[] = [
@@ -241,6 +251,22 @@ export const AI_BOTS: BotPattern[] = [
     pattern: 'gptbot',
     name: 'gpt',
     secondaryPatterns: ['openai.com'],
+  },
+  {
+    pattern: 'google-extended',
+    name: 'google-extended',
+  },
+  {
+    pattern: 'applebot-extended',
+    name: 'applebot-extended',
+  },
+  {
+    pattern: 'bytespider',
+    name: 'bytespider',
+  },
+  {
+    pattern: 'diffbot',
+    name: 'diffbot',
   },
   {
     pattern: 'googlebot-news',

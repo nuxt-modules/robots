@@ -6,7 +6,7 @@ const { resolve } = createResolver(import.meta.url)
 
 process.env.NODE_ENV = 'production'
 await setup({
-  rootDir: resolve('../../.playground'),
+  rootDir: resolve('../../playground'),
   build: true,
   nuxtConfig: {
     robots: {

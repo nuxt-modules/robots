@@ -8,7 +8,7 @@ process.env.NODE_ENV = 'production'
 
 describe('robots:config hook - issue #233', async () => {
   await setup({
-    rootDir: resolve('../../.playground'),
+    rootDir: resolve('../../playground'),
     build: true,
     server: true,
     nuxtConfig: {

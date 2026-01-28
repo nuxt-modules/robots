@@ -13,7 +13,7 @@ node_modules
 **/.yarn/cache
 **/.yarn/*state*
 
-.playground/nuxt-runtime
+playground/nuxt-runtime
 
 # Generated dirs
 dist

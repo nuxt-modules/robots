@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest'
 const { resolve } = createResolver(import.meta.url)
 
 await setup({
-  rootDir: resolve('../../.playground'),
+  rootDir: resolve('../../playground'),
   build: true,
   server: true,
   nuxtConfig: {
