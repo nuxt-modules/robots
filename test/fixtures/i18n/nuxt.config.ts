@@ -22,6 +22,7 @@ export default defineNuxtConfig({
     baseUrl: 'https://nuxtseo.com',
     defaultLocale: 'en',
     strategy: 'prefix',
+    customRoutes: 'config',
     locales: [
       {
         code: 'en',
@@ -36,6 +37,12 @@ export default defineNuxtConfig({
         language: 'fr-FR',
       },
     ],
+    pages: {
+      'route-rules-custom-path': {
+        en: '/other',
+        fr: '/autre',
+      },
+    },
   },
 
   experimental: {

@@ -15,6 +15,7 @@ await setup({
       disallow: [
         '/secret',
         '/admin',
+        '/route-rules-custom-path',
       ],
     },
   },
@@ -22,22 +23,23 @@ await setup({
 
 describe('i18n', () => {
   it('basic', async () => {
-    expect(await $fetch('/robots.txt')).toMatchInlineSnapshot(`
-      "# START nuxt-robots (indexable)
-      User-agent: *
-      Disallow: /secret
-      Disallow: /en/secret
-      Disallow: /es/secret
-      Disallow: /fr/secret
-      Disallow: /admin
-      Disallow: /en/admin
-      Disallow: /es/admin
-      Disallow: /fr/admin
-
-      # END nuxt-robots"
-    `)
+    const robotsTxt = await $fetch<string>('/robots.txt')
+    // /secret and /admin get simple prefix expansion
+    expect(robotsTxt).toContain('Disallow: /secret')
+    expect(robotsTxt).toContain('Disallow: /en/secret')
+    expect(robotsTxt).toContain('Disallow: /es/secret')
+    expect(robotsTxt).toContain('Disallow: /fr/secret')
+    expect(robotsTxt).toContain('Disallow: /admin')
+    expect(robotsTxt).toContain('Disallow: /en/admin')
+    // /route-rules-custom-path gets custom i18n path resolution
+    expect(robotsTxt).toContain('Disallow: /en/other')
+    expect(robotsTxt).toContain('Disallow: /fr/autre')
+    expect(robotsTxt).toContain('Disallow: /es/route-rules-custom-path')
+    // should NOT contain the naive prefix expansion
+    expect(robotsTxt).not.toContain('Disallow: /en/route-rules-custom-path')
+    expect(robotsTxt).not.toContain('Disallow: /fr/route-rules-custom-path')
   })
   it('respects route rules', async () => {
-    expect((await $fetch('/en/route-rules/?mockProductionEnv=true')).match(/<meta name="robots" content="([^"]+)">/)[1]).toMatchInlineSnapshot(`"noindex, nofollow"`)
+    expect((await $fetch<string>('/en/route-rules/?mockProductionEnv=true')).match(/<meta name="robots" content="([^"]+)">/)?.[1]).toMatchInlineSnapshot(`"noindex, nofollow"`)
   })
 })
