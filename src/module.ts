@@ -437,6 +437,16 @@ export default defineNuxtModule<ModuleOptions>({
       isNuxtContentV2 = false
     }
 
+    nuxt.hook('nitro:build:public-assets', (nitro: any) => {
+      nitro.hooks.hook('close', async () => {
+        const outputPath = resolve(nitro.options.output.publicDir, '_robots.txt')
+        if (await fsp.stat(outputPath).catch(() => false)) {
+          await fsp.unlink(outputPath)
+          logger.debug('Deleted _robots.txt from output')
+        }
+      })
+    })
+
     nuxt.hook('modules:done', async () => {
       config.sitemap = asArray(config.sitemap)
       config.disallow = asArray(config.disallow)
@@ -542,6 +552,7 @@ export default defineNuxtModule<ModuleOptions>({
         pageMetaRobots,
       }
       nuxt.options.runtimeConfig['nuxt-robots'] = robotsRuntimeConfig as any
+      nuxt.options.runtimeConfig.public['nuxt-robots'] = robotsRuntimeConfig as any
     })
 
     registerTypeTemplates({ nuxt, config })
