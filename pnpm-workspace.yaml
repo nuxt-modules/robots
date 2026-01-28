@@ -1,13 +1,6 @@
-catalogMode: prefer
-
-cleanupUnusedCatalogs: true
-
-shellEmulator: true
-
-trustPolicy: no-downgrade
-
 packages:
   - client
+
 catalog:
   '@fingerprintjs/botd': ^2.0.0
   '@nuxt/kit': ^4.3.0
@@ -20,6 +13,9 @@ catalog:
   sirv: ^3.0.2
   std-env: ^3.10.0
   ufo: ^1.6.3
+
+catalogMode: prefer
+
 catalogs:
   dev:
     '@antfu/eslint-config': ^7.2.0
@@ -60,6 +56,9 @@ catalogs:
     vitest: ^4.0.18
     vue: ^3.5.27
     vue-router: ^4.6.4
+
+cleanupUnusedCatalogs: true
+
 onlyBuiltDependencies:
   - '@firebase/util'
   - '@parcel/watcher'
@@ -68,3 +67,6 @@ onlyBuiltDependencies:
   - protobufjs
   - unrs-resolver
   - vue-demi
+
+shellEmulator: true
+

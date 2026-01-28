@@ -1,6 +1,6 @@
-import { eventHandler } from '#imports'
+import { defineEventHandler } from 'h3'
 
-export default eventHandler((e) => {
+export default defineEventHandler((e) => {
   // used to test route rules
   return e.context._nitro.routeRules
 })

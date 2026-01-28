@@ -1,4 +1,1 @@
-imports.autoImport=false
-typescript.includeWorkspace=true
-modules[]=@nuxtjs/robots
-modules[]=@nuxt/content
+imports.autoImport=true
