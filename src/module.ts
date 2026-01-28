@@ -261,6 +261,19 @@ export default defineNuxtModule<ModuleOptions>({
       return
     }
 
+    // Allow `definePageMeta({ robots: false })` to set per-page robots rules
+    nuxt.options.experimental.extraPageMetaExtractionKeys = nuxt.options.experimental.extraPageMetaExtractionKeys || []
+    if (!nuxt.options.experimental.extraPageMetaExtractionKeys.includes('robots'))
+      nuxt.options.experimental.extraPageMetaExtractionKeys.push('robots')
+
+    const pageMetaRobots: Record<string, any> = {}
+    nuxt.hook('pages:resolved', (pages) => {
+      for (const page of pages) {
+        if (typeof page.meta?.robots !== 'undefined')
+          pageMetaRobots[page.path] = page.meta.robots
+      }
+    })
+
     if (nuxt.options.app.baseURL?.length > 1 && config.robotsTxt) {
       logger.error(`You are not allowed to generate a robots.txt with a base URL, please set \`{ robots: { robotsTxt: false } }\` in your nuxt.config.`)
       config.robotsTxt = false
@@ -526,6 +539,7 @@ export default defineNuxtModule<ModuleOptions>({
         robotsDisabledValue: config.robotsDisabledValue,
         cacheControl: config.cacheControl ?? 'max-age=14400, must-revalidate',
         botDetection: config.botDetection ?? true,
+        pageMetaRobots,
       }
       nuxt.options.runtimeConfig['nuxt-robots'] = robotsRuntimeConfig as any
     })

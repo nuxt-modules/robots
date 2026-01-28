@@ -85,7 +85,23 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
     }
   }
 
-  // 3. nitro route rules
+  // 3. page meta robots
+  const { pageMetaRobots } = useRuntimeConfigNuxtRobots(e)
+  const pageMetaRule = pageMetaRobots?.[withoutTrailingSlash(path)]
+  if (typeof pageMetaRule !== 'undefined') {
+    const normalised = normaliseRobotsRouteRule({ robots: pageMetaRule })
+    if (normalised && (typeof normalised.allow !== 'undefined' || typeof normalised.rule !== 'undefined')) {
+      return {
+        indexable: normalised.allow ?? false,
+        rule: normalised.rule || (normalised.allow ? robotsEnabledValue : robotsDisabledValue),
+        debug: {
+          source: 'Page Meta',
+        },
+      }
+    }
+  }
+
+  // 4. nitro route rules
   nitroApp._robotsRuleMatcher = nitroApp._robotsRuleMatcher || createNitroRouteRuleMatcher(e)
   let robotRouteRules = nitroApp._robotsRuleMatcher(path)
   let routeRulesPath = path

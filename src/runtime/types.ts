@@ -206,6 +206,7 @@ export interface NuxtRobotsRuntimeConfig {
   robotsDisabledValue: string
   cacheControl: string | false
   botDetection: boolean
+  pageMetaRobots: Record<string, RobotsValue>
 }
 
 export interface BotDetectionData {
