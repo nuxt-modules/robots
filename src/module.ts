@@ -18,7 +18,7 @@ import { readPackageJSON } from 'pkg-types'
 import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { AiBots, NonHelpfulBots } from './const'
 import { setupDevToolsUI } from './devtools'
-import { resolveI18nConfig, splitPathForI18nLocales } from './i18n'
+import { mapPathForI18nPages, resolveI18nConfig, splitPathForI18nLocales } from './i18n'
 import { isNuxtGenerate, resolveNitroPreset } from './kit'
 import { logger } from './logger'
 import { registerTypeTemplates } from './templates'
@@ -519,8 +519,16 @@ export default defineNuxtModule<ModuleOptions>({
       if (resolvedAutoI18n && resolvedAutoI18n.locales && resolvedAutoI18n.strategy !== 'no_prefix') {
         const i18n = resolvedAutoI18n
         for (const group of config.groups.filter(g => !g._skipI18n)) {
-          group.allow = asArray(group.allow || []).map(path => splitPathForI18nLocales(path, i18n)).flat()
-          group.disallow = asArray(group.disallow || []).map(path => splitPathForI18nLocales(path, i18n)).flat()
+          group.allow = asArray(group.allow || []).map((path) => {
+            if (typeof path !== 'string')
+              return path
+            return mapPathForI18nPages(path, i18n) || splitPathForI18nLocales(path, i18n)
+          }).flat()
+          group.disallow = asArray(group.disallow || []).map((path) => {
+            if (typeof path !== 'string')
+              return path
+            return mapPathForI18nPages(path, i18n) || splitPathForI18nLocales(path, i18n)
+          }).flat()
         }
       }
 

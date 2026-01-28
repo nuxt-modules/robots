@@ -186,6 +186,7 @@ export interface AutoI18nConfig {
   locales: NormalisedLocales
   defaultLocale: string
   strategy: 'prefix' | 'prefix_except_default' | 'prefix_and_default' | 'no_prefix'
+  pages?: Record<string, Record<string, string | false>>
 }
 
 export interface RobotsContext {
