@@ -31,7 +31,7 @@ catalogs:
     '@nuxt/devtools-ui-kit': ^3.1.1
     '@nuxt/fonts': ^0.13.0
     '@nuxt/module-builder': ^1.0.2
-    '@nuxt/test-utils': ^3.23.0
+    '@nuxt/test-utils': ^4.0.0
     '@nuxt/ui': ^4.4.0
     '@nuxtjs/color-mode': ^4.0.0
     '@nuxtjs/eslint-config-typescript': ^12.1.0
@@ -69,4 +69,3 @@ onlyBuiltDependencies:
   - vue-demi
 
 shellEmulator: true
-
