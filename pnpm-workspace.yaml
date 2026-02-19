@@ -55,7 +55,7 @@ catalogs:
     unocss: ^66.6.0
     vitest: ^4.0.18
     vue: ^3.5.27
-    vue-router: ^4.6.4
+    vue-router: ^5.0.3
 
 cleanupUnusedCatalogs: true
 
@@ -69,4 +69,3 @@ onlyBuiltDependencies:
   - vue-demi
 
 shellEmulator: true
-
