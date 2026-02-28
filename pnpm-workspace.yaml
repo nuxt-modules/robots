@@ -7,7 +7,7 @@ catalog:
   consola: ^3.4.2
   defu: ^6.1.4
   h3: ^1.15.5
-  nuxt-site-config: ^3.2.18
+  nuxt-site-config: ^3.2.21
   pathe: ^2.0.3
   pkg-types: ^2.3.0
   sirv: ^3.0.2
@@ -18,43 +18,43 @@ catalogMode: prefer
 
 catalogs:
   dev:
-    '@antfu/eslint-config': ^7.2.0
+    '@antfu/eslint-config': ^7.6.1
     '@arethetypeswrong/cli': ^0.18.2
     '@headlessui/vue': ^1.7.23
-    '@iconify-json/carbon': ^1.2.18
+    '@iconify-json/carbon': ^1.2.19
     '@iconify-json/logos': ^1.2.10
-    '@iconify-json/ri': ^1.2.7
-    '@iconify-json/simple-icons': ^1.2.68
-    '@iconify-json/tabler': ^1.2.26
-    '@nuxt/content': ^3.11.0
-    '@nuxt/devtools-kit': ^3.1.1
-    '@nuxt/devtools-ui-kit': ^3.1.1
-    '@nuxt/fonts': ^0.13.0
+    '@iconify-json/ri': ^1.2.10
+    '@iconify-json/simple-icons': ^1.2.71
+    '@iconify-json/tabler': ^1.2.28
+    '@nuxt/content': ^3.12.0
+    '@nuxt/devtools-kit': ^3.2.2
+    '@nuxt/devtools-ui-kit': ^3.2.2
+    '@nuxt/fonts': ^0.14.0
     '@nuxt/module-builder': ^1.0.2
     '@nuxt/test-utils': ^3.23.0
-    '@nuxt/ui': ^4.4.0
+    '@nuxt/ui': ^4.5.0
     '@nuxtjs/color-mode': ^4.0.0
     '@nuxtjs/eslint-config-typescript': ^12.1.0
-    '@nuxtjs/i18n': ^10.2.1
-    '@unocss/nuxt': ^66.6.0
-    '@unocss/preset-icons': ^66.6.0
-    '@unocss/preset-uno': ^66.6.0
-    '@unocss/runtime': ^66.6.0
-    '@vueuse/core': ^14.1.0
-    '@vueuse/nuxt': ^14.1.0
+    '@nuxtjs/i18n': ^10.2.3
+    '@unocss/nuxt': ^66.6.2
+    '@unocss/preset-icons': ^66.6.2
+    '@unocss/preset-uno': ^66.6.2
+    '@unocss/runtime': ^66.6.2
+    '@vueuse/core': ^14.2.1
+    '@vueuse/nuxt': ^14.2.1
     better-sqlite3: ^12.6.2
-    bumpp: ^10.4.0
-    eslint: ^9.39.2
+    bumpp: ^10.4.1
+    eslint: ^9.39.3
     execa: ^9.6.1
-    firebase-functions: ^7.0.4
-    happy-dom: ^20.4.0
+    firebase-functions: ^7.0.6
+    happy-dom: ^20.7.0
     nuxt: ^4.3.0
-    playwright-core: ^1.58.0
-    shiki: ^3.21.0
+    playwright-core: ^1.58.2
+    shiki: ^3.23.0
     typescript: ^5.9.3
-    unocss: ^66.6.0
+    unocss: ^66.6.2
     vitest: ^4.0.18
-    vue: ^3.5.27
+    vue: ^3.5.29
     vue-router: ^4.6.4
 
 cleanupUnusedCatalogs: true
@@ -69,4 +69,3 @@ onlyBuiltDependencies:
   - vue-demi
 
 shellEmulator: true
-

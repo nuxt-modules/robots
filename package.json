@@ -2,7 +2,7 @@
   "name": "@nuxtjs/robots",
   "type": "module",
   "version": "5.7.0",
-  "packageManager": "pnpm@10.28.2",
+  "packageManager": "pnpm@10.30.3",
   "description": "Tame the robots crawling and indexing your Nuxt site with ease.",
   "author": {
     "name": "Harlan Wilton",
@@ -61,7 +61,7 @@
     "test:attw": "attw --pack"
   },
   "peerDependencies": {
-    "zod": ">=3"
+    "zod": ">=3.25.76"
   },
   "peerDependenciesMeta": {
     "zod": {
