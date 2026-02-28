@@ -8,8 +8,8 @@ interface TemplateContext {
 }
 
 export function registerTypeTemplates({ nuxt }: TemplateContext) {
-  // Nuxt 4 uses nitropack/types, Nuxt 3 uses nitropack
-  const isNuxt4 = Number(nuxt.options.future?.compatibilityVersion) === 4
+  // Nuxt 4+ uses nitropack/types, Nuxt 3 uses nitropack
+  const isNuxt4 = Number(nuxt.options.future?.compatibilityVersion) >= 4
   const nitroModule = isNuxt4 ? 'nitropack/types' : 'nitropack'
 
   // Nuxt-only type augmentations (PageMeta)
