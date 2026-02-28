@@ -44,7 +44,7 @@ catalogs:
     '@vueuse/nuxt': ^14.1.0
     better-sqlite3: ^12.6.2
     bumpp: ^10.4.0
-    eslint: ^9.39.2
+    eslint: ^10.0.2
     execa: ^9.6.1
     firebase-functions: ^7.0.4
     happy-dom: ^20.4.0
@@ -69,4 +69,3 @@ onlyBuiltDependencies:
   - vue-demi
 
 shellEmulator: true
-
