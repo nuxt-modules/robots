@@ -58,7 +58,7 @@ export default defineEventHandler(async (e) => {
   const [source, line] = robotsHint ? robotsHint.split(',') : [null, null]
   return {
     rule: robotsContent,
-    indexable: !(robotsContent?.includes('noindex') && robotsHeader?.includes('noindex')),
+    indexable: !(robotsContent?.includes('noindex') || robotsHeader?.includes('noindex')),
     crawlable: !(source === '/robots.txt'),
     path,
     debug: {
