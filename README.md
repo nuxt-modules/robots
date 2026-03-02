@@ -42,12 +42,6 @@ Install `@nuxtjs/robots` dependency to your project:
 npx nuxi@latest module add robots
 ```
 
-> [!TIP]
-> Generate an Agent Skill for this package using [skilld](https://github.com/harlan-zw/skilld):
-> ```bash
-> npx skilld add @nuxtjs/robots
-> ```
-
 💡 Need a complete SEO solution for Nuxt? Check out [Nuxt SEO](https://nuxtseo.com).
 
 ## Documentation
@@ -62,7 +56,7 @@ npx nuxi@latest module add robots
 
 <p align="center">
   <a href="https://raw.githubusercontent.com/harlan-zw/static/main/sponsors.svg">
-    <img src='https://raw.githubusercontent.com/harlan-zw/static/main/sponsors.svg'/>
+    <img src='https://raw.githubusercontent.com/harlan-zw/static/main/sponsors.svg' alt='sponsors'/>
   </a>
 </p>
 
