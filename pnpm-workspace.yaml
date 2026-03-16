@@ -18,7 +18,7 @@ catalog:
   pathe: ^2.0.3
   pkg-types: ^2.3.0
   sirv: ^3.0.2
-  std-env: ^3.10.0
+  std-env: ^4.0.0
   ufo: ^1.6.3
 
 catalogs:
