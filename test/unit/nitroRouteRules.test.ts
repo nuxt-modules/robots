@@ -71,6 +71,16 @@ describe('normaliseRobotsRouteRule with new directives', () => {
     })
   })
 
+  it('should return undefined for undefined config', () => {
+    const result = normaliseRobotsRouteRule(undefined)
+    expect(result).toBeUndefined()
+  })
+
+  it('should return undefined for null config', () => {
+    const result = normaliseRobotsRouteRule(null)
+    expect(result).toBeUndefined()
+  })
+
   it('should handle standard directives', () => {
     const result = normaliseRobotsRouteRule({
       robots: 'index, follow',
