@@ -4,8 +4,6 @@ cleanupUnusedCatalogs: true
 
 shellEmulator: true
 trustPolicy: no-downgrade
-overrides:
-  vite: ^8.0.1
 trustPolicyExclude:
   - chokidar
   - semver
@@ -14,6 +12,8 @@ trustPolicyExclude:
 packages:
   - client
 
+overrides:
+  vite: ^8.0.1
 catalog:
   '@antfu/eslint-config': ^7.7.3
   '@fingerprintjs/botd': ^2.0.0
@@ -38,6 +38,7 @@ catalog:
   happy-dom: ^20.8.4
   nuxt: ^4.4.2
   nuxt-site-config: ^3.2.21
+  nuxtseo-shared: ^0.1.0
   pathe: ^2.0.3
   pkg-types: ^2.3.0
   shiki: ^4.0.2

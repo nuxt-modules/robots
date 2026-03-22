@@ -1,14 +1,17 @@
 import type { Collection } from '@nuxt/content'
+import { createContentSchemaFactory } from 'nuxtseo-shared/content'
 import { z } from 'zod'
 
-export const schema = z.object({
-  robots: z.union([z.string(), z.boolean()]).optional(),
-})
+const { defineSchema, asCollection, schema } = createContentSchemaFactory({
+  fieldName: 'robots',
+  label: 'robots',
+  docsUrl: 'https://nuxtseo.com/robots/guides/content',
+  buildSchema: _z => _z.union([_z.string(), _z.boolean()]).optional(),
+}, z)
 
+export { defineSchema as defineRobotsSchema, schema }
+
+/** @deprecated Use `defineRobotsSchema()` in your collection schema instead. See https://nuxtseo.com/robots/advanced/content */
 export function asRobotsCollection<T>(collection: Collection<T>): Collection<T> {
-  if (collection.type === 'page') {
-    // @ts-expect-error untyped
-    collection.schema = collection.schema ? schema.extend(collection.schema.shape) : schema
-  }
-  return collection
+  return asCollection(collection) as Collection<T>
 }
