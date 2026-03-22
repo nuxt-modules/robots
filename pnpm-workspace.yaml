@@ -9,11 +9,12 @@ trustPolicyExclude:
   - semver
   - undici-types
   - jose
+
 packages:
   - client
-
 overrides:
   vite: ^8.0.1
+
 catalog:
   '@antfu/eslint-config': ^7.7.3
   '@fingerprintjs/botd': ^2.0.0
@@ -34,11 +35,11 @@ catalog:
   eslint: ^10.1.0
   eslint-plugin-harlanzw: ^0.10.3
   firebase-functions: ^7.2.2
-  h3: ^1.15.9
+  h3: ^1.15.10
   happy-dom: ^20.8.4
   nuxt: ^4.4.2
-  nuxt-site-config: ^3.2.21
-  nuxtseo-shared: ^0.1.0
+  nuxt-site-config: ^4.0.0
+  nuxtseo-shared: ^0.1.1
   pathe: ^2.0.3
   pkg-types: ^2.3.0
   shiki: ^4.0.2
@@ -49,7 +50,6 @@ catalog:
   vitest: ^4.1.0
   vue: ^3.5.30
   vue-router: ^5.0.4
-
 catalogs:
   dev:
     '@arethetypeswrong/cli': ^0.18.2

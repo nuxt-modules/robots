@@ -3,12 +3,11 @@ import type { MaybeRef } from 'vue'
 import { createHighlighterCore } from 'shiki/core'
 import { createJavaScriptRegexEngine } from 'shiki/engine/javascript'
 import { computed, ref, toValue } from 'vue'
-import { devtools } from './rpc'
 
 export const shiki = ref<HighlighterCore>()
 
-export function loadShiki() {
-  return createHighlighterCore({
+export async function loadShiki() {
+  shiki.value = await createHighlighterCore({
     themes: [
       import('@shikijs/themes/vitesse-light'),
       import('@shikijs/themes/vitesse-dark'),
@@ -71,17 +70,16 @@ export function loadShiki() {
       }),
     ],
     engine: createJavaScriptRegexEngine(),
-  }).then((i) => {
-    shiki.value = i
   })
+
+  return shiki.value
 }
 
 export function useRenderCodeHighlight(code: MaybeRef<string>, lang: 'json' | 'html' | 'bash' | 'robots-txt') {
   return computed(() => {
-    const colorMode = devtools.value?.colorMode || 'light'
-    return shiki.value!.codeToHtml(toValue(code), {
+    return shiki.value!.codeToHtml(toValue(code) || '', {
       lang,
-      theme: colorMode === 'dark' ? 'vitesse-dark' : 'vitesse-light',
+      themes: { light: 'vitesse-light', dark: 'vitesse-dark' },
     }) || ''
   })
 }

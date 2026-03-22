@@ -1,29 +1,22 @@
 <script setup lang="ts">
 import { useAsyncData, useHead } from '#imports'
 import { useLocalStorage } from '@vueuse/core'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { appFetch, colorMode } from './composables/rpc'
 import { loadShiki } from './composables/shiki'
 import { envTab, path, refreshSources } from './util/logic'
 
 await loadShiki()
 
-const loading = ref(false)
-const refreshing = ref(false)
-
-async function refresh() {
-  if (refreshing.value)
-    return
-  refreshing.value = true
-  loading.value = true
-  refreshSources()
-  setTimeout(() => {
-    loading.value = false
-    refreshing.value = false
-  }, 300)
+interface GlobalDebugData {
+  indexable: boolean
+  hints: string[]
+  runtimeConfig: { version: string }
+  robotsTxt: string
+  validation: { errors: string[], groups: number, sitemaps: string[] }
 }
 
-const globalDebugFetch = useAsyncData<{ indexable: boolean, hints: string[], runtimeConfig: { version: string }, robotsTxt: string }>(() => {
+const globalDebugFetch = useAsyncData<GlobalDebugData>(() => {
   if (!appFetch.value || typeof appFetch.value !== 'function')
     return null
   const query: Record<string, any> = {}
@@ -47,7 +40,7 @@ const pathDebug = useAsyncData<any>(() => {
 })
 
 const pathDebugData = computed(() => pathDebug.data?.value)
-const globalDebugData = computed(() => globalDebug.value || {})
+const globalDebugData = computed(() => globalDebug.value || {} as GlobalDebugData)
 const version = computed(() => globalDebugData.value?.runtimeConfig?.version || '')
 
 const metaTag = computed(() => {
@@ -80,7 +73,6 @@ const navItems = [
       <!-- Header -->
       <header class="header glass sticky top-0 z-50">
         <div class="header-content">
-          <!-- Logo & Brand -->
           <div class="flex items-center gap-3 sm:gap-4">
             <a
               href="https://nuxtseo.com"
@@ -94,10 +86,7 @@ const navItems = [
 
             <div class="flex items-center gap-2">
               <div class="brand-icon">
-                <UIcon
-                  name="carbon:bot"
-                  class="text-base sm:text-lg"
-                />
+                <UIcon name="carbon:bot" class="text-base sm:text-lg" />
               </div>
               <h1 class="text-sm sm:text-base font-semibold tracking-tight text-[var(--color-text)]">
                 Robots
@@ -113,9 +102,7 @@ const navItems = [
             </div>
           </div>
 
-          <!-- Navigation -->
           <nav class="flex items-center gap-1 sm:gap-2">
-            <!-- Nav Tabs -->
             <div class="nav-tabs">
               <button
                 v-for="item of navItems"
@@ -124,14 +111,11 @@ const navItems = [
                 class="nav-tab"
                 :class="[
                   tab === item.value ? 'active' : '',
-                  loading ? 'opacity-50 pointer-events-none' : '',
+                  globalDebugFetch.status.value === 'pending' ? 'opacity-50 pointer-events-none' : '',
                 ]"
                 @click="tab = item.value"
               >
-                <UTooltip
-                  :text="item.label"
-                  :delay-duration="300"
-                >
+                <UTooltip :text="item.label" :delay-duration="300">
                   <div class="nav-tab-inner">
                     <UIcon
                       :name="item.icon"
@@ -144,31 +128,19 @@ const navItems = [
               </button>
             </div>
 
-            <!-- Actions -->
             <div class="flex items-center gap-1">
-              <UTooltip
-                text="Refresh"
-                :delay-duration="300"
-              >
+              <UTooltip text="Refresh" :delay-duration="300">
                 <UButton
-                  square
                   variant="ghost"
                   color="neutral"
                   size="sm"
                   icon="carbon:reset"
                   class="nav-action"
-                  :class="{ 'refresh-spinning': refreshing }"
-                  :disabled="refreshing"
-                  @click="refresh"
+                  @click="refreshSources"
                 />
               </UTooltip>
-
-              <UTooltip
-                text="GitHub"
-                :delay-duration="300"
-              >
+              <UTooltip text="GitHub" :delay-duration="300">
                 <UButton
-                  square
                   variant="ghost"
                   color="neutral"
                   size="sm"
@@ -184,51 +156,45 @@ const navItems = [
       </header>
 
       <!-- Main Content -->
-      <div
-        class="flex-1 flex flex-col p-3 sm:p-4"
-        style="min-height: calc(100vh - 60px);"
-      >
+      <div class="main-content">
         <main class="mx-auto flex flex-col w-full max-w-7xl">
+          <!-- Loading -->
           <div
-            v-if="!globalDebug || globalDebugFetch.status.value === 'pending' || loading"
+            v-if="!globalDebug || globalDebugFetch.status.value === 'pending'"
             class="flex items-center justify-center py-20"
           >
-            <UIcon
-              name="carbon:circle-dash"
-              class="animate-spin text-3xl text-[var(--color-text-muted)]"
-            />
+            <UIcon name="carbon:circle-dash" class="animate-spin text-3xl text-[var(--color-text-muted)]" />
           </div>
-          <template v-else-if="globalDebugFetch.error.value">
-            <div class="empty-state card">
-              <UIcon
-                name="carbon:warning"
-                class="empty-state-icon text-red-500"
-              />
-              <p class="text-sm font-medium mb-1">
-                Error loading debug data
-              </p>
-              <p class="text-xs opacity-70 max-w-xs">
-                {{ globalDebugFetch.error.value }}
-              </p>
-            </div>
-          </template>
+
+          <!-- Error -->
+          <div
+            v-else-if="globalDebugFetch.error.value"
+            class="flex flex-col items-center justify-center gap-3 py-16 text-center"
+          >
+            <UIcon name="carbon:warning" class="text-3xl text-red-500" />
+            <p class="text-sm font-medium">
+              Error loading debug data
+            </p>
+            <p class="text-xs text-[var(--color-text-muted)] max-w-xs">
+              {{ globalDebugFetch.error.value }}
+            </p>
+          </div>
+
           <template v-else>
             <!-- Overview Tab -->
             <div
               v-if="tab === 'overview'"
-              class="space-y-5 animate-fade-up"
+              class="stagger-children space-y-4"
             >
               <div class="flex items-center justify-between">
                 <div>
-                  <h2 class="text-lg font-semibold mb-1">
+                  <h2 class="text-lg font-semibold mb-0.5">
                     Overview
                   </h2>
                   <p class="text-xs text-[var(--color-text-muted)]">
                     Page and site indexability status.
                   </p>
                 </div>
-
-                <!-- Environment Toggle -->
                 <div class="nav-tabs">
                   <button
                     v-for="env of ['Production', 'Development']"
@@ -246,17 +212,11 @@ const navItems = [
               </div>
 
               <!-- Page Indexable -->
-              <OSectionBlock
-                icon="carbon:document"
-                text="Page Indexable"
-              >
+              <OSectionBlock icon="carbon:document" text="Page Indexable">
                 <div v-if="!pathDebugData" class="flex items-center justify-center py-6">
-                  <UIcon
-                    name="carbon:circle-dash"
-                    class="animate-spin text-xl text-[var(--color-text-muted)]"
-                  />
+                  <UIcon name="carbon:circle-dash" class="animate-spin text-xl text-[var(--color-text-muted)]" />
                 </div>
-                <div v-else class="space-y-4">
+                <div v-else class="space-y-3">
                   <div class="flex items-center gap-3">
                     <div v-if="pathDebugData?.indexable && pathDebugData.crawlable" class="status-enabled">
                       <UIcon name="carbon:checkmark" class="text-sm" />
@@ -268,13 +228,13 @@ const navItems = [
                     </div>
                     <span class="text-sm text-[var(--color-text-muted)]">
                       <template v-if="!pathDebugData.crawlable">
-                        Robots are not allowed to access <code class="px-1 py-0.5 rounded bg-[var(--color-surface-sunken)] text-xs">{{ path }}</code>.
+                        Robots cannot access <code class="inline-code">{{ path }}</code>.
                       </template>
                       <template v-else-if="!pathDebugData.indexable">
-                        Robots can access but not index <code class="px-1 py-0.5 rounded bg-[var(--color-surface-sunken)] text-xs">{{ path }}</code>.
+                        Robots can access but not index <code class="inline-code">{{ path }}</code>.
                       </template>
                       <template v-else>
-                        Robots can access and crawl <code class="px-1 py-0.5 rounded bg-[var(--color-surface-sunken)] text-xs">{{ path }}</code>.
+                        Robots can access and crawl <code class="inline-code">{{ path }}</code>.
                       </template>
                     </span>
                   </div>
@@ -284,36 +244,30 @@ const navItems = [
                     :code="`X-Robots-Tag: ${pathDebugData.robotsHeader}`"
                     lang="bash"
                   />
-                  <div
-                    v-if="pathDebugData?.debug"
-                    class="flex gap-2 flex-wrap"
-                  >
+                  <div v-if="pathDebugData?.debug" class="flex gap-2 flex-wrap">
                     <UBadge
-                      v-if="pathDebugData?.debug?.source"
+                      v-if="pathDebugData.debug.source"
                       color="neutral"
                       variant="subtle"
                       size="xs"
                     >
-                      Source: {{ pathDebugData?.debug?.source }}
+                      Source: {{ pathDebugData.debug.source }}
                     </UBadge>
                     <UBadge
-                      v-if="pathDebugData?.debug?.line"
+                      v-if="pathDebugData.debug.line"
                       color="neutral"
                       variant="subtle"
                       size="xs"
                     >
-                      {{ pathDebugData?.debug?.line }}
+                      {{ pathDebugData.debug.line }}
                     </UBadge>
                   </div>
                 </div>
               </OSectionBlock>
 
               <!-- Site Indexable -->
-              <OSectionBlock
-                icon="carbon:earth"
-                text="Site Indexable"
-              >
-                <div class="space-y-4">
+              <OSectionBlock icon="carbon:earth" text="Site Indexable">
+                <div class="space-y-3">
                   <div class="flex items-center gap-3">
                     <div v-if="globalDebugData?.indexable" class="status-enabled">
                       <UIcon name="carbon:checkmark" class="text-sm" />
@@ -324,24 +278,13 @@ const navItems = [
                       <span>Blocked</span>
                     </div>
                     <span class="text-sm text-[var(--color-text-muted)]">
-                      <template v-if="globalDebugData?.indexable">
-                        Robots can crawl your site.
-                      </template>
-                      <template v-else>
-                        Robots are blocked from crawling your site.
-                      </template>
+                      {{ globalDebugData?.indexable ? 'Robots can crawl your site.' : 'Robots are blocked from crawling your site.' }}
                     </span>
                   </div>
-                  <div
-                    v-if="globalDebugData?.hints?.length"
-                    class="hint-callout"
-                  >
-                    <UIcon
-                      name="carbon:information"
-                      class="hint-callout-icon text-lg flex-shrink-0 mt-0.5"
-                    />
+                  <div v-if="globalDebugData?.hints?.length" class="hint-callout">
+                    <UIcon name="carbon:information" class="hint-callout-icon text-lg flex-shrink-0 mt-0.5" />
                     <ul class="text-sm text-[var(--color-text-muted)] space-y-1">
-                      <li v-for="(hint, key) in globalDebugData?.hints" :key="key">
+                      <li v-for="(hint, key) in globalDebugData.hints" :key="key">
                         {{ hint.replace(' with ?mockProductionEnv query.', '.') }}
                       </li>
                     </ul>
@@ -350,23 +293,61 @@ const navItems = [
               </OSectionBlock>
 
               <!-- robots.txt -->
-              <OSectionBlock
-                icon="carbon:document-blank"
-                text="/robots.txt"
-              >
+              <OSectionBlock icon="carbon:document-blank" text="/robots.txt">
+                <template #actions>
+                  <div v-if="globalDebugData?.validation?.errors?.length" class="status-disabled">
+                    <UIcon name="carbon:warning" class="text-sm" />
+                    <span>{{ globalDebugData.validation.errors.length }} issue{{ globalDebugData.validation.errors.length === 1 ? '' : 's' }}</span>
+                  </div>
+                  <div v-else-if="globalDebugData?.validation" class="status-enabled">
+                    <UIcon name="carbon:checkmark" class="text-sm" />
+                    <span>Valid</span>
+                  </div>
+                </template>
                 <OCodeBlock :code="globalDebugData.robotsTxt" lang="robots-txt" />
+
+                <!-- Validation errors -->
+                <div v-if="globalDebugData?.validation?.errors?.length" class="validation-callout validation-callout--error">
+                  <div class="flex items-center gap-2 mb-2">
+                    <UIcon name="carbon:warning" class="text-sm" />
+                    <span class="text-xs font-semibold">Validation Issues</span>
+                  </div>
+                  <ul class="space-y-1">
+                    <li
+                      v-for="(err, i) in globalDebugData.validation.errors"
+                      :key="i"
+                      class="text-xs font-mono text-[var(--color-text-muted)]"
+                    >
+                      {{ err }}
+                    </li>
+                  </ul>
+                </div>
+
+                <!-- Sitemaps -->
+                <div v-if="globalDebugData?.validation?.sitemaps?.length" class="validation-callout validation-callout--info">
+                  <div class="flex items-center gap-2 mb-2">
+                    <UIcon name="carbon:map" class="text-sm" />
+                    <span class="text-xs font-semibold">Sitemaps</span>
+                  </div>
+                  <ul class="space-y-1">
+                    <li
+                      v-for="sitemap in globalDebugData.validation.sitemaps"
+                      :key="sitemap"
+                      class="text-xs font-mono text-[var(--color-text-muted)] truncate"
+                    >
+                      {{ sitemap }}
+                    </li>
+                  </ul>
+                </div>
               </OSectionBlock>
             </div>
 
             <!-- Debug Tab -->
             <div
               v-else-if="tab === 'debug'"
-              class="space-y-5 animate-fade-up"
+              class="stagger-children space-y-4"
             >
-              <OSectionBlock
-                icon="carbon:settings"
-                text="Runtime Config"
-              >
+              <OSectionBlock icon="carbon:settings" text="Runtime Config">
                 <OCodeBlock
                   :code="JSON.stringify(globalDebugData?.runtimeConfig || {}, null, 2)"
                   lang="json"
@@ -445,10 +426,7 @@ const navItems = [
 .nav-tab {
   position: relative;
   border-radius: var(--radius-sm);
-  transition: all 150ms cubic-bezier(0.22, 1, 0.36, 1);
-  background: transparent;
-  border: none;
-  cursor: pointer;
+  transition: background 150ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 150ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .nav-tab-inner {
@@ -496,14 +474,72 @@ const navItems = [
 
 .nav-action {
   color: var(--color-text-muted) !important;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .nav-action:hover {
   color: var(--color-text) !important;
   background: var(--color-surface-sunken) !important;
+}
+
+/* Main content wrapper */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem;
+  min-height: calc(100vh - 60px);
+}
+
+@media (min-width: 640px) {
+  .main-content {
+    padding: 1rem;
+  }
+}
+
+@media (max-height: 600px) {
+  .main-content {
+    padding: 0;
+    min-height: 0;
+  }
+}
+
+/* Inline code */
+.inline-code {
+  padding: 0.125rem 0.375rem;
+  border-radius: 4px;
+  background: var(--color-surface-sunken);
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+}
+
+/* Validation callouts */
+.validation-callout {
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  border: 1px solid;
+}
+
+.validation-callout--error {
+  background: oklch(65% 0.12 25 / 0.06);
+  border-color: oklch(65% 0.12 25 / 0.15);
+  color: oklch(55% 0.15 25);
+}
+
+.dark .validation-callout--error {
+  background: oklch(45% 0.1 25 / 0.1);
+  border-color: oklch(45% 0.1 25 / 0.2);
+  color: oklch(70% 0.12 25);
+}
+
+.validation-callout--info {
+  background: oklch(65% 0.15 145 / 0.06);
+  border-color: oklch(65% 0.15 145 / 0.15);
+  color: var(--seo-green);
+}
+
+.dark .validation-callout--info {
+  background: oklch(50% 0.12 145 / 0.1);
+  border-color: oklch(50% 0.12 145 / 0.2);
 }
 
 /* Base HTML */
@@ -528,7 +564,7 @@ textarea {
   border-radius: var(--radius-md);
 }
 
-textarea:focus {
+textarea:focus-visible {
   border-color: var(--seo-green);
   outline: none;
 }
@@ -552,10 +588,6 @@ textarea:focus {
   --jse-main-border: none !important;
 }
 
-.no-main-menu {
-  border: none !important;
-}
-
 .jse-main {
   min-height: 1em !important;
 }
@@ -563,16 +595,5 @@ textarea:focus {
 .jse-contents {
   border-width: 0 !important;
   border-radius: var(--radius-md) !important;
-}
-
-/* Hide scrollbar utility */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-  width: 0 !important;
-  height: 0 !important;
-}
-
-.no-scrollbar {
-  scrollbar-width: none;
 }
 </style>

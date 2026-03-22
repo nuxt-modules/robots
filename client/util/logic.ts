@@ -21,3 +21,5 @@ export const slowRefreshSources = useDebounceFn(() => {
 }, 1000)
 
 export const host = computed(() => withBase(base.value, `${window.location.protocol}//${hostname}`))
+
+export const previewSource = useLocalStorage<'local' | 'production'>('nuxt-robots:preview-source', 'local')
