@@ -1,0 +1,14 @@
+# see rfc 9309
+user-agent: ExampleBot
+disallow: /foo
+allow: /bar
+
+user-agent: examplebot
+disallow: /baz
+allow: /boo
+
+user-agent:
+disallow: /invalid
+
+user-agent: *
+disallow: /star
