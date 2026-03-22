@@ -5,7 +5,7 @@ import { generateRobotsTxt, parseRobotsTxt } from '../../src/runtime/util'
 describe('generateRobotsTxt', () => {
   it('yoast', async () => {
     // read fixture yoastRobots.txt
-    const robotsTxt = await fsp.readFile('./test/fixtures/yoastRobots.txt', { encoding: 'utf-8' })
+    const robotsTxt = await fsp.readFile('./test/fixtures/data/yoastRobots.txt', { encoding: 'utf-8' })
     const parsed = parseRobotsTxt(robotsTxt)
     const generated = generateRobotsTxt(parsed)
     expect(generated).toMatchInlineSnapshot(`
@@ -38,7 +38,7 @@ describe('generateRobotsTxt', () => {
 
   it('squareSpace', async () => {
     // read fixture yoastRobots.txt
-    const robotsTxt = await fsp.readFile('./test/fixtures/squareSpace.txt', { encoding: 'utf-8' })
+    const robotsTxt = await fsp.readFile('./test/fixtures/data/squareSpace.txt', { encoding: 'utf-8' })
     const parsed = parseRobotsTxt(robotsTxt)
     const generated = generateRobotsTxt(parsed)
     expect(robotsTxt.trim()).toEqual(generated.trim())
