@@ -66,6 +66,7 @@ jobs:
           node-version: lts/*
           cache: pnpm
       - run: pnpm i
+      - run: pnpm exec playwright-core install chromium
       - run: pnpm dev:prepare
       - run: pnpm prepare:fixtures
       - run: pnpm test
