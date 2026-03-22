@@ -39,7 +39,7 @@ catalog:
   happy-dom: ^20.8.4
   nuxt: ^4.4.2
   nuxt-site-config: ^4.0.0
-  nuxtseo-shared: ^0.1.1
+  nuxtseo-shared: ^0.1.2
   pathe: ^2.0.3
   pkg-types: ^2.3.0
   shiki: ^4.0.2
