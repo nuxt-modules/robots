@@ -5,7 +5,7 @@ const route = useRoute()
 const { data: page } = await useAsyncData(`page-${route.path}`, () => {
   return queryCollection('content').path(route.path).first()
 })
-useSeoMeta(page.value?.seo || {})
+useSeoMeta(page.value.seo)
 </script>
 
 <template>

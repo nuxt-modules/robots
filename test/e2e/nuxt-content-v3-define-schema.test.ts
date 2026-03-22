@@ -6,7 +6,6 @@ const { resolve } = createResolver(import.meta.url)
 
 await setup({
   rootDir: resolve('../fixtures/content-v3-define-schema'),
-  build: true,
 })
 
 describe('nuxt/content v3 defineRobotsSchema', () => {
