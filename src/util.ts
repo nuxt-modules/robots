@@ -705,7 +705,9 @@ export function getBotInfo(
   }
 }
 
-export function normaliseRobotsRouteRule(config: NitroRouteConfig) {
+export function normaliseRobotsRouteRule(config: NitroRouteConfig | undefined | null) {
+  if (!config)
+    return
   // parse allow
   let allow: boolean | undefined
   if (typeof config.robots === 'boolean')
