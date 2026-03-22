@@ -1,6 +1,7 @@
 import { defineEventHandler, getQuery } from 'h3'
 import { withQuery } from 'ufo'
 import { getPathRobotConfig } from '../../composables/getPathRobotConfig'
+import { extractRobotsMetaFromHtml } from '../../util/extractRobotsMetaFromHtml'
 
 export default defineEventHandler(async (e) => {
   const query = getQuery(e)
@@ -15,29 +16,26 @@ export default defineEventHandler(async (e) => {
   // try to fetch the page to get actual rendered meta tag
   const res = await $fetch.raw(withQuery(path, query)).catch(() => null)
   if (res) {
-    const html = res._data
-    robotsHeader = String(res.headers.get('x-robots-tag'))
+    const html = String(res._data)
+    robotsHeader = res.headers.get('x-robots-tag') || null
 
-    // if mocking production, use production values from headers/meta
-    if (isMockProduction) {
-      const productionHeader = res.headers.get('x-robots-production')
-      if (productionHeader) {
-        robotsHeader = String(productionHeader)
+    const meta = extractRobotsMetaFromHtml(html)
+    if (meta) {
+      // if mocking production, prefer the production specific values
+      if (isMockProduction) {
+        const productionHeader = res.headers.get('x-robots-production')
+        if (productionHeader) {
+          robotsHeader = productionHeader
+        }
+        if (meta.productionContent) {
+          robotsContent = meta.productionContent
+          robotsHint = meta.hint
+        }
       }
-      // extract production content from data-production-content attribute
-      const productionMeta = String(html).match(/<meta[^>]+name=["']robots["'][^>]+data-production-content=["']([^"']+)["'](?:[^>]+data-hint=["']([^"']+)["'])?[^>]*>/i)
-      if (productionMeta) {
-        [, robotsContent = null, robotsHint = null] = productionMeta
-      }
-    }
-
-    // if not mocking production or no production values found, use regular values
-    if (!robotsContent) {
-      // get robots meta tag <meta name="robots" content="noindex, nofollow" data-hint="useRobotsRule">
-      // <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-      const robotsMeta = String(html).match(/<meta[^>]+name=["']robots["'][^>]+content=["']([^"']+)["'](?:[^>]+data-hint=["']([^"']+)["'])?[^>]*>/i)
-      if (robotsMeta) {
-        [, robotsContent = null, robotsHint = null] = robotsMeta
+      // use regular content value if not mocking production or no production values found
+      if (!robotsContent && meta.content) {
+        robotsContent = meta.content
+        robotsHint = meta.hint
       }
     }
   }
