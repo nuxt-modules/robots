@@ -1,5 +1,6 @@
 import type { Arrayable, AutoI18nConfig, NuxtRobotsRuntimeConfig, RobotsGroupInput, RobotsGroupResolved } from './util'
-import fsp from 'node:fs/promises'
+import { existsSync } from 'node:fs'
+import fsp, { readFile, writeFile } from 'node:fs/promises'
 import {
   addImports,
   addPlugin,
@@ -13,7 +14,7 @@ import {
 } from '@nuxt/kit'
 import { defu } from 'defu'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config/kit'
-import { relative } from 'pathe'
+import { join, relative } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
 import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { AiBots, NonHelpfulBots } from './const'
@@ -564,6 +565,41 @@ export default defineNuxtModule<ModuleOptions>({
     })
 
     registerTypeTemplates({ nuxt, config })
+
+    // Fix unenv process polyfill on Vercel Edge: Proxy + private class fields are incompatible.
+    // unenv's Process class uses private fields (#stdin, #stdout, #stderr, #cwd) but the
+    // process polyfill wraps it in a Proxy. Vercel Edge's minimal process object causes
+    // property lookups to fall through to processModule, where `this` is the Proxy (not the
+    // Process instance), causing "Cannot read private member" errors.
+    // TODO: remove once upstream unenv fix is released
+    if (nitroPreset === 'vercel-edge') {
+      const RE_REFLECT_HAS_MINIFIED = /Reflect\.has\(([\w$]+),([\w$]+)\)\?Reflect\.get\(\1,\2,([\w$]+)\):Reflect\.get\(([\w$]+),\2,\3\)/g
+      nuxt.hooks.hook('nitro:init', (nitro) => {
+        nitro.hooks.hook('compiled', async (_nitro) => {
+          const configuredEntry = nitro.options.rollupConfig?.output.entryFileNames
+          const serverEntry = join(_nitro.options.output.serverDir, typeof configuredEntry === 'string'
+            ? configuredEntry
+            : 'index.mjs')
+          if (!existsSync(serverEntry))
+            return
+          let contents = await readFile(serverEntry, 'utf-8')
+          const original = contents
+          contents = contents
+            .replaceAll(
+              'return Reflect.get(target, prop, receiver);\n\t}\n\treturn Reflect.get(processModule, prop, receiver)',
+              'return Reflect.get(target, prop, receiver);\n\t}\n\treturn Reflect.get(processModule, prop, processModule)',
+            )
+            .replace(
+              RE_REFLECT_HAS_MINIFIED,
+              'Reflect.has($1,$2)?Reflect.get($1,$2,$3):Reflect.get($4,$2,$4)',
+            )
+          if (contents !== original) {
+            await writeFile(serverEntry, contents, 'utf-8')
+            logger.debug('Patched unenv process polyfill for Vercel Edge compatibility.')
+          }
+        })
+      })
+    }
 
     // only prerender for `nuxi generate`
     const isFirebase = nitroPreset === 'firebase'
