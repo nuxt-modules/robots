@@ -1,4 +1,0 @@
-User-agent: *
-Disallow:
-Sitemap: https://doyban.com/sitemap.xml
-Host: https://doyban.com

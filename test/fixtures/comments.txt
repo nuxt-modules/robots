@@ -1,4 +1,0 @@
-# line comment
-
-User-agent: *   # 1st inline comment
-Allow: /        # 2nd inline comment
