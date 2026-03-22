@@ -3,9 +3,9 @@ catalogMode: prefer
 cleanupUnusedCatalogs: true
 
 shellEmulator: true
-
 trustPolicy: no-downgrade
-
+overrides:
+  vite: ^8.0.1
 trustPolicyExclude:
   - chokidar
   - semver

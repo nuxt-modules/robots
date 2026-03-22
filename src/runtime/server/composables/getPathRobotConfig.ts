@@ -108,10 +108,9 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
   // if we're using i18n we need to strip leading prefixes so the rule will match
   // note this is for < v10 i18n behavior as it now handles route rules itself
   // TODO we may consider checking the version explicitly rather than the presence of the rules
-  if (runtimeConfig.public?.i18n?.locales && typeof robotRouteRules.robots === 'undefined') {
-    const { locales } = runtimeConfig.public.i18n as {
-      locales: { code: string }[]
-    }
+  const i18nConfig = (runtimeConfig.public as Record<string, any>)?.i18n as { locales?: { code: string }[] } | undefined
+  if (i18nConfig?.locales && typeof robotRouteRules.robots === 'undefined') {
+    const { locales } = i18nConfig
     const locale = locales.find(l => routeRulesPath.startsWith(`/${l.code}`))
     if (locale) {
       routeRulesPath = routeRulesPath.replace(`/${locale.code}`, '')
