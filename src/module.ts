@@ -35,6 +35,8 @@ import {
   validateRobots,
 } from './util'
 
+const RE_REFLECT_HAS_MINIFIED = /Reflect\.has\(([\w$]+),([\w$]+)\)\?Reflect\.get\(\1,\2,([\w$]+)\):Reflect\.get\(([\w$]+),\2,\3\)/g
+
 // Re-export runtime types used in type augmentation templates
 export type {
   HookRobotsConfigContext,
@@ -573,7 +575,6 @@ export default defineNuxtModule<ModuleOptions>({
     // Process instance), causing "Cannot read private member" errors.
     // TODO: remove once upstream unenv fix is released
     if (nitroPreset === 'vercel-edge') {
-      const RE_REFLECT_HAS_MINIFIED = /Reflect\.has\(([\w$]+),([\w$]+)\)\?Reflect\.get\(\1,\2,([\w$]+)\):Reflect\.get\(([\w$]+),\2,\3\)/g
       nuxt.hooks.hook('nitro:init', (nitro) => {
         nitro.hooks.hook('compiled', async (_nitro) => {
           const configuredEntry = nitro.options.rollupConfig?.output.entryFileNames
