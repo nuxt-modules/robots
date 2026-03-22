@@ -486,6 +486,8 @@ export default defineNuxtModule<ModuleOptions>({
           }, nuxt.options.routeRules[path])
         }
         Object.entries(nuxt.options.routeRules).forEach(([route, rules]) => {
+          if (!rules)
+            return
           const robotRule = normaliseRobotsRouteRule(rules)
           // only if a rule has been specified as robots.txt will cover disallows
           if (robotRule && !robotRule.allow && robotRule.rule) {
@@ -503,6 +505,8 @@ export default defineNuxtModule<ModuleOptions>({
       if (config.disallowNonIndexableRoutes) {
         // iterate the route rules and add any non indexable rules to disallow
         Object.entries(nuxt.options.routeRules || {}).forEach(([route, rules]) => {
+          if (!rules)
+            return
           const url = route.split('/').map(segment => segment.startsWith(':') ? '*' : segment).join('/')
           const robotsRule = normaliseRobotsRouteRule(rules)
           if (robotsRule && !robotsRule.allow) {
