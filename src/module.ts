@@ -33,6 +33,7 @@ import {
   ROBOT_DIRECTIVE_VALUES,
   validateRobots,
 } from './util'
+import { setupVercelEdgeFix } from './vercel-edge-fix'
 
 // Re-export runtime types used in type augmentation templates
 export type {
@@ -651,5 +652,8 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.nitro.alias['#internal/nuxt-simple-robots'] = resolve('./runtime/server/composables')
     nuxt.options.nitro.alias['#internal/nuxt-robots'] = resolve('./runtime/server/composables')
     nuxt.options.alias['#robots'] = resolve('./runtime')
+
+    // Fix unenv v2 process polyfill breaking Vercel Edge (private class fields + Proxy)
+    setupVercelEdgeFix(nuxt)
   },
 })
