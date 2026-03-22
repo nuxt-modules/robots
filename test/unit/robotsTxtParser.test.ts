@@ -5,7 +5,7 @@ import { parseRobotsTxt } from '../../src/runtime/util'
 describe('robotsTxtParser', () => {
   it('yoast', async () => {
     // read fixture yoastRobots.txt
-    const robotsTxt = await fsp.readFile('./test/fixtures/yoastRobots.txt', { encoding: 'utf-8' })
+    const robotsTxt = await fsp.readFile('./test/fixtures/data/yoastRobots.txt', { encoding: 'utf-8' })
     expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
       {
         "errors": [],
@@ -60,7 +60,7 @@ describe('robotsTxtParser', () => {
 
   it('squareSpace', async () => {
     // read fixture yoastRobots.txt
-    const robotsTxt = await fsp.readFile('./test/fixtures/squareSpace.txt', { encoding: 'utf-8' })
+    const robotsTxt = await fsp.readFile('./test/fixtures/data/squareSpace.txt', { encoding: 'utf-8' })
     expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
       {
         "errors": [],
@@ -235,7 +235,7 @@ describe('robotsTxtParser', () => {
 
   it('robots #36', async () => {
     // read fixture yoastRobots.txt
-    const robotsTxt = await fsp.readFile('./test/fixtures/issue36.txt', { encoding: 'utf-8' })
+    const robotsTxt = await fsp.readFile('./test/fixtures/data/issue36.txt', { encoding: 'utf-8' })
     expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
       {
         "errors": [],
@@ -263,7 +263,7 @@ describe('robotsTxtParser', () => {
 
   it('yandex', async () => {
     // read fixture yandex.txt
-    const robotsTxt = await fsp.readFile('./test/fixtures/yandex.txt', { encoding: 'utf-8' })
+    const robotsTxt = await fsp.readFile('./test/fixtures/data/yandex.txt', { encoding: 'utf-8' })
     expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
       {
         "errors": [],
@@ -306,7 +306,7 @@ describe('robotsTxtParser', () => {
 
   it('case-insensitive startgroupline', async () => {
     // read fixture startgroupRobots.txt
-    const robotsTxt = await fsp.readFile('./test/fixtures/startgroupRobots.txt', { encoding: 'utf-8' })
+    const robotsTxt = await fsp.readFile('./test/fixtures/data/startgroupRobots.txt', { encoding: 'utf-8' })
     expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
       {
         "errors": [],
@@ -383,7 +383,7 @@ Unknown: /bar
   })
 
   it('comments do not error', async () => {
-    const robotsTxt = await fsp.readFile('./test/fixtures/comments.txt', { encoding: 'utf-8' })
+    const robotsTxt = await fsp.readFile('./test/fixtures/data/comments.txt', { encoding: 'utf-8' })
     expect(parseRobotsTxt(robotsTxt)).toMatchInlineSnapshot(`
       {
         "errors": [],
