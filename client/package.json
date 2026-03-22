@@ -3,15 +3,15 @@
   "private": true,
   "devDependencies": {
     "@iconify-json/carbon": "catalog:dev",
-    "@iconify-json/simple-icons": "catalog:dev",
-    "@nuxt/devtools-kit": "catalog:dev",
+    "@iconify-json/simple-icons": "catalog:",
+    "@nuxt/devtools-kit": "catalog:",
     "@nuxt/fonts": "catalog:dev",
     "@nuxt/kit": "catalog:",
-    "@nuxt/ui": "catalog:dev",
+    "@nuxt/ui": "catalog:",
     "@vueuse/core": "catalog:dev",
-    "nuxt": "catalog:dev",
-    "shiki": "catalog:dev",
-    "vue": "catalog:dev",
-    "vue-router": "catalog:dev"
+    "nuxt": "catalog:",
+    "shiki": "catalog:",
+    "vue": "catalog:",
+    "vue-router": "catalog:"
   }
 }

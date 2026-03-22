@@ -76,7 +76,7 @@ export function loadShiki() {
   })
 }
 
-export function renderCodeHighlight(code: MaybeRef<string>, lang: 'json' | 'html' | 'bash' | 'robots-txt') {
+export function useRenderCodeHighlight(code: MaybeRef<string>, lang: 'json' | 'html' | 'bash' | 'robots-txt') {
   return computed(() => {
     const colorMode = devtools.value?.colorMode || 'light'
     return shiki.value!.codeToHtml(toValue(code), {
