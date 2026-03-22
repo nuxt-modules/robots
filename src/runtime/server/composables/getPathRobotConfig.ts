@@ -47,7 +47,11 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
     ...nitroApp._robots.ctx.groups.filter(g => g.userAgent.includes('*')),
   ]
   for (const group of groups) {
-    if (group._indexable === false) {
+    // When skipSiteIndexable is set, skip both the group-level _indexable shortcut
+    // and the blanket disallow: / rule, as these are site-level indexability signals.
+    // This allows sitemaps to still generate URLs in non-indexable environments (e.g. staging)
+    // while still respecting specific path disallow rules like /admin.
+    if (!options?.skipSiteIndexable && group._indexable === false) {
       return {
         indexable: false,
         rule: robotsDisabledValue,
@@ -57,7 +61,10 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
         },
       }
     }
-    const robotsTxtRule = matchPathToRule(path, group._rules || [])
+    const rules = options?.skipSiteIndexable
+      ? (group._rules || []).filter(r => r.pattern !== '/')
+      : (group._rules || [])
+    const robotsTxtRule = matchPathToRule(path, rules)
     if (robotsTxtRule) {
       if (!robotsTxtRule.allow) {
         return {
