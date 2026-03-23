@@ -11,6 +11,8 @@ export async function resolveRobotsTxtContext(e: H3Event | undefined, nitro: Nit
   const generateRobotsTxtCtx: HookRobotsConfigContext = {
     event: e,
     context: e ? 'robots.txt' : 'init',
+    errors: [],
+    warnings: [],
     ...JSON.parse(JSON.stringify({ groups, sitemaps })),
   }
   await nitro.hooks.callHook('robots:config', generateRobotsTxtCtx)

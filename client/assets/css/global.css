@@ -392,6 +392,23 @@ h1, h2, h3, h4, h5, h6 {
   color: oklch(70% 0.12 25);
 }
 
+.status-warning {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  background: oklch(75% 0.12 85 / 0.1);
+  color: oklch(55% 0.15 85);
+}
+
+.dark .status-warning {
+  background: oklch(55% 0.1 85 / 0.15);
+  color: oklch(75% 0.12 85);
+}
+
 /* Hint/tip callout */
 .hint-callout {
   display: flex;

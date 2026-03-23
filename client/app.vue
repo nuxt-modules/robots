@@ -23,7 +23,7 @@ async function refresh() {
   }, 300)
 }
 
-const globalDebugFetch = useAsyncData<{ indexable: boolean, hints: string[], runtimeConfig: { version: string }, robotsTxt: string }>(() => {
+const globalDebugFetch = useAsyncData<{ indexable: boolean, hints: string[], runtimeConfig: { version: string }, robotsTxt: string, validation: { errors: string[], warnings: string[], groups: number, sitemaps: string[] } }>(() => {
   if (!appFetch.value || typeof appFetch.value !== 'function')
     return null
   const query: Record<string, any> = {}
@@ -354,7 +354,72 @@ const navItems = [
                 icon="carbon:document-blank"
                 text="/robots.txt"
               >
+                <template #actions>
+                  <div v-if="globalDebugData?.validation?.errors?.length" class="status-disabled">
+                    <UIcon name="carbon:warning" class="text-sm" />
+                    <span>{{ globalDebugData.validation.errors.length }} error{{ globalDebugData.validation.errors.length === 1 ? '' : 's' }}</span>
+                  </div>
+                  <div v-if="globalDebugData?.validation?.warnings?.length" class="status-warning">
+                    <UIcon name="carbon:warning-alt" class="text-sm" />
+                    <span>{{ globalDebugData.validation.warnings.length }} warning{{ globalDebugData.validation.warnings.length === 1 ? '' : 's' }}</span>
+                  </div>
+                  <div v-else-if="globalDebugData?.validation && !globalDebugData?.validation?.errors?.length" class="status-enabled">
+                    <UIcon name="carbon:checkmark" class="text-sm" />
+                    <span>Valid</span>
+                  </div>
+                </template>
                 <OCodeBlock :code="globalDebugData.robotsTxt" lang="robots-txt" />
+
+                <!-- Validation errors -->
+                <div v-if="globalDebugData?.validation?.errors?.length" class="validation-callout validation-callout--error">
+                  <div class="flex items-center gap-2 mb-2">
+                    <UIcon name="carbon:warning" class="text-sm" />
+                    <span class="text-xs font-semibold">Validation Issues</span>
+                  </div>
+                  <ul class="space-y-1">
+                    <li
+                      v-for="(err, i) in globalDebugData.validation.errors"
+                      :key="i"
+                      class="text-xs font-mono text-[var(--color-text-muted)]"
+                    >
+                      {{ err }}
+                    </li>
+                  </ul>
+                </div>
+
+                <!-- Validation warnings -->
+                <div v-if="globalDebugData?.validation?.warnings?.length" class="validation-callout validation-callout--warning">
+                  <div class="flex items-center gap-2 mb-2">
+                    <UIcon name="carbon:warning-alt" class="text-sm" />
+                    <span class="text-xs font-semibold">Warnings</span>
+                  </div>
+                  <ul class="space-y-1">
+                    <li
+                      v-for="(warn, i) in globalDebugData.validation.warnings"
+                      :key="i"
+                      class="text-xs font-mono text-[var(--color-text-muted)]"
+                    >
+                      {{ warn }}
+                    </li>
+                  </ul>
+                </div>
+
+                <!-- Sitemaps -->
+                <div v-if="globalDebugData?.validation?.sitemaps?.length" class="validation-callout validation-callout--info">
+                  <div class="flex items-center gap-2 mb-2">
+                    <UIcon name="carbon:map" class="text-sm" />
+                    <span class="text-xs font-semibold">Sitemaps</span>
+                  </div>
+                  <ul class="space-y-1">
+                    <li
+                      v-for="sitemap in globalDebugData.validation.sitemaps"
+                      :key="sitemap"
+                      class="text-xs font-mono text-[var(--color-text-muted)] truncate"
+                    >
+                      {{ sitemap }}
+                    </li>
+                  </ul>
+                </div>
               </OSectionBlock>
             </div>
 
@@ -393,6 +458,48 @@ const navItems = [
 </template>
 
 <style>
+/* Validation callouts */
+.validation-callout {
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  border: 1px solid;
+}
+
+.validation-callout--error {
+  background: oklch(65% 0.12 25 / 0.06);
+  border-color: oklch(65% 0.12 25 / 0.15);
+  color: oklch(55% 0.15 25);
+}
+
+.dark .validation-callout--error {
+  background: oklch(45% 0.1 25 / 0.1);
+  border-color: oklch(45% 0.1 25 / 0.2);
+  color: oklch(70% 0.12 25);
+}
+
+.validation-callout--warning {
+  background: oklch(75% 0.12 85 / 0.06);
+  border-color: oklch(75% 0.12 85 / 0.15);
+  color: oklch(55% 0.15 85);
+}
+
+.dark .validation-callout--warning {
+  background: oklch(55% 0.1 85 / 0.1);
+  border-color: oklch(55% 0.1 85 / 0.2);
+  color: oklch(75% 0.12 85);
+}
+
+.validation-callout--info {
+  background: oklch(65% 0.15 145 / 0.06);
+  border-color: oklch(65% 0.15 145 / 0.15);
+  color: var(--seo-green);
+}
+
+.dark .validation-callout--info {
+  background: oklch(50% 0.12 145 / 0.1);
+  border-color: oklch(50% 0.12 145 / 0.2);
+}
+
 /* Header */
 .header {
   border-bottom: 1px solid var(--color-border);
