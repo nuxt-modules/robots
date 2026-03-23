@@ -1,5 +1,5 @@
 import { useDebounceFn, useLocalStorage } from '@vueuse/core'
-import { withBase } from 'ufo'
+import { hasProtocol, withBase } from 'ufo'
 import { computed, ref } from 'vue'
 
 export const envTab = useLocalStorage('nuxt-robots:env-tab', 'Production')
@@ -22,4 +22,15 @@ export const slowRefreshSources = useDebounceFn(() => {
 
 export const host = computed(() => withBase(base.value, `${window.location.protocol}//${hostname}`))
 
+// Production preview state
 export const previewSource = useLocalStorage<'local' | 'production'>('nuxt-robots:preview-source', 'local')
+export const productionUrl = ref<string>('')
+
+export const hasProductionUrl = computed(() => {
+  const url = productionUrl.value
+  if (!url || !hasProtocol(url))
+    return false
+  return !url.includes('localhost') && !url.includes('127.0.0.1')
+})
+
+export const isProductionMode = computed(() => previewSource.value === 'production' && hasProductionUrl.value)

@@ -24,6 +24,7 @@ export default defineEventHandler(async (e) => {
     },
     validation: {
       errors: parsed.errors,
+      warnings: parsed.warnings,
       groups: parsed.groups.length,
       sitemaps: parsed.sitemaps,
     },

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useAsyncData, useHead } from '#imports'
 import { useLocalStorage } from '@vueuse/core'
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { appFetch, colorMode } from './composables/rpc'
 import { loadShiki } from './composables/shiki'
-import { envTab, path, refreshSources } from './util/logic'
+import { envTab, hasProductionUrl, isProductionMode, path, previewSource, productionUrl, refreshSources } from './util/logic'
 
 await loadShiki()
 
@@ -13,7 +13,8 @@ interface GlobalDebugData {
   hints: string[]
   runtimeConfig: { version: string }
   robotsTxt: string
-  validation: { errors: string[], groups: number, sitemaps: string[] }
+  siteConfig?: { url?: string }
+  validation: { errors: string[], warnings: string[], groups: number, sitemaps: string[] }
 }
 
 const globalDebugFetch = useAsyncData<GlobalDebugData>(() => {
@@ -48,6 +49,21 @@ const metaTag = computed(() => {
   return `<meta name="robots" content="${content}">`
 })
 
+// Sync production URL from debug data
+watch(globalDebug, (val) => {
+  if (val?.siteConfig?.url)
+    productionUrl.value = val.siteConfig.url
+}, { immediate: true })
+
+const productionHostname = computed(() => {
+  try {
+    return new URL(productionUrl.value).hostname
+  }
+  catch {
+    return productionUrl.value
+  }
+})
+
 const isDark = computed(() => colorMode.value === 'dark')
 useHead({
   title: 'Nuxt Robots',
@@ -58,11 +74,23 @@ useHead({
 
 const tab = useLocalStorage('nuxt-robots:tab', 'overview')
 
-const navItems = [
-  { value: 'overview', icon: 'carbon:dashboard-reference', label: 'Overview' },
-  { value: 'debug', icon: 'carbon:debug', label: 'Debug' },
-  { value: 'docs', icon: 'carbon:book', label: 'Docs' },
+const allNavItems = [
+  { value: 'overview', icon: 'carbon:dashboard-reference', label: 'Overview', devOnly: false },
+  { value: 'debug', icon: 'carbon:debug', label: 'Debug', devOnly: true },
+  { value: 'docs', icon: 'carbon:book', label: 'Docs', devOnly: false },
 ]
+
+const navItems = computed(() =>
+  isProductionMode.value
+    ? allNavItems.filter(item => !item.devOnly)
+    : allNavItems,
+)
+
+// Redirect to overview when switching to production mode from a dev-only tab
+watch(isProductionMode, (isProd) => {
+  if (isProd && tab.value === 'debug')
+    tab.value = 'overview'
+})
 </script>
 
 <template>
@@ -127,6 +155,34 @@ const navItems = [
                 </UTooltip>
               </button>
             </div>
+
+            <!-- Preview source toggle -->
+            <div v-if="hasProductionUrl" class="preview-source-toggle">
+              <button
+                class="preview-source-btn"
+                :class="{ active: previewSource === 'local' }"
+                @click="previewSource = 'local'"
+              >
+                <UIcon name="carbon:laptop" class="w-3.5 h-3.5" />
+                <span class="hidden sm:inline">Local</span>
+              </button>
+              <button
+                class="preview-source-btn"
+                :class="{ active: previewSource === 'production' }"
+                @click="previewSource = 'production'"
+              >
+                <UIcon name="carbon:cloud" class="w-3.5 h-3.5" />
+                <span class="hidden sm:inline">Production</span>
+              </button>
+            </div>
+
+            <!-- Production URL indicator -->
+            <UTooltip v-if="isProductionMode" :text="productionUrl" :delay-duration="200">
+              <span class="production-url-badge">
+                <span class="production-url-dot" />
+                <span class="hidden sm:inline text-xs">{{ productionHostname }}</span>
+              </span>
+            </UTooltip>
 
             <div class="flex items-center gap-1">
               <UTooltip text="Refresh" :delay-duration="300">
@@ -195,7 +251,7 @@ const navItems = [
                     Page and site indexability status.
                   </p>
                 </div>
-                <div class="nav-tabs">
+                <div v-if="!isProductionMode" class="nav-tabs">
                   <button
                     v-for="env of ['Production', 'Development']"
                     :key="env"
@@ -244,7 +300,7 @@ const navItems = [
                     :code="`X-Robots-Tag: ${pathDebugData.robotsHeader}`"
                     lang="bash"
                   />
-                  <div v-if="pathDebugData?.debug" class="flex gap-2 flex-wrap">
+                  <div v-if="pathDebugData?.debug && !isProductionMode" class="flex gap-2 flex-wrap">
                     <UBadge
                       v-if="pathDebugData.debug.source"
                       color="neutral"
@@ -281,7 +337,7 @@ const navItems = [
                       {{ globalDebugData?.indexable ? 'Robots can crawl your site.' : 'Robots are blocked from crawling your site.' }}
                     </span>
                   </div>
-                  <div v-if="globalDebugData?.hints?.length" class="hint-callout">
+                  <div v-if="globalDebugData?.hints?.length && !isProductionMode" class="hint-callout">
                     <UIcon name="carbon:information" class="hint-callout-icon text-lg flex-shrink-0 mt-0.5" />
                     <ul class="text-sm text-[var(--color-text-muted)] space-y-1">
                       <li v-for="(hint, key) in globalDebugData.hints" :key="key">
@@ -297,9 +353,13 @@ const navItems = [
                 <template #actions>
                   <div v-if="globalDebugData?.validation?.errors?.length" class="status-disabled">
                     <UIcon name="carbon:warning" class="text-sm" />
-                    <span>{{ globalDebugData.validation.errors.length }} issue{{ globalDebugData.validation.errors.length === 1 ? '' : 's' }}</span>
+                    <span>{{ globalDebugData.validation.errors.length }} error{{ globalDebugData.validation.errors.length === 1 ? '' : 's' }}</span>
                   </div>
-                  <div v-else-if="globalDebugData?.validation" class="status-enabled">
+                  <div v-if="globalDebugData?.validation?.warnings?.length" class="status-warning">
+                    <UIcon name="carbon:warning-alt" class="text-sm" />
+                    <span>{{ globalDebugData.validation.warnings.length }} warning{{ globalDebugData.validation.warnings.length === 1 ? '' : 's' }}</span>
+                  </div>
+                  <div v-else-if="globalDebugData?.validation && !globalDebugData?.validation?.errors?.length" class="status-enabled">
                     <UIcon name="carbon:checkmark" class="text-sm" />
                     <span>Valid</span>
                   </div>
@@ -319,6 +379,23 @@ const navItems = [
                       class="text-xs font-mono text-[var(--color-text-muted)]"
                     >
                       {{ err }}
+                    </li>
+                  </ul>
+                </div>
+
+                <!-- Validation warnings -->
+                <div v-if="globalDebugData?.validation?.warnings?.length" class="validation-callout validation-callout--warning">
+                  <div class="flex items-center gap-2 mb-2">
+                    <UIcon name="carbon:warning-alt" class="text-sm" />
+                    <span class="text-xs font-semibold">Warnings</span>
+                  </div>
+                  <ul class="space-y-1">
+                    <li
+                      v-for="(warn, i) in globalDebugData.validation.warnings"
+                      :key="i"
+                      class="text-xs font-mono text-[var(--color-text-muted)]"
+                    >
+                      {{ warn }}
                     </li>
                   </ul>
                 </div>
@@ -481,6 +558,76 @@ const navItems = [
   background: var(--color-surface-sunken) !important;
 }
 
+/* Preview source toggle */
+.preview-source-toggle {
+  display: flex;
+  gap: 1px;
+  background: var(--color-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.preview-source-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  background: var(--color-surface-sunken);
+  border: none;
+  cursor: pointer;
+  transition: color 150ms, background 150ms;
+  white-space: nowrap;
+}
+
+.preview-source-btn:hover {
+  color: var(--color-text);
+  background: var(--color-surface-elevated);
+}
+
+.preview-source-btn.active {
+  color: var(--color-text);
+  background: var(--color-surface-elevated);
+  box-shadow: 0 1px 2px oklch(0% 0 0 / 0.06);
+}
+
+.dark .preview-source-btn.active {
+  box-shadow: 0 1px 2px oklch(0% 0 0 / 0.2);
+}
+
+/* Production URL badge */
+.production-url-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-full);
+  background: oklch(85% 0.12 145 / 0.12);
+  color: oklch(45% 0.15 145);
+  font-weight: 500;
+  font-family: var(--font-mono, ui-monospace, monospace);
+}
+
+.dark .production-url-badge {
+  background: oklch(35% 0.08 145 / 0.2);
+  color: oklch(75% 0.12 145);
+}
+
+.production-url-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: oklch(65% 0.2 145);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
 /* Main content wrapper */
 .main-content {
   flex: 1;
@@ -529,6 +676,18 @@ const navItems = [
   background: oklch(45% 0.1 25 / 0.1);
   border-color: oklch(45% 0.1 25 / 0.2);
   color: oklch(70% 0.12 25);
+}
+
+.validation-callout--warning {
+  background: oklch(75% 0.12 85 / 0.06);
+  border-color: oklch(75% 0.12 85 / 0.15);
+  color: oklch(55% 0.15 85);
+}
+
+.dark .validation-callout--warning {
+  background: oklch(55% 0.1 85 / 0.1);
+  border-color: oklch(55% 0.1 85 / 0.2);
+  color: oklch(75% 0.12 85);
 }
 
 .validation-callout--info {
