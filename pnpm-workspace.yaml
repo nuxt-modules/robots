@@ -37,7 +37,7 @@ catalog:
   h3: ^1.15.9
   happy-dom: ^20.8.4
   nuxt: ^4.4.2
-  nuxt-site-config: ^3.2.21
+  nuxt-site-config: ^4.0.0
   pathe: ^2.0.3
   pkg-types: ^2.3.0
   shiki: ^4.0.2
