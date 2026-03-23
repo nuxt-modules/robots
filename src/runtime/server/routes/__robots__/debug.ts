@@ -8,7 +8,7 @@ export default defineEventHandler(async (e) => {
   const runtimeConfig = useRuntimeConfigNuxtRobots(e)
   const { indexable, hints } = getSiteRobotConfig(e)
   const siteConfig = useSiteConfig(e)
-  const robotsTxt = await e.$fetch('/robots.txt', {
+  const robotsTxt = await e.$fetch('/robots.txt' as string, {
     query: getQuery(e),
   }) as string
   const parsed = validateRobots(parseRobotsTxt(robotsTxt))
