@@ -1,27 +1,9 @@
 import { resolve } from 'pathe'
 
 export default defineNuxtConfig({
-  ssr: false,
-
-  modules: [
-    '@nuxt/fonts',
-    '@nuxt/ui',
-  ],
+  extends: ['nuxtseo-shared/layer-devtools'],
 
   robots: false,
-
-  css: ['~/assets/css/global.css'],
-
-  // @ts-expect-error @nuxt/fonts module config
-  fonts: {
-    families: [
-      { name: 'Hubot Sans' },
-    ],
-  },
-
-  devtools: {
-    enabled: false,
-  },
 
   nitro: {
     output: {
@@ -32,6 +14,4 @@ export default defineNuxtConfig({
   app: {
     baseURL: '/__nuxt-robots',
   },
-
-  compatibilityDate: '2025-03-13',
 })

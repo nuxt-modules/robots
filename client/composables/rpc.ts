@@ -1,24 +1,17 @@
-import type { NuxtDevtoolsClient, NuxtDevtoolsIframeClient } from '@nuxt/devtools-kit/types'
+import type { NuxtDevtoolsIframeClient } from '@nuxt/devtools-kit/types'
 import type { $Fetch } from 'nitropack/types'
-import { onDevtoolsClientConnected } from '@nuxt/devtools-kit/iframe-client'
-import { computed, onMounted, onUnmounted, ref, watchEffect } from 'vue'
-import { base, path, query, refreshSources } from '../util/logic'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 
-export const appFetch = ref<$Fetch>()
-
-export const devtools = ref<NuxtDevtoolsClient>()
+// appFetch, colorMode, devtools, useDevtoolsConnection are auto-imported from layer
+// base, path, query, refreshSources are auto-imported from layer state
 
 export const devtoolsClient = ref<NuxtDevtoolsIframeClient>()
-
-export const colorMode = ref<'dark' | 'light'>('dark')
 
 // Connection state tracking
 export const connectionState = ref<'connecting' | 'connected' | 'fallback' | 'failed'>('connecting')
 export const isConnected = computed(() => connectionState.value === 'connected' || connectionState.value === 'fallback')
 export const isConnectionFailed = computed(() => connectionState.value === 'failed')
 export const isFallbackMode = computed(() => connectionState.value === 'fallback')
-
-let connectionTimeout: any
 
 // Fallback fetch for localhost:3000
 async function tryFallbackConnection() {
@@ -34,7 +27,7 @@ async function tryFallbackConnection() {
   return false
 }
 
-// Set timeout for connection — if not connected within 2s, try fallback
+// Set timeout for connection; if not connected within 2s, try fallback
 onMounted(() => {
   const timer = setTimeout(async () => {
     if (connectionState.value === 'connecting') {
@@ -50,25 +43,18 @@ onMounted(() => {
   })
 })
 
-onDevtoolsClientConnected(async (client) => {
-  if (connectionTimeout)
-    clearTimeout(connectionTimeout)
-  connectionState.value = 'connected'
-  // @ts-expect-error untyped
-  appFetch.value = client.host.app.$fetch
-  // @ts-expect-error untyped
-  base.value = client.host.nuxt.vueApp.config.globalProperties?.$router?.options?.history?.base || client.host.app.baseURL || '/'
-  watchEffect(() => {
-    colorMode.value = client.host.app.colorMode.value
-  })
-  const $route = client.host.nuxt.vueApp.config.globalProperties?.$route
-  query.value = $route.query
-  path.value = $route.path || '/'
-  client.host.nuxt.$router.afterEach((route: any) => {
+useDevtoolsConnection({
+  onConnected(client) {
+    connectionState.value = 'connected'
+    base.value = client.host.nuxt.vueApp.config.globalProperties?.$router?.options?.history?.base || client.host.app.baseURL || '/'
+    const $route = client.host.nuxt.vueApp.config.globalProperties?.$route
+    query.value = $route.query
+    path.value = $route.path || '/'
+    devtoolsClient.value = client
+  },
+  onRouteChange(route) {
     query.value = route.query
     path.value = route.path
     refreshSources()
-  })
-  devtools.value = client.devtools
-  devtoolsClient.value = client
+  },
 })

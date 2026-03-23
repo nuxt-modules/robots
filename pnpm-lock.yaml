@@ -76,8 +76,8 @@ catalogs:
       specifier: ^4.0.0
       version: 4.0.0
     nuxtseo-shared:
-      specifier: ^0.1.2
-      version: 0.1.2
+      specifier: ^0.1.6
+      version: 0.1.6
     pathe:
       specifier: ^2.0.3
       version: 2.0.3
@@ -188,7 +188,7 @@ importers:
         version: 4.0.0(magicast@0.5.2)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(yaml@2.8.3))(vue@3.5.30(typescript@5.9.3))
       nuxtseo-shared:
         specifier: 'catalog:'
-        version: 0.1.2(eba15c2610e66258355312ac4ebed714)
+        version: 0.1.6(eba15c2610e66258355312ac4ebed714)
       pathe:
         specifier: 'catalog:'
         version: 2.0.3
@@ -6853,14 +6853,14 @@ packages:
       '@types/node':
         optional: true
 
-  nuxtseo-shared@0.1.2:
-    resolution: {integrity: sha512-0rv4S/UeNBioZbTCgZ+Hno7ie1fFsRWS+ciSjtwt8VLnQEjs+NhQXNMaigzA/vmJ0sL7jd+Wa4H4FQYObQDOEg==}
+  nuxtseo-shared@0.1.6:
+    resolution: {integrity: sha512-DyBYbFb1HAFMMYk3kuR5+G7C4VB/2fDn0v2yNqi9IE5iTYlqo07jOWhA9xWAc/96FP3A989jaE4a9pEYIcEe4g==}
     peerDependencies:
       '@nuxt/schema': ^3.16.0 || ^4.0.0
       nuxt: ^3.16.0 || ^4.0.0
       nuxt-site-config: ^3.2.0
       vue: ^3.5.0
-      zod: ^3.23.0
+      zod: ^3.23.0 || ^4.0.0
     peerDependenciesMeta:
       nuxt-site-config:
         optional: true
@@ -16693,7 +16693,7 @@ snapshots:
       - xml2js
       - yaml
 
-  nuxtseo-shared@0.1.2(eba15c2610e66258355312ac4ebed714):
+  nuxtseo-shared@0.1.6(eba15c2610e66258355312ac4ebed714):
     dependencies:
       '@clack/prompts': 1.1.0
       '@nuxt/devtools-kit': 3.2.4(magicast@0.5.2)(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(yaml@2.8.3))

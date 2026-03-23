@@ -5,11 +5,10 @@
     "@iconify-json/carbon": "catalog:dev",
     "@iconify-json/simple-icons": "catalog:",
     "@nuxt/devtools-kit": "catalog:",
-    "@nuxt/fonts": "catalog:dev",
     "@nuxt/kit": "catalog:",
-    "@nuxt/ui": "catalog:",
     "@vueuse/core": "catalog:dev",
     "nuxt": "catalog:",
+    "nuxtseo-shared": "catalog:",
     "shiki": "catalog:",
     "vue": "catalog:",
     "vue-router": "catalog:"
