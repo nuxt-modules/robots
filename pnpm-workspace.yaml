@@ -66,7 +66,7 @@ catalogs:
     '@vueuse/nuxt': ^14.2.1
     execa: ^9.6.1
     playwright-core: ^1.58.2
-    typescript: ^5.9.3
+    typescript: ^6.0.2
 
 onlyBuiltDependencies:
   - '@firebase/util'
