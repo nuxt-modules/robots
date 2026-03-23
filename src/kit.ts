@@ -1,1 +1,1 @@
-export { detectTarget, getNuxtModuleOptions, isNuxtGenerate, resolveNitroPreset } from 'nuxtseo-shared/kit'
+export { detectTarget, getNuxtModuleOptions, isNuxtGenerate, resolveNitroPreset, resolveNuxtContentVersion } from 'nuxtseo-shared/kit'

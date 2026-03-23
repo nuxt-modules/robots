@@ -8,6 +8,7 @@ export default defineEventHandler(async (e) => {
   const runtimeConfig = useRuntimeConfigNuxtRobots(e)
   const { indexable, hints } = getSiteRobotConfig(e)
   const siteConfig = useSiteConfig(e)
+  // @ts-expect-error excessive type depth
   const robotsTxt = await e.$fetch('/robots.txt', {
     query: getQuery(e),
   }) as string

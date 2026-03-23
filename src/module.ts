@@ -8,8 +8,6 @@ import {
   addServerPlugin,
   createResolver,
   defineNuxtModule,
-  hasNuxtModule,
-  hasNuxtModuleCompatibility,
 } from '@nuxt/kit'
 import { defu } from 'defu'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config/kit'
@@ -19,7 +17,7 @@ import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { AiBots, NonHelpfulBots } from './const'
 import { setupDevToolsUI } from './devtools'
 import { mapPathForI18nPages, resolveI18nConfig, splitPathForI18nLocales } from './i18n'
-import { isNuxtGenerate, resolveNitroPreset } from './kit'
+import { isNuxtGenerate, resolveNitroPreset, resolveNuxtContentVersion } from './kit'
 import { logger } from './logger'
 import { registerTypeTemplates } from './templates'
 import {
@@ -388,9 +386,9 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     const nitroPreset = resolveNitroPreset(nuxt.options.nitro)
-    const usingNuxtContent = hasNuxtModule('@nuxt/content')
-    const isNuxtContentV3 = usingNuxtContent && await hasNuxtModuleCompatibility('@nuxt/content', '^3')
-    let isNuxtContentV2 = usingNuxtContent && await hasNuxtModuleCompatibility('@nuxt/content', '^2')
+    const contentVersion = await resolveNuxtContentVersion()
+    const isNuxtContentV3 = contentVersion && contentVersion.version === 3
+    let isNuxtContentV2 = contentVersion && contentVersion.version === 2
     if (isNuxtContentV3) {
       if (nuxt.options._installedModules.some(m => m.meta.name === 'Content')) {
         logger.warn('You have loaded `@nuxt/content` before `@nuxtjs/robots`, this may cause issues with the integration. Please ensure `@nuxtjs/robots` is loaded first.')
@@ -521,7 +519,7 @@ export default defineNuxtModule<ModuleOptions>({
         firstGroup.disallow = [...new Set([...(firstGroup.disallow || []), ...extraDisallows])]
 
       if (resolvedAutoI18n && resolvedAutoI18n.locales && resolvedAutoI18n.strategy !== 'no_prefix') {
-        const i18n = resolvedAutoI18n
+        const i18n = resolvedAutoI18n as AutoI18nConfig
         for (const group of config.groups.filter(g => !g._skipI18n)) {
           group.allow = asArray(group.allow || []).map((path) => {
             if (typeof path !== 'string')

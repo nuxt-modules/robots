@@ -1,3 +1,5 @@
+import type { NuxtI18nOptions } from '@nuxtjs/i18n'
+import type { AutoI18nConfig as SharedAutoI18nConfig } from 'nuxtseo-shared/i18n'
 import type { AutoI18nConfig } from './util'
 // re-import for local use in mapPathForI18nPages
 import { generatePathForI18nPages } from 'nuxtseo-shared/i18n'
@@ -28,7 +30,12 @@ export function mapPathForI18nPages(path: string, autoI18n: AutoI18nConfig): str
         const localePath = (l.code in pageLocales && pageLocales[l.code] !== false)
           ? pageLocales[l.code] as string
           : `/${pageName}`
-        return withLeadingSlash(generatePathForI18nPages(l.code, localePath, autoI18n.defaultLocale, autoI18n.strategy))
+        return withLeadingSlash(generatePathForI18nPages({
+          localeCode: l.code,
+          pageLocales: localePath,
+          nuxtI18nConfig: { strategy: autoI18n.strategy, defaultLocale: autoI18n.defaultLocale } as NuxtI18nOptions,
+          normalisedLocales: autoI18n.locales as SharedAutoI18nConfig['locales'],
+        }))
       })
   }
 
