@@ -39,7 +39,7 @@ catalog:
   nuxt: ^4.4.2
   nuxt-site-config: ^3.2.21
   nuxtseo-layer-devtools: ^0.1.0
-  nuxtseo-shared: ^0.3.0
+  nuxtseo-shared: ^0.4.0
   pathe: ^2.0.3
   pkg-types: ^2.3.0
   shiki: ^4.0.2

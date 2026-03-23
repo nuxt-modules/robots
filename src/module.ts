@@ -511,7 +511,7 @@ export default defineNuxtModule<ModuleOptions>({
         firstGroup.disallow = [...new Set([...(firstGroup.disallow || []), ...extraDisallows])]
 
       if (resolvedAutoI18n && resolvedAutoI18n.locales && resolvedAutoI18n.strategy !== 'no_prefix') {
-        const i18n = resolvedAutoI18n as AutoI18nConfig
+        const i18n = resolvedAutoI18n as any
         for (const group of config.groups.filter(g => !g._skipI18n)) {
           group.allow = asArray(group.allow || []).map((path) => {
             if (typeof path !== 'string')

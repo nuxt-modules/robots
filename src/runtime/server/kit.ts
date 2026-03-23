@@ -1,6 +1,6 @@
 import type { H3Event } from 'h3'
 import type { NitroRouteConfig } from 'nitropack'
-import { createNitroRouteRuleMatcher as _createNitroRouteRuleMatcher, withoutQuery } from 'nuxtseo-shared/runtime/server/kit'
+import { createNitroRouteRuleMatcher as _createNitroRouteRuleMatcher, withoutQuery } from '#nuxtseo-shared/server/kit'
 
 export { withoutQuery }
 
