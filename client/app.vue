@@ -125,7 +125,7 @@ watch(isProductionMode, (isProd) => {
         </div>
 
         <!-- Page Indexable -->
-        <OSectionBlock icon="carbon:document" text="Page Indexable">
+        <DevtoolsSection icon="carbon:document" text="Page Indexable">
           <div v-if="!pathDebugData" class="flex items-center justify-center py-6">
             <UIcon name="carbon:circle-dash" class="animate-spin text-xl text-[var(--color-text-muted)]" />
           </div>
@@ -151,11 +151,11 @@ watch(isProductionMode, (isProd) => {
                 </template>
               </span>
             </div>
-            <OCodeBlock :code="metaTag" lang="html" />
-            <OCodeBlock
+            <DevtoolsSnippet :code="metaTag" lang="xml" label="Meta Tag" />
+            <DevtoolsSnippet
               v-if="pathDebugData.robotsHeader"
               :code="`X-Robots-Tag: ${pathDebugData.robotsHeader}`"
-              lang="bash"
+              label="X-Robots-Tag"
             />
             <div v-if="pathDebugData?.debug && !isProductionMode" class="flex gap-2 flex-wrap">
               <UBadge
@@ -176,10 +176,10 @@ watch(isProductionMode, (isProd) => {
               </UBadge>
             </div>
           </div>
-        </OSectionBlock>
+        </DevtoolsSection>
 
         <!-- Site Indexable -->
-        <OSectionBlock icon="carbon:earth" text="Site Indexable">
+        <DevtoolsSection icon="carbon:earth" text="Site Indexable">
           <div class="space-y-3">
             <div class="flex items-center gap-3">
               <div v-if="globalDebugData?.indexable" class="status-enabled">
@@ -194,19 +194,18 @@ watch(isProductionMode, (isProd) => {
                 {{ globalDebugData?.indexable ? 'Robots can crawl your site.' : 'Robots are blocked from crawling your site.' }}
               </span>
             </div>
-            <div v-if="globalDebugData?.hints?.length && !isProductionMode" class="hint-callout">
-              <UIcon name="carbon:information" class="hint-callout-icon text-lg flex-shrink-0 mt-0.5" />
-              <ul class="text-sm text-[var(--color-text-muted)] space-y-1">
+            <DevtoolsAlert v-if="globalDebugData?.hints?.length && !isProductionMode" variant="info">
+              <ul class="text-sm space-y-1">
                 <li v-for="(hint, key) in globalDebugData.hints" :key="key">
                   {{ hint.replace(' with ?mockProductionEnv query.', '.') }}
                 </li>
               </ul>
-            </div>
+            </DevtoolsAlert>
           </div>
-        </OSectionBlock>
+        </DevtoolsSection>
 
         <!-- robots.txt -->
-        <OSectionBlock icon="carbon:document-blank" text="/robots.txt">
+        <DevtoolsSection icon="carbon:document-blank" text="/robots.txt">
           <template #actions>
             <div v-if="globalDebugData?.validation?.errors?.length" class="status-disabled">
               <UIcon name="carbon:warning" class="text-sm" />
@@ -221,59 +220,56 @@ watch(isProductionMode, (isProd) => {
               <span>Valid</span>
             </div>
           </template>
-          <OCodeBlock :code="globalDebugData.robotsTxt" lang="robots-txt" />
+          <DevtoolsSnippet :code="globalDebugData.robotsTxt" label="robots.txt" />
 
           <!-- Validation errors -->
-          <div v-if="globalDebugData?.validation?.errors?.length" class="validation-callout validation-callout--error">
-            <div class="flex items-center gap-2 mb-2">
-              <UIcon name="carbon:warning" class="text-sm" />
+          <DevtoolsAlert v-if="globalDebugData?.validation?.errors?.length" variant="warning">
+            <div class="space-y-2">
               <span class="text-xs font-semibold">Validation Issues</span>
+              <ul class="space-y-1">
+                <li
+                  v-for="(err, i) in globalDebugData.validation.errors"
+                  :key="i"
+                  class="text-xs font-mono"
+                >
+                  {{ err }}
+                </li>
+              </ul>
             </div>
-            <ul class="space-y-1">
-              <li
-                v-for="(err, i) in globalDebugData.validation.errors"
-                :key="i"
-                class="text-xs font-mono text-[var(--color-text-muted)]"
-              >
-                {{ err }}
-              </li>
-            </ul>
-          </div>
+          </DevtoolsAlert>
 
           <!-- Validation warnings -->
-          <div v-if="globalDebugData?.validation?.warnings?.length" class="validation-callout validation-callout--warning">
-            <div class="flex items-center gap-2 mb-2">
-              <UIcon name="carbon:warning-alt" class="text-sm" />
+          <DevtoolsAlert v-if="globalDebugData?.validation?.warnings?.length" variant="warning">
+            <div class="space-y-2">
               <span class="text-xs font-semibold">Warnings</span>
+              <ul class="space-y-1">
+                <li
+                  v-for="(warn, i) in globalDebugData.validation.warnings"
+                  :key="i"
+                  class="text-xs font-mono"
+                >
+                  {{ warn }}
+                </li>
+              </ul>
             </div>
-            <ul class="space-y-1">
-              <li
-                v-for="(warn, i) in globalDebugData.validation.warnings"
-                :key="i"
-                class="text-xs font-mono text-[var(--color-text-muted)]"
-              >
-                {{ warn }}
-              </li>
-            </ul>
-          </div>
+          </DevtoolsAlert>
 
           <!-- Sitemaps -->
-          <div v-if="globalDebugData?.validation?.sitemaps?.length" class="validation-callout validation-callout--info">
-            <div class="flex items-center gap-2 mb-2">
-              <UIcon name="carbon:map" class="text-sm" />
+          <DevtoolsAlert v-if="globalDebugData?.validation?.sitemaps?.length" variant="info">
+            <div class="space-y-2">
               <span class="text-xs font-semibold">Sitemaps</span>
+              <ul class="space-y-1">
+                <li
+                  v-for="sitemap in globalDebugData.validation.sitemaps"
+                  :key="sitemap"
+                  class="text-xs font-mono truncate"
+                >
+                  {{ sitemap }}
+                </li>
+              </ul>
             </div>
-            <ul class="space-y-1">
-              <li
-                v-for="sitemap in globalDebugData.validation.sitemaps"
-                :key="sitemap"
-                class="text-xs font-mono text-[var(--color-text-muted)] truncate"
-              >
-                {{ sitemap }}
-              </li>
-            </ul>
-          </div>
-        </OSectionBlock>
+          </DevtoolsAlert>
+        </DevtoolsSection>
       </div>
 
       <!-- Debug Tab -->
@@ -281,12 +277,13 @@ watch(isProductionMode, (isProd) => {
         v-else-if="tab === 'debug'"
         class="stagger-children space-y-4"
       >
-        <OSectionBlock icon="carbon:settings" text="Runtime Config">
-          <OCodeBlock
+        <DevtoolsSection icon="carbon:settings" text="Runtime Config">
+          <DevtoolsSnippet
             :code="JSON.stringify(globalDebugData?.runtimeConfig || {}, null, 2)"
             lang="json"
+            label="Runtime Config"
           />
-        </OSectionBlock>
+        </DevtoolsSection>
       </div>
 
       <!-- Docs Tab -->
