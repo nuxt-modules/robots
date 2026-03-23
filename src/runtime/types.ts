@@ -85,6 +85,7 @@ export interface ParsedRobotsTxt {
   groups: RobotsGroupResolved[]
   sitemaps: string[]
   errors: string[]
+  warnings: string[]
 }
 
 export type RobotsGroupInput = GoogleInput | YandexInput

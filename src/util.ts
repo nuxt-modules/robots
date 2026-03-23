@@ -70,6 +70,7 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
   const groups: RobotsGroupResolved[] = []
   const sitemaps: string[] = []
   const errors: string[] = []
+  const warnings: string[] = []
   let createNewGroup = false
   let currentGroup: RobotsGroupResolved = {
     comment: [], // comments are too hard to parse in a logical order, we'll just omit them
@@ -163,10 +164,11 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
     groups,
     sitemaps,
     errors,
+    warnings,
   }
 }
 
-function validateGroupRules(group: ParsedRobotsTxt['groups'][number], errors: string[]) {
+function validateGroupRules(group: ParsedRobotsTxt['groups'][number], errors: string[], warnings: string[]) {
   const toCheck = ['allow', 'disallow']
   toCheck.forEach((key) => {
     (group[key as keyof typeof group] as string[] || []).filter((rule) => {
@@ -176,7 +178,9 @@ function validateGroupRules(group: ParsedRobotsTxt['groups'][number], errors: st
         errors.push(`Disallow rule "${rule}" must start with a \`/\` or be a \`*\`.`)
         return false
       }
-      // TODO other rules?
+      if (key === 'disallow' && (rule === '/api' || rule === '/api/')) {
+        warnings.push(`Disallow rule "${rule}" blocks API routes which may prevent crawlers from functioning correctly (e.g. sitemaps, OG image generation).`)
+      }
       return true
     })
   })
@@ -422,7 +426,7 @@ export function validateRobots(robotsTxt: ParsedRobotsTxt) {
       robotsTxt.errors.push(`Group "${group.userAgent.join(', ')}" has no allow or disallow rules. You must provide one of either.`)
       return false
     }
-    validateGroupRules(group, robotsTxt.errors)
+    validateGroupRules(group, robotsTxt.errors, robotsTxt.warnings)
     return true
   })
   return robotsTxt

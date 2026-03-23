@@ -54,6 +54,7 @@ describe('robotsTxtParser', () => {
         "sitemaps": [
           "https://yoast.com/sitemap_index.xml",
         ],
+        "warnings": [],
       }
     `)
   })
@@ -229,6 +230,7 @@ describe('robotsTxtParser', () => {
         "sitemaps": [
           "https: //www.example.com/sitemap.xml",
         ],
+        "warnings": [],
       }
     `)
   })
@@ -257,6 +259,7 @@ describe('robotsTxtParser', () => {
         "sitemaps": [
           "https://doyban.com/sitemap.xml",
         ],
+        "warnings": [],
       }
     `)
   })
@@ -300,6 +303,7 @@ describe('robotsTxtParser', () => {
         "sitemaps": [
           "https://yoast.com/sitemap_index.xml",
         ],
+        "warnings": [],
       }
     `)
   })
@@ -365,6 +369,7 @@ describe('robotsTxtParser', () => {
           },
         ],
         "sitemaps": [],
+        "warnings": [],
       }
     `)
   })
@@ -402,6 +407,7 @@ Unknown: /bar
           },
         ],
         "sitemaps": [],
+        "warnings": [],
       }
     `)
   })
@@ -436,6 +442,7 @@ Content-Usage: /restricted/ train-ai=n, ai-output=n
           },
         ],
         "sitemaps": [],
+        "warnings": [],
       }
     `)
   })
@@ -480,6 +487,7 @@ Content-Signal: /restricted/ ai-train=no, ai-input=no
           },
         ],
         "sitemaps": [],
+        "warnings": [],
       }
     `)
   })

@@ -15,6 +15,7 @@ export default defineEventHandler(async (e) => {
   // move towards deprecating indexable
   let robotsTxtCtx: Omit<HookRobotsConfigContext, 'context' | 'event'> = {
     errors: [],
+    warnings: [],
     sitemaps: [],
     groups: [
       {
