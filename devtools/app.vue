@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { data, refreshSources } from './composables/state'
+import { navigateTo, useRoute } from '#imports'
+import { computed, ref, watch } from 'vue'
+import { data, productionData, refreshProductionData, refreshSources } from './composables/state'
 import './composables/rpc'
 
 await loadShiki().catch(() => {})
@@ -12,7 +13,10 @@ async function refresh() {
     return
   refreshing.value = true
   data.value = null
+  productionData.value = null
   await refreshSources()
+  if (isProductionMode.value)
+    await refreshProductionData()
   setTimeout(() => {
     refreshing.value = false
   }, 300)
@@ -29,12 +33,18 @@ const currentTab = computed(() => {
 })
 
 const navItems = [
-  { value: 'overview', to: '/', icon: 'carbon:dashboard-reference', label: 'Overview' },
-  { value: 'debug', to: '/debug', icon: 'carbon:debug', label: 'Debug' },
-  { value: 'docs', to: '/docs', icon: 'carbon:book', label: 'Docs' },
+  { value: 'overview', to: '/', icon: 'carbon:dashboard-reference', label: 'Overview', devOnly: false },
+  { value: 'debug', to: '/debug', icon: 'carbon:debug', label: 'Debug', devOnly: true },
+  { value: 'docs', to: '/docs', icon: 'carbon:book', label: 'Docs', devOnly: false },
 ]
 
 const version = computed(() => data.value?.runtimeConfig?.version || '')
+
+// Redirect to home when switching to production mode from a dev-only tab
+watch(isProductionMode, (isProd) => {
+  if (isProd && currentTab.value === 'debug')
+    return navigateTo('/')
+})
 </script>
 
 <template>

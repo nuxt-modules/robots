@@ -618,6 +618,12 @@ export default defineNuxtModule<ModuleOptions>({
         route: '/__robots__/debug-path.json',
         handler: resolve('./runtime/server/routes/__robots__/debug-path'),
       })
+      if (nuxt.options.dev) {
+        addServerHandler({
+          route: '/__robots__/debug-production.json',
+          handler: resolve('./runtime/server/routes/__robots__/debug-production'),
+        })
+      }
     }
 
     if (nuxt.options.dev)
