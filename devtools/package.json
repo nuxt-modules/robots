@@ -3,13 +3,8 @@
   "private": true,
   "devDependencies": {
     "@iconify-json/carbon": "catalog:dev",
-    "@iconify-json/simple-icons": "catalog:",
-    "@nuxt/devtools-kit": "catalog:",
-    "@nuxt/kit": "catalog:",
-    "@vueuse/core": "catalog:dev",
     "nuxt": "catalog:",
-    "shiki": "catalog:",
-    "vue": "catalog:",
-    "vue-router": "catalog:"
+    "nuxtseo-layer-devtools": "catalog:",
+    "shiki": "catalog:"
   }
 }

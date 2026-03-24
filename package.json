@@ -47,8 +47,8 @@
   ],
   "scripts": {
     "lint": "eslint . --fix",
-    "client:build": "nuxt generate client",
-    "client:dev": "nuxt dev client --port 3030",
+    "client:build": "nuxt generate devtools",
+    "devtools": "nuxt dev devtools --port 3030",
     "build": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && npm run client:build",
     "dev": "nuxt dev playground",
     "prepare:fixtures": "nuxt prepare playground && nuxt prepare test/fixtures/basic && nuxt prepare test/fixtures/i18n && nuxt prepare test/fixtures/content-v3",

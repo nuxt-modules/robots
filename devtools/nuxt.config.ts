@@ -4,18 +4,15 @@ export default defineNuxtConfig({
   extends: ['nuxtseo-layer-devtools'],
 
   robots: false,
+  content: false,
 
   nitro: {
-    output: {
-      publicDir: resolve(__dirname, '../dist/devtools'),
-    },
     prerender: {
       routes: ['/', '/debug', '/docs'],
     },
-  },
-
-  imports: {
-    autoImport: true,
+    output: {
+      publicDir: resolve(__dirname, '../dist/devtools'),
+    },
   },
 
   app: {

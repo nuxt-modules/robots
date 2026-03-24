@@ -174,7 +174,7 @@ const metaTag = computed(() => {
         </DevtoolsAlert>
       </template>
 
-      <DevtoolsSnippet :code="data?.robotsTxt" lang="robots-txt" />
+      <DevtoolsSnippet v-if="data?.robotsTxt" :code="data.robotsTxt" lang="robots-txt" />
 
       <!-- Validation errors -->
       <DevtoolsAlert

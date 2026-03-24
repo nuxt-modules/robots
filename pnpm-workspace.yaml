@@ -1,6 +1,5 @@
 catalogMode: prefer
 cleanupUnusedCatalogs: true
-
 shellEmulator: true
 trustPolicy: no-downgrade
 trustPolicyExclude:
@@ -8,6 +7,7 @@ trustPolicyExclude:
   - semver
   - undici-types
   - jose
+
 packages:
   - devtools
 
@@ -17,7 +17,6 @@ overrides:
 catalog:
   '@antfu/eslint-config': ^7.7.3
   '@fingerprintjs/botd': ^2.0.0
-  '@iconify-json/simple-icons': ^1.2.75
   '@iconify-json/tabler': ^1.2.32
   '@nuxt/devtools-kit': 3.1.1
   '@nuxt/devtools-ui-kit': 3.1.1
@@ -62,7 +61,6 @@ catalogs:
     '@nuxt/module-builder': ^1.0.2
     '@nuxt/test-utils': ^4.0.0
     '@nuxtjs/color-mode': ^4.0.0
-    '@vueuse/core': ^14.2.1
     '@vueuse/nuxt': ^14.2.1
     execa: ^9.6.1
     playwright-core: ^1.58.2
