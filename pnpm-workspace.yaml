@@ -10,16 +10,16 @@ trustPolicyExclude:
 
 packages:
   - devtools
+  - playground
 
 overrides:
   vite: ^8.0.2
-
 catalog:
   '@antfu/eslint-config': ^7.7.3
   '@fingerprintjs/botd': ^2.0.0
   '@iconify-json/tabler': ^1.2.32
-  '@nuxt/devtools-kit': 3.1.1
-  '@nuxt/devtools-ui-kit': 3.1.1
+  '@nuxt/devtools-kit': 4.0.0-alpha.3
+  '@nuxt/devtools-ui-kit': ^3.2.4
   '@nuxt/kit': ^4.4.2
   '@nuxtjs/i18n': ^10.2.4
   '@unocss/nuxt': ^66.6.7
@@ -37,8 +37,8 @@ catalog:
   happy-dom: ^20.8.7
   nuxt: ^4.4.2
   nuxt-site-config: ^4.0.0
-  nuxtseo-layer-devtools: ^0.2.6
-  nuxtseo-shared: ^0.6.0
+  nuxtseo-layer-devtools: ^0.3.0
+  nuxtseo-shared: ^0.7.0
   pathe: ^2.0.3
   pkg-types: ^2.3.0
   shiki: ^4.0.2

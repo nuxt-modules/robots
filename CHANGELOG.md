@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v6.0.0-beta.4...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.0-beta.4...main)
+
+### 🏡 Chore
+
+- Sync ([551575d](https://github.com/nuxt-modules/robots/commit/551575d))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
 ## v6.0.0-beta.1...main
 
 [compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.0-beta.1...main)

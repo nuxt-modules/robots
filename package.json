@@ -117,8 +117,5 @@
     "vitest": "catalog:",
     "vue": "catalog:",
     "vue-router": "catalog:"
-  },
-  "resolutions": {
-    "@nuxtjs/robots": "workspace:*"
   }
 }
