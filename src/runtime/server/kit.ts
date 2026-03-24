@@ -1,11 +1,26 @@
-import type { H3Event } from 'h3'
-import type { NitroRouteConfig } from 'nitropack'
-import { createNitroRouteRuleMatcher as _createNitroRouteRuleMatcher, withoutQuery } from 'nuxtseo-shared/server'
+import type { NitroRouteRules } from 'nitropack'
+import { defu } from 'defu'
+import { useRuntimeConfig } from 'nitropack/runtime'
+import { createRouter as createRadixRouter, toRouteMatcher } from 'radix3'
+import { withoutBase, withoutTrailingSlash } from 'ufo'
 
-export { withoutQuery }
+function withoutQuery(path: string): string {
+  return path.split('?')[0]
+}
 
-export function createNitroRouteRuleMatcher(_e?: H3Event): (path: string) => NitroRouteConfig {
-  // TODO the H3Event param was used for useRuntimeConfig(e) but the shared version doesn't support it
-  // This is kept for API compatibility, the event param is currently unused
-  return _createNitroRouteRuleMatcher() as (path: string) => NitroRouteConfig
+export function createNitroRouteRuleMatcher(_e?: H3Event): (path: string) => NitroRouteRules {
+  const { nitro, app } = useRuntimeConfig(e)
+  const _routeRulesMatcher = toRouteMatcher(
+    createRadixRouter({
+      routes: Object.fromEntries(
+        Object.entries(nitro?.routeRules || {})
+          .map(([path, rules]) => [withoutTrailingSlash(path), rules]),
+      ),
+    }),
+  )
+  return (path: string) => {
+    return defu({}, ..._routeRulesMatcher.matchAll(
+      withoutBase(withoutTrailingSlash(withoutQuery(path)), app.baseURL),
+    ).reverse()) as NitroRouteRules
+  }
 }

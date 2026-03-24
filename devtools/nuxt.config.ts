@@ -7,8 +7,15 @@ export default defineNuxtConfig({
 
   nitro: {
     output: {
-      publicDir: resolve(__dirname, '../dist/client'),
+      publicDir: resolve(__dirname, '../dist/devtools'),
     },
+    prerender: {
+      routes: ['/', '/debug', '/docs'],
+    },
+  },
+
+  imports: {
+    autoImport: true,
   },
 
   app: {

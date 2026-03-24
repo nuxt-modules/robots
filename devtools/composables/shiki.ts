@@ -1,7 +1,7 @@
-// loadShiki, shiki, useRenderCodeHighlight are auto-imported from layer
+import type { LanguageRegistration } from 'shiki'
+import { loadShiki as _loadShiki } from 'nuxtseo-layer-devtools/composables/shiki'
 
-// Custom robots-txt language for shiki
-export const robotsTxtLang = Object.freeze({
+const robotsTxtLang: LanguageRegistration = {
   displayName: 'robots.txt',
   name: 'robots-txt',
   patterns: [
@@ -52,4 +52,8 @@ export const robotsTxtLang = Object.freeze({
     },
   },
   scopeName: 'text.robots-txt',
-})
+}
+
+export function loadShiki() {
+  return _loadShiki({ extraLangs: [robotsTxtLang] })
+}
