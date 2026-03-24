@@ -1,10 +1,23 @@
+catalogMode: prefer
+cleanupUnusedCatalogs: true
 
+shellEmulator: true
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  - chokidar
+  - semver
+  - undici-types
+  - jose
 packages:
-  - client
+  - devtools
+
+overrides:
+  vite: ^8.0.2
 
 catalog:
   '@antfu/eslint-config': ^7.7.3
   '@fingerprintjs/botd': ^2.0.0
+  '@iconify-json/simple-icons': ^0.0.0
   '@iconify-json/tabler': ^1.2.32
   '@nuxt/devtools-kit': 3.1.1
   '@nuxt/devtools-ui-kit': 3.1.1
@@ -29,6 +42,7 @@ catalog:
   nuxtseo-shared: ^0.6.0
   pathe: ^2.0.3
   pkg-types: ^2.3.0
+  shiki: ^0.0.0
   sirv: ^3.0.2
   std-env: ^4.0.0
   typescript: ^6.0.2
@@ -37,7 +51,6 @@ catalog:
   vitest: ^4.1.1
   vue: ^3.5.30
   vue-router: ^5.0.4
-catalogMode: prefer
 catalogs:
   dev:
     '@arethetypeswrong/cli': ^0.18.2
@@ -49,11 +62,10 @@ catalogs:
     '@nuxt/module-builder': ^1.0.2
     '@nuxt/test-utils': ^4.0.0
     '@nuxtjs/color-mode': ^4.0.0
+    '@vueuse/core': ^0.0.0
     '@vueuse/nuxt': ^14.2.1
     execa: ^9.6.1
     playwright-core: ^1.58.2
-cleanupUnusedCatalogs: true
-
 onlyBuiltDependencies:
   - '@firebase/util'
   - '@parcel/watcher'
@@ -63,14 +75,4 @@ onlyBuiltDependencies:
   - unrs-resolver
   - vue-demi
 
-overrides:
-  vite: ^8.0.2
-
-shellEmulator: true
-trustPolicy: no-downgrade
-trustPolicyExclude:
-  - chokidar
-  - semver
-  - undici-types
-  - jose
 trustPolicyIgnoreAfter: 262800
