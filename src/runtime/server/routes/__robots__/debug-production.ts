@@ -61,7 +61,7 @@ export default defineEventHandler(async (e): Promise<ProductionDebugResponse> =>
 
   // Check if any group disallows all paths for all user agents
   const hasBlockAll = parsed.groups.some(g =>
-    g.userAgent.includes('*') && g.disallow.some(d => d.pattern === '/'),
+    g.userAgent.includes('*') && g.disallow.includes('/'),
   )
 
   return {
