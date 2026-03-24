@@ -1,3 +1,4 @@
+import type { FileAfterParseHook } from '@nuxt/content'
 import type { Arrayable, AutoI18nConfig, NuxtRobotsRuntimeConfig, RobotsGroupInput, RobotsGroupResolved } from './util'
 import fsp from 'node:fs/promises'
 import {
@@ -389,7 +390,7 @@ export default defineNuxtModule<ModuleOptions>({
       if (nuxt.options._installedModules.some(m => m.meta.name === 'Content')) {
         logger.warn('You have loaded `@nuxt/content` before `@nuxtjs/robots`, this may cause issues with the integration. Please ensure `@nuxtjs/robots` is loaded first.')
       }
-      nuxt.hooks.hook('content:file:afterParse', (ctx: any) => {
+      nuxt.hooks.hook('content:file:afterParse' as any, (ctx: FileAfterParseHook) => {
         if (typeof ctx.content.robots !== 'undefined') {
           let rule = ctx.content.robots
           if (typeof rule === 'boolean') {
@@ -421,8 +422,8 @@ export default defineNuxtModule<ModuleOptions>({
             rule = directives.join(', ') || config.robotsEnabledValue
           }
           // add route rule for the path
-          ctx.content.seo = ctx.content.seo || {}
-          ctx.content.seo.robots = rule
+          ;(ctx.content as any).seo = (ctx.content as any).seo || {}
+          ;(ctx.content as any).seo.robots = rule
         }
       })
     }
