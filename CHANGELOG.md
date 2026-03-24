@@ -1,6 +1,52 @@
 # Changelog
 
 
+## v6.0.0-beta.1...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.0-beta.1...main)
+
+### 🏡 Chore
+
+- Sync ([00c4548](https://github.com/nuxt-modules/robots/commit/00c4548))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
+## v5.7.1...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v5.7.1...main)
+
+### 🚀 Enhancements
+
+- **content:** Add `defineRobotsSchema()` composable ([#283](https://github.com/nuxt-modules/robots/pull/283))
+- **validation:** Add warnings support and warn on /api disallow ([#287](https://github.com/nuxt-modules/robots/pull/287))
+
+### 🩹 Fixes
+
+- Guard against undefined routeRules values ([#277](https://github.com/nuxt-modules/robots/pull/277))
+- **devtools:** Make meta tag parsing attribute order agnostic ([#280](https://github.com/nuxt-modules/robots/pull/280))
+- `skipSiteIndexable` now skips `disallow: /` robots.txt rules ([#282](https://github.com/nuxt-modules/robots/pull/282))
+
+### 💅 Refactors
+
+- Migrate to nuxtseo-shared ([#284](https://github.com/nuxt-modules/robots/pull/284))
+
+### 🏡 Chore
+
+- Sync ([d979b7f](https://github.com/nuxt-modules/robots/commit/d979b7f))
+- Sync ([377a547](https://github.com/nuxt-modules/robots/commit/377a547))
+- Sync ([ba6b10e](https://github.com/nuxt-modules/robots/commit/ba6b10e))
+- Sync ([4ad60dd](https://github.com/nuxt-modules/robots/commit/4ad60dd))
+- Sync ([bc46dc5](https://github.com/nuxt-modules/robots/commit/bc46dc5))
+- Sync ([5e6ace0](https://github.com/nuxt-modules/robots/commit/5e6ace0))
+- Sync ([a6ba44c](https://github.com/nuxt-modules/robots/commit/a6ba44c))
+- Sync ([476b4f0](https://github.com/nuxt-modules/robots/commit/476b4f0))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
 ## v5.6.7...main
 
 [compare changes](https://github.com/nuxt-modules/robots/compare/v5.6.7...main)
