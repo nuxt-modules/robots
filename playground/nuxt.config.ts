@@ -13,6 +13,15 @@ export default defineNuxtConfig({
     url: 'https://nuxtseo.com/',
   },
 
+  vite: {
+    optimizeDeps: {
+      include: [
+        '@vue/devtools-core',
+        '@vue/devtools-kit',
+      ]
+    }
+  },
+
   nitro: {
     plugins: ['plugins/robots.ts'],
     prerender: {
@@ -52,5 +61,5 @@ export default defineNuxtConfig({
     },
   },
 
-  compatibilityDate: '2025-01-01',
+  compatibilityDate: '2026-01-01',
 })

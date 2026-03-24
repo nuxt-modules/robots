@@ -3,6 +3,7 @@
   "exclude": [
     "test/**",
     "client",
+    "devtools",
     "playground"
   ]
 }

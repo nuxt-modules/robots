@@ -1,29 +1,11 @@
-import type { ModuleOptions as NuxtI18nOptions } from '@nuxtjs/i18n'
-import type { AutoI18nConfig, NormalisedLocales } from './util'
-import { getNuxtModuleVersion, hasNuxtModule, hasNuxtModuleCompatibility } from '@nuxt/kit'
-import { joinURL, withLeadingSlash, withoutLeadingSlash, withoutTrailingSlash } from 'ufo'
-import { getNuxtModuleOptions } from './kit'
-import { logger } from './logger'
-import { isInternalRoute, mergeOnKey } from './util'
+import type { NuxtI18nOptions } from '@nuxtjs/i18n'
+import type { AutoI18nConfig as SharedAutoI18nConfig } from 'nuxtseo-shared/i18n'
+import type { AutoI18nConfig } from './util'
+// re-import for local use in mapPathForI18nPages
+import { generatePathForI18nPages } from 'nuxtseo-shared/i18n'
+import { withLeadingSlash, withoutLeadingSlash, withoutTrailingSlash } from 'ufo'
 
-export function generatePathForI18nPages(
-  localeCode: string,
-  pageLocales: string,
-  defaultLocale: string,
-  strategy: AutoI18nConfig['strategy'],
-) {
-  let path = pageLocales
-  switch (strategy) {
-    case 'prefix_except_default':
-    case 'prefix_and_default':
-      path = localeCode === defaultLocale ? pageLocales : joinURL(localeCode, pageLocales)
-      break
-    case 'prefix':
-      path = joinURL(localeCode, pageLocales)
-      break
-  }
-  return path
-}
+export { generatePathForI18nPages, resolveI18nConfig, splitPathForI18nLocales } from 'nuxtseo-shared/i18n'
 
 export function mapPathForI18nPages(path: string, autoI18n: AutoI18nConfig): string[] | false {
   const pages = autoI18n.pages
@@ -48,7 +30,12 @@ export function mapPathForI18nPages(path: string, autoI18n: AutoI18nConfig): str
         const localePath = (l.code in pageLocales && pageLocales[l.code] !== false)
           ? pageLocales[l.code] as string
           : `/${pageName}`
-        return withLeadingSlash(generatePathForI18nPages(l.code, localePath, autoI18n.defaultLocale, autoI18n.strategy))
+        return withLeadingSlash(generatePathForI18nPages({
+          localeCode: l.code,
+          pageLocales: localePath,
+          nuxtI18nConfig: { strategy: autoI18n.strategy, defaultLocale: autoI18n.defaultLocale } as NuxtI18nOptions,
+          normalisedLocales: autoI18n.locales as SharedAutoI18nConfig['locales'],
+        }))
       })
   }
 
@@ -68,45 +55,4 @@ export function mapPathForI18nPages(path: string, autoI18n: AutoI18nConfig): str
   }
 
   return false
-}
-
-export function splitPathForI18nLocales(path: string, autoI18n: AutoI18nConfig) {
-  const locales = autoI18n.strategy === 'prefix_except_default' ? autoI18n.locales.filter(l => l.code !== autoI18n.defaultLocale) : autoI18n.locales
-  if (!path || isInternalRoute(path))
-    return path
-  const match = path.match(new RegExp(`^/(${locales.map(l => l.code).join('|')})(.*)`))
-  const locale = match?.[1]
-  // only accept paths without locale
-  if (locale)
-    return path
-  return [
-    // always add the original route to avoid redirects
-    path,
-    ...locales.map(l => `/${l.code}${path}`),
-  ]
-}
-
-export async function resolveI18nConfig() {
-  let nuxtI18nConfig: NuxtI18nOptions = {}
-  let resolvedAutoI18n: false | AutoI18nConfig = false
-  let normalisedLocales: NormalisedLocales = []
-  if (hasNuxtModule('@nuxtjs/i18n')) {
-    const i18nVersion = await getNuxtModuleVersion('@nuxtjs/i18n')
-    if (!await hasNuxtModuleCompatibility('@nuxtjs/i18n', '>=8'))
-      logger.warn(`You are using @nuxtjs/i18n v${i18nVersion}. For the best compatibility, please upgrade to @nuxtjs/i18n v8.0.0 or higher.`)
-    nuxtI18nConfig = (await getNuxtModuleOptions('@nuxtjs/i18n') || {}) as NuxtI18nOptions
-    normalisedLocales = mergeOnKey((nuxtI18nConfig.locales || []).map((locale: Required<NuxtI18nOptions>['locales'][number]) => typeof locale === 'string' ? { code: locale } : locale), 'code')
-    const usingI18nPages = Object.keys(nuxtI18nConfig.pages || {}).length
-    const hasI18nConfigForAlternatives = nuxtI18nConfig.differentDomains || usingI18nPages || (nuxtI18nConfig.strategy !== 'no_prefix' && nuxtI18nConfig.locales)
-    if (hasI18nConfigForAlternatives) {
-      resolvedAutoI18n = {
-        differentDomains: nuxtI18nConfig.differentDomains,
-        defaultLocale: nuxtI18nConfig.defaultLocale!,
-        locales: normalisedLocales,
-        strategy: nuxtI18nConfig.strategy as 'prefix' | 'prefix_except_default' | 'prefix_and_default',
-        pages: nuxtI18nConfig.pages as Record<string, Record<string, string | false>> | undefined,
-      }
-    }
-  }
-  return resolvedAutoI18n
 }

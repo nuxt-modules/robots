@@ -3,15 +3,15 @@ import fsp from 'node:fs/promises'
 import {
   addImports,
   addPlugin,
+  addPrerenderRoutes,
   addServerHandler,
+  addServerImports,
   addServerImportsDir,
   addServerPlugin,
   createResolver,
   defineNuxtModule,
-  hasNuxtModule,
-  hasNuxtModuleCompatibility,
+  extendRouteRules,
 } from '@nuxt/kit'
-import { defu } from 'defu'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config/kit'
 import { relative } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
@@ -19,7 +19,7 @@ import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { AiBots, NonHelpfulBots } from './const'
 import { setupDevToolsUI } from './devtools'
 import { mapPathForI18nPages, resolveI18nConfig, splitPathForI18nLocales } from './i18n'
-import { isNuxtGenerate, resolveNitroPreset } from './kit'
+import { isNuxtGenerate, resolveNitroPreset, resolveNuxtContentVersion } from './kit'
 import { logger } from './logger'
 import { registerTypeTemplates } from './templates'
 import {
@@ -208,7 +208,7 @@ export default defineNuxtModule<ModuleOptions>({
       optional: true,
     },
     'nuxt-site-config': {
-      version: '>=3',
+      version: '>=3.2',
     },
     '@nuxt/content': {
       version: '>=2',
@@ -243,19 +243,13 @@ export default defineNuxtModule<ModuleOptions>({
       // need to mock the composables to allow module still to work when disabled
       addImports({ name: 'useRobotsRule', from: resolve(`./runtime/app/composables/mock`) })
       addImports({ name: 'useBotDetection', from: resolve(`./runtime/app/composables/mock`) })
-      nuxt.options.nitro = nuxt.options.nitro || {}
-      nuxt.options.nitro.imports = nuxt.options.nitro.imports || {}
-      nuxt.options.nitro.imports.presets = nuxt.options.nitro.imports.presets || []
-      nuxt.options.nitro.imports.presets.push({
-        from: resolve('./runtime/server/mock-composables'),
-        imports: [
-          'getPathRobotConfig',
-          'getSiteRobotConfig',
-          'getBotDetection',
-          'isBot',
-          'getBotInfo',
-        ],
-      })
+      addServerImports([
+        'getPathRobotConfig',
+        'getSiteRobotConfig',
+        'getBotDetection',
+        'isBot',
+        'getBotInfo',
+      ].map(name => ({ name, from: resolve('./runtime/server/mock-composables') })))
       nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
       nuxt.options.nitro.alias['#internal/nuxt-robots'] = resolve('./runtime/server/mock-composables')
       return
@@ -388,9 +382,9 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     const nitroPreset = resolveNitroPreset(nuxt.options.nitro)
-    const usingNuxtContent = hasNuxtModule('@nuxt/content')
-    const isNuxtContentV3 = usingNuxtContent && await hasNuxtModuleCompatibility('@nuxt/content', '^3')
-    let isNuxtContentV2 = usingNuxtContent && await hasNuxtModuleCompatibility('@nuxt/content', '^2')
+    const contentVersion = await resolveNuxtContentVersion()
+    const isNuxtContentV3 = contentVersion && contentVersion.version === 3
+    let isNuxtContentV2 = contentVersion && contentVersion.version === 2
     if (isNuxtContentV3) {
       if (nuxt.options._installedModules.some(m => m.meta.name === 'Content')) {
         logger.warn('You have loaded `@nuxt/content` before `@nuxtjs/robots`, this may cause issues with the integration. Please ensure `@nuxtjs/robots` is loaded first.')
@@ -476,27 +470,23 @@ export default defineNuxtModule<ModuleOptions>({
       // @ts-expect-error runtime type
       await nuxt.hooks.callHook('robots:config', config)
 
-      nuxt.options.routeRules = nuxt.options.routeRules || {}
       // convert robot routeRules to header routeRules for static hosting
       if (config.header) {
         const noIndexPaths = [withoutTrailingSlash(nuxt.options.app.buildAssetsDir), `${nuxt.options.app.buildAssetsDir}**`]
         for (const path of noIndexPaths) {
-          nuxt.options.routeRules[path] = defu({
-            robots: 'noindex',
-          }, nuxt.options.routeRules[path])
+          extendRouteRules(path, { robots: 'noindex' }, { override: true })
         }
-        Object.entries(nuxt.options.routeRules).forEach(([route, rules]) => {
+        Object.entries(nuxt.options.routeRules || {}).forEach(([route, rules]) => {
           if (!rules)
             return
           const robotRule = normaliseRobotsRouteRule(rules)
           // only if a rule has been specified as robots.txt will cover disallows
           if (robotRule && !robotRule.allow && robotRule.rule) {
-          // @ts-expect-error untyped
-            nuxt.options.routeRules[route] = defu({
+            extendRouteRules(route, {
               headers: {
                 'X-Robots-Tag': robotRule.rule,
               },
-            }, nuxt.options.routeRules?.[route])
+            }, { override: true })
           }
         })
       }
@@ -521,7 +511,7 @@ export default defineNuxtModule<ModuleOptions>({
         firstGroup.disallow = [...new Set([...(firstGroup.disallow || []), ...extraDisallows])]
 
       if (resolvedAutoI18n && resolvedAutoI18n.locales && resolvedAutoI18n.strategy !== 'no_prefix') {
-        const i18n = resolvedAutoI18n
+        const i18n = resolvedAutoI18n as any
         for (const group of config.groups.filter(g => !g._skipI18n)) {
           group.allow = asArray(group.allow || []).map((path) => {
             if (typeof path !== 'string')
@@ -573,9 +563,7 @@ export default defineNuxtModule<ModuleOptions>({
     const isFirebase = nitroPreset === 'firebase'
     // @ts-expected-error nuxt 3
     if ((isNuxtGenerate() || isFirebase) && config.robotsTxt) {
-      nuxt.options.nitro.prerender = nuxt.options.nitro.prerender || {}
-      nuxt.options.nitro.prerender.routes = nuxt.options.nitro.prerender.routes || []
-      nuxt.options.nitro.prerender.routes.push('/robots.txt')
+      addPrerenderRoutes('/robots.txt')
       if (isFirebase)
         logger.info('Firebase does not support dynamic robots.txt files. Prerendering /robots.txt.')
     }
@@ -640,16 +628,11 @@ export default defineNuxtModule<ModuleOptions>({
     // Conditionally provide bot detection server composables
     if (!config.botDetection) {
       // Override bot detection imports with mock implementations when disabled
-      nuxt.options.nitro.imports = nuxt.options.nitro.imports || {}
-      nuxt.options.nitro.imports.presets = nuxt.options.nitro.imports.presets || []
-      nuxt.options.nitro.imports.presets.push({
-        from: resolve('./runtime/server/mock-composables'),
-        imports: [
-          'getBotDetection',
-          'isBot',
-          'getBotInfo',
-        ],
-      })
+      addServerImports([
+        'getBotDetection',
+        'isBot',
+        'getBotInfo',
+      ].map(name => ({ name, from: resolve('./runtime/server/mock-composables') })))
     }
     nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
     nuxt.options.nitro.alias['#internal/nuxt-simple-robots'] = resolve('./runtime/server/composables')
