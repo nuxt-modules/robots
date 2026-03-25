@@ -1,6 +1,19 @@
 # Changelog
 
 
+## v6.0.2...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.2...main)
+
+### 🏡 Chore
+
+- Ignore typechecks in examples ([8249c76](https://github.com/nuxt-modules/robots/commit/8249c76))
+- Bump ([8e2d5d3](https://github.com/nuxt-modules/robots/commit/8e2d5d3))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
 ## v6.0.1...main
 
 [compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.1...main)
