@@ -1,8 +1,19 @@
+catalogMode: prefer
+cleanupUnusedCatalogs: true
+shellEmulator: true
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  - chokidar
+  - semver
+  - undici-types
+  - jose
 
 packages:
   - devtools
   - playground
   - '!examples/**'
+overrides:
+  vite: ^8.0.2
 catalog:
   '@antfu/eslint-config': ^7.7.3
   '@fingerprintjs/botd': ^2.0.0
@@ -39,7 +50,6 @@ catalog:
   vitest: ^4.1.1
   vue: ^3.5.31
   vue-router: ^5.0.4
-catalogMode: prefer
 catalogs:
   dev:
     '@arethetypeswrong/cli': ^0.18.2
@@ -54,7 +64,6 @@ catalogs:
     '@vueuse/nuxt': ^14.2.1
     execa: ^9.6.1
     playwright-core: ^1.58.2
-cleanupUnusedCatalogs: true
 onlyBuiltDependencies:
   - '@firebase/util'
   - '@parcel/watcher'
@@ -63,15 +72,5 @@ onlyBuiltDependencies:
   - protobufjs
   - unrs-resolver
   - vue-demi
-
-overrides:
-  vite: ^8.0.2
-shellEmulator: true
-trustPolicy: no-downgrade
-trustPolicyExclude:
-  - chokidar
-  - semver
-  - undici-types
-  - jose
 
 trustPolicyIgnoreAfter: 262800
