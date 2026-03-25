@@ -1,6 +1,24 @@
 # Changelog
 
 
+## v6.0.1...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.1...main)
+
+### 🩹 Fixes
+
+- **devtools:** Label module ([1c3e5de](https://github.com/nuxt-modules/robots/commit/1c3e5de))
+
+### 🏡 Chore
+
+- Examples ([1c78f32](https://github.com/nuxt-modules/robots/commit/1c78f32))
+- Bump deps ([cd0f0e9](https://github.com/nuxt-modules/robots/commit/cd0f0e9))
+- Bump deps ([6bce0d4](https://github.com/nuxt-modules/robots/commit/6bce0d4))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
 ## v6.0.0...main
 
 [compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.0...main)
