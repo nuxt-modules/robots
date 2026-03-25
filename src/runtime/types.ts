@@ -162,7 +162,7 @@ export interface BotInfo {
   name?: BotName
   category?: BotCategory
   trusted?: boolean
-  method?: 'server' | 'fingerprint'
+  method?: 'headers' | 'fingerprint'
 }
 
 // Options for useBotDetection composable
