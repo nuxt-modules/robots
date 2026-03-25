@@ -4,6 +4,7 @@
     "test/**",
     "client",
     "devtools",
-    "playground"
+    "playground",
+    "examples"
   ]
 }
