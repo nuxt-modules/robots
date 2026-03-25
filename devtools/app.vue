@@ -50,6 +50,7 @@ watch(isProductionMode, (isProd) => {
 <template>
   <DevtoolsLayout
     v-model:active-tab="currentTab"
+    module-name="nuxt-robots"
     title="Robots"
     icon="carbon:bot"
     :version="version"
