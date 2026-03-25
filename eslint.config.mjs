@@ -34,4 +34,12 @@ export default antfu(
       'harlanzw/vue-require-composable-prefix': 'off',
     },
   },
+  {
+    files: ['examples/**/package.json'],
+    rules: {
+      'pnpm/json-enforce-catalog': 'off',
+      'pnpm/json-valid-catalog': 'off',
+      'pnpm/json-prefer-workspace-settings': 'off',
+    },
+  },
 )

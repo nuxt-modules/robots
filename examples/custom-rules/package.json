@@ -1,0 +1,10 @@
+{
+  "name": "nuxtjs-robots-custom-rules-example",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@nuxtjs/robots": "latest",
+    "nuxt": "^4.4.2",
+    "vue": "^3.5.31"
+  }
+}

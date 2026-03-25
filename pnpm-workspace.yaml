@@ -11,6 +11,7 @@ trustPolicyExclude:
 packages:
   - devtools
   - playground
+  - '!examples/**'
 
 overrides:
   vite: ^8.0.2
@@ -34,9 +35,9 @@ catalog:
   eslint-plugin-harlanzw: ^0.11.0
   firebase-functions: ^7.2.2
   h3: ^1.15.10
-  happy-dom: ^20.8.7
+  happy-dom: ^20.8.8
   nuxt: ^4.4.2
-  nuxt-site-config: ^4.0.0
+  nuxt-site-config: ^4.0.1
   nuxtseo-layer-devtools: ^0.3.0
   nuxtseo-shared: ^0.7.0
   pathe: ^2.0.3
@@ -48,7 +49,7 @@ catalog:
   ufo: ^1.6.3
   unocss: ^66.6.7
   vitest: ^4.1.1
-  vue: ^3.5.30
+  vue: ^3.5.31
   vue-router: ^5.0.4
 catalogs:
   dev:

@@ -1,6 +1,30 @@
 # Changelog
 
 
+## v6.0.0...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.0...main)
+
+### 🏡 Chore
+
+- Type ([8ff0245](https://github.com/nuxt-modules/robots/commit/8ff0245))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
+## v6.0.0-beta.5...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.0-beta.5...main)
+
+### 🏡 Chore
+
+- Sync ([c72432d](https://github.com/nuxt-modules/robots/commit/c72432d))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
 ## v6.0.0-beta.4...main
 
 [compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.0-beta.4...main)
