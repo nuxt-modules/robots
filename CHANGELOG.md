@@ -1,6 +1,18 @@
 # Changelog
 
 
+## v6.0.3...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.3...main)
+
+### 🏡 Chore
+
+- Bump ([e4d5010](https://github.com/nuxt-modules/robots/commit/e4d5010))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
 ## v6.0.2...main
 
 [compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.2...main)
