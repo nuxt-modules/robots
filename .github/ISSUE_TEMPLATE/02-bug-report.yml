@@ -14,7 +14,11 @@ body:
       required: true
     attributes:
       label: 🛠️ To reproduce
-      description: 'A reproduction of the bug. Please use the Nuxt Link Checker starter https://nuxtseo.com/link-checker/getting-started/stackblitz'
+      description: |
+        A reproduction of the bug. Please create a StackBlitz reproduction from one of the starters:
+        - [Basic](https://stackblitz.com/github/nuxt-modules/robots/tree/main/examples/basic)
+        - [i18n](https://stackblitz.com/github/nuxt-modules/robots/tree/main/examples/i18n)
+        - [Custom Rules](https://stackblitz.com/github/nuxt-modules/robots/tree/main/examples/custom-rules)
       placeholder: https://stackblitz.com/[...]
   - type: textarea
     validations:
