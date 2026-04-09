@@ -15,7 +15,7 @@ packages:
 overrides:
   vite: ^8.0.3
 catalog:
-  '@antfu/eslint-config': ^7.7.3
+  '@antfu/eslint-config': ^8.1.1
   '@fingerprintjs/botd': ^2.0.0
   '@iconify-json/tabler': ^1.2.32
   '@nuxt/devtools-kit': 4.0.0-alpha.3
