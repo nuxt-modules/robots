@@ -5,6 +5,6 @@
   "dependencies": {
     "@nuxtjs/robots": "latest",
     "nuxt": "^4.4.2",
-    "vue": "^3.5.31"
+    "vue": "^3.5.32"
   }
 }

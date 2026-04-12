@@ -1,6 +1,31 @@
 # Changelog
 
 
+## v6.0.5...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.5...main)
+
+### 🏡 Chore
+
+- Bump deps ([436052a](https://github.com/nuxt-modules/robots/commit/436052a))
+- Bump deps ([a2325e7](https://github.com/nuxt-modules/robots/commit/a2325e7))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
+## v6.0.4...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.4...main)
+
+### 🏡 Chore
+
+- Bump ([240bcc5](https://github.com/nuxt-modules/robots/commit/240bcc5))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
 ## v6.0.3...main
 
 [compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.3...main)
