@@ -18,7 +18,7 @@ catalog:
   '@antfu/eslint-config': ^8.1.1
   '@fingerprintjs/botd': ^2.0.0
   '@iconify-json/tabler': ^1.2.33
-  '@nuxt/devtools-kit': 4.0.0-alpha.3
+  '@nuxt/devtools-kit': 4.0.0-alpha.4
   '@nuxt/devtools-ui-kit': ^3.2.4
   '@nuxt/kit': ^4.4.2
   '@nuxtjs/i18n': ^10.2.4
