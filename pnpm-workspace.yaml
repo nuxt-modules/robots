@@ -15,10 +15,10 @@ packages:
 overrides:
   vite: ^8.0.8
 catalog:
-  '@antfu/eslint-config': ^8.1.1
+  '@antfu/eslint-config': ^8.2.0
   '@fingerprintjs/botd': ^2.0.0
   '@iconify-json/tabler': ^1.2.33
-  '@nuxt/devtools-kit': 4.0.0-alpha.3
+  '@nuxt/devtools-kit': 4.0.0-alpha.4
   '@nuxt/devtools-ui-kit': ^3.2.4
   '@nuxt/kit': ^4.4.2
   '@nuxtjs/i18n': ^10.2.4
@@ -26,25 +26,25 @@ catalog:
   '@unocss/preset-icons': ^66.6.8
   '@unocss/preset-uno': ^66.6.8
   '@unocss/runtime': ^66.6.8
-  better-sqlite3: ^12.8.0
+  better-sqlite3: ^12.9.0
   bumpp: ^11.0.1
   consola: ^3.4.2
   defu: ^6.1.7
-  eslint: ^10.2.0
+  eslint: ^10.2.1
   eslint-plugin-harlanzw: ^0.12.1
   firebase-functions: ^7.2.5
   h3: ^1.15.11
-  happy-dom: ^20.8.9
+  happy-dom: ^20.9.0
   nuxt: ^4.4.2
   nuxt-site-config: ^4.0.8
-  nuxtseo-layer-devtools: ^5.1.2
-  nuxtseo-shared: ^5.1.2
+  nuxtseo-layer-devtools: ^5.1.3
+  nuxtseo-shared: ^5.1.3
   pathe: ^2.0.3
   pkg-types: ^2.3.0
   shiki: ^4.0.2
   sirv: ^3.0.2
-  std-env: ^4.0.0
-  typescript: ^6.0.2
+  std-env: ^4.1.0
+  typescript: ^6.0.3
   ufo: ^1.6.3
   unocss: ^66.6.8
   vitest: ^4.1.4
@@ -57,7 +57,7 @@ catalogs:
     '@iconify-json/carbon': ^1.2.20
     '@iconify-json/logos': ^1.2.11
     '@iconify-json/ri': ^1.2.10
-    '@nuxt/content': ^3.12.0
+    '@nuxt/content': ^3.13.0
     '@nuxt/module-builder': ^1.0.2
     '@nuxt/test-utils': ^4.0.2
     '@nuxtjs/color-mode': ^4.0.0
