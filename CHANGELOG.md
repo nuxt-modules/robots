@@ -1,6 +1,22 @@
 # Changelog
 
 
+## v6.0.7...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.7...main)
+
+### 🩹 Fixes
+
+- Augment NitroRouteConfig on both nitropack module paths ([#295](https://github.com/nuxt-modules/robots/pull/295))
+
+### 🏡 Chore
+
+- Bump ([3b40427](https://github.com/nuxt-modules/robots/commit/3b40427))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
 ## v6.0.6...main
 
 [compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.6...main)
