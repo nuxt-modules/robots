@@ -6,7 +6,9 @@ import type {
   RobotsValue,
 } from '@nuxtjs/robots'
 import type { H3EventContext } from 'h3'
+import type { NitroRouteConfig as NitroRouteConfigPack, NitroRouteRules as NitroRouteRulesPack } from 'nitropack'
 import type { NitroRouteConfig, NitroRouteRules, NitroRuntimeHooks } from 'nitropack/types'
+import { extendRouteRules } from '@nuxt/kit'
 import { describe, expectTypeOf, it } from 'vitest'
 
 // Tests the generated type augmentations from .nuxt/types/nuxt-robots-*.d.ts.
@@ -27,6 +29,39 @@ describe('nitropack/types augmentations', () => {
       .toEqualTypeOf<(ctx: HookRobotsConfigContext) => void | Promise<void>>()
     expectTypeOf<NitroRuntimeHooks['robots:robots-txt']>()
       .toEqualTypeOf<(ctx: HookRobotsTxtContext) => void | Promise<void>>()
+  })
+})
+
+// Regression test for https://github.com/nuxt-modules/robots/issues/294
+// @nuxt/kit v4's extendRouteRules types NitroRouteConfig as
+// `NitroV2.NitroRouteConfig | NitroV3.NitroRouteConfig`, pulling the interface
+// through both 'nitropack' and 'nitropack/types'. If we only augment one path,
+// the other re-exports the un-augmented interface and `robots` goes missing.
+describe('nitropack augmentations (cross-module-path)', () => {
+  it('NitroRouteConfig.robots is present on both nitropack and nitropack/types', () => {
+    expectTypeOf<NitroRouteConfigPack['robots']>().toEqualTypeOf<RobotsValue | { indexable: boolean, rule: string } | undefined>()
+  })
+
+  it('NitroRouteRules.robots is present on both nitropack and nitropack/types', () => {
+    expectTypeOf<NitroRouteRulesPack['robots']>().toEqualTypeOf<RobotsValue | { indexable: boolean, rule: string } | undefined>()
+  })
+
+  // Reproduces the exact scenario reported in issue #294 — a consumer module
+  // calling @nuxt/kit's extendRouteRules should still see native Nitro keys
+  // (`ssr`) alongside our augmented `robots` key. Kit v4 unions NitroRouteConfig
+  // across both 'nitropack' and 'nitropack/types', so the rule object must
+  // satisfy both augmented interfaces.
+  it('extendRouteRules accepts ssr and robots together', () => {
+    // Type-level only; never invoked. Before the fix, this call failed with
+    // "Object literal may only specify known properties, and 'ssr' does not
+    // exist in type 'NitroRouteConfig'." because our augmentation clobbered
+    // only one of the two module paths kit v4 unions across.
+    void (() => extendRouteRules('/example', {
+      ssr: false,
+      robots: false,
+    }))
+    expectTypeOf<NitroRouteConfig>().toExtend<{ ssr?: boolean, robots?: RobotsValue | { indexable: boolean, rule: string } }>()
+    expectTypeOf<NitroRouteConfigPack>().toExtend<{ ssr?: boolean, robots?: RobotsValue | { indexable: boolean, rule: string } }>()
   })
 })
 
