@@ -1,6 +1,22 @@
 # Changelog
 
 
+## v6.0.6...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.6...main)
+
+### 🩹 Fixes
+
+- Move devtools-only deps to devDependencies ([d5f87aa](https://github.com/nuxt-modules/robots/commit/d5f87aa))
+
+### 🏡 Chore
+
+- Bump ([2b55534](https://github.com/nuxt-modules/robots/commit/2b55534))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
 ## v6.0.5...main
 
 [compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.5...main)
