@@ -1,5 +1,5 @@
-import { useHead } from '#imports'
 import { defineNuxtPlugin, useRequestEvent } from 'nuxt/app'
+import { useHead } from '#imports'
 
 export default defineNuxtPlugin({
   setup() {

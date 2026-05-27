@@ -1,5 +1,7 @@
 catalogMode: prefer
 cleanupUnusedCatalogs: true
+minimumReleaseAgeExclude:
+  - eslint-plugin-harlanzw@0.16.1
 shellEmulator: true
 trustPolicy: no-downgrade
 trustPolicyExclude:
@@ -7,63 +9,63 @@ trustPolicyExclude:
   - semver
   - undici-types
   - jose
-
+  - tinyexec@1.2.2
 packages:
   - devtools
   - playground
   - '!examples/**'
 overrides:
-  vite: ^8.0.10
+  vite: ^8.0.14
 catalog:
-  '@antfu/eslint-config': ^8.2.0
+  '@antfu/eslint-config': ^9.0.0
   '@fingerprintjs/botd': ^2.0.0
-  '@iconify-json/tabler': ^1.2.33
-  '@nuxt/devtools-kit': 4.0.0-alpha.3
+  '@iconify-json/tabler': ^1.2.35
+  '@nuxt/devtools-kit': 4.0.0-alpha.4
   '@nuxt/devtools-ui-kit': ^3.2.4
-  '@nuxt/kit': ^4.4.2
-  '@nuxtjs/i18n': ^10.2.4
-  '@unocss/nuxt': ^66.6.8
-  '@unocss/preset-icons': ^66.6.8
-  '@unocss/preset-uno': ^66.6.8
-  '@unocss/runtime': ^66.6.8
-  better-sqlite3: ^12.9.0
-  bumpp: ^11.0.1
+  '@nuxt/kit': ^4.4.6
+  '@nuxtjs/i18n': ^10.4.0
+  '@unocss/nuxt': ^66.7.0
+  '@unocss/preset-icons': ^66.7.0
+  '@unocss/preset-uno': ^66.7.0
+  '@unocss/runtime': ^66.7.0
+  better-sqlite3: ^12.10.0
+  bumpp: ^11.1.0
   consola: ^3.4.2
   defu: ^6.1.7
-  eslint: ^10.2.1
-  eslint-plugin-harlanzw: ^0.12.1
+  eslint: ^10.4.0
+  eslint-plugin-harlanzw: ^0.16.1
   firebase-functions: ^7.2.5
   h3: ^1.15.11
   happy-dom: ^20.9.0
-  nuxt: ^4.4.2
+  nuxt: ^4.4.6
   nuxt-site-config: ^4.0.8
   nuxtseo-layer-devtools: ^5.1.3
   nuxtseo-shared: ^5.1.3
   pathe: ^2.0.3
-  pkg-types: ^2.3.0
-  shiki: ^4.0.2
+  pkg-types: ^2.3.1
+  shiki: ^4.1.0
   sirv: ^3.0.2
   std-env: ^4.1.0
   typescript: ^6.0.3
-  ufo: ^1.6.3
-  unocss: ^66.6.8
-  vitest: ^4.1.5
-  vue: ^3.5.33
-  vue-router: ^5.0.6
+  ufo: ^1.6.4
+  unocss: ^66.7.0
+  vitest: ^4.1.7
+  vue: ^3.5.34
+  vue-router: ^5.0.7
 catalogs:
   dev:
     '@arethetypeswrong/cli': ^0.18.2
     '@headlessui/vue': ^1.7.23
-    '@iconify-json/carbon': ^1.2.20
+    '@iconify-json/carbon': ^1.2.22
     '@iconify-json/logos': ^1.2.11
     '@iconify-json/ri': ^1.2.10
-    '@nuxt/content': ^3.13.0
+    '@nuxt/content': ^3.14.0
     '@nuxt/module-builder': ^1.0.2
-    '@nuxt/test-utils': ^4.0.2
+    '@nuxt/test-utils': ^4.0.3
     '@nuxtjs/color-mode': ^4.0.0
-    '@vueuse/nuxt': ^14.2.1
+    '@vueuse/nuxt': ^14.3.0
     execa: ^9.6.1
-    playwright-core: ^1.59.1
+    playwright-core: ^1.60.0
 onlyBuiltDependencies:
   - '@firebase/util'
   - '@parcel/watcher'
@@ -73,3 +75,10 @@ onlyBuiltDependencies:
   - unrs-resolver
   - vue-demi
 trustPolicyIgnoreAfter: 262800
+allowBuilds:
+  '@firebase/util': set this to true or false
+  '@parcel/watcher': set this to true or false
+  better-sqlite3: set this to true or false
+  esbuild: set this to true or false
+  protobufjs: set this to true or false
+  vue-demi: set this to true or false

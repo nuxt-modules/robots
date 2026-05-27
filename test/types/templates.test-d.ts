@@ -1,4 +1,3 @@
-import type { PageMeta } from '#app'
 import type {
   HookRobotsConfigContext,
   HookRobotsTxtContext,
@@ -8,6 +7,7 @@ import type {
 import type { H3EventContext } from 'h3'
 import type { NitroRouteConfig as NitroRouteConfigPack, NitroRouteRules as NitroRouteRulesPack } from 'nitropack'
 import type { NitroRouteConfig, NitroRouteRules, NitroRuntimeHooks } from 'nitropack/types'
+import type { PageMeta } from '#app'
 import { extendRouteRules } from '@nuxt/kit'
 import { describe, expectTypeOf, it } from 'vitest'
 

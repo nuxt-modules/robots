@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { navigateTo, useRoute } from '#imports'
 import { computed, ref, watch } from 'vue'
+import { navigateTo, useRoute } from '#imports'
 import { data, productionData, refreshProductionData, refreshSources } from './composables/state'
 import './composables/rpc'
 
-await loadShiki().catch(() => {})
+await loadShiki().catch((err) => {
+  console.error(err)
+})
 
 const refreshing = ref(false)
 
