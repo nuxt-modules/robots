@@ -1,6 +1,6 @@
 import type { Nuxt } from '@nuxt/schema'
 import type { ModuleOptions } from './module'
-import { addTypeTemplate } from '@nuxt/kit'
+import { addTypeTemplate, isNuxtMajorVersion } from '@nuxt/kit'
 
 interface TemplateContext {
   nuxt: Nuxt
@@ -8,12 +8,13 @@ interface TemplateContext {
 }
 
 export function registerTypeTemplates({ nuxt }: TemplateContext) {
-  // Nuxt 4 augments both 'nitropack' and 'nitropack/types' (matching @nuxt/nitro-server).
-  // Augmenting only one leaves the other's re-exported NitroRouteConfig/NitroRouteRules
-  // without our `robots` key, which breaks consumers like @nuxt/kit's extendRouteRules
-  // that pull the type through both module paths.
-  const isNuxt4 = Number(nuxt.options.future?.compatibilityVersion) === 4
-  const nitroModules = isNuxt4 ? ['nitropack', 'nitropack/types'] : ['nitropack']
+  // Nuxt 4 ships Nitro v3, which exposes `nitropack/types` as a public subpath.
+  // @nuxt/kit's extendRouteRules unions NitroRouteConfig across both 'nitropack'
+  // and 'nitropack/types', so augmenting only one leaves the other's re-exported
+  // interface without our `robots` key.
+  const nitroModules = isNuxtMajorVersion(4, nuxt)
+    ? ['nitropack', 'nitropack/types']
+    : ['nitropack']
 
   // Nuxt-only type augmentations (PageMeta)
   addTypeTemplate({
