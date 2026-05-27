@@ -76,9 +76,9 @@ onlyBuiltDependencies:
   - vue-demi
 trustPolicyIgnoreAfter: 262800
 allowBuilds:
-  '@firebase/util': set this to true or false
-  '@parcel/watcher': set this to true or false
-  better-sqlite3: set this to true or false
-  esbuild: set this to true or false
-  protobufjs: set this to true or false
-  vue-demi: set this to true or false
+  '@firebase/util': true
+  '@parcel/watcher': true
+  better-sqlite3: true
+  esbuild: true
+  protobufjs: true
+  vue-demi: true
