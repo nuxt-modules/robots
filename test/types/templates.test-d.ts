@@ -7,6 +7,7 @@ import type {
 import type { H3EventContext } from 'h3'
 import type { NitroRouteConfig as NitroRouteConfigPack, NitroRouteRules as NitroRouteRulesPack } from 'nitropack'
 import type { NitroRouteConfig, NitroRouteRules, NitroRuntimeHooks } from 'nitropack/types'
+import type { NuxtConfig } from 'nuxt/schema'
 import type { PageMeta } from '#app'
 import { extendRouteRules } from '@nuxt/kit'
 import { describe, expectTypeOf, it } from 'vitest'
@@ -62,6 +63,19 @@ describe('nitropack augmentations (cross-module-path)', () => {
     }))
     expectTypeOf<NitroRouteConfig>().toExtend<{ ssr?: boolean, robots?: RobotsValue | { indexable: boolean, rule: string } }>()
     expectTypeOf<NitroRouteConfigPack>().toExtend<{ ssr?: boolean, robots?: RobotsValue | { indexable: boolean, rule: string } }>()
+  })
+})
+
+// Regression test for https://github.com/nuxt-modules/robots/issues/299
+// `nuxt.config.ts` routeRules are typed via `NuxtConfig['routeRules']`,
+// which (in Nuxt 4) resolves NitroRouteConfig through 'nitropack/types'.
+// If only 'nitropack' is augmented, declaring `robots` in routeRules fails
+// with TS2353 "Object literal may only specify known properties".
+describe('NuxtConfig routeRules (issue #299)', () => {
+  it('NuxtConfig.routeRules accepts a robots-tagged literal', () => {
+    expectTypeOf<{ '/admin': { robots: false } }>().toExtend<NonNullable<NuxtConfig['routeRules']>>()
+    expectTypeOf<{ '/private': { robots: 'noindex, nofollow' } }>().toExtend<NonNullable<NuxtConfig['routeRules']>>()
+    expectTypeOf<{ '/legacy': { robots: { indexable: false, rule: 'noindex' } } }>().toExtend<NonNullable<NuxtConfig['routeRules']>>()
   })
 })
 
