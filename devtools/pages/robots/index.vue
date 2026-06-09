@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { data, mockProduction, pathDebugData, productionData, productionLoading } from '../composables/state'
+import { data, mockProduction, pathDebugData, productionData, productionLoading } from '../../lib/robots/state'
 
 const metaTag = computed(() => {
   const content = pathDebugData.value?.rule || ''

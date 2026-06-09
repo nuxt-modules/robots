@@ -1,4 +1,4 @@
-import type { ProductionDebugResponse } from '../../src/runtime/server/routes/__robots__/debug-production'
+import type { ProductionDebugResponse } from './types'
 import { ref, watch } from 'vue'
 
 export const mockProduction = useLocalStorage('nuxt-robots:mock-production', false)
