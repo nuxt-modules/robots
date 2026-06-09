@@ -17,14 +17,14 @@ packages:
   - playground
   - '!examples/**'
 overrides:
-  vite: ^8.0.14
+  vite: ^8.0.16
 catalog:
   '@antfu/eslint-config': ^9.0.0
   '@fingerprintjs/botd': ^2.0.0
   '@iconify-json/tabler': ^1.2.35
-  '@nuxt/devtools-kit': 4.0.0-alpha.4
-  '@nuxt/devtools-ui-kit': ^3.2.4
-  '@nuxt/kit': ^4.4.6
+  '@nuxt/devtools-kit': 4.0.0-alpha.7
+  '@nuxt/devtools-ui-kit': 4.0.0-alpha.7
+  '@nuxt/kit': ^4.4.7
   '@nuxtjs/i18n': ^10.4.0
   '@unocss/nuxt': ^66.7.0
   '@unocss/preset-icons': ^66.7.0
@@ -35,12 +35,12 @@ catalog:
   bumpp: ^11.1.0
   consola: ^3.4.2
   defu: ^6.1.7
-  eslint: ^10.4.0
-  eslint-plugin-harlanzw: ^0.16.1
+  eslint: ^10.4.1
+  eslint-plugin-harlanzw: ^0.17.0
   firebase-functions: ^7.2.5
   h3: ^1.15.11
-  happy-dom: ^20.9.0
-  nuxt: ^4.4.6
+  happy-dom: ^20.10.2
+  nuxt: ^4.4.7
   nuxt-site-config: ^4.0.8
   nuxtseo-layer-devtools: ^5.2.0
   nuxtseo-shared: ^5.2.0
@@ -53,14 +53,14 @@ catalog:
   ufo: ^1.6.4
   unbuild: ^3.6.1
   unocss: ^66.7.0
-  vitest: ^4.1.7
-  vue: ^3.5.34
-  vue-router: ^5.0.7
+  vitest: ^4.1.8
+  vue: ^3.5.35
+  vue-router: ^5.1.0
 catalogs:
   dev:
-    '@arethetypeswrong/cli': ^0.18.2
+    '@arethetypeswrong/cli': ^0.18.3
     '@headlessui/vue': ^1.7.23
-    '@iconify-json/carbon': ^1.2.22
+    '@iconify-json/carbon': ^1.2.23
     '@iconify-json/logos': ^1.2.11
     '@iconify-json/ri': ^1.2.10
     '@nuxt/content': ^3.14.0
