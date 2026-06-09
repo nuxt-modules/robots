@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { data } from '../composables/state'
+import { data } from '../../lib/robots/state'
 </script>
 
 <template>

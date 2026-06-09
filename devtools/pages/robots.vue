@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { navigateTo, useRoute } from '#imports'
-import { data, productionData, refreshProductionData, refreshSources } from './composables/state'
-import './composables/rpc'
+import { loadShiki } from '../lib/robots/shiki'
+import { data, productionData, refreshProductionData, refreshSources } from '../lib/robots/state'
+import '../lib/robots/rpc'
 
 await loadShiki().catch((err) => {
   console.error(err)
@@ -27,25 +28,24 @@ async function refresh() {
 const route = useRoute()
 const currentTab = computed(() => {
   const p = route.path
-  if (p.startsWith('/debug'))
+  if (p.startsWith('/robots/debug'))
     return 'debug'
-  if (p.startsWith('/docs'))
+  if (p.startsWith('/robots/docs'))
     return 'docs'
   return 'overview'
 })
 
 const navItems = [
-  { value: 'overview', to: '/', icon: 'carbon:dashboard-reference', label: 'Overview', devOnly: false },
-  { value: 'debug', to: '/debug', icon: 'carbon:debug', label: 'Debug', devOnly: true },
-  { value: 'docs', to: '/docs', icon: 'carbon:book', label: 'Docs', devOnly: false },
+  { value: 'overview', to: '/robots', icon: 'carbon:dashboard-reference', label: 'Overview', devOnly: false },
+  { value: 'debug', to: '/robots/debug', icon: 'carbon:debug', label: 'Debug', devOnly: true },
+  { value: 'docs', to: '/robots/docs', icon: 'carbon:book', label: 'Docs', devOnly: false },
 ]
 
 const version = computed(() => data.value?.runtimeConfig?.version || '')
 
-// Redirect to home when switching to production mode from a dev-only tab
 watch(isProductionMode, (isProd) => {
   if (isProd && currentTab.value === 'debug')
-    return navigateTo('/')
+    return navigateTo('/robots')
 })
 </script>
 
