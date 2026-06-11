@@ -1,4 +1,4 @@
-import type { LanguageRegistration } from 'shiki'
+import type { LanguageRegistration } from 'nuxtseo-layer-devtools/composables/shiki'
 import { loadShiki as _loadShiki } from 'nuxtseo-layer-devtools/composables/shiki'
 
 const robotsTxtLang: LanguageRegistration = {

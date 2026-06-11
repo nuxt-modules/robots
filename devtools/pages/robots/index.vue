@@ -1,196 +1,36 @@
 <script setup lang="ts">
+import { isProductionMode, path } from 'nuxtseo-layer-devtools/composables/state'
 import { computed } from 'vue'
-import { data, mockProduction, pathDebugData, productionData, productionLoading } from '../../lib/robots/state'
+import { overview, pathDebugData, productionLoading } from '../../lib/robots/state'
 
 const metaTag = computed(() => {
   const content = pathDebugData.value?.rule || ''
   return `<meta name="robots" content="${content}">`
 })
+
+const subtitle = computed(() => isProductionMode.value
+  ? 'Inspecting the robots.txt from your deployed site.'
+  : 'Page and site indexability status.')
 </script>
 
 <template>
   <div class="space-y-5 animate-fade-up">
-    <!-- Production Mode -->
-    <template v-if="isProductionMode">
-      <div>
-        <h2 class="text-lg font-semibold mb-1">
-          Production
-        </h2>
-        <p class="text-xs text-[var(--color-text-muted)]">
-          Inspecting robots.txt from your production site.
-        </p>
-      </div>
+    <div>
+      <h2 class="text-lg font-semibold mb-1">
+        Overview
+      </h2>
+      <p class="text-xs text-[var(--color-text-muted)]">
+        {{ subtitle }}
+      </p>
+    </div>
 
-      <DevtoolsLoading v-if="productionLoading" />
-      <DevtoolsProductionError v-else-if="!productionData || productionData.error" />
+    <DevtoolsLoading v-if="isProductionMode && productionLoading" />
+    <DevtoolsProductionError v-else-if="isProductionMode && (!overview || overview.error)" />
 
-      <template v-else>
-        <!-- Site Indexable -->
-        <DevtoolsSection
-          icon="carbon:earth"
-          text="Site Indexable"
-        >
-          <div class="space-y-4">
-            <div class="flex items-center gap-3">
-              <DevtoolsAlert
-                v-if="productionData.indexable"
-                icon="carbon:checkmark"
-                variant="success"
-              >
-                Crawlable
-              </DevtoolsAlert>
-              <DevtoolsAlert
-                v-else
-                icon="carbon:warning"
-                variant="warning"
-              >
-                Blocked
-              </DevtoolsAlert>
-              <span class="text-sm text-[var(--color-text-muted)]">
-                <template v-if="productionData.indexable">
-                  Robots can crawl your production site.
-                </template>
-                <template v-else>
-                  Robots are blocked from crawling your production site.
-                </template>
-              </span>
-            </div>
-            <DevtoolsAlert
-              v-if="productionData.hints?.length"
-              icon="carbon:information"
-              variant="info"
-            >
-              <ul class="text-sm text-[var(--color-text-muted)] space-y-1">
-                <li v-for="(hint, key) in productionData.hints" :key="key">
-                  {{ hint }}
-                </li>
-              </ul>
-            </DevtoolsAlert>
-            <DevtoolsAlert
-              v-if="productionData.hasRemoteDebug"
-              icon="carbon:checkmark"
-              variant="success"
-            >
-              <span class="text-xs">Debug endpoint available on production (debug: true)</span>
-            </DevtoolsAlert>
-            <DevtoolsAlert
-              v-else
-              icon="carbon:information"
-              variant="info"
-            >
-              <span class="text-xs">Deploy with <code class="px-1 py-0.5 rounded bg-[var(--color-surface-sunken)]">robots: { debug: true }</code> for full debug data.</span>
-            </DevtoolsAlert>
-          </div>
-        </DevtoolsSection>
-
-        <!-- robots.txt -->
-        <DevtoolsSection
-          icon="carbon:document-blank"
-          text="/robots.txt"
-        >
-          <template #actions>
-            <DevtoolsAlert
-              v-if="productionData.validation?.errors?.length"
-              icon="carbon:warning"
-              variant="warning"
-            >
-              {{ productionData.validation.errors.length }} error{{ productionData.validation.errors.length === 1 ? '' : 's' }}
-            </DevtoolsAlert>
-            <DevtoolsAlert
-              v-if="productionData.validation?.warnings?.length"
-              icon="carbon:warning-alt"
-              variant="warning"
-            >
-              {{ productionData.validation.warnings.length }} warning{{ productionData.validation.warnings.length === 1 ? '' : 's' }}
-            </DevtoolsAlert>
-            <DevtoolsAlert
-              v-else-if="productionData.validation && !productionData.validation?.errors?.length"
-              icon="carbon:checkmark"
-              variant="success"
-            >
-              Valid
-            </DevtoolsAlert>
-          </template>
-
-          <DevtoolsSnippet v-if="productionData.robotsTxt" :code="productionData.robotsTxt" lang="robots-txt" />
-
-          <DevtoolsAlert
-            v-if="productionData.validation?.errors?.length"
-            icon="carbon:warning"
-            variant="warning"
-          >
-            <div class="flex flex-col gap-2">
-              <span class="text-xs font-semibold">Validation Issues</span>
-              <ul class="space-y-1">
-                <li
-                  v-for="(err, i) in productionData.validation.errors"
-                  :key="i"
-                  class="text-xs font-mono text-[var(--color-text-muted)]"
-                >
-                  {{ err }}
-                </li>
-              </ul>
-            </div>
-          </DevtoolsAlert>
-
-          <DevtoolsAlert
-            v-if="productionData.validation?.warnings?.length"
-            icon="carbon:warning-alt"
-            variant="warning"
-          >
-            <div class="flex flex-col gap-2">
-              <span class="text-xs font-semibold">Warnings</span>
-              <ul class="space-y-1">
-                <li
-                  v-for="(warn, i) in productionData.validation.warnings"
-                  :key="i"
-                  class="text-xs font-mono text-[var(--color-text-muted)]"
-                >
-                  {{ warn }}
-                </li>
-              </ul>
-            </div>
-          </DevtoolsAlert>
-
-          <DevtoolsAlert
-            v-if="productionData.validation?.sitemaps?.length"
-            icon="carbon:map"
-            variant="info"
-          >
-            <div class="flex flex-col gap-2">
-              <span class="text-xs font-semibold">Sitemaps</span>
-              <ul class="space-y-1">
-                <li
-                  v-for="sitemap in productionData.validation.sitemaps"
-                  :key="sitemap"
-                  class="text-xs font-mono text-[var(--color-text-muted)] truncate"
-                >
-                  {{ sitemap }}
-                </li>
-              </ul>
-            </div>
-          </DevtoolsAlert>
-        </DevtoolsSection>
-      </template>
-    </template>
-
-    <!-- Local Mode -->
     <template v-else>
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-lg font-semibold mb-1">
-            Overview
-          </h2>
-          <p class="text-xs text-[var(--color-text-muted)]">
-            Page and site indexability status.
-          </p>
-        </div>
-
-        <UCheckbox v-model="mockProduction" label="Mock Production" />
-      </div>
-
-      <!-- Page Indexable -->
+      <!-- Page Indexable (per-path, local only) -->
       <DevtoolsSection
+        v-if="!isProductionMode"
         icon="carbon:document"
         text="Page Indexable"
       >
@@ -261,7 +101,7 @@ const metaTag = computed(() => {
         <div class="space-y-4">
           <div class="flex items-center gap-3">
             <DevtoolsAlert
-              v-if="data?.indexable"
+              v-if="overview?.indexable"
               icon="carbon:checkmark"
               variant="success"
             >
@@ -275,24 +115,31 @@ const metaTag = computed(() => {
               Blocked
             </DevtoolsAlert>
             <span class="text-sm text-[var(--color-text-muted)]">
-              <template v-if="data?.indexable">
-                Robots can crawl your site.
+              <template v-if="overview?.indexable">
+                Robots can crawl your {{ isProductionMode ? 'production ' : '' }}site.
               </template>
               <template v-else>
-                Robots are blocked from crawling your site.
+                Robots are blocked from crawling your {{ isProductionMode ? 'production ' : '' }}site.
               </template>
             </span>
           </div>
           <DevtoolsAlert
-            v-if="data?.hints?.length"
+            v-if="overview?.hints?.length"
             icon="carbon:information"
             variant="info"
           >
             <ul class="text-sm text-[var(--color-text-muted)] space-y-1">
-              <li v-for="(hint, key) in data?.hints" :key="key">
+              <li v-for="(hint, key) in overview?.hints" :key="key">
                 {{ hint }}
               </li>
             </ul>
+          </DevtoolsAlert>
+          <DevtoolsAlert
+            v-if="isProductionMode && overview && 'hasRemoteDebug' in overview && !overview.hasRemoteDebug"
+            icon="carbon:information"
+            variant="info"
+          >
+            <span class="text-xs">Deploy with <code class="px-1 py-0.5 rounded bg-[var(--color-surface-sunken)]">robots: { debug: true }</code> for full debug data.</span>
           </DevtoolsAlert>
         </div>
       </DevtoolsSection>
@@ -304,21 +151,21 @@ const metaTag = computed(() => {
       >
         <template #actions>
           <DevtoolsAlert
-            v-if="data?.validation?.errors?.length"
+            v-if="overview?.validation?.errors?.length"
             icon="carbon:warning"
             variant="warning"
           >
-            {{ data.validation.errors.length }} error{{ data.validation.errors.length === 1 ? '' : 's' }}
+            {{ overview.validation.errors.length }} error{{ overview.validation.errors.length === 1 ? '' : 's' }}
           </DevtoolsAlert>
           <DevtoolsAlert
-            v-if="data?.validation?.warnings?.length"
+            v-if="overview?.validation?.warnings?.length"
             icon="carbon:warning-alt"
             variant="warning"
           >
-            {{ data.validation.warnings.length }} warning{{ data.validation.warnings.length === 1 ? '' : 's' }}
+            {{ overview.validation.warnings.length }} warning{{ overview.validation.warnings.length === 1 ? '' : 's' }}
           </DevtoolsAlert>
           <DevtoolsAlert
-            v-else-if="data?.validation && !data?.validation?.errors?.length"
+            v-else-if="overview?.validation && !overview?.validation?.errors?.length"
             icon="carbon:checkmark"
             variant="success"
           >
@@ -326,11 +173,11 @@ const metaTag = computed(() => {
           </DevtoolsAlert>
         </template>
 
-        <DevtoolsSnippet v-if="data?.robotsTxt" :code="data.robotsTxt" lang="robots-txt" />
+        <DevtoolsSnippet v-if="overview?.robotsTxt" :code="overview.robotsTxt" lang="robots-txt" />
 
         <!-- Validation errors -->
         <DevtoolsAlert
-          v-if="data?.validation?.errors?.length"
+          v-if="overview?.validation?.errors?.length"
           icon="carbon:warning"
           variant="warning"
         >
@@ -338,7 +185,7 @@ const metaTag = computed(() => {
             <span class="text-xs font-semibold">Validation Issues</span>
             <ul class="space-y-1">
               <li
-                v-for="(err, i) in data.validation.errors"
+                v-for="(err, i) in overview.validation.errors"
                 :key="i"
                 class="text-xs font-mono text-[var(--color-text-muted)]"
               >
@@ -350,7 +197,7 @@ const metaTag = computed(() => {
 
         <!-- Validation warnings -->
         <DevtoolsAlert
-          v-if="data?.validation?.warnings?.length"
+          v-if="overview?.validation?.warnings?.length"
           icon="carbon:warning-alt"
           variant="warning"
         >
@@ -358,7 +205,7 @@ const metaTag = computed(() => {
             <span class="text-xs font-semibold">Warnings</span>
             <ul class="space-y-1">
               <li
-                v-for="(warn, i) in data.validation.warnings"
+                v-for="(warn, i) in overview.validation.warnings"
                 :key="i"
                 class="text-xs font-mono text-[var(--color-text-muted)]"
               >
@@ -370,7 +217,7 @@ const metaTag = computed(() => {
 
         <!-- Sitemaps -->
         <DevtoolsAlert
-          v-if="data?.validation?.sitemaps?.length"
+          v-if="overview?.validation?.sitemaps?.length"
           icon="carbon:map"
           variant="info"
         >
@@ -378,7 +225,7 @@ const metaTag = computed(() => {
             <span class="text-xs font-semibold">Sitemaps</span>
             <ul class="space-y-1">
               <li
-                v-for="sitemap in data.validation.sitemaps"
+                v-for="sitemap in overview.validation.sitemaps"
                 :key="sitemap"
                 class="text-xs font-mono text-[var(--color-text-muted)] truncate"
               >

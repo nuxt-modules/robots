@@ -1,7 +1,7 @@
 import type { ProductionDebugResponse } from './types'
-import { ref, watch } from 'vue'
-
-export const mockProduction = useLocalStorage('nuxt-robots:mock-production', false)
+import { appFetch } from 'nuxtseo-layer-devtools/composables/rpc'
+import { isProductionMode, path, productionUrl, refreshTime } from 'nuxtseo-layer-devtools/composables/state'
+import { computed, ref, watch } from 'vue'
 
 export const data = ref<{
   indexable: boolean
@@ -23,13 +23,18 @@ export const pathDebugData = ref<{
 export const productionData = ref<ProductionDebugResponse | null>(null)
 export const productionLoading = ref(false)
 
+/**
+ * Single source of truth for the Overview, driven only by the header Local/Production
+ * switch (`previewSource`). Local mode reads the dev debug endpoint; Production mode
+ * reads the fetched-and-validated deployed robots.txt. Both expose `indexable`, `hints`,
+ * `robotsTxt` and `validation`, so the Overview renders the same sections either way.
+ */
+export const overview = computed(() => isProductionMode.value ? productionData.value : data.value)
+
 export async function refreshSources() {
   if (!appFetch.value || typeof appFetch.value !== 'function')
     return
-  const query: Record<string, any> = {}
-  if (mockProduction.value)
-    query.mockProductionEnv = true
-  data.value = await appFetch.value('/__robots__/debug.json', { query })
+  data.value = await appFetch.value('/__robots__/debug.json')
   if (data.value?.siteConfig?.url)
     productionUrl.value = data.value.siteConfig.url
 }
@@ -37,10 +42,7 @@ export async function refreshSources() {
 export async function refreshPathDebug() {
   if (!appFetch.value || typeof appFetch.value !== 'function')
     return
-  const req: Record<string, any> = { path: path.value }
-  if (mockProduction.value)
-    req.mockProductionEnv = true
-  pathDebugData.value = await appFetch.value('/__robots__/debug-path.json', { query: req })
+  pathDebugData.value = await appFetch.value('/__robots__/debug-path.json', { query: { path: path.value } })
 }
 
 export async function refreshProductionData() {
@@ -49,7 +51,7 @@ export async function refreshProductionData() {
   productionLoading.value = true
 
   // Try full debug endpoint first (requires debug: true in production)
-  const remoteDebug = await appFetch.value('/__robots__/debug-production.json', {
+  const remoteDebug: ProductionDebugResponse | null = await appFetch.value('/__robots__/debug-production.json', {
     query: { url: productionUrl.value, mode: 'debug' },
   }).catch(() => null)
   if (remoteDebug && !remoteDebug.error && remoteDebug.hasRemoteDebug) {
@@ -68,13 +70,13 @@ export async function refreshProductionData() {
   productionLoading.value = false
 }
 
-// Re-fetch when env or path changes
-watch([mockProduction, path, appFetch, refreshTime], () => {
+// Re-fetch local debug when the inspected path or host data changes
+watch([path, appFetch, refreshTime], () => {
   refreshSources()
   refreshPathDebug()
 })
 
-// Fetch production data when switching to production mode
+// Fetch production data the first time the header switch flips to Production
 watch(isProductionMode, (isProd) => {
   if (isProd && !productionData.value)
     refreshProductionData()
