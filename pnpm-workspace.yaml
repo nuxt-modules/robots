@@ -4,6 +4,8 @@ minimumReleaseAgeExclude:
   - eslint-plugin-harlanzw@0.16.1
   - nuxtseo-layer-devtools@5.2.0
   - nuxtseo-shared@5.2.0
+  - nuxtseo-layer-devtools@5.2.3
+  - nuxtseo-shared@5.2.3
 shellEmulator: true
 trustPolicy: no-downgrade
 trustPolicyExclude:
@@ -24,7 +26,7 @@ catalog:
   '@iconify-json/tabler': ^1.2.35
   '@nuxt/devtools-kit': 4.0.0-alpha.7
   '@nuxt/devtools-ui-kit': 4.0.0-alpha.7
-  '@nuxt/kit': ^4.4.7
+  '@nuxt/kit': ^4.4.8
   '@nuxtjs/i18n': ^10.4.0
   '@unocss/nuxt': ^66.7.0
   '@unocss/preset-icons': ^66.7.0
@@ -40,10 +42,10 @@ catalog:
   firebase-functions: ^7.2.5
   h3: ^1.15.11
   happy-dom: ^20.10.2
-  nuxt: ^4.4.7
+  nuxt: ^4.4.8
   nuxt-site-config: ^4.0.8
-  nuxtseo-layer-devtools: ^5.2.0
-  nuxtseo-shared: ^5.2.0
+  nuxtseo-layer-devtools: ^5.2.3
+  nuxtseo-shared: ^5.2.3
   pathe: ^2.0.3
   pkg-types: ^2.3.1
   radix3: ^1.1.2
@@ -66,7 +68,7 @@ catalogs:
     '@nuxt/content': ^3.14.0
     '@nuxt/module-builder': ^1.0.2
     '@nuxt/test-utils': ^4.0.3
-    '@nuxtjs/color-mode': ^4.0.0
+    '@nuxtjs/color-mode': ^4.0.1
     '@vueuse/nuxt': ^14.3.0
     execa: ^9.6.1
     playwright-core: ^1.60.0

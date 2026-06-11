@@ -52,7 +52,7 @@
     "dev": "nuxt dev playground",
     "prepare:fixtures": "nuxt prepare playground && nuxt prepare test/fixtures/basic && nuxt prepare test/fixtures/i18n && nuxt prepare test/fixtures/content-v3",
     "dev:build": "nuxt build playground",
-    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && nuxt prepare playground",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && nuxt prepare playground && pnpm run client:build",
     "release": "pnpm build && bumpp -x \"npx changelogen --output=CHANGELOG.md\"",
     "prepack": "pnpm run build",
     "test": "pnpm run prepare:fixtures && vitest",

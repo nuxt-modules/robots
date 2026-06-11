@@ -8,8 +8,8 @@ export default defineEventHandler(async (e) => {
   const runtimeConfig = useRuntimeConfigNuxtRobots(e)
   const { indexable, hints } = getSiteRobotConfig(e)
   const siteConfig = getSiteConfig(e)
-  // @ts-expect-error Nuxt typed routes cause excessive type depth with $fetch
-  const robotsTxt: string = await e.$fetch('/robots.txt', {
+  // Cast avoids the excessive type-instantiation depth Nuxt's typed routes trigger on $fetch.
+  const robotsTxt: string = await (e.$fetch as any)('/robots.txt', {
     query: getQuery(e),
   })
   const parsed = validateRobots(parseRobotsTxt(robotsTxt))
