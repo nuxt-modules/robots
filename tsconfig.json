@@ -4,6 +4,7 @@
     "test/**",
     "client",
     "devtools",
+    "dist",
     "playground",
     "examples"
   ]
