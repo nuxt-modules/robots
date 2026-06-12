@@ -1,6 +1,19 @@
 # Changelog
 
 
+## v6.1.0...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.1.0...main)
+
+### 🏡 Chore
+
+- **devtools:** Drop redundant @iconify-json/carbon devDependency ([#303](https://github.com/nuxt-modules/robots/pull/303))
+- Bump deps ([8d6a932](https://github.com/nuxt-modules/robots/commit/8d6a932))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
 ## v6.0.7...main
 
 [compare changes](https://github.com/nuxt-modules/robots/compare/v6.0.7...main)

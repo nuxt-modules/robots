@@ -6,6 +6,6 @@
     "@nuxtjs/i18n": "^10.4.0",
     "@nuxtjs/robots": "latest",
     "nuxt": "^4.4.8",
-    "vue": "^3.5.35"
+    "vue": "^3.5.38"
   }
 }
