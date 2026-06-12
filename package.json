@@ -83,7 +83,6 @@
     "@antfu/eslint-config": "catalog:",
     "@arethetypeswrong/cli": "catalog:dev",
     "@headlessui/vue": "catalog:dev",
-    "@iconify-json/carbon": "catalog:dev",
     "@iconify-json/logos": "catalog:dev",
     "@iconify-json/ri": "catalog:dev",
     "@iconify-json/tabler": "catalog:",
