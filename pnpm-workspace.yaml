@@ -42,8 +42,8 @@ catalog:
   happy-dom: ^20.10.2
   nuxt: ^4.4.8
   nuxt-site-config: ^4.0.8
-  nuxtseo-layer-devtools: ^5.2.6
-  nuxtseo-shared: ^5.2.6
+  nuxtseo-layer-devtools: ^5.3.0
+  nuxtseo-shared: ^5.3.0
   pathe: ^2.0.3
   pkg-types: ^2.3.1
   radix3: ^1.1.2
@@ -60,7 +60,6 @@ catalogs:
   dev:
     '@arethetypeswrong/cli': ^0.18.3
     '@headlessui/vue': ^1.7.23
-    '@iconify-json/carbon': ^1.2.23
     '@iconify-json/logos': ^1.2.11
     '@iconify-json/ri': ^1.2.10
     '@nuxt/content': ^3.14.0
