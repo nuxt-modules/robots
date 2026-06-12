@@ -124,9 +124,6 @@ catalogs:
     '@headlessui/vue':
       specifier: ^1.7.23
       version: 1.7.23
-    '@iconify-json/carbon':
-      specifier: ^1.2.23
-      version: 1.2.23
     '@iconify-json/logos':
       specifier: ^1.2.11
       version: 1.2.11
@@ -205,9 +202,6 @@ importers:
       '@headlessui/vue':
         specifier: catalog:dev
         version: 1.7.23(vue@3.5.35(typescript@6.0.3))
-      '@iconify-json/carbon':
-        specifier: catalog:dev
-        version: 1.2.23
       '@iconify-json/logos':
         specifier: catalog:dev
         version: 1.2.11
