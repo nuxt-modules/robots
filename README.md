@@ -42,7 +42,7 @@ Install `@nuxtjs/robots` dependency to your project:
 npx nuxi@latest module add robots
 ```
 
-💡 Need a complete SEO solution for Nuxt? Check out [Nuxt SEO](https://nuxtseo.com).
+💡 Configured your robots.txt? Verify what crawlers and AI bots can access with the free [Robots.txt Validator](https://nuxtseo.com/tools/robots-txt-validator), or monitor crawl & indexing status with [Nuxt SEO Pro](https://nuxtseo.com/pro).
 
 ## Documentation
 
