@@ -80,6 +80,7 @@ export {}
 `,
   }, {
     nitro: true,
+    node: true,
     nuxt: true,
   })
 }
