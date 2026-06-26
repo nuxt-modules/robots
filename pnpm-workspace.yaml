@@ -69,6 +69,7 @@ catalog:
   vitest: ^4.1.9
   vue: ^3.5.38
   vue-router: ^5.1.0
+  vue-tsc: ^3.3.5
 catalogs:
   dev:
     '@arethetypeswrong/cli': ^0.18.4
