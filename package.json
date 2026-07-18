@@ -60,7 +60,7 @@
     "test:attw": "attw --pack"
   },
   "peerDependencies": {
-    "zod": ">=3"
+    "zod": ">=4.4.3"
   },
   "peerDependenciesMeta": {
     "zod": {
