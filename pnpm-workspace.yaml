@@ -37,7 +37,7 @@ catalog:
   '@iconify-json/tabler': ^1.2.35
   '@nuxt/devtools-kit': 4.0.0-alpha.7
   '@nuxt/devtools-ui-kit': 4.0.0-alpha.7
-  '@nuxt/kit': ^4.4.8
+  '@nuxt/kit': ^4.5.0
   '@nuxtjs/i18n': ^10.4.0
   '@unocss/nuxt': ^66.7.2
   '@unocss/preset-icons': ^66.7.2
@@ -53,7 +53,7 @@ catalog:
   firebase-functions: ^7.2.5
   h3: ^1.15.11
   happy-dom: ^20.10.6
-  nuxt: ^4.4.8
+  nuxt: ^4.5.0
   nuxt-site-config: ^4.1.1
   nuxtseo-layer-devtools: ^5.3.1
   nuxtseo-shared: ^5.3.1
