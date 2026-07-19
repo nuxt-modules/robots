@@ -17,6 +17,11 @@ minimumReleaseAgeExclude:
   - nuxt-site-config-kit@4.1.1
   - nuxt-site-config@4.1.1
   - site-config-stack@4.1.1
+  - '@nuxt/kit@4.5.0'
+  - '@nuxt/nitro-server@4.5.0'
+  - '@nuxt/schema@4.5.0'
+  - '@nuxt/vite-builder@4.5.0'
+  - nuxt@4.5.0
 shellEmulator: true
 trustPolicy: no-downgrade
 trustPolicyExclude:
@@ -30,58 +35,58 @@ packages:
   - playground
   - '!examples/**'
 overrides:
-  vite: ^8.1.0
+  vite: ^8.1.5
 catalog:
   '@antfu/eslint-config': ^9.1.0
   '@fingerprintjs/botd': ^2.0.0
-  '@iconify-json/tabler': ^1.2.35
+  '@iconify-json/tabler': ^1.2.36
   '@nuxt/devtools-kit': 4.0.0-alpha.7
   '@nuxt/devtools-ui-kit': 4.0.0-alpha.7
-  '@nuxt/kit': ^4.4.8
-  '@nuxtjs/i18n': ^10.4.0
-  '@unocss/nuxt': ^66.7.2
-  '@unocss/preset-icons': ^66.7.2
-  '@unocss/preset-uno': ^66.7.2
-  '@unocss/runtime': ^66.7.2
+  '@nuxt/kit': ^4.5.0
+  '@nuxtjs/i18n': ^10.4.1
+  '@unocss/nuxt': ^66.7.5
+  '@unocss/preset-icons': ^66.7.5
+  '@unocss/preset-uno': ^66.7.5
+  '@unocss/runtime': ^66.7.5
   '@vueuse/core': ^14.3.0
   better-sqlite3: ^12.11.1
   bumpp: ^11.1.0
   consola: ^3.4.2
   defu: ^6.1.7
-  eslint: ^10.5.0
+  eslint: ^10.7.0
   eslint-plugin-harlanzw: ^0.17.0
-  firebase-functions: ^7.2.5
+  firebase-functions: ^7.3.0
   h3: ^1.15.11
   happy-dom: ^20.10.6
-  nuxt: ^4.4.8
+  nuxt: ^4.5.0
   nuxt-site-config: ^4.1.1
-  nuxtseo-layer-devtools: ^5.3.1
-  nuxtseo-shared: ^5.3.1
+  nuxtseo-layer-devtools: ^5.3.2
+  nuxtseo-shared: ^5.3.2
   pathe: ^2.0.3
   pkg-types: ^2.3.1
   radix3: ^1.1.2
   sirv: ^3.0.2
-  std-env: ^4.1.0
-  typescript: ^6.0.3
+  std-env: ^4.2.0
+  typescript: 6.0.3
   ufo: ^1.6.4
   unbuild: ^3.6.1
-  unocss: ^66.7.2
-  vitest: ^4.1.9
-  vue: ^3.5.38
-  vue-router: ^5.1.0
-  vue-tsc: ^3.3.5
+  unocss: ^66.7.5
+  vitest: ^4.1.10
+  vue: ^3.5.40
+  vue-router: ^5.2.0
+  vue-tsc: ^3.3.7
 catalogs:
   dev:
-    '@arethetypeswrong/cli': ^0.18.4
+    '@arethetypeswrong/cli': ^0.18.5
     '@headlessui/vue': ^1.7.23
     '@iconify-json/logos': ^1.2.11
     '@iconify-json/ri': ^1.2.10
-    '@nuxt/content': ^3.14.0
+    '@nuxt/content': ^3.15.0
     '@nuxt/module-builder': ^1.0.2
     '@nuxt/test-utils': ^4.0.3
     '@nuxtjs/color-mode': ^4.0.1
     '@vueuse/nuxt': ^14.3.0
-    execa: ^9.6.1
+    execa: ^10.0.0
     playwright-core: ^1.61.1
 onlyBuiltDependencies:
   - '@firebase/util'

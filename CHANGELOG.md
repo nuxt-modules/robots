@@ -1,6 +1,25 @@
 # Changelog
 
 
+## v6.1.1...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.1.1...main)
+
+### 🩹 Fixes
+
+- Register robots Nitro types for node context ([#305](https://github.com/nuxt-modules/robots/pull/305))
+
+### 🏡 Chore
+
+- Bump ([668f6a3](https://github.com/nuxt-modules/robots/commit/668f6a3))
+- Bump deps ([7402119](https://github.com/nuxt-modules/robots/commit/7402119))
+- Bump ([bd72d75](https://github.com/nuxt-modules/robots/commit/bd72d75))
+- Bump ([389d6c1](https://github.com/nuxt-modules/robots/commit/389d6c1))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
 ## v6.1.0...main
 
 [compare changes](https://github.com/nuxt-modules/robots/compare/v6.1.0...main)
