@@ -23,10 +23,10 @@ export type ReactiveRobotsValue = MaybeRef<RobotsValue>
 export function useRobotsRule(rule?: ReactiveRobotsValue) {
   const head = injectHead()
   const vm = getCurrentInstance()
-  if (import.meta.client) {
+  if (import.meta.client && head) {
     // bit hacky but should work fine
     const robotsRef = ref<RobotsValue>(document.querySelector('meta[name="robots"]')?.getAttribute('content') || '')
-    const _ = head.hooks.hook('dom:rendered', () => {
+    const _ = head.hooks?.hook('dom:rendered', () => {
       robotsRef.value = document.querySelector('meta[name="robots"]')?.getAttribute('content') || ''
     })
     // remove hook
