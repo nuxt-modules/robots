@@ -109,7 +109,7 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
   }
 
   // 4. nitro route rules
-  nitroApp._robotsRuleMatcher = nitroApp._robotsRuleMatcher || createNitroRouteRuleMatcher(runtimeConfig, e)
+  nitroApp._robotsRuleMatcher = nitroApp._robotsRuleMatcher || createNitroRouteRuleMatcher(runtimeConfig)
   let robotRouteRules = nitroApp._robotsRuleMatcher(path)
   let routeRulesPath = path
   // if we're using i18n we need to strip leading prefixes so the rule will match
