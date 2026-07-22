@@ -168,6 +168,73 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
   }
 }
 
+function validateContentPreferenceRules(rules: string[], directiveName: string, validCategories: string[], validValues: string[], example: string, errors: string[]) {
+  rules.forEach((rule) => {
+    if (rule === '') {
+      errors.push(`${directiveName} rule cannot be empty.`)
+      return
+    }
+
+    // Format can be: "preference" or "/path preference"
+    const parts = rule.trim().split(/\s+/)
+
+    const validatePreferences = (preferences: string[]) => {
+      preferences.forEach((pref) => {
+        const [category, value] = pref.split('=').map(s => s.trim())
+        if (!validCategories.includes(category || '')) {
+          errors.push(`${directiveName} category "${category}" is invalid. Valid categories: ${validCategories.join(', ')}.`)
+        }
+        if (!validValues.includes(value || '')) {
+          errors.push(`${directiveName} value "${value}" for "${category}" is invalid. Valid values: ${validValues.join(', ')}.`)
+        }
+      })
+    }
+
+    if (parts.length === 1) {
+      // Global preference like "bots=y" or "train-ai=n"
+      if (!parts[0]?.includes('=')) {
+        errors.push(`${directiveName} rule "${rule}" must contain a preference assignment (e.g., "${example}").`)
+        return
+      }
+
+      // Validate category and value
+      validatePreferences(parts[0].split(',').map(p => p.trim()))
+    }
+    else if (parts.length >= 2) {
+      const firstPart = parts[0]
+      // Check if first part is a preference (contains =) vs a path (starts with /)
+      // This handles comma-separated values with spaces like "search=y, train-ai=n"
+      if (firstPart?.includes('=')) {
+        // Global preferences with spaces around commas - validate each preference
+        const allPreferences = rule.split(',').map(p => p.trim())
+        allPreferences.forEach((pref) => {
+          if (!pref.includes('=')) {
+            errors.push(`${directiveName} rule "${pref}" must contain a preference assignment (e.g., "${example}").`)
+            return
+          }
+          validatePreferences([pref])
+        })
+      }
+      else {
+        // Path-specific preference like "/path train-ai=n"
+        const path = firstPart
+        const preference = parts.slice(1).join(' ')
+
+        if (!path?.startsWith('/')) {
+          errors.push(`${directiveName} path "${path}" must start with a \`/\`.`)
+        }
+        if (!preference.includes('=')) {
+          errors.push(`${directiveName} preference "${preference}" must contain an assignment (e.g., "${example}").`)
+        }
+        else {
+          // Validate category and value in path-specific rules
+          validatePreferences(preference.split(',').map(p => p.trim()))
+        }
+      }
+    }
+  })
+}
+
 function validateGroupRules(group: ParsedRobotsTxt['groups'][number], errors: string[], warnings: string[]) {
   const toCheck = ['allow', 'disallow']
   toCheck.forEach((key) => {
@@ -185,170 +252,12 @@ function validateGroupRules(group: ParsedRobotsTxt['groups'][number], errors: st
     })
   })
 
-  // Validate Content-Usage directives
   if (group.contentUsage) {
-    const validCategories = ['bots', 'train-ai', 'ai-output', 'search']
-    const validValues = ['y', 'n']
-
-    group.contentUsage.forEach((rule) => {
-      if (rule === '') {
-        errors.push(`Content-Usage rule cannot be empty.`)
-        return
-      }
-
-      // Format can be: "preference" or "/path preference"
-      const parts = rule.trim().split(/\s+/)
-
-      if (parts.length === 1) {
-        // Global preference like "bots=y" or "train-ai=n"
-        if (!parts[0]?.includes('=')) {
-          errors.push(`Content-Usage rule "${rule}" must contain a preference assignment (e.g., "train-ai=n").`)
-          return
-        }
-
-        // Validate category and value
-        const preferences = parts[0].split(',').map(p => p.trim())
-        preferences.forEach((pref) => {
-          const [category, value] = pref.split('=').map(s => s.trim())
-          if (!validCategories.includes(category || '')) {
-            errors.push(`Content-Usage category "${category}" is invalid. Valid categories: ${validCategories.join(', ')}.`)
-          }
-          if (!validValues.includes(value || '')) {
-            errors.push(`Content-Usage value "${value}" for "${category}" is invalid. Valid values: y, n.`)
-          }
-        })
-      }
-      else if (parts.length >= 2) {
-        const firstPart = parts[0]
-        // Check if first part is a preference (contains =) vs a path (starts with /)
-        // This handles comma-separated values with spaces like "search=y, train-ai=n"
-        if (firstPart?.includes('=')) {
-          // Global preferences with spaces around commas - validate each preference
-          const allPreferences = rule.split(',').map(p => p.trim())
-          allPreferences.forEach((pref) => {
-            if (!pref.includes('=')) {
-              errors.push(`Content-Usage rule "${pref}" must contain a preference assignment (e.g., "train-ai=n").`)
-              return
-            }
-            const [category, value] = pref.split('=').map(s => s.trim())
-            if (!validCategories.includes(category || '')) {
-              errors.push(`Content-Usage category "${category}" is invalid. Valid categories: ${validCategories.join(', ')}.`)
-            }
-            if (!validValues.includes(value || '')) {
-              errors.push(`Content-Usage value "${value}" for "${category}" is invalid. Valid values: y, n.`)
-            }
-          })
-        }
-        else {
-          // Path-specific preference like "/path train-ai=n"
-          const path = firstPart
-          const preference = parts.slice(1).join(' ')
-
-          if (!path?.startsWith('/')) {
-            errors.push(`Content-Usage path "${path}" must start with a \`/\`.`)
-          }
-          if (!preference.includes('=')) {
-            errors.push(`Content-Usage preference "${preference}" must contain an assignment (e.g., "train-ai=n").`)
-          }
-          else {
-            // Validate category and value in path-specific rules
-            const preferences = preference.split(',').map(p => p.trim())
-            preferences.forEach((pref) => {
-              const [category, value] = pref.split('=').map(s => s.trim())
-              if (!validCategories.includes(category || '')) {
-                errors.push(`Content-Usage category "${category}" is invalid. Valid categories: ${validCategories.join(', ')}.`)
-              }
-              if (!validValues.includes(value || '')) {
-                errors.push(`Content-Usage value "${value}" for "${category}" is invalid. Valid values: y, n.`)
-              }
-            })
-          }
-        }
-      }
-    })
+    validateContentPreferenceRules(group.contentUsage, 'Content-Usage', ['bots', 'train-ai', 'ai-output', 'search'], ['y', 'n'], 'train-ai=n', errors)
   }
 
-  // Validate Content-Signal directives
   if (group.contentSignal) {
-    const validCategories = ['search', 'ai-input', 'ai-train']
-    const validValues = ['yes', 'no']
-
-    group.contentSignal.forEach((rule) => {
-      if (rule === '') {
-        errors.push(`Content-Signal rule cannot be empty.`)
-        return
-      }
-
-      // Format can be: "preference" or "/path preference"
-      const parts = rule.trim().split(/\s+/)
-
-      if (parts.length === 1) {
-        // Global preference like "ai-train=no" or "search=yes"
-        if (!parts[0]?.includes('=')) {
-          errors.push(`Content-Signal rule "${rule}" must contain a preference assignment (e.g., "ai-train=no").`)
-          return
-        }
-
-        // Validate category and value
-        const preferences = parts[0].split(',').map(p => p.trim())
-        preferences.forEach((pref) => {
-          const [category, value] = pref.split('=').map(s => s.trim())
-          if (!validCategories.includes(category || '')) {
-            errors.push(`Content-Signal category "${category}" is invalid. Valid categories: ${validCategories.join(', ')}.`)
-          }
-          if (!validValues.includes(value || '')) {
-            errors.push(`Content-Signal value "${value}" for "${category}" is invalid. Valid values: yes, no.`)
-          }
-        })
-      }
-      else if (parts.length >= 2) {
-        const firstPart = parts[0]
-        // Check if first part is a preference (contains =) vs a path (starts with /)
-        // This handles comma-separated values with spaces like "search=yes, ai-train=no"
-        if (firstPart?.includes('=')) {
-          // Global preferences with spaces around commas - validate each preference
-          const allPreferences = rule.split(',').map(p => p.trim())
-          allPreferences.forEach((pref) => {
-            if (!pref.includes('=')) {
-              errors.push(`Content-Signal rule "${pref}" must contain a preference assignment (e.g., "ai-train=no").`)
-              return
-            }
-            const [category, value] = pref.split('=').map(s => s.trim())
-            if (!validCategories.includes(category || '')) {
-              errors.push(`Content-Signal category "${category}" is invalid. Valid categories: ${validCategories.join(', ')}.`)
-            }
-            if (!validValues.includes(value || '')) {
-              errors.push(`Content-Signal value "${value}" for "${category}" is invalid. Valid values: yes, no.`)
-            }
-          })
-        }
-        else {
-          // Path-specific preference like "/path ai-train=no"
-          const path = firstPart
-          const preference = parts.slice(1).join(' ')
-
-          if (!path?.startsWith('/')) {
-            errors.push(`Content-Signal path "${path}" must start with a \`/\`.`)
-          }
-          if (!preference.includes('=')) {
-            errors.push(`Content-Signal preference "${preference}" must contain an assignment (e.g., "ai-train=no").`)
-          }
-          else {
-            // Validate category and value in path-specific rules
-            const preferences = preference.split(',').map(p => p.trim())
-            preferences.forEach((pref) => {
-              const [category, value] = pref.split('=').map(s => s.trim())
-              if (!validCategories.includes(category || '')) {
-                errors.push(`Content-Signal category "${category}" is invalid. Valid categories: ${validCategories.join(', ')}.`)
-              }
-              if (!validValues.includes(value || '')) {
-                errors.push(`Content-Signal value "${value}" for "${category}" is invalid. Valid values: yes, no.`)
-              }
-            })
-          }
-        }
-      }
-    })
+    validateContentPreferenceRules(group.contentSignal, 'Content-Signal', ['search', 'ai-input', 'ai-train'], ['yes', 'no'], 'ai-train=no', errors)
   }
 }
 
@@ -709,6 +618,36 @@ export function getBotInfo(
   }
 }
 
+/**
+ * Convert an object of robots directives (e.g. `{ index: true, 'max-snippet': -1 }`) into
+ * a list of robots meta/header directive strings.
+ */
+export function robotsDirectivesFromObject(obj: Record<string, any>): string[] {
+  const directives: string[] = []
+  for (const [key, value] of Object.entries(obj)) {
+    if (value === false || value === null || value === undefined)
+      continue
+
+    // Handle boolean directives
+    if (key in ROBOT_DIRECTIVE_VALUES && typeof value === 'boolean' && value) {
+      directives.push(ROBOT_DIRECTIVE_VALUES[key as keyof typeof ROBOT_DIRECTIVE_VALUES])
+    }
+    // Handle max-image-preview
+    else if (key === 'max-image-preview' && typeof value === 'string') {
+      directives.push(formatMaxImagePreview(value as 'none' | 'standard' | 'large'))
+    }
+    // Handle max-snippet
+    else if (key === 'max-snippet' && typeof value === 'number') {
+      directives.push(formatMaxSnippet(value))
+    }
+    // Handle max-video-preview
+    else if (key === 'max-video-preview' && typeof value === 'number') {
+      directives.push(formatMaxVideoPreview(value))
+    }
+  }
+  return directives
+}
+
 export function normaliseRobotsRouteRule(config: NitroRouteConfig | undefined | null) {
   if (!config)
     return undefined
@@ -727,28 +666,7 @@ export function normaliseRobotsRouteRule(config: NitroRouteConfig | undefined | 
     }
     // Check if it's using the new directive format
     else if (!('indexable' in config.robots)) {
-      const directives: string[] = []
-      for (const [key, value] of Object.entries(config.robots)) {
-        if (value === false || value === null || value === undefined)
-          continue
-
-        // Handle boolean directives
-        if (key in ROBOT_DIRECTIVE_VALUES && typeof value === 'boolean' && value) {
-          directives.push(ROBOT_DIRECTIVE_VALUES[key as keyof typeof ROBOT_DIRECTIVE_VALUES])
-        }
-        // Handle max-image-preview
-        else if (key === 'max-image-preview' && typeof value === 'string') {
-          directives.push(formatMaxImagePreview(value as 'none' | 'standard' | 'large'))
-        }
-        // Handle max-snippet
-        else if (key === 'max-snippet' && typeof value === 'number') {
-          directives.push(formatMaxSnippet(value))
-        }
-        // Handle max-video-preview
-        else if (key === 'max-video-preview' && typeof value === 'number') {
-          directives.push(formatMaxVideoPreview(value))
-        }
-      }
+      const directives = robotsDirectivesFromObject(config.robots)
       if (directives.length > 0) {
         rule = directives.join(', ')
       }

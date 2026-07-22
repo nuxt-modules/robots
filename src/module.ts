@@ -25,13 +25,11 @@ import { logger } from './logger'
 import { registerTypeTemplates } from './templates'
 import {
   asArray,
-  formatMaxImagePreview,
-  formatMaxSnippet,
-  formatMaxVideoPreview,
   normaliseRobotsRouteRule,
   normalizeGroup,
   parseRobotsTxt,
   ROBOT_DIRECTIVE_VALUES,
+  robotsDirectivesFromObject,
   validateRobots,
 } from './util'
 
@@ -397,29 +395,7 @@ export default defineNuxtModule<ModuleOptions>({
             rule = rule ? config.robotsEnabledValue : config.robotsDisabledValue
           }
           else if (typeof rule === 'object' && rule !== null) {
-            const directives: string[] = []
-            for (const [key, value] of Object.entries(rule)) {
-              if (value === false || value === null || value === undefined)
-                continue
-
-              // Handle boolean directives
-              if (key in ROBOT_DIRECTIVE_VALUES && typeof value === 'boolean' && value) {
-                directives.push(ROBOT_DIRECTIVE_VALUES[key as keyof typeof ROBOT_DIRECTIVE_VALUES])
-              }
-              // Handle max-image-preview
-              else if (key === 'max-image-preview' && typeof value === 'string') {
-                directives.push(formatMaxImagePreview(value as 'none' | 'standard' | 'large'))
-              }
-              // Handle max-snippet
-              else if (key === 'max-snippet' && typeof value === 'number') {
-                directives.push(formatMaxSnippet(value))
-              }
-              // Handle max-video-preview
-              else if (key === 'max-video-preview' && typeof value === 'number') {
-                directives.push(formatMaxVideoPreview(value))
-              }
-            }
-            rule = directives.join(', ') || config.robotsEnabledValue
+            rule = robotsDirectivesFromObject(rule).join(', ') || config.robotsEnabledValue
           }
           // add route rule for the path
           ;(ctx.content as any).seo = (ctx.content as any).seo || {}
