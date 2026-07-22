@@ -15,6 +15,7 @@ import {
   hasNuxtModule,
 } from '@nuxt/kit'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config/kit'
+import { useModuleLogger } from 'nuxtseo-shared/kit'
 import { relative } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
 import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
@@ -22,7 +23,6 @@ import { AiBots, NonHelpfulBots } from './const'
 import { setupDevToolsUI } from './devtools'
 import { mapPathForI18nPages, resolveI18nConfig, splitPathForI18nLocales } from './i18n'
 import { isNuxtGenerate, resolveNitroPreset, resolveNuxtContentVersion } from './kit'
-import { logger } from './logger'
 import { registerTypeTemplates } from './templates'
 import {
   asArray,
@@ -237,7 +237,7 @@ export default defineNuxtModule<ModuleOptions>({
   async setup(config, nuxt) {
     const { resolve } = createResolver(import.meta.url)
     const { version } = await readPackageJSON(resolve('../package.json'))
-    logger.level = (config.debug || nuxt.options.debug) ? 4 : 3
+    const logger = useModuleLogger('@nuxt/robots', config, nuxt)
     if (config.enabled === false) {
       logger.debug('The module is disabled, skipping setup.')
       // need to mock the composables to allow module still to work when disabled

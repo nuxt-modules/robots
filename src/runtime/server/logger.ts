@@ -1,5 +1,3 @@
-import { createConsola } from 'consola'
+import { createModuleLogger } from 'nuxtseo-shared/utils'
 
-export const logger = createConsola({
-  defaults: { tag: '@nuxtjs/robots' },
-})
+export const logger = createModuleLogger('@nuxtjs/robots')

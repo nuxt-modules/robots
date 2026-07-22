@@ -3,8 +3,8 @@ import type { RobotsContext } from '../../types'
 import { matchPathToRule, normaliseRobotsRouteRule } from '@nuxtjs/robots/util'
 import { getRequestHeader } from 'h3'
 import { useNitroApp, useRuntimeConfig } from 'nitropack/runtime'
+import { createNitroRouteRuleMatcher } from 'nuxtseo-shared/server'
 import { withoutTrailingSlash } from 'ufo'
-import { createNitroRouteRuleMatcher } from '../kit'
 import { getSiteRobotConfig } from './getSiteRobotConfig'
 import { useRuntimeConfigNuxtRobots } from './useRuntimeConfigNuxtRobots'
 
@@ -109,7 +109,7 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
   }
 
   // 4. nitro route rules
-  nitroApp._robotsRuleMatcher = nitroApp._robotsRuleMatcher || createNitroRouteRuleMatcher(e)
+  nitroApp._robotsRuleMatcher = nitroApp._robotsRuleMatcher || createNitroRouteRuleMatcher(runtimeConfig)
   let robotRouteRules = nitroApp._robotsRuleMatcher(path)
   let routeRulesPath = path
   // if we're using i18n we need to strip leading prefixes so the rule will match
