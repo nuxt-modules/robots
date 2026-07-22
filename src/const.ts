@@ -20,38 +20,38 @@ export const NonHelpfulBots = [
 ]
 
 /**
- * A list of AI crawler user agents, both training and retrieval.
+ * AI-related robots.txt product tokens for training, search, and user-directed retrieval.
  *
- * Search crawlers are deliberately excluded, so `blockAiBots` never costs a site its search
- * visibility. This is why `Googlebot`, `Applebot` (Siri, Spotlight) and `facebookexternalhit`
- * (Open Graph previews) are absent, while their AI-only counterparts `Google-Extended` and
- * `Applebot-Extended` are listed.
+ * Blocking search and retrieval bots can reduce a site's visibility in AI-generated answers.
+ * Robots.txt is also voluntary, and some user-triggered fetchers may ignore these directives.
  *
- * @credits https://github.com/ai-robots-txt/ai.robots.txt
+ * @see https://github.com/ai-robots-txt/ai.robots.txt
  */
 export const AiBots = [
   // OpenAI
   'GPTBot',
-  'ChatGPT-User',
   'OAI-SearchBot',
+  'ChatGPT-User',
   // Anthropic
   'ClaudeBot',
-  'Claude-User',
   'Claude-SearchBot',
+  'Claude-User',
   'Claude-Web',
   'anthropic-ai',
   // Google
   'Google-Extended',
   'Google-CloudVertexBot',
+  'Google-GeminiNotebook',
   'Google-NotebookLM',
-  'Gemini-Deep-Research',
-  'GoogleOther',
+  'Google-Agent',
   // Meta
   'meta-externalagent',
   'meta-externalfetcher',
   'FacebookBot',
   // Amazon
   'Amazonbot',
+  'Amzn-SearchBot',
+  'Amzn-User',
   'bedrockbot',
   // Apple
   'Applebot-Extended',
@@ -60,7 +60,6 @@ export const AiBots = [
   'Perplexity-User',
   // ByteDance
   'Bytespider',
-  'TikTokSpider',
   // Webz.io
   'omgili',
   'omgilibot',
@@ -74,16 +73,10 @@ export const AiBots = [
   'Diffbot',
   'ImagesiftBot',
   'MistralAI-User',
-  'DeepSeekBot',
+  'MistralAI-Index',
   'AI2Bot',
-  'Ai2Bot-Dolma',
-  'YouBot',
-  'Timpibot',
-  'PanguBot',
   'DuckAssistBot',
   'FirecrawlAgent',
   'ICC-Crawler',
-  'Kangaroo Bot',
   'SemrushBot-OCOB',
-  'img2dataset',
 ]
