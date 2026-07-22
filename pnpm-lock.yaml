@@ -79,8 +79,8 @@ catalogs:
       specifier: ^5.3.2
       version: 5.3.2
     nuxtseo-shared:
-      specifier: ^5.3.4
-      version: 5.3.4
+      specifier: ^5.3.6
+      version: 5.3.6
     pathe:
       specifier: ^2.0.3
       version: 2.0.3
@@ -182,7 +182,7 @@ importers:
         version: 4.1.1(da492382c1613737eb6965233c01da45)
       nuxtseo-shared:
         specifier: 'catalog:'
-        version: 5.3.4(0f111c405d5d37e4cc7ae2c99663ea87)
+        version: 5.3.6(0f111c405d5d37e4cc7ae2c99663ea87)
       pathe:
         specifier: 'catalog:'
         version: 2.0.3
@@ -6872,8 +6872,8 @@ packages:
       zod:
         optional: true
 
-  nuxtseo-shared@5.3.4:
-    resolution: {integrity: sha512-y4SYS67WaE8njciQ+orQWi72WYSP78CC9CvkSUIFQY9a4hrcaPVnW/k7UBlLMhrLk8dnFHyFz9OGdlTaRqybJw==}
+  nuxtseo-shared@5.3.6:
+    resolution: {integrity: sha512-l6CAwodMSe/0X9O4FxNN4BtKldz1L/aVu8ThCynjRPdTb2qsste91+tcegYfit0TpA7o5S9qHLDiOEte+mS9rg==}
     peerDependencies:
       '@nuxt/schema': ^3.16.0 || ^4.0.0
       nuxt: ^3.16.0 || ^4.0.0
@@ -17086,7 +17086,7 @@ snapshots:
       '@nuxt/kit': 4.4.8(magicast@0.5.3)
       h3: 1.15.11
       nuxt-site-config-kit: 4.1.1(magic-string@1.0.0)(magicast@0.5.3)(oxc-parser@0.131.0)(rolldown@1.2.0)(unplugin@3.3.0(esbuild@0.28.1)(rolldown@1.2.0)(rollup@4.62.2)(vite@8.1.5)(webpack@5.107.2(cssnano@8.0.2(postcss@8.5.19))(csso@5.0.5)(esbuild@0.28.1)(lightningcss@1.32.0)(postcss@8.5.19)))(vue@3.5.40(typescript@6.0.3))
-      nuxtseo-shared: 5.3.4(0f111c405d5d37e4cc7ae2c99663ea87)
+      nuxtseo-shared: 5.3.6(0f111c405d5d37e4cc7ae2c99663ea87)
       pathe: 2.0.3
       pkg-types: 2.3.1
       site-config-stack: 4.1.1(vue@3.5.40(typescript@6.0.3))
@@ -17370,7 +17370,7 @@ snapshots:
       - unplugin
       - vite
 
-  nuxtseo-shared@5.3.4(0f111c405d5d37e4cc7ae2c99663ea87):
+  nuxtseo-shared@5.3.6(0f111c405d5d37e4cc7ae2c99663ea87):
     dependencies:
       '@clack/prompts': 1.7.0
       '@nuxt/devtools-kit': 4.0.0-alpha.7(magicast@0.5.3)(vite@8.1.5)
