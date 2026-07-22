@@ -255,10 +255,6 @@ export default defineNuxtModule<ModuleOptions>({
       return
     }
 
-    nuxt.options.nitro.externals = nuxt.options.nitro.externals || {}
-    nuxt.options.nitro.externals.inline = nuxt.options.nitro.externals.inline || []
-    nuxt.options.nitro.externals.inline.push('nuxtseo-shared')
-
     // Allow `definePageMeta({ robots: false })` to set per-page robots rules
     nuxt.options.experimental.extraPageMetaExtractionKeys = nuxt.options.experimental.extraPageMetaExtractionKeys || []
     if (!nuxt.options.experimental.extraPageMetaExtractionKeys.includes('robots'))
