@@ -16,10 +16,14 @@ export interface ProductionDebugResponse {
   error?: string
 }
 
+function errorResponse(url: string, error: string): ProductionDebugResponse {
+  return { url, robotsTxt: '', indexable: false, hints: [], validation: { errors: [], warnings: [], groups: 0, sitemaps: [] }, hasRemoteDebug: false, error }
+}
+
 export default defineEventHandler(async (e): Promise<ProductionDebugResponse> => {
   const { url, mode } = getQuery(e) as { url?: string, mode?: string }
   if (!url || typeof url !== 'string')
-    return { url: '', robotsTxt: '', indexable: false, hints: [], validation: { errors: [], warnings: [], groups: 0, sitemaps: [] }, hasRemoteDebug: false, error: 'Missing url query parameter' }
+    return errorResponse('', 'Missing url query parameter')
 
   const baseUrl = url.replace(/\/$/, '')
 
@@ -51,10 +55,10 @@ export default defineEventHandler(async (e): Promise<ProductionDebugResponse> =>
   }).catch((err: Error) => err)
 
   if (response instanceof Error)
-    return { url: baseUrl, robotsTxt: '', indexable: false, hints: [], validation: { errors: [], warnings: [], groups: 0, sitemaps: [] }, hasRemoteDebug: false, error: `Failed to fetch robots.txt: ${response.message}` }
+    return errorResponse(baseUrl, `Failed to fetch robots.txt: ${response.message}`)
 
   if (!response.ok)
-    return { url: baseUrl, robotsTxt: '', indexable: false, hints: [], validation: { errors: [], warnings: [], groups: 0, sitemaps: [] }, hasRemoteDebug: false, error: `HTTP ${response.status}: ${response.statusText}` }
+    return errorResponse(baseUrl, `HTTP ${response.status}: ${response.statusText}`)
 
   const robotsTxt = await response.text()
   const parsed = validateRobots(parseRobotsTxt(robotsTxt))

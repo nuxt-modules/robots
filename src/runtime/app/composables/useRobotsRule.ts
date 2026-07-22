@@ -1,6 +1,6 @@
 import type { MaybeRef } from 'vue'
 import type { RobotsValue } from '../../types'
-import { formatMaxImagePreview, formatMaxSnippet, formatMaxVideoPreview, ROBOT_DIRECTIVE_VALUES } from '@nuxtjs/robots/util'
+import { robotsDirectivesFromObject } from '@nuxtjs/robots/util'
 import { setHeader } from 'h3'
 import {
   useRequestEvent,
@@ -50,30 +50,8 @@ export function useRobotsRule(rule?: ReactiveRobotsValue) {
     }
     // Handle object directive values
     else if (typeof _rule === 'object' && _rule !== null) {
-      const directives: string[] = []
-      for (const [key, value] of Object.entries(_rule)) {
-        if (value === false || value === null || value === undefined)
-          continue
-
-        // Handle boolean directives
-        if (key in ROBOT_DIRECTIVE_VALUES && typeof value === 'boolean' && value) {
-          directives.push(ROBOT_DIRECTIVE_VALUES[key as keyof typeof ROBOT_DIRECTIVE_VALUES])
-        }
-        // Handle max-image-preview
-        else if (key === 'max-image-preview' && typeof value === 'string') {
-          directives.push(formatMaxImagePreview(value as 'none' | 'standard' | 'large'))
-        }
-        // Handle max-snippet
-        else if (key === 'max-snippet' && typeof value === 'number') {
-          directives.push(formatMaxSnippet(value))
-        }
-        // Handle max-video-preview
-        else if (key === 'max-video-preview' && typeof value === 'number') {
-          directives.push(formatMaxVideoPreview(value))
-        }
-      }
       const robotsConfig = config['nuxt-robots'] as any
-      finalRule = directives.join(', ') || robotsConfig.robotsEnabledValue
+      finalRule = robotsDirectivesFromObject(_rule).join(', ') || robotsConfig.robotsEnabledValue
     }
     // Handle string values
     else {

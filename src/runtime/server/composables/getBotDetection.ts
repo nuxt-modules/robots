@@ -6,15 +6,19 @@ import { useNitroApp } from 'nitropack/runtime'
 // Re-export the interface from util
 export type { BotDetectionContext } from '@nuxtjs/robots/util'
 
+function resolveBotDetectionInput(event: H3Event) {
+  const headers = getHeaders(event) || {}
+  const nitroApp = useNitroApp()
+  return { headers, patternMap: nitroApp._robotsPatternMap }
+}
+
 /**
  * Server-side bot detection using request headers
  * @param event H3 event object
  * @returns Bot detection context
  */
 export function getBotDetection(event: H3Event) {
-  const headers = getHeaders(event) || {}
-  const nitroApp = useNitroApp()
-  const patternMap = nitroApp._robotsPatternMap
+  const { headers, patternMap } = resolveBotDetectionInput(event)
   return getBotDetectionFromHeaders(headers, patternMap)
 }
 
@@ -24,9 +28,7 @@ export function getBotDetection(event: H3Event) {
  * @returns boolean indicating if request is from a bot
  */
 export function isBot(event: H3Event): boolean {
-  const headers = getHeaders(event) || {}
-  const nitroApp = useNitroApp()
-  const patternMap = nitroApp._robotsPatternMap
+  const { headers, patternMap } = resolveBotDetectionInput(event)
   return isBotFromHeaders(headers, patternMap)
 }
 
@@ -36,8 +38,6 @@ export function isBot(event: H3Event): boolean {
  * @returns Bot info object or null
  */
 export function getBotInfo(event: H3Event) {
-  const headers = getHeaders(event) || {}
-  const nitroApp = useNitroApp()
-  const patternMap = nitroApp._robotsPatternMap
+  const { headers, patternMap } = resolveBotDetectionInput(event)
   return getBotInfoFromHeaders(headers, patternMap)
 }
