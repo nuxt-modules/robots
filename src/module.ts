@@ -12,6 +12,7 @@ import {
   createResolver,
   defineNuxtModule,
   extendRouteRules,
+  hasNuxtModule,
 } from '@nuxt/kit'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config/kit'
 import { relative } from 'pathe'
@@ -385,7 +386,7 @@ export default defineNuxtModule<ModuleOptions>({
     const isNuxtContentV3 = contentVersion && contentVersion.version === 3
     let isNuxtContentV2 = contentVersion && contentVersion.version === 2
     if (isNuxtContentV3) {
-      if (nuxt.options._installedModules.some(m => m.meta.name === 'Content')) {
+      if (hasNuxtModule('Content', nuxt)) {
         logger.warn('You have loaded `@nuxt/content` before `@nuxtjs/robots`, this may cause issues with the integration. Please ensure `@nuxtjs/robots` is loaded first.')
       }
       nuxt.hooks.hook('content:file:afterParse' as any, (ctx: FileAfterParseHook) => {
