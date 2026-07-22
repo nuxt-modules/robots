@@ -193,7 +193,7 @@ importers:
         specifier: 'catalog:'
         version: 1.6.4
       zod:
-        specifier: '>=3'
+        specifier: '>=4.4.3'
         version: 4.4.3
     devDependencies:
       '@antfu/eslint-config':
