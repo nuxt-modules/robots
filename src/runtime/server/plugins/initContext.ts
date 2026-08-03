@@ -1,16 +1,20 @@
-import type { NitroApp } from 'nitropack/types'
 import { createPatternMap } from '@nuxtjs/robots/util'
-import { defineNitroPlugin, getRouteRules } from 'nitropack/runtime'
+import { createNitroRouteRuleMatcher } from 'nuxtseo-shared/server'
 import { withoutTrailingSlash } from 'ufo'
+import { defineNitroPlugin, useRuntimeConfig } from '#nuxtseo/nitro'
 import { useRuntimeConfigNuxtRobots } from '../composables/useRuntimeConfigNuxtRobots'
 import { logger } from '../logger'
 import { resolveRobotsTxtContext } from '../util'
 
 const PRERENDER_NO_SSR_ROUTES = new Set(['/index.html', '/200.html', '/404.html'])
 
+interface RobotsRenderRouteRules {
+  ssr?: boolean
+}
+
 // we need to init our state using a nitro plugin so the user doesn't throttle the resolve context hook
 // important when we integrate with nuxt-simple-sitemap and we're checking thousands of URLs
-export default defineNitroPlugin(async (nitroApp: NitroApp) => {
+export default defineNitroPlugin(async (nitroApp) => {
   const { isNuxtContentV2, robotsDisabledValue, botDetection } = useRuntimeConfigNuxtRobots()
 
   // Initialize bot detection pattern map if enabled
@@ -40,7 +44,8 @@ export default defineNitroPlugin(async (nitroApp: NitroApp) => {
   if (import.meta.prerender) {
     // need to inject HTML if we have an SPA route
     nitroApp.hooks.hook('render:html', async (ctx, { event }) => {
-      const routeOptions = getRouteRules(event)
+      nitroApp._robotsRuleMatcher ||= createNitroRouteRuleMatcher<RobotsRenderRouteRules>(useRuntimeConfig(event))
+      const routeOptions = nitroApp._robotsRuleMatcher(event.path)
       const isIsland = (process.env.NUXT_COMPONENT_ISLANDS && event.path.startsWith('/__nuxt_island'))
       const noSSR = !!(process.env.NUXT_NO_SSR)
         || event.context.nuxt?.noSSR

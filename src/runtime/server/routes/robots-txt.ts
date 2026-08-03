@@ -1,7 +1,7 @@
 import type { HookRobotsConfigContext, HookRobotsTxtContext } from '../../types'
 import { asArray, generateRobotsTxt } from '@nuxtjs/robots/util'
-import { defineEventHandler, setHeader } from 'h3'
-import { useNitroApp } from 'nitropack/runtime'
+import { defineEventHandler, setHeader } from '#nuxtseo/h3'
+import { useNitroApp } from '#nuxtseo/nitro'
 import { withSiteUrl } from '#site-config/server/composables/utils'
 import { getSiteRobotConfig } from '../composables/getSiteRobotConfig'
 import { useRuntimeConfigNuxtRobots } from '../composables/useRuntimeConfigNuxtRobots'
@@ -71,7 +71,7 @@ export default defineEventHandler(async (e) => {
 
   setHeader(e, 'Content-Type', 'text/plain; charset=utf-8')
   setHeader(e, 'Cache-Control', (import.meta.dev || import.meta.test || !cacheControl) ? 'no-store' : cacheControl)
-  const hookCtx: HookRobotsTxtContext = { robotsTxt, e }
+  const hookCtx: HookRobotsTxtContext<typeof e> = { robotsTxt, e }
   await nitroApp.hooks.callHook('robots:robots-txt', hookCtx)
   return hookCtx.robotsTxt
 })

@@ -1,5 +1,5 @@
 import { parseRobotsTxt, validateRobots } from '@nuxtjs/robots/util'
-import { defineEventHandler, getQuery } from 'h3'
+import { defineEventHandler, getQuery } from '#nuxtseo/h3'
 import { getSiteConfig } from '#site-config/server/composables/getSiteConfig'
 import { getSiteRobotConfig } from '../../composables/getSiteRobotConfig'
 import { useRuntimeConfigNuxtRobots } from '../../composables/useRuntimeConfigNuxtRobots'

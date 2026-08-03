@@ -1,6 +1,5 @@
-import type { NitroRouteConfig } from 'nitropack/types'
 import type { BotCategory, BotName } from './const-bots'
-import type { BotDetectionContext, ParsedRobotsTxt, PatternMapValue, RobotsGroupInput, RobotsGroupResolved } from './runtime/types'
+import type { BotDetectionContext, ParsedRobotsTxt, PatternMapValue, RobotsGroupInput, RobotsGroupResolved, RobotsRouteRuleConfig } from './runtime/types'
 import { createDefu } from 'defu'
 import { withoutLeadingSlash } from 'ufo'
 import { AiBots, NonHelpfulBots } from './const'
@@ -648,7 +647,7 @@ export function robotsDirectivesFromObject(obj: Record<string, any>): string[] {
   return directives
 }
 
-export function normaliseRobotsRouteRule(config: NitroRouteConfig | undefined | null) {
+export function normaliseRobotsRouteRule(config: RobotsRouteRuleConfig | undefined | null) {
   if (!config)
     return undefined
   // parse allow
