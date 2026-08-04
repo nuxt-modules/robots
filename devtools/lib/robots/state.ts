@@ -53,7 +53,10 @@ export async function refreshProductionData() {
   // Try full debug endpoint first (requires debug: true in production)
   const remoteDebug: ProductionDebugResponse | null = await appFetch.value('/__robots__/debug-production.json', {
     query: { url: productionUrl.value, mode: 'debug' },
-  }).catch(() => null)
+  }).catch(() => {
+    // Production sites may disable the debug route; the public endpoint below is the fallback.
+    return null
+  })
   if (remoteDebug && !remoteDebug.error && remoteDebug.hasRemoteDebug) {
     productionData.value = remoteDebug
     productionLoading.value = false

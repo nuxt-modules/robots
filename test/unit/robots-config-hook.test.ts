@@ -10,7 +10,7 @@ const mockNitroApp = {
   _robots: {},
 }
 
-vi.mock('nitropack/runtime', () => ({
+vi.mock('#nuxtseo/nitro', () => ({
   useNitroApp: () => mockNitroApp,
   useRuntimeConfig: () => ({
     'public': {},

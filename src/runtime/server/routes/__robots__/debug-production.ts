@@ -1,5 +1,5 @@
 import { parseRobotsTxt, validateRobots } from '@nuxtjs/robots/util'
-import { defineEventHandler, getQuery } from 'h3'
+import { defineEventHandler, getQuery } from '#nuxtseo/h3'
 
 export interface ProductionDebugResponse {
   url: string
@@ -33,9 +33,15 @@ export default defineEventHandler(async (e): Promise<ProductionDebugResponse> =>
     const response = await fetch(debugUrl, {
       headers: { Accept: 'application/json' },
       signal: AbortSignal.timeout(10000),
-    }).catch(() => null)
+    }).catch(() => {
+      // Production sites may disable the debug route; robots.txt remains the fallback.
+      return null
+    })
     if (response?.ok) {
-      const json = await response.json().catch(() => null)
+      const json = await response.json().catch(() => {
+        // Invalid debug payloads fall through to the public robots.txt endpoint.
+        return null
+      })
       if (json?.robotsTxt) {
         return {
           ...json,

@@ -1,4 +1,4 @@
-import { defineEventHandler, getQuery, setHeader } from 'h3'
+import { defineEventHandler, getQuery, setHeader } from '#nuxtseo/h3'
 import { getPathRobotConfig } from '../composables/getPathRobotConfig'
 import { useRuntimeConfigNuxtRobots } from '../composables/useRuntimeConfigNuxtRobots'
 

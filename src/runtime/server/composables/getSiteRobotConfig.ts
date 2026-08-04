@@ -1,6 +1,6 @@
-import type { H3Event } from 'h3'
+import type { H3Event } from '#nuxtseo/h3'
 import type { ParsedRobotsTxt } from '../../types'
-import { getQuery } from 'h3'
+import { getQuery } from '#nuxtseo/h3'
 import { getSiteConfig } from '#site-config/server/composables'
 import { getSiteIndexable } from '#site-config/server/composables/getSiteIndexable'
 import { useRuntimeConfigNuxtRobots } from './useRuntimeConfigNuxtRobots'

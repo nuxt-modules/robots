@@ -1,12 +1,17 @@
-import type { H3Event } from 'h3'
-import type { RobotsContext } from '../../types'
+import type { H3Event } from '#nuxtseo/h3'
+import type { RobotsContext, RobotsValue } from '../../types'
 import { matchPathToRule, normaliseRobotsRouteRule } from '@nuxtjs/robots/util'
-import { getRequestHeader } from 'h3'
-import { useNitroApp, useRuntimeConfig } from 'nitropack/runtime'
 import { createNitroRouteRuleMatcher } from 'nuxtseo-shared/server'
 import { withoutTrailingSlash } from 'ufo'
+import { getRequestHeader } from '#nuxtseo/h3'
+import { useNitroApp, useRuntimeConfig } from '#nuxtseo/nitro'
 import { getSiteRobotConfig } from './getSiteRobotConfig'
 import { useRuntimeConfigNuxtRobots } from './useRuntimeConfigNuxtRobots'
+
+interface RobotsRouteRules {
+  robots?: RobotsValue | { indexable: boolean, rule: string }
+  ssr?: boolean
+}
 
 export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, skipSiteIndexable?: boolean, path?: string }): RobotsContext {
   const runtimeConfig = useRuntimeConfig(e)
@@ -109,7 +114,7 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
   }
 
   // 4. nitro route rules
-  nitroApp._robotsRuleMatcher = nitroApp._robotsRuleMatcher || createNitroRouteRuleMatcher(runtimeConfig)
+  nitroApp._robotsRuleMatcher = nitroApp._robotsRuleMatcher || createNitroRouteRuleMatcher<RobotsRouteRules>(runtimeConfig)
   let robotRouteRules = nitroApp._robotsRuleMatcher(path)
   let routeRulesPath = path
   // if we're using i18n we need to strip leading prefixes so the rule will match

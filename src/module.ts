@@ -13,9 +13,10 @@ import {
   defineNuxtModule,
   extendRouteRules,
   hasNuxtModule,
+  resolveModule,
 } from '@nuxt/kit'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config/kit'
-import { useModuleLogger } from 'nuxtseo-shared/kit'
+import { setupNitroRuntimeCompatibility, useModuleLogger } from 'nuxtseo-shared/kit'
 import { relative } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
 import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
@@ -40,6 +41,7 @@ export type {
   HookRobotsTxtContext,
   PatternMapValue,
   RobotsContext,
+  RobotsRouteRuleConfig,
   RobotsValue,
 } from './runtime/types'
 
@@ -254,6 +256,8 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt.options.nitro.alias['#internal/nuxt-robots'] = resolve('./runtime/server/mock-composables')
       return
     }
+    const nitroCompatibility = setupNitroRuntimeCompatibility(nuxt)
+    nuxt.options.nitro.alias!.ofetch ||= resolveModule('ofetch', { url: new URL(import.meta.url) })
 
     // Allow `definePageMeta({ robots: false })` to set per-page robots rules
     nuxt.options.experimental.extraPageMetaExtractionKeys = nuxt.options.experimental.extraPageMetaExtractionKeys || []
@@ -535,7 +539,7 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt.options.runtimeConfig.public['nuxt-robots'] = robotsRuntimeConfig as any
     })
 
-    registerTypeTemplates({ nuxt, config })
+    registerTypeTemplates({ nitroCompatibility })
 
     // only prerender for `nuxi generate`
     const isFirebase = nitroPreset === 'firebase'

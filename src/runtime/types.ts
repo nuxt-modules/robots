@@ -41,6 +41,14 @@ export interface RobotDirectives {
  */
 export type RobotsValue = boolean | string | Partial<RobotDirectives>
 
+/** Minimal route rule shape consumed by {@link normaliseRobotsRouteRule}. */
+export interface RobotsRouteRuleConfig {
+  robots?: RobotsValue | {
+    indexable?: boolean
+    rule?: string
+  }
+}
+
 /**
  * Content-Usage preference value (y = allow, n = disallow)
  * @see https://datatracker.ietf.org/doc/draft-ietf-aipref-vocab/
@@ -126,13 +134,13 @@ export interface RobotsGroupResolved {
   _normalized?: boolean
 }
 
-export interface HookRobotsTxtContext {
+export interface HookRobotsTxtContext<Event = H3Event> {
   robotsTxt: string
-  e: H3Event
+  e: Event
 }
 
-export interface HookRobotsConfigContext extends ParsedRobotsTxt {
-  event?: H3Event
+export interface HookRobotsConfigContext<Event = H3Event> extends ParsedRobotsTxt {
+  event?: Event
   context: 'robots.txt' | 'init'
 }
 

@@ -1,7 +1,7 @@
-import type { H3Event } from 'h3'
+import type { H3Event } from '#nuxtseo/h3'
 import { getBotDetection as getBotDetectionFromHeaders, getBotInfo as getBotInfoFromHeaders, isBot as isBotFromHeaders } from '@nuxtjs/robots/util'
-import { getHeaders } from 'h3'
-import { useNitroApp } from 'nitropack/runtime'
+import { getHeaders } from '#nuxtseo/h3'
+import { useNitroApp } from '#nuxtseo/nitro'
 
 // Re-export the interface from util
 export type { BotDetectionContext } from '@nuxtjs/robots/util'
