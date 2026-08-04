@@ -56,7 +56,7 @@
     "release": "pnpm build && bumpp -x \"npx changelogen --output=CHANGELOG.md\"",
     "prepack": "pnpm run build",
     "test": "pnpm run prepare:fixtures && vitest && pnpm run test:attw && pnpm run test:nuxt5",
-    "test:nuxt5": "pnpm pack --out test/fixtures/nuxt5/module.tgz && pnpm --dir test/fixtures/nuxt5 install --frozen-lockfile && pnpm --dir test/fixtures/nuxt5 test",
+    "test:nuxt5": "pnpm pack --out test/fixtures/nuxt5/module.tgz && pnpm install --dir test/fixtures/nuxt5 --no-frozen-lockfile --update-checksums && pnpm --dir test/fixtures/nuxt5 test",
     "typecheck": "nuxt typecheck",
     "test:attw": "attw --pack"
   },
@@ -76,7 +76,6 @@
     "h3": "catalog:",
     "nuxt-site-config": "catalog:",
     "nuxtseo-shared": "catalog:",
-    "ofetch": "catalog:",
     "pathe": "catalog:",
     "pkg-types": "catalog:",
     "ufo": "catalog:"

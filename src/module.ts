@@ -13,7 +13,6 @@ import {
   defineNuxtModule,
   extendRouteRules,
   hasNuxtModule,
-  resolveModule,
 } from '@nuxt/kit'
 import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config/kit'
 import { setupNitroRuntimeCompatibility, useModuleLogger } from 'nuxtseo-shared/kit'
@@ -257,7 +256,6 @@ export default defineNuxtModule<ModuleOptions>({
       return
     }
     const nitroCompatibility = setupNitroRuntimeCompatibility(nuxt)
-    nuxt.options.nitro.alias!.ofetch ||= resolveModule('ofetch', { url: new URL(import.meta.url) })
 
     // Allow `definePageMeta({ robots: false })` to set per-page robots rules
     nuxt.options.experimental.extraPageMetaExtractionKeys = nuxt.options.experimental.extraPageMetaExtractionKeys || []
