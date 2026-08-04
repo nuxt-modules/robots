@@ -1,7 +1,7 @@
 import type { HookRobotsConfigContext, HookRobotsTxtContext } from '../../types'
 import { asArray, generateRobotsTxt } from '@nuxtjs/robots/util'
 import { defineEventHandler, setHeader } from '#nuxtseo/h3'
-import { useNitroApp } from '#nuxtseo/nitro'
+import { fetchWithEvent, useNitroApp } from '#nuxtseo/nitro'
 import { withSiteUrl } from '#site-config/server/composables/utils'
 import { getSiteRobotConfig } from '../composables/getSiteRobotConfig'
 import { useRuntimeConfigNuxtRobots } from '../composables/useRuntimeConfigNuxtRobots'
@@ -35,7 +35,7 @@ export default defineEventHandler(async (e) => {
         .map(s => !s.startsWith('http') ? withSiteUrl(e, s, { withBase: true, absolute: true }) : s),
     )]
     if (isNuxtContentV2) {
-      const contentWithRobotRules = await e.$fetch<string[]>('/__robots__/nuxt-content.json', {
+      const contentWithRobotRules = await fetchWithEvent<string[]>(e, '/__robots__/nuxt-content.json', {
         headers: {
           Accept: 'application/json',
         },

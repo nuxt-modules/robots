@@ -1,5 +1,6 @@
 import { parseRobotsTxt, validateRobots } from '@nuxtjs/robots/util'
 import { defineEventHandler, getQuery } from '#nuxtseo/h3'
+import { fetchWithEvent } from '#nuxtseo/nitro'
 import { getSiteConfig } from '#site-config/server/composables/getSiteConfig'
 import { getSiteRobotConfig } from '../../composables/getSiteRobotConfig'
 import { useRuntimeConfigNuxtRobots } from '../../composables/useRuntimeConfigNuxtRobots'
@@ -8,8 +9,7 @@ export default defineEventHandler(async (e) => {
   const runtimeConfig = useRuntimeConfigNuxtRobots(e)
   const { indexable, hints } = getSiteRobotConfig(e)
   const siteConfig = getSiteConfig(e)
-  // Cast avoids the excessive type-instantiation depth Nuxt's typed routes trigger on $fetch.
-  const robotsTxt: string = await (e.$fetch as any)('/robots.txt', {
+  const robotsTxt = await fetchWithEvent<string>(e, '/robots.txt', {
     query: getQuery(e),
   })
   const parsed = validateRobots(parseRobotsTxt(robotsTxt))

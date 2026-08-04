@@ -45,6 +45,8 @@ try {
   const debugPath = await fetch(`${origin}/__robots__/debug-path.json?path=/private`).then(response => response.json())
   assert.equal(debugPath.path, '/private')
   assert.equal(debugPath.indexable, false)
+  const debug = await fetch(`${origin}/__robots__/debug.json`).then(response => response.json())
+  assert.match(debug.robotsTxt, /User-agent: \*/)
 }
 finally {
   server.kill()
