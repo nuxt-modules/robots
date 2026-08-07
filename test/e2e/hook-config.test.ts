@@ -71,6 +71,17 @@ describe('robots:config hook - issue #233', async () => {
     expect(indexHeaders.get('x-robots-tag')).toMatchInlineSnapshot(`"noindex, nofollow"`)
   })
 
+  it('should block the real AhrefsBot product string from all paths', async () => {
+    // The bare token above is not what Ahrefs sends; this is.
+    const { headers: indexHeaders } = await $fetch.raw('/', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; AhrefsBot/7.0; +http://ahrefs.com/robot/)',
+      },
+    })
+
+    expect(indexHeaders.get('x-robots-tag')).toMatchInlineSnapshot(`"noindex, nofollow"`)
+  })
+
   // Edge case: Multiple hook calls shouldn't cause issues
   it('should handle multiple hook calls without breaking normalization', async () => {
     // Second request - the hook might be called again depending on caching

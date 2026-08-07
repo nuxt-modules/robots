@@ -69,4 +69,22 @@ describe('stack', async () => {
     })
     expect(headers.get('x-robots-tag')).toMatchInlineSnapshot(`"noindex, nofollow"`)
   })
+  it('blocks the real GoogleBot product string from /test3', async () => {
+    // Crawlers send a product string, never the bare token above — the group has to match a user
+    // agent that CONTAINS `Googlebot`.
+    const { headers } = await $fetch.raw('/test3', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+      },
+    })
+    expect(headers.get('x-robots-tag')).toMatchInlineSnapshot(`"noindex, nofollow"`)
+  })
+  it('does not apply the GoogleBot group to a browser', async () => {
+    const { headers } = await $fetch.raw('/test3', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15',
+      },
+    })
+    expect(headers.get('x-robots-tag')).not.toContain('noindex')
+  })
 })
