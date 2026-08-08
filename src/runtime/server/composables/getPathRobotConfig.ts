@@ -44,7 +44,11 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
     // run explicit user agent matching first
     ...nitroApp._robots.ctx.groups.filter((g) => {
       if (userAgent) {
-        return g.userAgent.some(ua => ua.toLowerCase().includes(userAgent.toLowerCase()))
+        // The group's product token has to be found in the user agent, not the other way around:
+        // crawlers send a product string (`Mozilla/5.0 (compatible; Googlebot/2.1; ...)`), which
+        // can never be a substring of `Googlebot`. Equality still matches, so a bare token passed
+        // through `options.userAgent` keeps working.
+        return g.userAgent.some(ua => !!ua && userAgent.toLowerCase().includes(ua.toLowerCase()))
       }
       return false
     }),
