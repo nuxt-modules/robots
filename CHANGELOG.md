@@ -1,6 +1,23 @@
 # Changelog
 
 
+## v6.1.2...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.1.2...main)
+
+### 📖 Documentation
+
+- Content audit sweep (grammar, links, structure) ([#306](https://github.com/nuxt-modules/robots/pull/306))
+
+### 🏡 Chore
+
+- Bump ([f4fbd20](https://github.com/nuxt-modules/robots/commit/f4fbd20))
+- Bump ([bb5d2aa](https://github.com/nuxt-modules/robots/commit/bb5d2aa))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
 ## v6.1.1...main
 
 [compare changes](https://github.com/nuxt-modules/robots/compare/v6.1.1...main)
