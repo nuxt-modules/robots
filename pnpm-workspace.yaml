@@ -40,8 +40,8 @@ catalog:
   '@antfu/eslint-config': ^9.3.0
   '@fingerprintjs/botd': ^2.0.0
   '@iconify-json/tabler': ^1.2.38
-  '@nuxt/devtools-kit': 4.0.0-alpha.7
-  '@nuxt/devtools-ui-kit': 4.0.0-alpha.7
+  '@nuxt/devtools-kit': 4.0.0-alpha.10
+  '@nuxt/devtools-ui-kit': 4.0.0-alpha.9
   '@nuxt/kit': ^4.5.2
   '@nuxtjs/i18n': ^10.6.0
   '@unocss/nuxt': ^66.7.5
@@ -57,7 +57,7 @@ catalog:
   eslint-plugin-harlanzw: ^0.17.1
   firebase-functions: ^7.3.2
   h3: ^1.15.11
-  happy-dom: ^20.11.1
+  happy-dom: ^20.11.2
   nuxt: ^4.5.2
   nuxt-site-config: ^4.2.0
   nuxtseo-layer-devtools: ^5.3.10
