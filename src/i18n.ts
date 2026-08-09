@@ -15,7 +15,7 @@ export function mapPathForI18nPages(path: string, autoI18n: AutoI18nConfig): str
   const withoutSlashes = withoutTrailingSlash(withoutLeadingSlash(path)).replace('/index', '')
 
   function resolveForAllLocales(pageName: string, pageLocales: Record<string, string | false>): string[] {
-    return autoI18n.locales
+    const localizedPaths = autoI18n.locales
       .filter((l) => {
         // skip disabled locales
         if (l.code in pageLocales && pageLocales[l.code] === false)
@@ -37,6 +37,10 @@ export function mapPathForI18nPages(path: string, autoI18n: AutoI18nConfig): str
           normalisedLocales: autoI18n.locales as SharedAutoI18nConfig['locales'],
         }))
       })
+
+    return autoI18n.strategy === 'prefix_except_default'
+      ? [path, ...localizedPaths]
+      : localizedPaths
   }
 
   // direct match: path matches a page name in i18n pages config

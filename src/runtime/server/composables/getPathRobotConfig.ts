@@ -1,6 +1,8 @@
+import type { RuntimeI18nConfig } from 'nuxtseo-shared/i18n-runtime'
 import type { H3Event } from '#nuxtseo/h3'
 import type { RobotsContext, RobotsValue } from '../../types'
 import { matchPathToRule, normaliseRobotsRouteRule } from '@nuxtjs/robots/util'
+import { resolveLocaleFromRoute } from 'nuxtseo-shared/i18n-runtime'
 import { createNitroRouteRuleMatcher } from 'nuxtseo-shared/server'
 import { withoutTrailingSlash } from 'ufo'
 import { getRequestHeader } from '#nuxtseo/h3'
@@ -11,6 +13,31 @@ import { useRuntimeConfigNuxtRobots } from './useRuntimeConfigNuxtRobots'
 interface RobotsRouteRules {
   robots?: RobotsValue | { indexable: boolean, rule: string }
   ssr?: boolean
+}
+
+const i18nStrategies = new Set<RuntimeI18nConfig['strategy']>(['no_prefix', 'prefix_except_default', 'prefix', 'prefix_and_default'])
+
+function parseRuntimeI18nConfig(input: unknown): RuntimeI18nConfig | null {
+  if (!input || typeof input !== 'object')
+    return null
+  const config = input as Record<string, unknown>
+  if (!Array.isArray(config.locales))
+    return null
+  const locales = config.locales.flatMap((locale) => {
+    const code = typeof locale === 'string'
+      ? locale
+      : locale && typeof locale === 'object' && typeof (locale as Record<string, unknown>).code === 'string'
+        ? (locale as Record<string, string>).code
+        : null
+    return code ? [{ code, hreflang: code }] : []
+  })
+  if (!locales.length)
+    return null
+  const defaultLocale = typeof config.defaultLocale === 'string' ? config.defaultLocale : locales[0]!.code
+  const strategy = typeof config.strategy === 'string' && i18nStrategies.has(config.strategy as RuntimeI18nConfig['strategy'])
+    ? config.strategy as RuntimeI18nConfig['strategy']
+    : 'prefix'
+  return { defaultLocale, locales, strategy }
 }
 
 export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, skipSiteIndexable?: boolean, path?: string }): RobotsContext {
@@ -124,12 +151,11 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
   // if we're using i18n we need to strip leading prefixes so the rule will match
   // note this is for < v10 i18n behavior as it now handles route rules itself
   // TODO we may consider checking the version explicitly rather than the presence of the rules
-  const i18nConfig = (runtimeConfig.public as Record<string, any>)?.i18n as { locales?: { code: string }[] } | undefined
-  if (i18nConfig?.locales && typeof robotRouteRules.robots === 'undefined') {
-    const { locales } = i18nConfig
-    const locale = locales.find(l => routeRulesPath.startsWith(`/${l.code}`))
-    if (locale) {
-      routeRulesPath = routeRulesPath.replace(`/${locale.code}`, '')
+  const i18nConfig = parseRuntimeI18nConfig((runtimeConfig.public as Record<string, unknown>)?.i18n)
+  if (i18nConfig && typeof robotRouteRules.robots === 'undefined') {
+    const resolvedRoute = resolveLocaleFromRoute(routeRulesPath, i18nConfig)
+    if (resolvedRoute.basePath !== routeRulesPath) {
+      routeRulesPath = resolvedRoute.basePath
       robotRouteRules = nitroApp._robotsRuleMatcher(routeRulesPath)
     }
   }
