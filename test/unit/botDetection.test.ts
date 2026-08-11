@@ -116,6 +116,18 @@ describe('bot Detection from Headers', () => {
     expect(result.data?.botName).toBe('googlebot')
   })
 
+  it('preserves reusable-map priority for every pair of default patterns', () => {
+    const patternMap = createPatternMap()
+    const patterns = [...patternMap.keys()]
+
+    for (const firstPattern of patterns) {
+      for (const secondPattern of patterns) {
+        const headers = { 'user-agent': `${firstPattern}/${secondPattern}` }
+        expect(isBotFromHeaders(headers)).toEqual(isBotFromHeaders(headers, patternMap))
+      }
+    }
+  })
+
   // Test human traffic
   it('identifies likely human traffic', () => {
     const result = isBotFromHeaders(ValidHeaders)
