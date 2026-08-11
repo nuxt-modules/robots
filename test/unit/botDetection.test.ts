@@ -1,5 +1,6 @@
+import type { PatternMapValue } from '../../src/runtime/types'
 import { describe, expect, it } from 'vitest'
-import { isBotFromHeaders } from '../../src/util'
+import { createPatternMap, getBotDetection, isBotFromHeaders } from '../../src/util'
 
 const ValidHeaders = {
   'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -11,6 +12,12 @@ const ValidHeaders = {
 }
 
 describe('bot Detection from Headers', () => {
+  it.each([...createPatternMap().keys()])('matches the default %s pattern with reusable-map semantics', (pattern) => {
+    const headers = { 'user-agent': `Mozilla/5.0 compatible ${pattern}/1.0` }
+
+    expect(isBotFromHeaders(headers)).toEqual(isBotFromHeaders(headers, createPatternMap()))
+  })
+
   // Test empty user agent handling
   it('handles empty user agent properly', () => {
     const result = isBotFromHeaders({})
@@ -103,6 +110,12 @@ describe('bot Detection from Headers', () => {
     expect(result.data?.trusted).toBe(false)
   })
 
+  it('preserves definition priority over match position', () => {
+    const result = isBotFromHeaders({ 'user-agent': 'SomeRandomBot/1.0 Googlebot/2.1' })
+
+    expect(result.data?.botName).toBe('googlebot')
+  })
+
   // Test human traffic
   it('identifies likely human traffic', () => {
     const result = isBotFromHeaders(ValidHeaders)
@@ -128,5 +141,50 @@ describe('bot Detection from Headers', () => {
     })
 
     expect(result.isBot).toBe(false)
+  })
+
+  it('uses a caller-provided bot map', () => {
+    const customMap = new Map<string, PatternMapValue>([
+      ['private-crawler', { botName: 'private', botCategory: 'scraping', trusted: false }],
+    ])
+
+    const result = getBotDetection({ 'user-agent': 'Private-Crawler/1.0' }, customMap)
+
+    expect(result).toEqual({
+      isBot: true,
+      userAgent: 'Private-Crawler/1.0',
+      detectionMethod: 'headers',
+      botName: 'private',
+      botCategory: 'scraping',
+      trusted: false,
+    })
+  })
+
+  it('keeps caller-provided bot maps isolated', async () => {
+    const firstMap = new Map<string, PatternMapValue>([
+      ['first-crawler', { botName: 'first', botCategory: 'scraping', trusted: false }],
+    ])
+    const secondMap = new Map<string, PatternMapValue>([
+      ['second-crawler', { botName: 'second', botCategory: 'search-engine', trusted: true }],
+    ])
+
+    const [firstResult, secondResult] = await Promise.all([
+      Promise.resolve(isBotFromHeaders({ 'user-agent': 'First-Crawler/1.0' }, firstMap)),
+      Promise.resolve(isBotFromHeaders({ 'user-agent': 'Second-Crawler/1.0' }, secondMap)),
+    ])
+
+    expect(firstResult.data?.botName).toBe('first')
+    expect(secondResult.data?.botName).toBe('second')
+    expect(isBotFromHeaders({ 'user-agent': 'First-Crawler/1.0' }, secondMap)).toEqual({ isBot: false })
+  })
+
+  it('returns independently mutable pattern maps', () => {
+    const firstMap = createPatternMap()
+    const secondMap = createPatternMap()
+
+    firstMap.clear()
+
+    expect(isBotFromHeaders({ 'user-agent': 'Googlebot/2.1' }, firstMap)).toEqual({ isBot: false })
+    expect(isBotFromHeaders({ 'user-agent': 'Googlebot/2.1' }, secondMap).data?.botName).toBe('googlebot')
   })
 })
