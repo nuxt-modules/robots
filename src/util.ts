@@ -15,6 +15,7 @@ import {
   SEO_BOTS,
   SOCIAL_BOTS,
 } from './const-bots'
+import { matchDefaultBotTarget } from './generated-bot-matcher'
 
 export * from './const-bots'
 export { AiBots, NonHelpfulBots }
@@ -538,20 +539,37 @@ export function isBotFromHeaders(
 
   const userAgentLower = userAgent.toLowerCase()
 
-  // Use provided pattern map or create on demand for standalone usage
-  const resolvedPatternMap = patternMap || createPatternMap()
+  const defaultBotTarget = patternMap ? undefined : matchDefaultBotTarget(userAgentLower)
+  if (typeof defaultBotTarget !== 'undefined') {
+    const definition = BOT_MAP[defaultBotTarget >> 8]!
+    const bot = definition.bots[defaultBotTarget & 255]!
+    return {
+      isBot: true,
+      data: {
+        botName: bot.name as BotName,
+        botCategory: definition.type,
+        trusted: definition.trusted,
+      },
+    }
+  }
 
-  // Use optimized pattern lookup - O(n) instead of O(n³)
-  for (const [pattern, botData] of resolvedPatternMap) {
-    if (userAgentLower.includes(pattern)) {
-      return {
-        isBot: true,
-        data: {
-          botName: botData.botName,
-          botCategory: botData.botCategory,
-          trusted: botData.trusted,
-        },
+  let botData: PatternMapValue | undefined
+  if (patternMap) {
+    for (const [pattern, candidate] of patternMap) {
+      if (userAgentLower.includes(pattern)) {
+        botData = candidate
+        break
       }
+    }
+  }
+  if (botData) {
+    return {
+      isBot: true,
+      data: {
+        botName: botData.botName,
+        botCategory: botData.botCategory,
+        trusted: botData.trusted,
+      },
     }
   }
 
