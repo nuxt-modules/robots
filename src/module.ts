@@ -1,4 +1,3 @@
-import type { FileAfterParseHook } from '@nuxt/content'
 import type { Arrayable, AutoI18nConfig, NuxtRobotsRuntimeConfig, RobotsGroupInput, RobotsGroupResolved } from './util'
 import fsp from 'node:fs/promises'
 import {
@@ -176,6 +175,10 @@ export interface ModuleOptions {
    * @default true
    */
   botDetection?: boolean
+}
+
+interface FileAfterParseHook {
+  content: Record<string, any> & { robots?: unknown, seo?: Record<string, unknown> }
 }
 
 export interface ResolvedModuleOptions extends ModuleOptions {
@@ -387,26 +390,22 @@ export default defineNuxtModule<ModuleOptions>({
     const contentVersion = await resolveNuxtContentVersion()
     const isNuxtContentV3 = contentVersion && contentVersion.version === 3
     let isNuxtContentV2 = contentVersion && contentVersion.version === 2
-    if (isNuxtContentV3) {
-      if (hasNuxtModule('Content', nuxt)) {
-        logger.warn('You have loaded `@nuxt/content` before `@nuxtjs/robots`, this may cause issues with the integration. Please ensure `@nuxtjs/robots` is loaded first.')
-      }
-      nuxt.hooks.hook('content:file:afterParse' as any, (ctx: FileAfterParseHook) => {
-        if (typeof ctx.content.robots !== 'undefined') {
-          let rule = ctx.content.robots
-          if (typeof rule === 'boolean') {
-            rule = rule ? config.robotsEnabledValue : config.robotsDisabledValue
-          }
-          else if (typeof rule === 'object' && rule !== null) {
-            rule = robotsDirectivesFromObject(rule).join(', ') || config.robotsEnabledValue
-          }
-          // add route rule for the path
-          ;(ctx.content as any).seo = (ctx.content as any).seo || {}
-          ;(ctx.content as any).seo.robots = rule
-        }
-      })
-    }
-    else if (isNuxtContentV2 && nitroPreset.startsWith('cloudflare')) {
+    if (isNuxtContentV3 && hasNuxtModule('Content', nuxt))
+      logger.warn('You have loaded `@nuxt/content` before `@nuxtjs/robots`, this may cause issues with the integration. Please ensure `@nuxtjs/robots` is loaded first.')
+
+    nuxt.hooks.hook('content:file:afterParse' as any, (ctx: FileAfterParseHook) => {
+      if (typeof ctx.content.robots === 'undefined')
+        return
+      let rule = ctx.content.robots
+      if (typeof rule === 'boolean')
+        rule = rule ? config.robotsEnabledValue : config.robotsDisabledValue
+      else if (typeof rule === 'object' && rule !== null)
+        rule = robotsDirectivesFromObject(rule).join(', ') || config.robotsEnabledValue
+      ctx.content.seo ||= {}
+      ctx.content.seo.robots = rule
+    })
+
+    if (isNuxtContentV2 && nitroPreset.startsWith('cloudflare')) {
       logger.warn('The Nuxt Robots, Nuxt Content integration does not work with CloudFlare yet, the integration will be disabled. Learn more at: https://nuxtseo.com/docs/robots/guides/content')
       isNuxtContentV2 = false
     }
