@@ -3,6 +3,7 @@ catalogMode: prefer
 cleanupUnusedCatalogs: true
 
 shellEmulator: true
+
 trustPolicy: no-downgrade
 
 packages:
@@ -10,57 +11,57 @@ packages:
 
 catalog:
   '@fingerprintjs/botd': ^2.0.0
-  '@nuxt/kit': ^4.3.1
+  '@nuxt/kit': ^4.4.2
   consola: ^3.4.2
   defu: ^6.1.4
-  h3: ^1.15.5
+  h3: ^1.15.9
   nuxt-site-config: ^3.2.21
   pathe: ^2.0.3
   pkg-types: ^2.3.0
   sirv: ^3.0.2
-  std-env: ^3.10.0
+  std-env: ^4.0.0
   ufo: ^1.6.3
 
 catalogs:
   dev:
-    '@antfu/eslint-config': ^7.6.1
+    '@antfu/eslint-config': ^7.7.3
     '@arethetypeswrong/cli': ^0.18.2
     '@headlessui/vue': ^1.7.23
     '@iconify-json/carbon': ^1.2.19
     '@iconify-json/logos': ^1.2.10
     '@iconify-json/ri': ^1.2.10
-    '@iconify-json/simple-icons': ^1.2.71
-    '@iconify-json/tabler': ^1.2.28
+    '@iconify-json/simple-icons': ^1.2.74
+    '@iconify-json/tabler': ^1.2.31
     '@nuxt/content': ^3.12.0
-    '@nuxt/devtools-kit': ^3.2.2
-    '@nuxt/devtools-ui-kit': ^3.2.2
+    '@nuxt/devtools-kit': ^3.2.4
+    '@nuxt/devtools-ui-kit': ^3.2.4
     '@nuxt/fonts': ^0.14.0
     '@nuxt/module-builder': ^1.0.2
     '@nuxt/test-utils': ^4.0.0
-    '@nuxt/ui': ^4.5.0
+    '@nuxt/ui': ^4.5.1
     '@nuxtjs/color-mode': ^4.0.0
     '@nuxtjs/eslint-config-typescript': ^12.1.0
     '@nuxtjs/i18n': ^10.2.3
-    '@unocss/nuxt': ^66.6.2
-    '@unocss/preset-icons': ^66.6.2
-    '@unocss/preset-uno': ^66.6.2
-    '@unocss/runtime': ^66.6.2
+    '@unocss/nuxt': ^66.6.7
+    '@unocss/preset-icons': ^66.6.7
+    '@unocss/preset-uno': ^66.6.7
+    '@unocss/runtime': ^66.6.7
     '@vueuse/core': ^14.2.1
     '@vueuse/nuxt': ^14.2.1
-    better-sqlite3: ^12.6.2
-    bumpp: ^10.4.1
-    eslint: ^10.0.2
+    better-sqlite3: ^12.8.0
+    bumpp: ^11.0.1
+    eslint: ^10.1.0
     execa: ^9.6.1
-    firebase-functions: ^7.0.6
-    happy-dom: ^20.7.0
-    nuxt: ^4.3.1
+    firebase-functions: ^7.2.2
+    happy-dom: ^20.8.4
+    nuxt: ^4.4.2
     playwright-core: ^1.58.2
-    shiki: ^4.0.0
+    shiki: ^4.0.2
     typescript: ^5.9.3
-    unocss: ^66.6.2
-    vitest: ^4.0.18
-    vue: ^3.5.29
-    vue-router: ^5.0.3
+    unocss: ^66.6.7
+    vitest: ^4.1.0
+    vue: ^3.5.30
+    vue-router: ^5.0.4
 
 onlyBuiltDependencies:
   - '@firebase/util'

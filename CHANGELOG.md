@@ -1,6 +1,29 @@
 # Changelog
 
 
+## v5.7.0...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v5.7.0...main)
+
+### 🩹 Fixes
+
+- Support nuxt 4 with compatibility version >= 4 ([#272](https://github.com/nuxt-modules/robots/pull/272))
+- **devtools:** Broken indexable status ([b003020](https://github.com/nuxt-modules/robots/commit/b003020))
+
+### 📖 Documentation
+
+- Add skilld agent skill snippet ([#270](https://github.com/nuxt-modules/robots/pull/270))
+- Add skilld snippet to installation docs ([#271](https://github.com/nuxt-modules/robots/pull/271))
+
+### 🏡 Chore
+
+- Sync ([bfa19e5](https://github.com/nuxt-modules/robots/commit/bfa19e5))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+- Lumirelle ([@lumirelle](https://github.com/lumirelle))
+
 ## v5.6.7...main
 
 [compare changes](https://github.com/nuxt-modules/robots/compare/v5.6.7...main)

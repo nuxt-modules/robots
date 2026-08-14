@@ -2,6 +2,8 @@ import { defineConfig, defineProject } from 'vitest/config'
 
 export default defineConfig({
   test: {
+    globals: true,
+    reporters: 'dot',
     projects: [
       // utils folders as *.test.ts in either test/unit or in src/**/*.test.ts
       defineProject({
@@ -30,6 +32,7 @@ export default defineConfig({
           ],
           exclude: [
             '**/node_modules/**',
+            '**/.claude/**',
           ],
         },
       }),
@@ -37,12 +40,14 @@ export default defineConfig({
       defineProject({
         test: {
           name: 'e2e',
+          environment: 'node',
           include: [
             './test/e2e/**/*.test.ts',
           ],
           exclude: [
             '**/node_modules/**',
           ],
+          globalSetup: './test/e2e/global-setup.ts',
         },
       }),
     ],
