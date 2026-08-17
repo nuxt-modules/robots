@@ -54,7 +54,7 @@ catalog:
   consola: ^3.4.2
   defu: ^6.1.7
   eslint: ^10.8.0
-  eslint-plugin-harlanzw: ^0.17.1
+  eslint-plugin-harlanzw: ^0.18.1
   firebase-functions: ^7.3.2
   h3: ^1.15.11
   happy-dom: ^20.11.1
