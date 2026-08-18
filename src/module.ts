@@ -22,7 +22,7 @@ import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { AiBots, NonHelpfulBots } from './const'
 import { setupDevToolsUI } from './devtools'
 import { mapPathForI18nPages, resolveI18nConfig, splitPathForI18nLocales } from './i18n'
-import { isNuxtGenerate, resolveNitroPreset, resolveNuxtContentVersion } from './kit'
+import { isNuxtGenerate, resolveContentProvider, resolveNitroPreset } from './kit'
 import { registerTypeTemplates } from './templates'
 import {
   asArray,
@@ -215,6 +215,10 @@ export default defineNuxtModule<ModuleOptions>({
       version: '>=2',
       optional: true,
     },
+    '@harlan-zw/comark-content': {
+      version: '>=0.1.2',
+      optional: true,
+    },
   },
   defaults: {
     enabled: true,
@@ -384,11 +388,15 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     const nitroPreset = resolveNitroPreset(nuxt.options.nitro)
-    const contentVersion = await resolveNuxtContentVersion()
-    const isNuxtContentV3 = contentVersion && contentVersion.version === 3
-    let isNuxtContentV2 = contentVersion && contentVersion.version === 2
-    if (isNuxtContentV3) {
-      if (hasNuxtModule('Content', nuxt)) {
+    const contentProvider = await resolveContentProvider(nuxt)
+    const isNuxtContentV3 = contentProvider._tag === 'NuxtContent' && contentProvider.version === 3
+    let isNuxtContentV2 = contentProvider._tag === 'NuxtContent' && contentProvider.version === 2
+    const isComarkContent = contentProvider._tag === 'Comark'
+    // comark-content fires the same build hook with the same context shape, so the
+    // frontmatter mapping is identical. It reads Markdown into Nitro server assets
+    // rather than a database, so unlike Nuxt Content v2 it needs no Cloudflare opt out.
+    if (isNuxtContentV3 || isComarkContent) {
+      if (isNuxtContentV3 && hasNuxtModule('Content', nuxt)) {
         logger.warn('You have loaded `@nuxt/content` before `@nuxtjs/robots`, this may cause issues with the integration. Please ensure `@nuxtjs/robots` is loaded first.')
       }
       nuxt.hooks.hook('content:file:afterParse' as any, (ctx: FileAfterParseHook) => {
