@@ -83,11 +83,11 @@
   "devDependencies": {
     "@antfu/eslint-config": "catalog:",
     "@arethetypeswrong/cli": "catalog:dev",
+    "@harlan-zw/comark-content": "catalog:dev",
     "@headlessui/vue": "catalog:dev",
     "@iconify-json/logos": "catalog:dev",
     "@iconify-json/ri": "catalog:dev",
     "@iconify-json/tabler": "catalog:",
-    "@harlan-zw/comark-content": "catalog:dev",
     "@nuxt/content": "catalog:dev",
     "@nuxt/devtools-kit": "catalog:",
     "@nuxt/devtools-ui-kit": "catalog:",
