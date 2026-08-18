@@ -58,8 +58,8 @@ catalogs:
       specifier: ^10.8.0
       version: 10.8.0
     eslint-plugin-harlanzw:
-      specifier: ^0.18.1
-      version: 0.18.1
+      specifier: ^0.19.0
+      version: 0.19.0
     firebase-functions:
       specifier: ^7.3.2
       version: 7.3.2
@@ -264,7 +264,7 @@ importers:
         version: 10.8.0(jiti@2.7.0)(supports-color@10.2.2)
       eslint-plugin-harlanzw:
         specifier: 'catalog:'
-        version: 0.18.1(eslint@10.8.0(jiti@2.7.0)(supports-color@10.2.2))
+        version: 0.19.0(eslint@10.8.0(jiti@2.7.0)(supports-color@10.2.2))
       execa:
         specifier: catalog:dev
         version: 10.0.1
@@ -4910,8 +4910,8 @@ packages:
     peerDependencies:
       eslint: '>=8'
 
-  eslint-plugin-harlanzw@0.18.1:
-    resolution: {integrity: sha512-w2xMDe3zuGPUDO+8GfGUrvUg447XJHqRi6U+IuH/HgsADRqo8SmC4GsQuxKaXq7YdkLe8eYjTtrGYDt/YwnpHw==}
+  eslint-plugin-harlanzw@0.19.0:
+    resolution: {integrity: sha512-Y/fxnaU7J3P9J45RQnlnRo2WEgCXlP9xZD+qfE9UwIykIi4uHo/TeH5qJMYLN8ghQCqyF5alasxHRlAU6nHh7g==}
     peerDependencies:
       eslint: '>=9.0.0'
 
@@ -14510,7 +14510,7 @@ snapshots:
       eslint: 10.8.0(jiti@2.7.0)(supports-color@10.2.2)
       eslint-compat-utils: 0.5.1(eslint@10.8.0(jiti@2.7.0)(supports-color@10.2.2))
 
-  eslint-plugin-harlanzw@0.18.1(eslint@10.8.0(jiti@2.7.0)(supports-color@10.2.2)):
+  eslint-plugin-harlanzw@0.19.0(eslint@10.8.0(jiti@2.7.0)(supports-color@10.2.2)):
     dependencies:
       '@eslint/plugin-kit': 0.7.2
       eslint: 10.8.0(jiti@2.7.0)(supports-color@10.2.2)
