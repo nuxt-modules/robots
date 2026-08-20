@@ -1,6 +1,26 @@
 # Changelog
 
 
+## v6.1.4...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.1.4...main)
+
+### 🔥 Performance
+
+- Compile default bot matcher at build time ([#318](https://github.com/nuxt-modules/robots/pull/318))
+
+### 🩹 Fixes
+
+- **i18n:** Resolve localized robot paths ([#316](https://github.com/nuxt-modules/robots/pull/316))
+
+### 🏡 Chore
+
+- Adopt shared eslint base config ([#320](https://github.com/nuxt-modules/robots/pull/320))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
 ## v6.1.2...main
 
 [compare changes](https://github.com/nuxt-modules/robots/compare/v6.1.2...main)

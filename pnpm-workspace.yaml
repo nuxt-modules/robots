@@ -41,27 +41,27 @@ catalog:
   '@antfu/eslint-config': ^9.3.0
   '@fingerprintjs/botd': ^2.0.0
   '@iconify-json/tabler': ^1.2.38
-  '@nuxt/devtools-kit': 4.0.0-alpha.7
-  '@nuxt/devtools-ui-kit': 4.0.0-alpha.7
+  '@nuxt/devtools-kit': 4.0.0-alpha.11
+  '@nuxt/devtools-ui-kit': 4.0.0-alpha.9
   '@nuxt/kit': ^4.5.2
   '@nuxtjs/i18n': ^10.6.0
-  '@unocss/nuxt': ^66.7.5
-  '@unocss/preset-icons': ^66.7.5
-  '@unocss/preset-uno': ^66.7.5
-  '@unocss/runtime': ^66.7.5
+  '@unocss/nuxt': ^66.8.0
+  '@unocss/preset-icons': ^66.8.0
+  '@unocss/preset-uno': ^66.8.0
+  '@unocss/runtime': ^66.8.0
   '@vueuse/core': ^14.4.0
   better-sqlite3: ^13.0.3
-  bumpp: ^12.2.0
+  bumpp: ^12.2.1
   consola: ^3.4.2
   defu: ^6.1.7
-  eslint: ^10.8.0
-  eslint-plugin-harlanzw: ^0.19.2
+  eslint: ^10.8.1
+  eslint-plugin-harlanzw: ^0.20.0
   firebase-functions: ^7.3.2
   h3: ^1.15.11
-  happy-dom: ^20.11.1
+  happy-dom: ^20.11.2
   nuxt: ^4.5.2
-  nuxt-site-config: ^4.2.0
-  nuxtseo-layer-devtools: ^5.3.10
+  nuxt-site-config: ^4.2.3
+  nuxtseo-layer-devtools: ^5.3.14
   nuxtseo-shared: ^5.3.14
   pathe: ^2.0.3
   pkg-types: ^2.3.1
@@ -71,17 +71,17 @@ catalog:
   typescript: 6.0.3
   ufo: ^1.6.4
   unbuild: ^3.6.1
-  unocss: ^66.7.5
-  vitest: ^4.1.10
+  unocss: ^66.8.0
+  vitest: ^4.1.11
   vue: ^3.5.41
   vue-router: ^5.2.0
-  vue-tsc: ^3.3.9
+  vue-tsc: ^3.3.10
 catalogs:
   dev:
     '@arethetypeswrong/cli': ^0.18.5
     '@harlan-zw/comark-content': ^0.1.4
     '@headlessui/vue': ^1.7.23
-    '@iconify-json/logos': ^1.2.12
+    '@iconify-json/logos': ^1.2.13
     '@iconify-json/ri': ^1.2.10
     '@nuxt/content': ^3.15.2
     '@nuxt/module-builder': ^1.0.3
