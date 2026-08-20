@@ -22,6 +22,7 @@ minimumReleaseAgeExclude:
   - '@nuxt/schema@4.5.0'
   - '@nuxt/vite-builder@4.5.0'
   - nuxt@4.5.0
+  - '@harlan-zw/comark-content@0.1.4'
 shellEmulator: true
 trustPolicy: no-downgrade
 trustPolicyExclude:
@@ -61,7 +62,7 @@ catalog:
   nuxt: ^4.5.2
   nuxt-site-config: ^4.2.0
   nuxtseo-layer-devtools: ^5.3.10
-  nuxtseo-shared: ^5.3.11
+  nuxtseo-shared: ^5.3.14
   pathe: ^2.0.3
   pkg-types: ^2.3.1
   radix3: ^1.1.2
@@ -78,6 +79,7 @@ catalog:
 catalogs:
   dev:
     '@arethetypeswrong/cli': ^0.18.5
+    '@harlan-zw/comark-content': ^0.1.4
     '@headlessui/vue': ^1.7.23
     '@iconify-json/logos': ^1.2.12
     '@iconify-json/ri': ^1.2.10
