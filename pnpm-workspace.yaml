@@ -36,29 +36,29 @@ packages:
   - playground
   - '!examples/**'
 overrides:
-  vite: ^8.2.1
+  vite: ^8.2.2
 catalog:
   '@antfu/eslint-config': ^9.3.0
   '@fingerprintjs/botd': ^2.0.0
   '@iconify-json/tabler': ^1.2.38
-  '@nuxt/devtools-kit': 4.0.0-alpha.11
-  '@nuxt/devtools-ui-kit': 4.0.0-alpha.9
+  '@nuxt/devtools-kit': 4.0.0-alpha.14
+  '@nuxt/devtools-ui-kit': 4.0.0-alpha.14
   '@nuxt/kit': ^4.5.2
   '@nuxtjs/i18n': ^10.6.0
-  '@unocss/nuxt': ^66.8.0
-  '@unocss/preset-icons': ^66.8.0
-  '@unocss/preset-uno': ^66.8.0
-  '@unocss/runtime': ^66.8.0
+  '@unocss/nuxt': ^66.8.1
+  '@unocss/preset-icons': ^66.8.1
+  '@unocss/preset-uno': ^66.8.1
+  '@unocss/runtime': ^66.8.1
   '@vueuse/core': ^14.4.0
   better-sqlite3: ^13.0.3
   bumpp: ^12.2.1
   consola: ^3.4.2
   defu: ^6.1.7
-  eslint: ^10.8.1
+  eslint: ^10.9.0
   eslint-plugin-harlanzw: ^0.20.0
   firebase-functions: ^7.3.2
   h3: ^1.15.11
-  happy-dom: ^20.11.2
+  happy-dom: ^20.11.6
   nuxt: ^4.5.2
   nuxt-site-config: ^4.2.3
   nuxtseo-layer-devtools: ^5.3.14
@@ -71,11 +71,11 @@ catalog:
   typescript: 6.0.3
   ufo: ^1.6.4
   unbuild: ^3.6.1
-  unocss: ^66.8.0
+  unocss: ^66.8.1
   vitest: ^4.1.11
   vue: ^3.5.41
   vue-router: ^5.2.0
-  vue-tsc: ^3.3.10
+  vue-tsc: ^3.3.11
 catalogs:
   dev:
     '@arethetypeswrong/cli': ^0.18.5
