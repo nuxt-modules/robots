@@ -1,6 +1,22 @@
 # Changelog
 
 
+## v6.1.5...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.1.5...main)
+
+### 🚀 Enhancements
+
+- First-party comark-content support ([#321](https://github.com/nuxt-modules/robots/pull/321))
+
+### 🏡 Chore
+
+- Bump ([74b975e](https://github.com/nuxt-modules/robots/commit/74b975e))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
 ## v6.1.4...main
 
 [compare changes](https://github.com/nuxt-modules/robots/compare/v6.1.4...main)
