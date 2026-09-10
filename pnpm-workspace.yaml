@@ -68,7 +68,7 @@ catalog:
   radix3: ^1.1.2
   sirv: ^3.0.2
   std-env: ^4.2.0
-  typescript: 6.0.3
+  typescript: 7.0.2
   ufo: ^1.6.4
   unbuild: ^3.6.1
   unocss: ^66.8.0
