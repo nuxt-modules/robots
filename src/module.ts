@@ -622,8 +622,10 @@ export default defineNuxtModule<ModuleOptions>({
     // The bot detection helpers must only come from one source: the real
     // implementations above, or the mocks below. Exclude the real file from
     // the scan when disabled so the auto-import registry holds no duplicates.
+    // Published installs transpile the runtime to .js with .d.ts declarations,
+    // so the exclusion matches every variant of the file, not just .ts.
     if (!config.botDetection) {
-      addServerImportsDir(`!${resolve('./runtime/server/composables/getBotDetection.ts')}`)
+      addServerImportsDir(`!${resolve('./runtime/server/composables/getBotDetection.*')}`)
       addServerImports([
         'getBotDetection',
         'isBot',
