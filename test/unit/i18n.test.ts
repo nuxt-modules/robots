@@ -39,6 +39,18 @@ describe('multi-domain rules', () => {
     pages: { private: { en: '/private', de: '/privat', fr: '/prive' } },
   }
 
+  it('seeds the unprefixed path when no host defaults to the global default locale', () => {
+    expect(mapPathForI18nPages('/private', {
+      ...i18n,
+      multiDomainLocales: true,
+      locales: [
+        { code: 'en' },
+        { code: 'de', domains: ['de.example'], defaultForDomains: ['de.example'] },
+      ],
+      pages: { private: { en: '/private', de: '/privat' } },
+    })).toContain('/private')
+  })
+
   it('includes the global default prefix on another locale host', () => {
     expect(new Set(splitPathForI18nLocales('/private', config)))
       .toEqual(new Set(['/private', '/en/private', '/fr/private']))

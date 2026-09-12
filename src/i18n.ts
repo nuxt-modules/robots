@@ -23,7 +23,7 @@ export function mapPathForI18nPages(path: string, autoI18n: AutoI18nConfig): str
         ...locale.domain ? [locale.domain] : [],
       ]))]
       if (hosts.length) {
-        const paths = new Set<string>()
+        const paths = new Set<string>([path])
         const config = { ...autoI18n, locales: autoI18n.locales.map(locale => ({ ...locale, hreflang: locale.code })) }
         for (const host of hosts) {
           for (const locale of resolveI18nDomain(host, config).locales) {
