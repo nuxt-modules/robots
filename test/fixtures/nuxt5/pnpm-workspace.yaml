@@ -7,11 +7,4 @@ minimumReleaseAgeExclude:
   - nuxt-site-config-kit@4.1.4
   - nuxt-site-config@4.1.4
   - site-config-stack@4.1.4
-  - nuxtseo-shared@5.3.8
-  - nuxtseo-shared@5.3.9
-  # nuxt-site-config@4.1.4 still resolves this transitive version.
-  - nuxtseo-shared@5.3.7
-
-# Remove the direct preview and this override after the next Shared release.
-overrides:
-  "@nuxtjs/robots>nuxtseo-shared": "-"
+  - nuxtseo-shared@5.3.7 || 5.3.8 || 5.3.9 || 5.3.16
