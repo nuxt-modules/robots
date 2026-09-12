@@ -12,7 +12,8 @@
     "nuxt-site-config": "^4.1.4",
     "nuxt": "npm:nuxt-nightly@5.0.0-29762711.192612c7",
     "vue": "^3.5.40",
-    "vue-router": "^5.2.0"
+    "vue-router": "^5.2.0",
+    "nuxtseo-shared": "https://pkg.pr.new/nuxtseo-shared@3b1d4dc71d466f538e6e4e855ba18525a54abe1b"
   },
   "devDependencies": {
     "typescript": "6.0.3",
