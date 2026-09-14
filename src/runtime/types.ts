@@ -189,8 +189,9 @@ export interface UseBotDetectionReturn {
   reset: () => void
 }
 
-export type NormalisedLocales = { code: string, iso?: string, domain?: string }[]
+export type NormalisedLocales = { code: string, iso?: string, domain?: string, domains?: string[], defaultForDomains?: string[] }[]
 export interface AutoI18nConfig {
+  multiDomainLocales?: boolean
   differentDomains?: boolean
   locales: NormalisedLocales
   defaultLocale: string

@@ -3,6 +3,7 @@ import type { AutoI18nConfig as SharedAutoI18nConfig } from 'nuxtseo-shared/i18n
 import type { AutoI18nConfig } from './util'
 // re-import for local use in mapPathForI18nPages
 import { generatePathForI18nPages } from 'nuxtseo-shared/i18n'
+import { localePath, resolveI18nDomain } from 'nuxtseo-shared/i18n-runtime'
 import { withLeadingSlash, withoutLeadingSlash, withoutTrailingSlash } from 'ufo'
 
 export { generatePathForI18nPages, resolveI18nConfig, splitPathForI18nLocales } from 'nuxtseo-shared/i18n'
@@ -15,6 +16,29 @@ export function mapPathForI18nPages(path: string, autoI18n: AutoI18nConfig): str
   const withoutSlashes = withoutTrailingSlash(withoutLeadingSlash(path)).replace('/index', '')
 
   function resolveForAllLocales(pageName: string, pageLocales: Record<string, string | false>): string[] {
+    if (autoI18n.multiDomainLocales) {
+      const hosts = [...new Set(autoI18n.locales.flatMap(locale => [
+        ...locale.domains || [],
+        ...locale.defaultForDomains || [],
+        ...locale.domain ? [locale.domain] : [],
+      ]))]
+      if (hosts.length) {
+        const paths = new Set<string>([path])
+        const config = { ...autoI18n, locales: autoI18n.locales.map(locale => ({ ...locale, hreflang: locale.code })) }
+        for (const host of hosts) {
+          for (const locale of resolveI18nDomain(host, config).locales) {
+            const translated = pageLocales[locale.code]
+            if (translated === false)
+              continue
+            const basePath = translated ?? `/${pageName}`
+            paths.add(localePath(basePath, locale.code, config, { host }))
+            if (config.strategy === 'prefix_and_default')
+              paths.add(localePath(basePath, locale.code, { ...config, strategy: 'prefix' }, { host }))
+          }
+        }
+        return [...paths]
+      }
+    }
     const localizedPaths = autoI18n.locales
       .filter((l) => {
         // skip disabled locales
