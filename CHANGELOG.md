@@ -1,6 +1,46 @@
 # Changelog
 
 
+## v6.2.2...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.2.2...main)
+
+### 🩹 Fixes
+
+- **i18n:** Expand robots rules across locale domains ([#327](https://github.com/nuxt-modules/robots/pull/327))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
+## v6.2.1...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.2.1...main)
+
+### 🩹 Fixes
+
+- **botDetection:** Make composable exclusion match dist filenames ([#326](https://github.com/nuxt-modules/robots/pull/326))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
+## v6.2.0...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.2.0...main)
+
+### 🩹 Fixes
+
+- **botDetection:** Stop duplicate server auto-imports when disabled ([#325](https://github.com/nuxt-modules/robots/pull/325))
+
+### 🏡 Chore
+
+- Bump ([6b3ca7c](https://github.com/nuxt-modules/robots/commit/6b3ca7c))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
 ## v6.1.5...main
 
 [compare changes](https://github.com/nuxt-modules/robots/compare/v6.1.5...main)
