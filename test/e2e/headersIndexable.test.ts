@@ -11,7 +11,7 @@ await setup({
   build: true,
 })
 
-// An indexable site keeps the exact headers it had before non-indexable sites got full coverage.
+// Pins the headers of an indexable site. The non-indexable header fix must not change them.
 describe('x-robots-tag on an indexable site', () => {
   it('sends the enabled value on pages', async () => {
     expect(await fetchRobotsHeaders('/')).toEqual(['index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'])

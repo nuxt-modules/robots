@@ -20,7 +20,7 @@ export interface RobotsHeaderRulesInput {
  * They apply every rule whose pattern matches, so overlapping rules send the header twice.
  */
 export function resolveRobotsHeaderRules(input: RobotsHeaderRulesInput): Record<string, string> {
-  // Every response of a non-indexable site gets the same header, so one rule covers all of them.
+  // A non-indexable site sends the same header on every response. One rule covers them all.
   if (!input.indexable)
     return { '/**': input.robotsDisabledValue }
 
@@ -35,7 +35,7 @@ export function resolveRobotsHeaderRules(input: RobotsHeaderRulesInput): Record<
       headerRules[route] = robotRule.rule || input.robotsDisabledValue
   }
 
-  // A user rule that already sends noindex on build assets is at least as strict as the built-in rule.
+  // If a user rule already sends noindex on build assets, drop the weaker built-in rule.
   const userHeaderRules = Object.fromEntries(
     Object.entries(headerRules)
       .filter(([route]) => !buildAssetsRoutes.has(route))

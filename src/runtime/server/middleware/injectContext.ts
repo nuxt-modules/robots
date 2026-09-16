@@ -5,7 +5,7 @@ import { useRuntimeConfigNuxtRobots } from '../composables/useRuntimeConfigNuxtR
 
 export default defineEventHandler(async (e) => {
   if (e.path === '/robots.txt' || e.path.startsWith('/__') || e.path.startsWith('/api') || e.path.startsWith('/_nuxt')) {
-    // A search engine can index JSON too, so a non-indexable site sends noindex on these responses.
+    // Search engines can index JSON. A non-indexable site sends noindex on these paths too.
     const { header, robotsDisabledValue } = useRuntimeConfigNuxtRobots(e)
     if (header && !getSiteRobotConfig(e).indexable)
       setHeader(e, 'X-Robots-Tag', robotsDisabledValue)

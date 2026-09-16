@@ -15,7 +15,7 @@ await setup({
   },
 })
 
-// An indexable site keeps the exact `_headers` it had before non-indexable sites got full coverage.
+// Pins the `_headers` of an indexable site. The non-indexable header fix must not change them.
 describe('_headers on an indexable site', () => {
   it('only marks build assets as noindex', () => {
     const headers = readHeadersFile()

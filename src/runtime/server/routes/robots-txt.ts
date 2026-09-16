@@ -62,7 +62,7 @@ export default defineEventHandler(async (e) => {
     robotsTxt += `\n# DEVELOPMENT HINTS:\n# - ${hints.join('\n# - ')}\n`
   }
   if (credits) {
-    // A catch-all route rule can disable indexing while the robots.txt still allows crawling.
+    // A catch-all noindex route rule disables indexing, and robots.txt still allows crawling.
     const catchAllRule = normaliseRobotsRouteRule(useRuntimeConfig(e).nitro?.routeRules?.['/**'] as RobotsRouteRuleConfig | undefined)
     const siteIndexable = indexable && !(catchAllRule?.allow === false && isNoIndexRule(catchAllRule.rule || robotsDisabledValue))
     robotsTxt = [
