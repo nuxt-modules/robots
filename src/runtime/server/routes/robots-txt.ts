@@ -1,7 +1,7 @@
-import type { HookRobotsConfigContext, HookRobotsTxtContext } from '../../types'
-import { asArray, generateRobotsTxt } from '@nuxtjs/robots/util'
+import type { HookRobotsConfigContext, HookRobotsTxtContext, RobotsRouteRuleConfig } from '../../types'
+import { asArray, generateRobotsTxt, isNoIndexRule, normaliseRobotsRouteRule } from '@nuxtjs/robots/util'
 import { defineEventHandler, setHeader } from '#nuxtseo/h3'
-import { fetchWithEvent, useNitroApp } from '#nuxtseo/nitro'
+import { fetchWithEvent, useNitroApp, useRuntimeConfig } from '#nuxtseo/nitro'
 import { withSiteUrl } from '#site-config/server/composables/utils'
 import { getSiteRobotConfig } from '../composables/getSiteRobotConfig'
 import { useRuntimeConfigNuxtRobots } from '../composables/useRuntimeConfigNuxtRobots'
@@ -11,7 +11,7 @@ import { resolveRobotsTxtContext } from '../util'
 export default defineEventHandler(async (e) => {
   const nitroApp = useNitroApp()
   const { indexable, hints } = getSiteRobotConfig(e)
-  const { credits, isNuxtContentV2, cacheControl } = useRuntimeConfigNuxtRobots(e)
+  const { credits, isNuxtContentV2, cacheControl, robotsDisabledValue } = useRuntimeConfigNuxtRobots(e)
   // move towards deprecating indexable
   let robotsTxtCtx: Omit<HookRobotsConfigContext, 'context' | 'event'> = {
     errors: [],
@@ -62,8 +62,11 @@ export default defineEventHandler(async (e) => {
     robotsTxt += `\n# DEVELOPMENT HINTS:\n# - ${hints.join('\n# - ')}\n`
   }
   if (credits) {
+    // A catch-all route rule can disable indexing while the robots.txt still allows crawling.
+    const catchAllRule = normaliseRobotsRouteRule(useRuntimeConfig(e).nitro?.routeRules?.['/**'] as RobotsRouteRuleConfig | undefined)
+    const siteIndexable = indexable && !(catchAllRule?.allow === false && isNoIndexRule(catchAllRule.rule || robotsDisabledValue))
     robotsTxt = [
-      `# START nuxt-robots (${indexable ? 'indexable' : 'indexing disabled'})`,
+      `# START nuxt-robots (${siteIndexable ? 'indexable' : 'indexing disabled'})`,
       robotsTxt,
       '# END nuxt-robots',
     ].filter(Boolean).join('\n')

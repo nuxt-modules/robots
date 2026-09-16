@@ -1,10 +1,16 @@
 import { defineEventHandler, getQuery, setHeader } from '#nuxtseo/h3'
 import { getPathRobotConfig } from '../composables/getPathRobotConfig'
+import { getSiteRobotConfig } from '../composables/getSiteRobotConfig'
 import { useRuntimeConfigNuxtRobots } from '../composables/useRuntimeConfigNuxtRobots'
 
 export default defineEventHandler(async (e) => {
-  if (e.path === '/robots.txt' || e.path.startsWith('/__') || e.path.startsWith('/api') || e.path.startsWith('/_nuxt'))
+  if (e.path === '/robots.txt' || e.path.startsWith('/__') || e.path.startsWith('/api') || e.path.startsWith('/_nuxt')) {
+    // A search engine can index JSON too, so a non-indexable site sends noindex on these responses.
+    const { header, robotsDisabledValue } = useRuntimeConfigNuxtRobots(e)
+    if (header && !getSiteRobotConfig(e).indexable)
+      setHeader(e, 'X-Robots-Tag', robotsDisabledValue)
     return
+  }
   const nuxtRobotsConfig = useRuntimeConfigNuxtRobots(e)
   if (nuxtRobotsConfig) {
     const { header } = nuxtRobotsConfig
