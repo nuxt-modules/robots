@@ -665,6 +665,13 @@ export function robotsDirectivesFromObject(obj: Record<string, any>): string[] {
   return directives
 }
 
+/**
+ * Whether a robots rule, such as `noindex, nofollow`, stops a search engine from indexing.
+ */
+export function isNoIndexRule(rule: string): boolean {
+  return rule.split(',').some(part => ['noindex', 'none'].includes(part.trim()))
+}
+
 export function normaliseRobotsRouteRule(config: RobotsRouteRuleConfig | undefined | null) {
   if (!config)
     return undefined
