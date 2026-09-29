@@ -14,13 +14,14 @@ import {
   extendRouteRules,
   hasNuxtModule,
 } from '@nuxt/kit'
-import { installNuxtSiteConfig, updateSiteConfig } from 'nuxt-site-config/kit'
+import { installNuxtSiteConfig, updateSiteConfig, useSiteConfig } from 'nuxt-site-config/kit'
 import { setupNitroRuntimeCompatibility, useModuleLogger } from 'nuxtseo-shared/kit'
 import { relative } from 'pathe'
 import { readPackageJSON } from 'pkg-types'
 import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { AiBots, NonHelpfulBots } from './const'
 import { setupDevToolsUI } from './devtools'
+import { resolveRobotsHeaderRules } from './header-rules'
 import { mapPathForI18nPages, resolveI18nConfig, splitPathForI18nLocales } from './i18n'
 import { isNuxtGenerate, resolveContentProvider, resolveNitroPreset } from './kit'
 import { registerTypeTemplates } from './templates'
@@ -464,19 +465,20 @@ export default defineNuxtModule<ModuleOptions>({
         for (const path of noIndexPaths) {
           extendRouteRules(path, { robots: 'noindex' }, { override: true })
         }
-        Object.entries(nuxt.options.routeRules || {}).forEach(([route, rules]) => {
-          if (!rules)
-            return
-          const robotRule = normaliseRobotsRouteRule(rules)
-          // only if a rule has been specified as robots.txt will cover disallows
-          if (robotRule && !robotRule.allow && robotRule.rule) {
-            extendRouteRules(route, {
-              headers: {
-                'X-Robots-Tag': robotRule.rule,
-              },
-            }, { override: true })
-          }
+        const headerRules = resolveRobotsHeaderRules({
+          routeRules: nuxt.options.routeRules || {},
+          indexable: useSiteConfig().indexable !== false
+            && !config.groups.some(group => asArray(group.userAgent).includes('*') && asArray(group.disallow).includes('/')),
+          robotsDisabledValue: config.robotsDisabledValue,
+          buildAssetsDir: nuxt.options.app.buildAssetsDir,
         })
+        for (const [route, rule] of Object.entries(headerRules)) {
+          extendRouteRules(route, {
+            headers: {
+              'X-Robots-Tag': rule,
+            },
+          }, { override: true })
+        }
       }
 
       const extraDisallows = new Set<string>()
