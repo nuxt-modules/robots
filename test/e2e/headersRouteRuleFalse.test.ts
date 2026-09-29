@@ -22,7 +22,10 @@ describe('a catch-all `robots: false` route rule', () => {
     const headers = Object.fromEntries(await Promise.all(paths.map(async path => [path, await fetchRobotsHeaders(path)])))
     expect(headers).toEqual(Object.fromEntries(paths.map(path => [path, ['noindex, nofollow']])))
   })
-  it('labels robots.txt as indexing disabled', async () => {
-    expect(await $fetch('/robots.txt')).toContain('# START nuxt-robots (indexing disabled)')
+  it('labels robots.txt as indexing disabled and keeps crawling allowed', async () => {
+    const robotsTxt = await $fetch<string>('/robots.txt')
+    expect(robotsTxt).toContain('# START nuxt-robots (indexing disabled)')
+    // Crawlers must reach the pages to see noindex, or indexed pages stay indexed.
+    expect(robotsTxt).not.toMatch(/^Disallow: \/$/m)
   })
 })
