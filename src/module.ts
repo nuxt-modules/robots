@@ -9,9 +9,12 @@ import {
   addServerImports,
   addServerImportsDir,
   addServerPlugin,
+  addServerTemplate,
+  addTemplate,
   createResolver,
   defineNuxtModule,
   extendRouteRules,
+  getNuxtVersion,
   hasNuxtModule,
 } from '@nuxt/kit'
 import { installNuxtSiteConfig, updateSiteConfig, useSiteConfig } from 'nuxt-site-config/kit'
@@ -261,6 +264,25 @@ export default defineNuxtModule<ModuleOptions>({
       return
     }
     const nitroCompatibility = setupNitroRuntimeCompatibility(nuxt)
+    const isNuxt5 = Number.parseInt(getNuxtVersion(nuxt)) >= 5
+    // Generate legacy imports only for older Nuxt versions to keep Nuxt 5 runtime dependencies portable.
+    nuxt.options.alias['#robots-app-compat'] = isNuxt5
+      ? resolve('./runtime/app/compat/nuxt5')
+      : addTemplate({
+        filename: 'robots-app-compat.mjs',
+        getContents: () => `
+import { setHeader } from 'h3'
+import { useRequestEvent } from 'nuxt/app'
+export { injectHead, useHead } from '#imports'
+export function useRobotsHeader() {
+  const event = useRequestEvent()
+  return (value) => {
+    if (event)
+      setHeader(event, 'X-Robots-Tag', value)
+  }
+}
+`,
+      }).dst
 
     // Allow `definePageMeta({ robots: false })` to set per-page robots rules
     nuxt.options.experimental.extraPageMetaExtractionKeys = nuxt.options.experimental.extraPageMetaExtractionKeys || []
@@ -591,6 +613,23 @@ export default defineNuxtModule<ModuleOptions>({
       handler: resolve('./runtime/server/middleware/injectContext'),
     })
     addServerPlugin(resolve('./runtime/server/plugins/initContext'))
+    // Nitro 3 merges middleware headers after rendering. Apply the final rule after that merge.
+    if (isNuxt5) {
+      addServerPlugin(addServerTemplate({
+        filename: `${nuxt.options.buildDir}/robots-header.mjs`,
+        getContents: () => `
+import { defineNitroPlugin } from '#nuxtseo/nitro'
+import { useRuntimeConfigNuxtRobots } from ${JSON.stringify(resolve('./runtime/server/composables/useRuntimeConfigNuxtRobots'))}
+export default defineNitroPlugin((nitroApp) => {
+  nitroApp.hooks.hook('response', (response, event) => {
+    const rule = event.context.robots?.rule
+    if (rule && useRuntimeConfigNuxtRobots(event).header)
+      response.headers.set('X-Robots-Tag', rule)
+  })
+})
+`,
+      }).filename)
+    }
 
     if (isNuxtContentV2) {
       addServerHandler({

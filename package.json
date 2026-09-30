@@ -55,10 +55,11 @@
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && nuxt prepare playground && pnpm run client:build",
     "release": "pnpm build && bumpp -x \"npx changelogen --output=CHANGELOG.md\"",
     "prepack": "pnpm run build",
-    "test": "pnpm run prepare:fixtures && vitest && pnpm run test:attw && pnpm run test:nuxt5",
+    "test": "pnpm run prepare:fixtures && vitest && pnpm run test:attw && pnpm run test:nuxt5 && pnpm run test:nuxt3",
     "test:nuxt5": "pnpm pack --out test/fixtures/nuxt5/module.tgz && pnpm install --dir test/fixtures/nuxt5 --no-frozen-lockfile --update-checksums && pnpm --dir test/fixtures/nuxt5 test",
     "typecheck": "nuxt typecheck",
-    "test:attw": "attw --pack"
+    "test:attw": "attw --pack",
+    "test:nuxt3": "pnpm pack --out test/fixtures/nuxt3/module.tgz && pnpm install --dir test/fixtures/nuxt3 --no-frozen-lockfile --update-checksums && pnpm --dir test/fixtures/nuxt3 test"
   },
   "peerDependencies": {
     "zod": ">=3"

@@ -1,0 +1,23 @@
+{
+  "name": "nuxt-robots-nuxt3-fixture",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node build.mjs && node test.mjs"
+  },
+  "dependencies": {
+    "@nuxtjs/robots": "file:./module.tgz",
+    "nuxt": "3.15.4",
+    "nuxt-site-config": "4.2.3",
+    "vue": "3.5.40",
+    "vue-router": "4.6.3",
+    "@unhead/vue": "1.11.20",
+    "unhead": "1.11.20"
+  },
+  "packageManager": "pnpm@11.15.0",
+  "devDependencies": {
+    "@nuxt/vite-builder": "3.15.4",
+    "@nuxt/kit": "3.15.4",
+    "@nuxt/schema": "3.15.4"
+  }
+}
