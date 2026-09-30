@@ -24,6 +24,8 @@ vi.mock('@nuxt/kit', async () => {
     defineNuxtModule: (options: unknown) => options,
     extendRouteRules: vi.fn(),
     hasNuxtModule: vi.fn(() => false),
+    getNuxtVersion: vi.fn(() => '4.5.2'),
+    addTemplate: vi.fn(template => ({ ...template, dst: path.resolve('.nuxt', template.filename) })),
     addTypeTemplate: vi.fn(),
   }
 })

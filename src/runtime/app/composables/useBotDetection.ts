@@ -1,7 +1,6 @@
 import type { BotDetectionContext, UseBotDetectionOptions, UseBotDetectionReturn } from '../../types'
 import { getBotDetection as getBotDetectionFromHeaders } from '@nuxtjs/robots/util'
-import { getHeaders } from 'h3'
-import { useRequestEvent, useState } from 'nuxt/app'
+import { useRequestEvent, useRequestHeaders, useState } from 'nuxt/app'
 import { computed } from 'vue'
 import { runFingerprinting } from '../utils/fingerprinting'
 
@@ -11,7 +10,7 @@ export function useBotDetection(options: UseBotDetectionOptions = {}): UseBotDet
     if (import.meta.server) {
       const event = useRequestEvent()
       if (event) {
-        const headers = getHeaders(event) || {}
+        const headers = useRequestHeaders()
         return getBotDetectionFromHeaders(headers)
       }
     }

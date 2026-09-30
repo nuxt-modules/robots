@@ -320,6 +320,12 @@ importers:
         specifier: 'catalog:'
         version: 3.3.10(typescript@6.0.3)
 
+  playground:
+    dependencies:
+      '@nuxtjs/robots':
+        specifier: workspace:*
+        version: link:..
+
 packages:
 
   '@alloc/quick-lru@5.2.0':

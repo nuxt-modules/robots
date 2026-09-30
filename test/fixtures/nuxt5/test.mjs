@@ -13,7 +13,7 @@ await once(portServer, 'close')
 
 const origin = `http://127.0.0.1:${port}`
 const nitroManifest = JSON.parse(await readFile(new URL('.output/nitro.json', import.meta.url), 'utf8'))
-assert.equal(nitroManifest.versions.nitro, '3.0.260610-beta')
+assert.match(nitroManifest.versions.nitro, /^3\./)
 
 const server = spawn(process.execPath, ['.output/server/index.mjs'], {
   cwd: import.meta.dirname,
@@ -38,6 +38,12 @@ async function waitForServer() {
 try {
   const robots = await (await waitForServer()).text()
   assert.match(robots, /User-agent: \*/)
+  const response = await fetch(origin, { headers: { 'user-agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)' } })
+  assert.equal(response.status, 200)
+  assert.equal(response.headers.get('x-robots-tag'), 'noindex, nofollow')
+  const html = await response.text()
+  assert.match(html, /<meta name="robots" content="noindex, nofollow"/)
+  assert.match(html, /noindex, nofollow:true/)
   const context = await fetch(`${origin}/api/compat`).then(response => response.json())
   assert.deepEqual(context.normalisedRouteRule, { allow: false })
   assert.equal(context.routeRule.robots, false)

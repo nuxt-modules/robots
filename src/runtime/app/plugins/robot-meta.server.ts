@@ -1,5 +1,5 @@
 import { defineNuxtPlugin, useRequestEvent } from 'nuxt/app'
-import { useHead } from '#imports'
+import { useHead } from '#robots-app-compat'
 
 export default defineNuxtPlugin({
   setup() {
