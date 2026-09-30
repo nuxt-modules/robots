@@ -1,6 +1,26 @@
 # Changelog
 
 
+## v6.2.3...main
+
+[compare changes](https://github.com/nuxt-modules/robots/compare/v6.2.3...main)
+
+### 🩹 Fixes
+
+- Send noindex on every response of a non-indexable site ([#329](https://github.com/nuxt-modules/robots/pull/329))
+
+### 📖 Documentation
+
+- Warn that `Disallow: /` hides `noindex` from crawlers ([#328](https://github.com/nuxt-modules/robots/pull/328))
+
+### 🏡 Chore
+
+- Bump ([3b58cc1](https://github.com/nuxt-modules/robots/commit/3b58cc1))
+
+### ❤️ Contributors
+
+- Harlan Wilton ([@harlan-zw](https://github.com/harlan-zw))
+
 ## v6.2.2...main
 
 [compare changes](https://github.com/nuxt-modules/robots/compare/v6.2.2...main)
