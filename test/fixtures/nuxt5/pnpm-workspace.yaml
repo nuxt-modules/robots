@@ -1,10 +1,11 @@
 minimumReleaseAgeExclude:
-  - '@nuxt/kit-nightly@5.0.0-29762711.192612c7'
-  - '@nuxt/nitro-server-nightly@5.0.0-29762711.192612c7'
-  - '@nuxt/schema-nightly@5.0.0-29762711.192612c7'
-  - '@nuxt/vite-builder-nightly@5.0.0-29762711.192612c7'
-  - nuxt-nightly@5.0.0-29762711.192612c7
+  - '@nuxt/kit-nightly@5.0.0-29844772.97ae4fa8'
+  - '@nuxt/nitro-server-nightly@5.0.0-29844772.97ae4fa8'
+  - '@nuxt/schema-nightly@5.0.0-29844772.97ae4fa8'
+  - '@nuxt/vite-builder-nightly@5.0.0-29844772.97ae4fa8'
+  - nuxt-nightly@5.0.0-29844772.97ae4fa8
   - nuxt-site-config-kit@4.1.4
   - nuxt-site-config@4.1.4
   - site-config-stack@4.1.4
   - nuxtseo-shared@5.3.7 || 5.3.8 || 5.3.9 || 5.3.16
+  - '@nuxt/vite-server-nightly@5.0.0-29844772.97ae4fa8'

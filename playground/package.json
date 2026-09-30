@@ -1,0 +1,7 @@
+{
+  "name": "nuxt-robots-playground",
+  "private": true,
+  "dependencies": {
+    "@nuxtjs/robots": "workspace:*"
+  }
+}
