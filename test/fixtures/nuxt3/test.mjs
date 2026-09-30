@@ -30,9 +30,9 @@ try {
     }),
   ])
   const response = await fetch(origin, { headers: { 'user-agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)' } })
-  assert.equal(response.status, 200)
-  assert.equal(response.headers.get('x-robots-tag'), 'noindex, nofollow')
   const html = await response.text()
+  assert.equal(response.status, 200, html.match(/<title>(.*?)<\/title>/)?.[1])
+  assert.equal(response.headers.get('x-robots-tag'), 'noindex, nofollow')
   assert.match(html, /<meta name="robots" content="noindex, nofollow"/)
   assert.match(html, /noindex, nofollow:true/)
   const robots = await fetch(`${origin}/robots.txt`).then(response => response.text())
