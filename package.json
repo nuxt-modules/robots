@@ -62,7 +62,7 @@
     "test:nuxt3": "pnpm pack --out test/fixtures/nuxt3/module.tgz && pnpm install --dir test/fixtures/nuxt3 --no-frozen-lockfile --update-checksums && pnpm --dir test/fixtures/nuxt3 test"
   },
   "peerDependencies": {
-    "zod": ">=3"
+    "zod": ">=4.6.5"
   },
   "peerDependenciesMeta": {
     "zod": {
