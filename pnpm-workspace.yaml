@@ -49,7 +49,7 @@ catalog:
   '@unocss/preset-icons': ^66.8.0
   '@unocss/preset-uno': ^66.8.0
   '@unocss/runtime': ^66.8.0
-  '@vueuse/core': ^14.4.0
+  '@vueuse/core': ^15.0.0
   better-sqlite3: ^13.0.3
   bumpp: ^12.2.1
   consola: ^3.4.2
@@ -87,7 +87,7 @@ catalogs:
     '@nuxt/module-builder': ^1.0.3
     '@nuxt/test-utils': ^4.1.0
     '@nuxtjs/color-mode': ^4.0.1
-    '@vueuse/nuxt': ^14.4.0
+    '@vueuse/nuxt': ^15.0.0
     execa: ^10.0.1
     playwright-core: ^1.62.1
 onlyBuiltDependencies:
