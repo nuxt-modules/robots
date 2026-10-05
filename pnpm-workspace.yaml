@@ -57,7 +57,7 @@ catalog:
   eslint: ^10.8.1
   eslint-plugin-harlanzw: ^0.20.0
   firebase-functions: ^7.3.2
-  h3: ^1.15.11
+  h3: ^2.0.1
   happy-dom: ^20.11.2
   nuxt: ^4.5.2
   nuxt-site-config: ^4.2.3
