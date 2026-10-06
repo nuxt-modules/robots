@@ -22,7 +22,8 @@ function run(args: string[], cwd: string, lane: Lane): Promise<void> {
   })
 }
 
-// Required CI builds the package before this runner. Packs use that exact build.
+// Development preparation can leave source-linked stubs. Pack a fresh production build.
+await run(['build'], root, selected as Lane || 'nuxt4')
 const packages = [{ directory: '.', name: '@nuxtjs/robots', artifact: 'module.tgz' }]
 const scratch = join(homedir(), 'scratch')
 await mkdir(scratch, { recursive: true })

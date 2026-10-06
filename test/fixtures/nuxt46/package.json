@@ -2,7 +2,7 @@
   "name": "nuxt-robots-nuxt46-fixture",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@11.15.0",
+  "packageManager": "pnpm@12.8.1",
   "scripts": {
     "test": "nuxt cleanup && nuxt prepare && vue-tsc --noEmit -p .nuxt/tsconfig.app.json && vue-tsc --noEmit -p .nuxt/tsconfig.server.json && nuxt build && node test.mjs && nuxt cleanup && nuxt generate && node test-generate.ts",
     "test:alias-mocks": "nuxt cleanup && nuxt prepare && vue-tsc --noEmit -p .nuxt/tsconfig.app.json && vue-tsc --noEmit -p .nuxt/tsconfig.server.json && nuxt build && node test.mjs"

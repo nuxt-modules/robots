@@ -165,4 +165,7 @@ allowBuilds:
   better-sqlite3: true
   esbuild: true
   protobufjs: true
+  simple-git-hooks: false
+  unrs-resolver: false
   vue-demi: true
+  workerd: false
