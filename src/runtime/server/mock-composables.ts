@@ -2,7 +2,7 @@ import type { RequestEvent } from 'nuxt/server'
 import type { BotDetectionContext } from '../types'
 
 // eslint-disable-next-line unused-imports/no-unused-vars
-export function getPathRobotConfig(e: RequestEvent, options?: { skipSiteIndexable?: boolean, path?: string }) {
+export function getPathRobotConfig(e: RequestEvent, options?: { userAgent?: string, skipSiteIndexable?: boolean, path?: string }) {
   return {
     indexable: true,
     rule: '',

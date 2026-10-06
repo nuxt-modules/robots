@@ -1,9 +1,9 @@
-import type { MaybeRef } from 'vue'
 import type { UseBotDetectionOptions, UseBotDetectionReturn } from '../../types'
+import type { ReactiveRobotsValue } from './useRobotsRule'
 import { computed, ref } from 'vue'
 
 // eslint-disable-next-line unused-imports/no-unused-vars
-export function useRobotsRule(rule?: MaybeRef<boolean | string>) {
+export function useRobotsRule(rule?: ReactiveRobotsValue) {
   return ref('')
 }
 
