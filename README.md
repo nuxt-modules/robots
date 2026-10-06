@@ -1,9 +1,4 @@
-<a href="https://nuxtseo.com"><picture>
-  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/icon-dark.svg">
-  <img src=".github/assets/icon-light.svg" width="64" height="64" alt="">
-</picture></a>
-
-<h1>@nuxtjs/robots</h1>
+<h1><a href="https://nuxtseo.com"><img src=".github/assets/icon.svg" width="40" height="40" alt="Nuxt SEO" align="top"></a> @nuxtjs/robots</h1>
 
 [![npm version][npm-version-src]][npm-version-href]
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
