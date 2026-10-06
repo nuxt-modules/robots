@@ -2,7 +2,12 @@ import NuxtRobots from '@nuxtjs/robots'
 
 export default defineNuxtConfig({
   future: { compatibilityVersion: process.env.NUXT_TEST_FUTURE === '5' ? 5 : 4 },
-  modules: [NuxtRobots],
+  modules: [NuxtRobots, (_options, nuxt) => {
+    nuxt.hook('nitro:config', (config) => {
+      config.routeRules ||= {}
+      config.routeRules['/late'] = { robots: false }
+    })
+  }],
   site: {
     url: 'https://nuxt5.example.com',
   },
@@ -13,11 +18,12 @@ export default defineNuxtConfig({
     debug: true,
   },
   routeRules: {
+    '/slash/': { robots: false },
     '/spa': { ssr: false, robots: false },
     '/private': {
       robots: false,
     },
   },
-  nitro: { prerender: { routes: ['/spa'] } },
+  nitro: { prerender: { routes: ['/static-ssr', '/spa'] } },
   compatibilityDate: '2026-10-06',
 })

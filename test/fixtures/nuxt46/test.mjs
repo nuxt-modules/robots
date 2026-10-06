@@ -28,7 +28,12 @@ async function waitForServer() {
       throw new Error(`Nuxt 5 server exited with code ${server.exitCode}`)
     const response = await fetch(`${origin}/api/compat`, {
       signal: AbortSignal.timeout(1_000),
-    }).catch(() => null)
+    }).catch((error) => {
+      // Connection failures are expected while the server starts.
+      if (error instanceof TypeError || error.name === 'TimeoutError')
+        return null
+      throw error
+    })
     if (response?.ok)
       return response
     await new Promise(resolve => setTimeout(resolve, 100))
@@ -57,6 +62,10 @@ try {
     assert.doesNotMatch(await disabledRobots.text(), /User-agent:/)
   }
   else {
+    assert.equal(context.trailingRule.indexable, false)
+    assert.equal(context.trailingRule.debug.source, 'Route Rules')
+    assert.equal(context.lateRule.indexable, false)
+    assert.equal(context.lateRule.debug.source, 'Route Rules')
     const robots = await fetch(`${origin}/robots.txt`).then(response => response.text())
     assert.match(robots, /User-agent: \*/)
     assert.equal(response.headers.get('x-robots-tag'), 'noindex, nofollow')

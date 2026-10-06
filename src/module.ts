@@ -284,7 +284,10 @@ export default defineNuxtModule<ModuleOptions>({
 
     if (isNitro3) {
       // Nitro 3 treats a scalar false rule as deletion. Preserve the module's boolean meaning.
-      nuxt.hook('nitro:config', (nitroConfig) => {
+      const unregister = nuxt.hooks.afterEach(({ name, args }) => {
+        if (name !== 'nitro:config')
+          return
+        const nitroConfig = args[0] as typeof nuxt.options.nitro
         for (const rules of Object.values(nitroConfig.routeRules || {})) {
           if (typeof rules.robots === 'boolean') {
             rules.robots = {
@@ -294,6 +297,7 @@ export default defineNuxtModule<ModuleOptions>({
           }
         }
       })
+      nuxt.hook('close', unregister)
     }
 
     // Allow `definePageMeta({ robots: false })` to set per-page robots rules
