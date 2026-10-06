@@ -1,6 +1,7 @@
 import { parseRobotsTxt, validateRobots } from '@nuxtjs/robots/util'
-import { defineEventHandler, getQuery } from '#nuxtseo/h3'
-import { fetchWithEvent } from '#nuxtseo/nitro'
+import { createError, defineEventHandler, getQuery, serverFetch } from 'nuxt/server'
+import { withQuery } from 'ufo'
+
 import { getSiteConfig } from '#site-config/server/composables/getSiteConfig'
 import { getSiteRobotConfig } from '../../composables/getSiteRobotConfig'
 import { useRuntimeConfigNuxtRobots } from '../../composables/useRuntimeConfigNuxtRobots'
@@ -9,9 +10,10 @@ export default defineEventHandler(async (e) => {
   const runtimeConfig = useRuntimeConfigNuxtRobots(e)
   const { indexable, hints } = getSiteRobotConfig(e)
   const siteConfig = getSiteConfig(e)
-  const robotsTxt = await fetchWithEvent<string>(e, '/robots.txt', {
-    query: getQuery(e),
-  })
+  const response = await serverFetch(e, withQuery('/robots.txt', getQuery(e)))
+  if (!response.ok)
+    throw createError({ status: response.status, statusText: response.statusText })
+  const robotsTxt = await response.text()
   const parsed = validateRobots(parseRobotsTxt(robotsTxt))
   return {
     robotsTxt,

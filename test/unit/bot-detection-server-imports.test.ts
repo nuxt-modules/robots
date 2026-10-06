@@ -18,13 +18,14 @@ vi.mock('@nuxt/kit', async () => {
     addServerImports: vi.fn(),
     addServerImportsDir: vi.fn(),
     addServerPlugin: vi.fn(),
+    addServerTemplate: vi.fn(template => template),
     createResolver: () => ({
-      resolve: (...args: string[]) => path.resolve(resolverRoot.root, ...args),
+      resolve: (...args: string[]) => args[0] === '../package.json' ? path.resolve(process.cwd(), 'package.json') : path.resolve(resolverRoot.root, ...args),
     }),
     defineNuxtModule: (options: unknown) => options,
     extendRouteRules: vi.fn(),
     hasNuxtModule: vi.fn(() => false),
-    getNuxtVersion: vi.fn(() => '4.5.2'),
+    getNuxtVersion: vi.fn(() => '4.6.0'),
     addTemplate: vi.fn(template => ({ ...template, dst: path.resolve('.nuxt', template.filename) })),
     addTypeTemplate: vi.fn(),
   }
@@ -42,10 +43,6 @@ vi.mock('nuxtseo-shared/kit', () => ({
   resolveContentProvider: vi.fn(async () => ({ _tag: 'None' })),
   resolveNitroPreset: vi.fn(() => 'node-server'),
   renderNitroTypeAugmentations: vi.fn(() => ''),
-}))
-
-vi.mock('pkg-types', () => ({
-  readPackageJSON: vi.fn(async () => ({ version: '0.0.0' })),
 }))
 
 // unimport is what Nitro uses to expand scanned auto-import dirs; it ships with nuxt

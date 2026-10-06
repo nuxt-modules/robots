@@ -1,4 +1,4 @@
-import { defineEventHandler, setCookie } from 'h3'
+import { defineEventHandler, setCookie } from 'nuxt/server'
 
 export default defineEventHandler((e) => {
   setCookie(e, 'auth', 'logged-in', {

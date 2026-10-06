@@ -1,4 +1,4 @@
-import { defineEventHandler, deleteCookie } from 'h3'
+import { defineEventHandler, deleteCookie } from 'nuxt/server'
 
 export default defineEventHandler((e) => {
   deleteCookie(e, 'auth')

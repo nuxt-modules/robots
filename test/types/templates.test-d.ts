@@ -81,7 +81,7 @@ describe('NuxtConfig routeRules (issue #299)', () => {
 
 describe('h3 augmentations', () => {
   it('H3EventContext.robots is RobotsContext', () => {
-    expectTypeOf<H3EventContext['robots']>().toEqualTypeOf<RobotsContext>()
+    expectTypeOf<H3EventContext['robots']>().toEqualTypeOf<RobotsContext | undefined>()
   })
 
   it('H3EventContext.robotsProduction is optional RobotsContext', () => {

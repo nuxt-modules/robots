@@ -1,4 +1,4 @@
-import { getPathRobotConfig } from '#imports/server'
+import { getPathRobotConfig } from '#imports'
 import type { RobotsRouteRuleConfig } from '@nuxtjs/robots'
 import { normaliseRobotsRouteRule } from '@nuxtjs/robots/util'
 import { defineEventHandler } from 'nuxt/server'

@@ -2,12 +2,14 @@ import type { MaybeRef } from 'vue'
 import type { RobotsValue } from '../../types'
 import { robotsDirectivesFromObject } from '@nuxtjs/robots/util'
 import {
+  injectHead,
+  useHead,
   useRequestEvent,
+  useResponseHeader,
   useRuntimeConfig,
 } from 'nuxt/app'
 import { computed, getCurrentInstance, onBeforeUnmount, ref, toValue } from 'vue'
 import { devRootDir } from '#build/nuxt.config.mjs'
-import { injectHead, useHead, useRobotsHeader } from '#robots-app-compat'
 
 /**
  * Reactive robot directive value type
@@ -58,7 +60,11 @@ export function useRobotsRule(rule?: ReactiveRobotsValue) {
       finalRule = _rule as string
     }
 
-    event.context.robots.rule = finalRule
+    event.context.robots = {
+      ...event.context.robots,
+      rule: finalRule,
+      indexable: event.context.robots?.indexable ?? !finalRule.includes('noindex'),
+    }
     const robotsConfig = config['nuxt-robots'] as any
     if (robotsConfig.header) {
       setRobotsHeader(finalRule)
@@ -86,4 +92,10 @@ export function useRobotsRule(rule?: ReactiveRobotsValue) {
       return event?.context?.robots?.rule
     },
   })
+}
+function useRobotsHeader() {
+  const header = useResponseHeader('X-Robots-Tag')
+  return (value: string) => {
+    header.value = value
+  }
 }

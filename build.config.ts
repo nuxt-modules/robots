@@ -1,5 +1,5 @@
 import { writeFile } from 'node:fs/promises'
-import { resolve } from 'pathe'
+import { resolve } from 'node:path'
 import { defineBuildConfig } from 'unbuild'
 import { generateBotMatcherModule } from './scripts/generate-bot-matcher'
 import { BOT_MAP } from './src/const-bots'

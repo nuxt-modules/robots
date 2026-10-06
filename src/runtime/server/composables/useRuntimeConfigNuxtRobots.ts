@@ -1,7 +1,7 @@
-import type { H3Event } from '#nuxtseo/h3'
+import type { RequestEvent } from 'nuxt/server'
 import type { NuxtRobotsRuntimeConfig } from '../../types'
-import { useRuntimeConfig } from '#nuxtseo/nitro'
+import { useRuntimeConfig } from 'nuxt/server'
 
-export function useRuntimeConfigNuxtRobots(event?: H3Event): NuxtRobotsRuntimeConfig {
-  return useRuntimeConfig(event)['nuxt-robots'] as NuxtRobotsRuntimeConfig
+export function useRuntimeConfigNuxtRobots(_event?: Pick<RequestEvent, 'context'>): NuxtRobotsRuntimeConfig {
+  return useRuntimeConfig()['nuxt-robots'] as NuxtRobotsRuntimeConfig
 }

@@ -1,5 +1,5 @@
 import type { BotCategory, BotName } from '@nuxtjs/robots/util'
-import type { H3Event } from 'h3'
+import type { RequestEvent } from 'nuxt/server'
 import type { ComputedRef } from 'vue'
 
 export type Arrayable<T> = T | T[]
@@ -134,12 +134,12 @@ export interface RobotsGroupResolved {
   _normalized?: boolean
 }
 
-export interface HookRobotsTxtContext<Event = H3Event> {
+export interface HookRobotsTxtContext<Event = RequestEvent> {
   robotsTxt: string
   e: Event
 }
 
-export interface HookRobotsConfigContext<Event = H3Event> extends ParsedRobotsTxt {
+export interface HookRobotsConfigContext<Event = RequestEvent> extends ParsedRobotsTxt {
   event?: Event
   context: 'robots.txt' | 'init'
 }

@@ -1,7 +1,7 @@
 {
   "name": "@nuxtjs/robots",
   "type": "module",
-  "version": "6.2.4",
+  "version": "7.0.0",
   "packageManager": "pnpm@11.22.0",
   "description": "Tame the robots crawling and indexing your Nuxt site with ease.",
   "author": {
@@ -45,6 +45,9 @@
   "files": [
     "dist"
   ],
+  "engines": {
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+  },
   "scripts": {
     "lint": "eslint . --fix",
     "client:build": "node -e \"require('fs').cpSync('devtools','dist/devtools',{recursive:true})\"",
@@ -55,14 +58,15 @@
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && nuxt prepare playground && pnpm run client:build",
     "release": "pnpm build && bumpp -x \"npx changelogen --output=CHANGELOG.md\"",
     "prepack": "pnpm run build",
-    "test": "pnpm run prepare:fixtures && vitest && pnpm run test:attw && pnpm run test:nuxt5 && pnpm run test:nuxt3",
-    "test:nuxt5": "pnpm pack --out test/fixtures/nuxt5/module.tgz && pnpm install --dir test/fixtures/nuxt5 --no-frozen-lockfile --update-checksums && pnpm --dir test/fixtures/nuxt5 test",
+    "test": "pnpm run prepare:fixtures && vitest run && pnpm run test:attw && pnpm run test:nuxt5 && pnpm run test:nuxt46",
+    "test:nuxt5": "node scripts/test-nuxt-lanes.ts nuxt5",
     "typecheck": "nuxt typecheck",
     "test:attw": "attw --pack",
-    "test:nuxt3": "pnpm pack --out test/fixtures/nuxt3/module.tgz && pnpm install --dir test/fixtures/nuxt3 --no-frozen-lockfile --update-checksums && pnpm --dir test/fixtures/nuxt3 test"
+    "test:nuxt46": "node scripts/test-nuxt-lanes.ts nuxt4 && node scripts/test-nuxt-lanes.ts future5"
   },
   "peerDependencies": {
-    "zod": ">=3"
+    "nuxt": "^4.6.0 || ^5.0.0",
+    "zod": "^4.4.3"
   },
   "peerDependenciesMeta": {
     "zod": {
@@ -72,13 +76,11 @@
   "dependencies": {
     "@fingerprintjs/botd": "catalog:",
     "@nuxt/kit": "catalog:",
+    "@vueuse/core": "catalog:",
     "consola": "catalog:",
     "defu": "catalog:",
-    "h3": "catalog:",
     "nuxt-site-config": "catalog:",
     "nuxtseo-shared": "catalog:",
-    "pathe": "catalog:",
-    "pkg-types": "catalog:",
     "ufo": "catalog:"
   },
   "devDependencies": {
@@ -100,7 +102,6 @@
     "@unocss/preset-icons": "catalog:",
     "@unocss/preset-uno": "catalog:",
     "@unocss/runtime": "catalog:",
-    "@vueuse/core": "catalog:",
     "@vueuse/nuxt": "catalog:dev",
     "better-sqlite3": "catalog:",
     "bumpp": "catalog:",
@@ -122,5 +123,10 @@
     "vue": "catalog:",
     "vue-router": "catalog:",
     "vue-tsc": "catalog:"
+  },
+  "build": {
+    "externals": [
+      "nuxt/server"
+    ]
   }
 }

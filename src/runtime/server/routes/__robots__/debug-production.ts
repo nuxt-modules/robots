@@ -1,5 +1,5 @@
 import { parseRobotsTxt, validateRobots } from '@nuxtjs/robots/util'
-import { defineEventHandler, getQuery } from '#nuxtseo/h3'
+import { defineEventHandler, getQuery } from 'nuxt/server'
 
 export interface ProductionDebugResponse {
   url: string

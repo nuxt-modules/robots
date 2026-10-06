@@ -1,8 +1,8 @@
-import type { H3Event } from '#nuxtseo/h3'
+import type { RequestEvent } from 'nuxt/server'
 import type { BotDetectionContext } from '../types'
 
 // eslint-disable-next-line unused-imports/no-unused-vars
-export function getPathRobotConfig(e: H3Event, options?: { skipSiteIndexable?: boolean, path?: string }) {
+export function getPathRobotConfig(e: RequestEvent, options?: { skipSiteIndexable?: boolean, path?: string }) {
   return {
     indexable: true,
     rule: '',
@@ -10,7 +10,7 @@ export function getPathRobotConfig(e: H3Event, options?: { skipSiteIndexable?: b
 }
 
 // eslint-disable-next-line unused-imports/no-unused-vars
-export function getSiteRobotConfig(e: H3Event): { indexable: boolean, hints: string[] } {
+export function getSiteRobotConfig(e: RequestEvent): { indexable: boolean, hints: string[] } {
   return {
     indexable: true,
     hints: [],
@@ -19,18 +19,18 @@ export function getSiteRobotConfig(e: H3Event): { indexable: boolean, hints: str
 
 // Mock bot detection functions when bot detection is disabled
 // eslint-disable-next-line unused-imports/no-unused-vars
-export function getBotDetection(e: H3Event): BotDetectionContext {
+export function getBotDetection(e: RequestEvent): BotDetectionContext {
   return {
     isBot: false,
   }
 }
 
 // eslint-disable-next-line unused-imports/no-unused-vars
-export function isBot(e: H3Event): boolean {
+export function isBot(e: RequestEvent): boolean {
   return false
 }
 
 // eslint-disable-next-line unused-imports/no-unused-vars
-export function getBotInfo(e: H3Event) {
+export function getBotInfo(e: RequestEvent) {
   return null
 }

@@ -1,6 +1,7 @@
 import type { FileAfterParseHook } from '@nuxt/content'
 import type { Arrayable, AutoI18nConfig, NuxtRobotsRuntimeConfig, RobotsGroupInput, RobotsGroupResolved } from './util'
-import fsp from 'node:fs/promises'
+import fsp, { readFile } from 'node:fs/promises'
+import { relative } from 'node:path'
 import {
   addImports,
   addPlugin,
@@ -10,17 +11,13 @@ import {
   addServerImportsDir,
   addServerPlugin,
   addServerTemplate,
-  addTemplate,
   createResolver,
   defineNuxtModule,
   extendRouteRules,
-  getNuxtVersion,
   hasNuxtModule,
 } from '@nuxt/kit'
 import { installNuxtSiteConfig, updateSiteConfig, useSiteConfig } from 'nuxt-site-config/kit'
 import { setupNitroRuntimeCompatibility, useModuleLogger } from 'nuxtseo-shared/kit'
-import { relative } from 'pathe'
-import { readPackageJSON } from 'pkg-types'
 import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { AiBots, NonHelpfulBots } from './const'
 import { setupDevToolsUI } from './devtools'
@@ -199,7 +196,7 @@ export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: '@nuxtjs/robots',
     compatibility: {
-      nuxt: '>=3.6.1',
+      nuxt: '^4.6.0 || ^5.0.0',
     },
     configKey: 'robots',
   },
@@ -213,7 +210,7 @@ export default defineNuxtModule<ModuleOptions>({
       optional: true,
     },
     'nuxt-site-config': {
-      version: '>=3.2',
+      version: '^5.0.0',
     },
     '@nuxt/content': {
       version: '>=2',
@@ -245,7 +242,7 @@ export default defineNuxtModule<ModuleOptions>({
   },
   async setup(config, nuxt) {
     const { resolve } = createResolver(import.meta.url)
-    const { version } = await readPackageJSON(resolve('../package.json'))
+    const { version } = JSON.parse(await readFile(resolve('../package.json'), 'utf8'))
     const logger = useModuleLogger('@nuxt/robots', config, nuxt)
     if (config.enabled === false) {
       logger.debug('The module is disabled, skipping setup.')
@@ -264,25 +261,38 @@ export default defineNuxtModule<ModuleOptions>({
       return
     }
     const nitroCompatibility = setupNitroRuntimeCompatibility(nuxt)
-    const isNuxt5 = Number.parseInt(getNuxtVersion(nuxt)) >= 5
-    // Generate legacy imports only for older Nuxt versions to keep Nuxt 5 runtime dependencies portable.
-    nuxt.options.alias['#robots-app-compat'] = isNuxt5
-      ? resolve('./runtime/app/compat/nuxt5')
-      : addTemplate({
-        filename: 'robots-app-compat.mjs',
-        getContents: () => `
-import { setHeader } from 'h3'
-import { useRequestEvent } from 'nuxt/app'
-export { injectHead, useHead } from '#imports'
-export function useRobotsHeader() {
-  const event = useRequestEvent()
-  return (value) => {
-    if (event)
-      setHeader(event, 'X-Robots-Tag', value)
-  }
-}
-`,
-      }).dst
+    const isNitro3 = nitroCompatibility._tag === 'nitro-v3'
+
+    addServerTemplate({
+      filename: '#nuxt-robots/ssr-default.mjs',
+      getContents: () => `export const ROBOTS_SSR_DEFAULT = ${!isNitro3}`,
+    })
+    if (!isNitro3) {
+      nuxt.options.nitro.externals ||= {}
+      nuxt.options.nitro.externals.inline ||= []
+      nuxt.options.nitro.externals.inline.push(resolve('./runtime'))
+    }
+    else if ((nuxt.options.nitro as { noExternals?: boolean | (string | RegExp)[] }).noExternals !== true) {
+      const nitro = nuxt.options.nitro as { noExternals?: boolean | (string | RegExp)[] }
+      const inline = Array.isArray(nitro.noExternals) ? nitro.noExternals : []
+      if (!inline.includes('@nuxtjs/robots'))
+        inline.push('@nuxtjs/robots')
+      nitro.noExternals = inline
+    }
+
+    if (isNitro3) {
+      // Nitro 3 treats a scalar false rule as deletion. Preserve the module's boolean meaning.
+      nuxt.hook('nitro:config', (nitroConfig) => {
+        for (const rules of Object.values(nitroConfig.routeRules || {})) {
+          if (typeof rules.robots === 'boolean') {
+            rules.robots = {
+              indexable: rules.robots,
+              rule: rules.robots ? config.robotsEnabledValue : config.robotsDisabledValue,
+            }
+          }
+        }
+      })
+    }
 
     // Allow `definePageMeta({ robots: false })` to set per-page robots rules
     nuxt.options.experimental.extraPageMetaExtractionKeys = nuxt.options.experimental.extraPageMetaExtractionKeys || []
@@ -614,7 +624,7 @@ export function useRobotsHeader() {
     })
     addServerPlugin(resolve('./runtime/server/plugins/initContext'))
     // Nitro 3 merges middleware headers after rendering. Apply the final rule after that merge.
-    if (isNuxt5) {
+    if (isNitro3) {
       addServerPlugin(addServerTemplate({
         filename: `${nuxt.options.buildDir}/robots-header.mjs`,
         getContents: () => `
