@@ -67,6 +67,12 @@ for (const lane of selected ? [selected as Lane] : lanes) {
     await writeFile(manifestFile, `${JSON.stringify(manifest, null, 2)}\n`)
     await run(['install', '--no-frozen-lockfile', '--update-checksums'], consumer, lane)
     await run(['test'], consumer, lane)
+    for (const mode of ['bot-disabled', 'disabled']) {
+      process.env.NUXT_ROBOTS_MODE = mode
+      await run(['test:alias-mocks'], consumer, lane)
+      delete process.env.NUXT_ROBOTS_MODE
+    }
+    console.log(`Passed packed Nuxt lane ${lane} and both mock modes, Node ${process.version}`)
   }
   finally {
     if (process.env.NUXT_TEST_KEEP_FIXTURE !== '1')

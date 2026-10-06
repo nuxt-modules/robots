@@ -1,8 +1,9 @@
+import NuxtSeoShared from 'nuxtseo-shared'
 import NuxtSiteConfig from 'nuxt-site-config'
 import NuxtRobots from '@nuxtjs/robots'
 
 // Stable support excludes prereleases. This fixture enables only its pinned nightly.
-for (const module of [NuxtRobots, NuxtSiteConfig]) {
+for (const module of [NuxtRobots, NuxtSiteConfig, NuxtSeoShared]) {
   const meta = await module.getMeta?.()
   if (!meta)
     throw new Error('Fixture module metadata unavailable')
@@ -15,6 +16,8 @@ export default defineNuxtConfig({
     url: 'https://nuxt5.example.com',
   },
   robots: {
+    enabled: process.env.NUXT_ROBOTS_MODE !== 'disabled',
+    botDetection: process.env.NUXT_ROBOTS_MODE !== 'bot-disabled',
     credits: false,
     debug: true,
   },

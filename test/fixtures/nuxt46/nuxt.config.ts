@@ -7,6 +7,8 @@ export default defineNuxtConfig({
     url: 'https://nuxt5.example.com',
   },
   robots: {
+    enabled: process.env.NUXT_ROBOTS_MODE !== 'disabled',
+    botDetection: process.env.NUXT_ROBOTS_MODE !== 'bot-disabled',
     credits: false,
     debug: true,
   },

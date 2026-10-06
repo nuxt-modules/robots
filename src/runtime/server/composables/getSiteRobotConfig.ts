@@ -1,8 +1,7 @@
 import type { RequestEvent } from 'nuxt/server'
 import type { ParsedRobotsTxt } from '../../types'
 import { getQuery } from 'nuxt/server'
-import { getSiteConfig } from '#site-config/server/composables'
-import { getSiteIndexable } from '#site-config/server/composables/getSiteIndexable'
+import { getSiteConfig, getSiteIndexable } from '#site-config/server'
 import { useRuntimeConfigNuxtRobots } from './useRuntimeConfigNuxtRobots'
 
 export function getSiteRobotConfig(e: RequestEvent): { indexable: boolean, hints: string[] } {

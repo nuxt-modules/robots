@@ -8,7 +8,7 @@ import type { H3EventContext } from 'h3'
 import type { NitroRouteConfig as NitroRouteConfigPack, NitroRouteRules as NitroRouteRulesPack } from 'nitropack'
 import type { NitroRouteConfig, NitroRouteRules, NitroRuntimeHooks } from 'nitropack/types'
 import type { NuxtConfig } from 'nuxt/schema'
-import type { PageMeta } from '#app'
+import type { PageMeta } from 'nuxt/app'
 import { extendRouteRules } from '@nuxt/kit'
 import { describe, expectTypeOf, it } from 'vitest'
 

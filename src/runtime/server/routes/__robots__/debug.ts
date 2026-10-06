@@ -2,7 +2,7 @@ import { parseRobotsTxt, validateRobots } from '@nuxtjs/robots/util'
 import { createError, defineEventHandler, getQuery, serverFetch } from 'nuxt/server'
 import { withQuery } from 'ufo'
 
-import { getSiteConfig } from '#site-config/server/composables/getSiteConfig'
+import { getSiteConfig } from '#site-config/server'
 import { getSiteRobotConfig } from '../../composables/getSiteRobotConfig'
 import { useRuntimeConfigNuxtRobots } from '../../composables/useRuntimeConfigNuxtRobots'
 

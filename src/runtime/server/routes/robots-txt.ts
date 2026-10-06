@@ -2,7 +2,7 @@ import type { HookRobotsConfigContext, HookRobotsTxtContext, RobotsRouteRuleConf
 import { asArray, generateRobotsTxt, isNoIndexRule, normaliseRobotsRouteRule } from '@nuxtjs/robots/util'
 import { createError, defineEventHandler, serverFetch, useRuntimeConfig } from 'nuxt/server'
 import { useNitroApp } from '#nuxtseo/nitro'
-import { withSiteUrl } from '#site-config/server/composables/utils'
+import { withSiteUrl } from '#site-config/server'
 import { getSiteRobotConfig } from '../composables/getSiteRobotConfig'
 import { useRuntimeConfigNuxtRobots } from '../composables/useRuntimeConfigNuxtRobots'
 import { logger } from '../logger'
