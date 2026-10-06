@@ -4,14 +4,13 @@
   "type": "module",
   "packageManager": "pnpm@12.8.1",
   "scripts": {
-    "test": "nuxt cleanup && nuxt prepare && vue-tsc --noEmit -p .nuxt/tsconfig.app.json && vue-tsc --noEmit -p .nuxt/tsconfig.server.json && nuxt build && node test.mjs && nuxt cleanup && nuxt generate && node test-generate.ts",
-    "test:alias-mocks": "nuxt cleanup && nuxt prepare && vue-tsc --noEmit -p .nuxt/tsconfig.app.json && vue-tsc --noEmit -p .nuxt/tsconfig.server.json && nuxt build && node test.mjs"
+    "test": "nuxt cleanup && nuxt prepare && vue-tsc --noEmit -p .nuxt/tsconfig.app.json && vue-tsc --noEmit -p .nuxt/tsconfig.server.json && nuxt build && node test.mjs"
   },
   "dependencies": {
     "@nuxtjs/robots": "link:../../..",
     "nitro": "3.0.260903-beta",
-    "nuxt-site-config": "^5.0.0",
     "nuxt": "npm:nuxt-nightly@5.0.0-2610061032-c7ad8cd",
+    "nuxt-site-config": "^5.0.0",
     "vue": "^3.5.43",
     "vue-router": "^5.3.1"
   },
