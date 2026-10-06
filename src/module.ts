@@ -209,7 +209,7 @@ export default defineNuxtModule<ModuleOptions>({
       optional: true,
     },
     'nuxt-site-config': {
-      version: '^5.0.0',
+      version: '>=5.0.0',
     },
     '@nuxt/content': {
       version: '>=2',
