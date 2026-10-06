@@ -2,11 +2,7 @@ name: Nightly
 
 on:
   pull_request:
-    paths-ignore:
-      - '**/*.md'
   push:
-    paths-ignore:
-      - '**/*.md'
     branches:
       - main
     tags:
@@ -17,7 +13,4 @@ permissions:
 
 jobs:
   build:
-    uses: harlan-zw/nuxt-seo/.github/workflows/reusable-nightly.yml@09760efb0ffeac9f477673725c1c2f1fc8b1b049
-    with:
-      publish-packages: .
-      node-version: 22.22.3
+    uses: harlan-zw/nuxt-seo/.github/workflows/reusable-nightly.yml@main
