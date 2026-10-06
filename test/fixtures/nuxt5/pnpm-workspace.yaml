@@ -31,6 +31,7 @@ minimumReleaseAgeExclude:
   - "@nuxt/vite-builder-nightly@5.0.0-2610061032-c7ad8cd"
   - "@nuxt/vite-server-nightly@5.0.0-2610061032-c7ad8cd"
   - nuxt-nightly@5.0.0-2610061032-c7ad8cd
+  - vite@8.3.3
 shellEmulator: true
 trustPolicy: no-downgrade
 trustPolicyExclude:
@@ -103,7 +104,7 @@ overrides:
   postcss-svgo: 9.0.4
   postcss-unique-selectors: 9.0.5
   stylehacks: 9.0.7
-  vite: ^8.2.1
+  vite: ^8.3.3
   nuxt-site-config: https://pkg.pr.new/harlan-zw/nuxt-site-config/nuxt-site-config@59e27b8dc55b21407ce19dfdbb7be0c6571e9490
   nuxt-site-config-kit: https://pkg.pr.new/harlan-zw/nuxt-site-config/nuxt-site-config-kit@59e27b8dc55b21407ce19dfdbb7be0c6571e9490
   site-config-stack: https://pkg.pr.new/harlan-zw/nuxt-site-config/site-config-stack@59e27b8dc55b21407ce19dfdbb7be0c6571e9490
