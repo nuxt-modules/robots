@@ -1,8 +1,8 @@
 import type { HookRobotsConfigContext, HookRobotsTxtContext, RobotsRouteRuleConfig } from '../../types'
 import { asArray, generateRobotsTxt, isNoIndexRule, normaliseRobotsRouteRule } from '@nuxtjs/robots/util'
-import { defineEventHandler, setHeader } from '#nuxtseo/h3'
-import { fetchWithEvent, useNitroApp, useRuntimeConfig } from '#nuxtseo/nitro'
-import { withSiteUrl } from '#site-config/server/composables/utils'
+import { createError, defineEventHandler, serverFetch, useRuntimeConfig } from 'nuxt/server'
+import { useNitroApp } from '#nuxtseo/nitro'
+import { withSiteUrl } from '#site-config/server'
 import { getSiteRobotConfig } from '../composables/getSiteRobotConfig'
 import { useRuntimeConfigNuxtRobots } from '../composables/useRuntimeConfigNuxtRobots'
 import { logger } from '../logger'
@@ -35,11 +35,14 @@ export default defineEventHandler(async (e) => {
         .map(s => !s.startsWith('http') ? withSiteUrl(e, s, { withBase: true, absolute: true }) : s),
     )]
     if (isNuxtContentV2) {
-      const contentWithRobotRules = await fetchWithEvent<string[]>(e, '/__robots__/nuxt-content.json', {
+      const contentResponse = await serverFetch(e, '/__robots__/nuxt-content.json', {
         headers: {
           Accept: 'application/json',
         },
       })
+      if (!contentResponse.ok)
+        throw createError({ status: contentResponse.status, statusText: contentResponse.statusText })
+      const contentWithRobotRules = await contentResponse.json() as string[]
       // ensure it's valid json
       if (String(contentWithRobotRules).trim().startsWith('<!DOCTYPE')) {
         logger.error('Invalid HTML returned from /__robots__/nuxt-content.json, skipping.')
@@ -63,7 +66,7 @@ export default defineEventHandler(async (e) => {
   }
   if (credits) {
     // A catch-all noindex route rule disables indexing, and robots.txt still allows crawling.
-    const catchAllRule = normaliseRobotsRouteRule(useRuntimeConfig(e).nitro?.routeRules?.['/**'] as RobotsRouteRuleConfig | undefined)
+    const catchAllRule = normaliseRobotsRouteRule(useRuntimeConfig().nitro?.routeRules?.['/**'] as RobotsRouteRuleConfig | undefined)
     const siteIndexable = indexable && !(catchAllRule?.allow === false && isNoIndexRule(catchAllRule.rule || robotsDisabledValue))
     robotsTxt = [
       `# START nuxt-robots (${siteIndexable ? 'indexable' : 'indexing disabled'})`,
@@ -72,8 +75,8 @@ export default defineEventHandler(async (e) => {
     ].filter(Boolean).join('\n')
   }
 
-  setHeader(e, 'Content-Type', 'text/plain; charset=utf-8')
-  setHeader(e, 'Cache-Control', (import.meta.dev || import.meta.test || !cacheControl) ? 'no-store' : cacheControl)
+  e.res.headers.set('Content-Type', 'text/plain; charset=utf-8')
+  e.res.headers.set('Cache-Control', (import.meta.dev || import.meta.test || !cacheControl) ? 'no-store' : cacheControl)
   const hookCtx: HookRobotsTxtContext<typeof e> = { robotsTxt, e }
   await nitroApp.hooks.callHook('robots:robots-txt', hookCtx)
   return hookCtx.robotsTxt

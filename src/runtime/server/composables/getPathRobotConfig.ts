@@ -1,19 +1,13 @@
+import type { RequestEvent } from 'nuxt/server'
 import type { RuntimeI18nConfig } from 'nuxtseo-shared/i18n-runtime'
-import type { H3Event } from '#nuxtseo/h3'
-import type { RobotsContext, RobotsValue } from '../../types'
+import type { RobotsContext } from '../../types'
 import { matchPathToRule, normaliseRobotsRouteRule } from '@nuxtjs/robots/util'
+import { getRequestHeader, matchRouteRules, useRuntimeConfig } from 'nuxt/server'
 import { resolveLocaleFromRoute } from 'nuxtseo-shared/i18n-runtime'
-import { createNitroRouteRuleMatcher } from 'nuxtseo-shared/server'
-import { withoutTrailingSlash } from 'ufo'
-import { getRequestHeader } from '#nuxtseo/h3'
-import { useNitroApp, useRuntimeConfig } from '#nuxtseo/nitro'
+import { parseURL, withoutBase, withoutTrailingSlash } from 'ufo'
+import { useNitroApp } from '#nuxtseo/nitro'
 import { getSiteRobotConfig } from './getSiteRobotConfig'
 import { useRuntimeConfigNuxtRobots } from './useRuntimeConfigNuxtRobots'
-
-interface RobotsRouteRules {
-  robots?: RobotsValue | { indexable: boolean, rule: string }
-  ssr?: boolean
-}
 
 const i18nStrategies = new Set<RuntimeI18nConfig['strategy']>(['no_prefix', 'prefix_except_default', 'prefix', 'prefix_and_default'])
 
@@ -40,8 +34,8 @@ function parseRuntimeI18nConfig(input: unknown): RuntimeI18nConfig | null {
   return { defaultLocale, locales, strategy }
 }
 
-export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, skipSiteIndexable?: boolean, path?: string }): RobotsContext {
-  const runtimeConfig = useRuntimeConfig(e)
+export function getPathRobotConfig(e: RequestEvent, options?: { userAgent?: string, skipSiteIndexable?: boolean, path?: string }): RobotsContext {
+  const runtimeConfig = useRuntimeConfig()
   // has already been resolved
   const { robotsDisabledValue, robotsEnabledValue, isNuxtContentV2 } = useRuntimeConfigNuxtRobots(e)
   if (!options?.skipSiteIndexable) {
@@ -55,15 +49,10 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
       }
     }
   }
-  const path = options?.path || e.path
+  const path = options?.path || `${e.url.pathname}${e.url.search}`
   let userAgent = options?.userAgent
   if (!userAgent) {
-    try {
-      userAgent = getRequestHeader(e, 'User-Agent')
-    }
-    catch {
-      // version conflict with sitemap module, ignore
-    }
+    userAgent = getRequestHeader(e, 'User-Agent')
   }
   const nitroApp = useNitroApp()
   // 1. robots txt no indexing
@@ -145,8 +134,9 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
   }
 
   // 4. nitro route rules
-  nitroApp._robotsRuleMatcher = nitroApp._robotsRuleMatcher || createNitroRouteRuleMatcher<RobotsRouteRules>(runtimeConfig)
-  let robotRouteRules = nitroApp._robotsRuleMatcher(path)
+  const baseURL = runtimeConfig.app.baseURL
+  const matchRules = (pathOrUrl: string) => matchRouteRules(withoutBase(withoutTrailingSlash((pathOrUrl.startsWith('/') ? pathOrUrl : parseURL(pathOrUrl, baseURL).pathname).split('?')[0]!), baseURL))
+  let robotRouteRules = matchRules(path)
   let routeRulesPath = path
   // if we're using i18n we need to strip leading prefixes so the rule will match
   // note this is for < v10 i18n behavior as it now handles route rules itself
@@ -156,7 +146,7 @@ export function getPathRobotConfig(e: H3Event, options?: { userAgent?: string, s
     const resolvedRoute = resolveLocaleFromRoute(routeRulesPath, i18nConfig)
     if (resolvedRoute.basePath !== routeRulesPath) {
       routeRulesPath = resolvedRoute.basePath
-      robotRouteRules = nitroApp._robotsRuleMatcher(routeRulesPath)
+      robotRouteRules = matchRules(routeRulesPath)
     }
   }
   const routeRules = normaliseRobotsRouteRule(robotRouteRules)

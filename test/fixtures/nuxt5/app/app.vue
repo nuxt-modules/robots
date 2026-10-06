@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { useBotDetection } from '#robots/app/composables/useBotDetection'
-import { useRobotsRule } from '#robots/app/composables/useRobotsRule'
-const rule = useRobotsRule('noindex, nofollow')
+import { useBotDetection, useRobotsRule } from '#robots/app'
+import { useBotDetection as useDeepBotDetection } from '#robots/app/composables/useBotDetection'
+const rule = useRobotsRule({ noindex: true, nofollow: true })
 const { isBot } = useBotDetection()
+const { isBot: deepBot } = useDeepBotDetection()
 </script>
 
 <template>
-  <div>{{ rule }}:{{ isBot }}</div>
+  <div>{{ rule }}:{{ isBot }}:deep:{{ deepBot }}</div>
 </template>

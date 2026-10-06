@@ -7,8 +7,8 @@ import type {
 import type { H3EventContext } from 'h3'
 import type { NitroRouteConfig as NitroRouteConfigPack, NitroRouteRules as NitroRouteRulesPack } from 'nitropack'
 import type { NitroRouteConfig, NitroRouteRules, NitroRuntimeHooks } from 'nitropack/types'
+import type { PageMeta } from 'nuxt/app'
 import type { NuxtConfig } from 'nuxt/schema'
-import type { PageMeta } from '#app'
 import { extendRouteRules } from '@nuxt/kit'
 import { describe, expectTypeOf, it } from 'vitest'
 
@@ -81,7 +81,7 @@ describe('NuxtConfig routeRules (issue #299)', () => {
 
 describe('h3 augmentations', () => {
   it('H3EventContext.robots is RobotsContext', () => {
-    expectTypeOf<H3EventContext['robots']>().toEqualTypeOf<RobotsContext>()
+    expectTypeOf<H3EventContext['robots']>().toEqualTypeOf<RobotsContext | undefined>()
   })
 
   it('H3EventContext.robotsProduction is optional RobotsContext', () => {

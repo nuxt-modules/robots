@@ -1,12 +1,12 @@
-import { createError, defineEventHandler, getCookie } from 'h3'
+import { createError, defineEventHandler, getCookie } from 'nuxt/server'
 
 export default defineEventHandler((e) => {
-  if (e.path.startsWith('/admin')) {
+  if (e.url.pathname.startsWith('/admin')) {
     const authCookie = getCookie(e, 'auth')
     if (!authCookie || authCookie !== 'logged-in') {
       throw createError({
-        statusCode: 403,
-        statusMessage: 'Forbidden - Please login first',
+        status: 403,
+        statusText: 'Forbidden - Please login first',
       })
     }
   }

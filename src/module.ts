@@ -1,26 +1,22 @@
 import type { FileAfterParseHook } from '@nuxt/content'
 import type { Arrayable, AutoI18nConfig, NuxtRobotsRuntimeConfig, RobotsGroupInput, RobotsGroupResolved } from './util'
-import fsp from 'node:fs/promises'
+import fsp, { readFile } from 'node:fs/promises'
+import { relative } from 'node:path'
 import {
   addImports,
   addPlugin,
   addPrerenderRoutes,
   addServerHandler,
   addServerImports,
-  addServerImportsDir,
   addServerPlugin,
   addServerTemplate,
-  addTemplate,
   createResolver,
   defineNuxtModule,
   extendRouteRules,
-  getNuxtVersion,
   hasNuxtModule,
 } from '@nuxt/kit'
 import { installNuxtSiteConfig, updateSiteConfig, useSiteConfig } from 'nuxt-site-config/kit'
-import { setupNitroRuntimeCompatibility, useModuleLogger } from 'nuxtseo-shared/kit'
-import { relative } from 'pathe'
-import { readPackageJSON } from 'pkg-types'
+import { setupNitroRuntimeCompatibility, setupRuntimeAliases, useModuleLogger } from 'nuxtseo-shared/kit'
 import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { AiBots, NonHelpfulBots } from './const'
 import { setupDevToolsUI } from './devtools'
@@ -199,7 +195,7 @@ export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: '@nuxtjs/robots',
     compatibility: {
-      nuxt: '>=3.6.1',
+      nuxt: '^4.6.0 || ^5.0.0',
     },
     configKey: 'robots',
   },
@@ -213,7 +209,7 @@ export default defineNuxtModule<ModuleOptions>({
       optional: true,
     },
     'nuxt-site-config': {
-      version: '>=3.2',
+      version: '>=5.0.0',
     },
     '@nuxt/content': {
       version: '>=2',
@@ -245,44 +241,64 @@ export default defineNuxtModule<ModuleOptions>({
   },
   async setup(config, nuxt) {
     const { resolve } = createResolver(import.meta.url)
-    const { version } = await readPackageJSON(resolve('../package.json'))
+    const { version } = JSON.parse(await readFile(resolve('../package.json'), 'utf8'))
     const logger = useModuleLogger('@nuxt/robots', config, nuxt)
+    setupRuntimeAliases({
+      namespace: '#robots',
+      app: resolve(config.enabled === false ? './runtime/app/disabled' : config.botDetection ? './runtime/app' : './runtime/app/bot-disabled'),
+      server: resolve(config.enabled === false ? './runtime/server/disabled' : config.botDetection ? './runtime/server' : './runtime/server/bot-disabled'),
+    }, nuxt)
+    nuxt.options.alias['#robots'] = resolve('./runtime')
     if (config.enabled === false) {
       logger.debug('The module is disabled, skipping setup.')
       // need to mock the composables to allow module still to work when disabled
-      addImports({ name: 'useRobotsRule', from: resolve(`./runtime/app/composables/mock`) })
-      addImports({ name: 'useBotDetection', from: resolve(`./runtime/app/composables/mock`) })
+      addImports(['useRobotsRule', 'useBotDetection'].map(name => ({ name, from: '#robots/app' })))
       addServerImports([
         'getPathRobotConfig',
         'getSiteRobotConfig',
         'getBotDetection',
         'isBot',
         'getBotInfo',
-      ].map(name => ({ name, from: resolve('./runtime/server/mock-composables') })))
-      nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
-      nuxt.options.nitro.alias['#internal/nuxt-robots'] = resolve('./runtime/server/mock-composables')
+      ].map(name => ({ name, from: '#robots/server' })))
       return
     }
     const nitroCompatibility = setupNitroRuntimeCompatibility(nuxt)
-    const isNuxt5 = Number.parseInt(getNuxtVersion(nuxt)) >= 5
-    // Generate legacy imports only for older Nuxt versions to keep Nuxt 5 runtime dependencies portable.
-    nuxt.options.alias['#robots-app-compat'] = isNuxt5
-      ? resolve('./runtime/app/compat/nuxt5')
-      : addTemplate({
-        filename: 'robots-app-compat.mjs',
-        getContents: () => `
-import { setHeader } from 'h3'
-import { useRequestEvent } from 'nuxt/app'
-export { injectHead, useHead } from '#imports'
-export function useRobotsHeader() {
-  const event = useRequestEvent()
-  return (value) => {
-    if (event)
-      setHeader(event, 'X-Robots-Tag', value)
-  }
-}
-`,
-      }).dst
+    const isNitro3 = nitroCompatibility._tag === 'nitro-v3'
+
+    addServerTemplate({
+      filename: '#nuxt-robots/ssr-default.mjs',
+      getContents: () => `export const ROBOTS_SSR_DEFAULT = ${!isNitro3}`,
+    })
+    if (!isNitro3) {
+      nuxt.options.nitro.externals ||= {}
+      nuxt.options.nitro.externals.inline ||= []
+      nuxt.options.nitro.externals.inline.push(resolve('./runtime'))
+    }
+    else if ((nuxt.options.nitro as { noExternals?: boolean | (string | RegExp)[] }).noExternals !== true) {
+      const nitro = nuxt.options.nitro as { noExternals?: boolean | (string | RegExp)[] }
+      const inline = Array.isArray(nitro.noExternals) ? nitro.noExternals : []
+      if (!inline.includes('@nuxtjs/robots'))
+        inline.push('@nuxtjs/robots')
+      nitro.noExternals = inline
+    }
+
+    if (isNitro3) {
+      // Nitro 3 treats a scalar false rule as deletion. Preserve the module's boolean meaning.
+      const unregister = nuxt.hooks.afterEach(({ name, args }) => {
+        if (name !== 'nitro:config')
+          return
+        const nitroConfig = args[0] as typeof nuxt.options.nitro
+        for (const rules of Object.values(nitroConfig.routeRules || {})) {
+          if (typeof rules.robots === 'boolean') {
+            rules.robots = {
+              indexable: rules.robots,
+              rule: rules.robots ? config.robotsEnabledValue : config.robotsDisabledValue,
+            }
+          }
+        }
+      })
+      nuxt.hook('close', unregister)
+    }
 
     // Allow `definePageMeta({ robots: false })` to set per-page robots rules
     nuxt.options.experimental.extraPageMetaExtractionKeys = nuxt.options.experimental.extraPageMetaExtractionKeys || []
@@ -580,25 +596,7 @@ export function useRobotsHeader() {
         logger.info('Firebase does not support dynamic robots.txt files. Prerendering /robots.txt.')
     }
 
-    addImports({
-      name: 'useRobotsRule',
-      from: resolve('./runtime/app/composables/useRobotsRule'),
-    })
-
-    // Only add bot detection composable if enabled
-    if (config.botDetection) {
-      addImports({
-        name: 'useBotDetection',
-        from: resolve('./runtime/app/composables/useBotDetection'),
-      })
-    }
-    else {
-      // Provide a mock implementation when disabled
-      addImports({
-        name: 'useBotDetection',
-        from: resolve('./runtime/app/composables/mock'),
-      })
-    }
+    addImports(['useRobotsRule', 'useBotDetection'].map(name => ({ name, from: '#robots/app' })))
 
     if (config.robotsTxt) {
       // add robots.txt server handler
@@ -614,7 +612,7 @@ export function useRobotsHeader() {
     })
     addServerPlugin(resolve('./runtime/server/plugins/initContext'))
     // Nitro 3 merges middleware headers after rendering. Apply the final rule after that merge.
-    if (isNuxt5) {
+    if (isNitro3) {
       addServerPlugin(addServerTemplate({
         filename: `${nuxt.options.buildDir}/robots-header.mjs`,
         getContents: () => `
@@ -658,24 +656,8 @@ export default defineNitroPlugin((nitroApp) => {
     if (nuxt.options.dev)
       setupDevToolsUI(config, resolve)
 
-    addServerImportsDir(resolve('./runtime/server/composables'))
-
-    // The bot detection helpers must only come from one source: the real
-    // implementations above, or the mocks below. Exclude the real file from
-    // the scan when disabled so the auto-import registry holds no duplicates.
-    // Published installs transpile the runtime to .js with .d.ts declarations,
-    // so the exclusion matches every variant of the file, not just .ts.
-    if (!config.botDetection) {
-      addServerImportsDir(`!${resolve('./runtime/server/composables/getBotDetection.*')}`)
-      addServerImports([
-        'getBotDetection',
-        'isBot',
-        'getBotInfo',
-      ].map(name => ({ name, from: resolve('./runtime/server/mock-composables') })))
-    }
-    nuxt.options.nitro.alias = nuxt.options.nitro.alias || {}
-    nuxt.options.nitro.alias['#internal/nuxt-simple-robots'] = resolve('./runtime/server/composables')
-    nuxt.options.nitro.alias['#internal/nuxt-robots'] = resolve('./runtime/server/composables')
-    nuxt.options.alias['#robots'] = resolve('./runtime')
+    addServerImports([{ name: 'useRuntimeConfigNuxtRobots', from: resolve('./runtime/server/composables/useRuntimeConfigNuxtRobots') }])
+    addServerImports(['getPathRobotConfig', 'getSiteRobotConfig', 'getBotDetection', 'isBot', 'getBotInfo']
+      .map(name => ({ name, from: '#robots/server' })))
   },
 })

@@ -29,17 +29,16 @@ export {}
   indexable: boolean
   rule: string
 }`
-  const runtimeHooks = `'robots:config': (ctx: HookRobotsConfigContext<${nitroCompatibility.eventType}>) => void | Promise<void>
-'robots:robots-txt': (ctx: HookRobotsTxtContext<${nitroCompatibility.eventType}>) => void | Promise<void>`
+  const runtimeHooks = `'robots:config': (ctx: HookRobotsConfigContext) => void | Promise<void>
+'robots:robots-txt': (ctx: HookRobotsTxtContext) => void | Promise<void>`
   const nitroTypes = renderNitroTypeAugmentations(nitroCompatibility, {
-    eventContext: `robots: RobotsContext
+    eventContext: `robots?: RobotsContext
 robotsProduction?: RobotsContext`,
     nitroInterfaces: {
       NitroApp: `_robots: {
-  ctx: HookRobotsConfigContext<${nitroCompatibility.eventType}>
+  ctx: HookRobotsConfigContext
   nuxtContentUrls?: Set<string>
 },
-_robotsRuleMatcher: (url: string) => any
 _robotsPatternMap?: Map<string, PatternMapValue>`,
     },
     routeConfig: routeRules,

@@ -1,14 +1,8 @@
+import { defineEventHandler, getQuery, serverFetch } from 'nuxt/server'
 import { withQuery } from 'ufo'
-import { defineEventHandler, getQuery, getRequestURL } from '#nuxtseo/h3'
-import { useNitroApp } from '#nuxtseo/nitro'
+
 import { getPathRobotConfig } from '../../composables/getPathRobotConfig'
 import { extractRobotsMetaFromHtml } from '../../util/extractRobotsMetaFromHtml'
-
-type NitroInternalFetchApp = {
-  localFetch: (request: string | URL | Request, init?: RequestInit) => Promise<Response>
-} | {
-  fetch: (request: Request) => Response | Promise<Response>
-}
 
 export default defineEventHandler(async (e) => {
   const query = getQuery(e)
@@ -22,10 +16,7 @@ export default defineEventHandler(async (e) => {
 
   // try to fetch the page to get actual rendered meta tag
   const requestPath = withQuery(path, query)
-  const nitroApp = useNitroApp() as unknown as NitroInternalFetchApp
-  const res = await Promise.resolve('localFetch' in nitroApp
-    ? nitroApp.localFetch(requestPath)
-    : nitroApp.fetch(new Request(new URL(requestPath, getRequestURL(e)))))
+  const res = await serverFetch(e, requestPath)
     .catch(() => {
     // The computed route config below is the intended fallback when rendering fails.
       return null
