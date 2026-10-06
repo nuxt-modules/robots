@@ -1,3 +1,8 @@
+<a href="https://nuxtseo.com"><picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/icon-dark.svg">
+  <img src=".github/assets/icon-light.svg" width="64" height="64" alt="">
+</picture></a>
+
 <h1>@nuxtjs/robots</h1>
 
 [![npm version][npm-version-src]][npm-version-href]
