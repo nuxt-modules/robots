@@ -4,6 +4,7 @@
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
 [![License][license-src]][license-href]
 [![Nuxt][nuxt-src]][nuxt-href]
+[![Skill repository on skilld.dev][skilld-src]][skilld-href]
 
 Nuxt Robots is a module for configuring the robots crawling your site with minimal config and best practice defaults.
 
@@ -65,14 +66,17 @@ npx nuxi@latest module add robots
 Licensed under the [MIT license](https://github.com/nuxt-modules/robots/blob/main/LICENSE.md).
 
 <!-- Badges -->
-[npm-version-src]: https://img.shields.io/npm/v/@nuxtjs/robots/latest.svg?style=flat&colorA=18181B&colorB=28CF8D
+[npm-version-src]: https://img.shields.io/npm/v/@nuxtjs/robots/latest.svg?style=flat&labelColor=16152b&color=00a63e
 [npm-version-href]: https://npmjs.com/package/@nuxtjs/robots
 
-[npm-downloads-src]: https://img.shields.io/npm/dm/@nuxtjs/robots.svg?style=flat&colorA=18181B&colorB=28CF8D
+[npm-downloads-src]: https://img.shields.io/npm/dm/@nuxtjs/robots.svg?style=flat&labelColor=16152b&color=00a63e
 [npm-downloads-href]: https://npmjs.com/package/@nuxtjs/robots
 
-[license-src]: https://img.shields.io/github/license/nuxt-modules/robots.svg?style=flat&colorA=18181B&colorB=28CF8D
+[license-src]: https://img.shields.io/github/license/nuxt-modules/robots.svg?style=flat&labelColor=16152b&color=00a63e
 [license-href]: https://github.com/nuxt-modules/robots/blob/main/LICENSE.md
 
-[nuxt-src]: https://img.shields.io/badge/Nuxt-18181B?logo=nuxt
+[nuxt-src]: https://img.shields.io/badge/Nuxt-16152b?logo=nuxt&style=flat
 [nuxt-href]: https://nuxt.com
+
+[skilld-src]: https://skilld.dev/b/nuxt-modules/robots?style=flat&labelColor=16152b&color=00a63e&logoColor=ffffff
+[skilld-href]: https://skilld.dev/gh/nuxt-modules/robots
