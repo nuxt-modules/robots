@@ -507,6 +507,7 @@ export default defineNuxtModule<ModuleOptions>({
           routeRules: nuxt.options.routeRules || {},
           indexable: useSiteConfig().indexable !== false
             && !config.groups.some(group => asArray(group.userAgent).includes('*') && asArray(group.disallow).includes('/')),
+          robotsEnabledValue: config.robotsEnabledValue,
           robotsDisabledValue: config.robotsDisabledValue,
           buildAssetsDir: nuxt.options.app.buildAssetsDir,
         })

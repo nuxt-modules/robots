@@ -66,8 +66,11 @@ export default defineEventHandler(async (e) => {
   }
   if (credits) {
     // A catch-all noindex route rule disables indexing, and robots.txt still allows crawling.
-    const catchAllRule = normaliseRobotsRouteRule(useRuntimeConfig().nitro?.routeRules?.['/**'] as RobotsRouteRuleConfig | undefined)
-    const siteIndexable = indexable && !(catchAllRule?.allow === false && isNoIndexRule(catchAllRule.rule || robotsDisabledValue))
+    // More specific allow rules win the route rule merge, so the site stays indexable.
+    const routeRules = (useRuntimeConfig().nitro?.routeRules || {}) as Record<string, RobotsRouteRuleConfig | undefined>
+    const catchAllRule = normaliseRobotsRouteRule(routeRules['/**'])
+    const hasAllowRule = Object.values(routeRules).some(rules => normaliseRobotsRouteRule(rules)?.allow === true)
+    const siteIndexable = indexable && !(catchAllRule?.allow === false && isNoIndexRule(catchAllRule.rule || robotsDisabledValue) && !hasAllowRule)
     robotsTxt = [
       `# START nuxt-robots (${siteIndexable ? 'indexable' : 'indexing disabled'})`,
       robotsTxt,
