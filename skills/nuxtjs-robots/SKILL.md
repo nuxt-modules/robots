@@ -29,9 +29,9 @@ Site-wide indexing is a `site` key (nuxt-site-config), not a `robots` key.
 - Indexable: robots.txt is `User-agent: *` and an empty `Disallow:`. Pages get `index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1`.
 - Not indexable: robots.txt is `Disallow: /`. Every response gets `X-Robots-Tag: noindex, nofollow`, including API routes, `/robots.txt`, and `/_nuxt/` files.
 - `/_nuxt/**` always gets `X-Robots-Tag: noindex`.
-- The module merges a hand-written robots.txt from `public/_robots.txt`, `assets/robots.txt`, `pages/robots.txt`, or the root `robots.txt`. Use one of these paths. A `public/robots.txt` is renamed to `public/_robots.txt` in your source tree at build time.
+- The module merges a hand-written robots.txt from `public/_robots.txt`, `assets/robots.txt`, `pages/robots.txt`, or `robots.txt`, all relative to the project root. It ignores `app/assets/` and `app/pages/` without a warning. Nuxt renames `public/robots.txt` to `public/_robots.txt` in your source tree each time it loads the module, `nuxt prepare` included.
 - `nuxt generate` prerenders `/robots.txt`. A static preset that reads `_headers`, such as Netlify, gets the header rules there.
-- To turn parts off, set `robots.robotsTxt`, `robots.header`, or `robots.metaTag` to `false`. `robots.enabled: false` turns off everything, and the composables do nothing.
+- To turn parts off, set `robots.robotsTxt`, `robots.header`, or `robots.metaTag` to `false`. `useRobotsRule()` still writes a meta tag when `metaTag` is `false`. `robots.enabled: false` turns off everything, and the composables do nothing.
 
 ## Common tasks
 
@@ -62,8 +62,9 @@ Decide per request, during SSR. Route rules cannot match a query string:
 import { useRobotsRule, useRoute } from '#imports'
 
 const route = useRoute()
-// true sends robotsEnabledValue, false sends robotsDisabledValue, a string is sent as is.
-useRobotsRule(route.query.q ? 'noindex, follow' : true)
+// Call it only to noindex. useRobotsRule(true) would make a staging page indexable.
+if (route.query.q)
+  useRobotsRule('noindex, follow')
 </script>
 
 <template>
@@ -76,7 +77,7 @@ With `experimental.inlineRouteRules`, `defineRouteRules({ robots: false })` in a
 Keep staging out of search: set `NUXT_SITE_ENV=staging` or `NUXT_SITE_INDEXABLE=false`. The Node server reads both at runtime.
 For `nuxt generate`, set `NUXT_SITE_INDEXABLE=false` at build time. `NUXT_SITE_ENV=staging` there blocks robots.txt and the meta tags, but `_headers` gets no site-wide noindex rule.
 
-Remove a live site from search: add the route rule `'/**': { robots: 'noindex, nofollow' }`.
+Remove a live site from search: add the route rule `'/**': { robots: 'noindex, nofollow' }`. A more specific robots route rule, or a `useRobotsRule()` call, still wins over it.
 Do not use `site.indexable: false` for this. Its `Disallow: /` stops crawlers before they read `noindex`.
 
 Write robots.txt rules:
@@ -114,18 +115,7 @@ export default defineNitroPlugin((nitroApp) => {
 })
 ```
 
-Read the rules in Nitro:
-
-```ts
-// server/api/robots-check.get.ts
-export default defineEventHandler((event) => {
-  const path = String(getQuery(event).path || '/')
-  return {
-    site: getSiteRobotConfig(event), // { indexable, hints }
-    page: getPathRobotConfig(event, { path }), // { indexable, rule, debug }
-  }
-})
-```
+In Nitro, `getSiteRobotConfig(event)` returns `{ indexable, hints }`. `getPathRobotConfig(event, { path })` returns `{ indexable, rule, debug }`.
 
 Detect bots from the `User-Agent` header:
 
@@ -133,14 +123,15 @@ Detect bots from the `User-Agent` header:
 // server/middleware/block-bots.ts
 export default defineEventHandler((event) => {
   const bot = getBotDetection(event) // { isBot, botName, botCategory, trusted }
+  // Search engines and AI crawlers count as trusted. To block AI crawlers, test bot.botCategory === 'ai'.
   if (event.path.startsWith('/api/') && bot.isBot && !bot.trusted)
     throw createError({ statusCode: 403 })
 })
 ```
 
-In the app, `useBotDetection()` returns the same fields as computed refs. On 6.2.4 it needs `@vueuse/core` in your dependencies.
+In the app, `useBotDetection()` returns the same fields as computed refs.
 `useBotDetection({ fingerprint: true })` also runs BotD in the browser. Its result arrives later, so watch `isBot`.
-Outside Nuxt, `getBotDetection(headers)` from `@nuxtjs/robots/util` takes a plain headers object.
+Outside Nuxt, `getBotDetection(headers)` from `@nuxtjs/robots/util` reads only a lowercase `user-agent` key. Pass `Object.fromEntries(request.headers)`. A `Headers` instance returns `isBot: false`.
 
 ## Integrations
 
@@ -149,13 +140,11 @@ Nuxt Content v3 frontmatter and Nuxt i18n path expansion: [references/integratio
 ## Traps
 
 - A path can be crawlable and noindex, or blocked in robots.txt. It cannot be both. Google never reads `noindex` on a disallowed URL and can still index it from links.
-- The docs' `robots:config` Nitro hook that edits `ctx.groups` per host leaks. The result is shared, so other hosts get `noindex` until the next `/robots.txt` request. Use the `site-config:init` plugin above.
+- `useRobotsRule(true)` sends `robotsEnabledValue` even when the site is not indexable. Pass `true` only to override that.
 - `useRobotsRule()` sets the rule only during SSR. In the browser it only reads the rendered value.
 - `noai` or `noimageai` makes a path non-indexable to the module, even with `index: true`. `getPathRobotConfig` returns `indexable: false`, and `disallowNonIndexableRoutes` disallows the path.
-- `groups[].comment` must be an array. A string prints one `#` line per character.
-- `disallowNonIndexableRoutes: true` is deprecated. It also writes `Disallow: /_nuxt` and `Disallow: /_nuxt/*` into robots.txt.
 - An `app.baseURL` other than `/` turns off robots.txt and logs an error. Crawlers only read `/robots.txt` at the host root.
-- Nuxt Content frontmatter `robots` sets the meta tag but not the header. See [references/integrations.md](references/integrations.md).
+- Nuxt Content frontmatter `robots` sets the meta tag but not the header, and it needs `zod` 4 in your dependencies. See [references/integrations.md](references/integrations.md).
 - The key is `blockAiBots`. Some docs prose spells it `blockAIBots`.
 
 ## Version limits
@@ -165,6 +154,9 @@ These hold for 6.2.4:
 - `definePageMeta({ robots })` has no effect on Nuxt 4.6. Use a route rule, `defineRouteRules()`, or `useRobotsRule()`.
 - A build that calls `useBotDetection()` fails with `Rolldown failed to resolve import "@vueuse/core"` unless the app installs `@vueuse/core`.
 - `robots.disableNuxtContentIntegration` has no effect.
+- The docs' `robots:config` Nitro hook that edits `ctx.groups` per host leaks. The result is shared, so other hosts get `noindex` until the next `/robots.txt` request. Use the `site-config:init` plugin above.
+- `groups[].comment` must be an array. A string prints one `#` line per character.
+- `disallowNonIndexableRoutes: true` (deprecated) also writes `Disallow: /_nuxt` and `Disallow: /_nuxt/*` into robots.txt.
 
 ## Config
 
