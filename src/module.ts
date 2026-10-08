@@ -323,7 +323,7 @@ export default defineNuxtModule<ModuleOptions>({
       interface RouteRecord { path: string, name: string, meta: Record<string, unknown>, children?: RouteRecord[], alias?: string | string[] }
       interface Matcher { re: RegExp, record: RouteRecord, parent?: Matcher }
       const { createRouterMatcher } = await importModule<{
-        createRouterMatcher: (routes: RouteRecord[], options: Record<string, never>) => { getRoutes: () => Matcher[] }
+        createRouterMatcher: (routes: RouteRecord[], options: { sensitive?: boolean, strict?: boolean, end?: boolean }) => { getRoutes: () => Matcher[] }
       }>('vue-router', { url: pathToFileURL(nuxtEntry) })
       let nextName = 0
       const records = (entries: typeof pages): RouteRecord[] => entries.map(page => ({
@@ -333,7 +333,12 @@ export default defineNuxtModule<ModuleOptions>({
         alias: page.alias || [],
         children: page.children ? records(page.children) : undefined,
       }))
-      const matcher = createRouterMatcher(records(pages), {})
+      const { sensitive, strict, end } = nuxt.options.router.options
+      const matcher = createRouterMatcher(records(pages), {
+        ...(sensitive === undefined ? {} : { sensitive }),
+        ...(strict === undefined ? {} : { strict }),
+        ...(end === undefined ? {} : { end }),
+      })
       pageMetaMatchers = matcher.getRoutes().map((route) => {
         let robots: unknown
         for (let current: Matcher | undefined = route; current; current = current.parent) {
