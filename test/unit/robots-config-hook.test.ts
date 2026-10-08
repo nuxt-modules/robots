@@ -61,3 +61,15 @@ describe('resolveRobotsTxtContext', () => {
     expect(ctx.groups[0]._rules).toBeDefined()
   })
 })
+
+it('keeps request-specific hook groups off the global context', async () => {
+  const baseline = { groups: [{ userAgent: ['*'], disallow: [], allow: [] }], sitemaps: [] }
+    ;(mockNitroApp._robots as any).ctx = baseline
+  mockCallHook.mockImplementation(async (_name, ctx) => {
+    ctx.groups.push({ userAgent: ['*'], disallow: ['/'] })
+  })
+  const event = { context: {} } as any
+  const result = await resolveRobotsTxtContext(event)
+  expect(result.groups[0].disallow).toEqual(['/'])
+  expect((mockNitroApp._robots as any).ctx).toBe(baseline)
+})

@@ -1,64 +1,44 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { useRobotsRule } from '../../src/runtime/app/composables/useRobotsRule'
 import { ROBOT_DIRECTIVE_VALUES } from '../../src/runtime/const'
 
-// Create a mock implementation of useRobotsRule for testing
-function createMockUseRobotsRule() {
-  const state = {
-    rule: '',
-  }
+const { event, header, useHead } = vi.hoisted(() => ({ event: { context: { robots: { rule: 'index, follow', indexable: true } } }, header: { value: 'index, follow' }, useHead: vi.fn() }))
+vi.mock('nuxt/app', () => ({
+  injectHead: () => ({}),
+  useHead,
+  useRequestEvent: () => event,
+  useResponseHeader: () => header,
+  useRuntimeConfig: () => ({ 'nuxt-robots': { header: true, robotsEnabledValue: ROBOT_DIRECTIVE_VALUES.enabled, robotsDisabledValue: ROBOT_DIRECTIVE_VALUES.disabled } }),
+}))
+vi.mock('#build/nuxt.config.mjs', () => ({ devRootDir: '' }))
+vi.mock('@nuxtjs/robots/util', async () => await vi.importActual('../../src/util'))
 
-  return (rule?: any) => {
-    if (typeof rule === 'boolean') {
-      state.rule = rule ? ROBOT_DIRECTIVE_VALUES.enabled : ROBOT_DIRECTIVE_VALUES.disabled
-    }
-    else if (rule) {
-      state.rule = rule
-    }
-
-    return {
-      get: () => state.rule,
-      set: (val: any) => {
-        if (typeof val === 'boolean') {
-          state.rule = val ? ROBOT_DIRECTIVE_VALUES.enabled : ROBOT_DIRECTIVE_VALUES.disabled
-        }
-        else {
-          state.rule = val
-        }
-      },
-    }
-  }
-}
-
-describe('useRobotsRule with new directives', () => {
-  let useRobotsRule: ReturnType<typeof createMockUseRobotsRule>
-
+describe('useRobotsRule', () => {
   beforeEach(() => {
-    useRobotsRule = createMockUseRobotsRule()
+    event.context.robots = { rule: 'index, follow', indexable: true }
+    header.value = 'index, follow'
+    delete (event.context as any).siteConfig
+    useHead.mockClear()
   })
+  it.each([undefined, null])('keeps the existing rule for an unset value', (value) => {
+    const robots = useRobotsRule(value as any)
+    expect(robots.value).toBe('index, follow')
+    expect(header.value).toBe('index, follow')
+    expect(useHead).not.toHaveBeenCalled()
+  })
+  it.each(['noai', 'noimageai', 'noindex, nofollow'])('sets the header and meta for %s', (value) => {
+    const robots = useRobotsRule(value)
+    expect(robots.value).toBe(value)
+    expect(header.value).toBe(value)
+    expect(useHead).toHaveBeenCalledWith(expect.objectContaining({ meta: [expect.objectContaining({ content: value })] }), expect.anything())
+  })
+  it.each([true, false])('maps boolean %s to the default directive', (value) => {
+    expect(useRobotsRule(value).value).toBe(value ? ROBOT_DIRECTIVE_VALUES.enabled : ROBOT_DIRECTIVE_VALUES.disabled)
+  })
+})
 
-  it('should handle noai directive', () => {
-    const rule = useRobotsRule('noai')
-    expect(rule.get()).toBe('noai')
-  })
-
-  it('should handle noimageai directive', () => {
-    const rule = useRobotsRule('noimageai')
-    expect(rule.get()).toBe('noimageai')
-  })
-
-  it('should handle boolean true to enabled value', () => {
-    const rule = useRobotsRule(true)
-    expect(rule.get()).toBe(ROBOT_DIRECTIVE_VALUES.enabled)
-  })
-
-  it('should handle boolean false to disabled value', () => {
-    const rule = useRobotsRule(false)
-    expect(rule.get()).toBe(ROBOT_DIRECTIVE_VALUES.disabled)
-  })
-
-  it('should handle custom string values', () => {
-    const customValue = 'noindex, nofollow, noai'
-    const rule = useRobotsRule(customValue)
-    expect(rule.get()).toBe(customValue)
-  })
+it.each([{ env: 'staging' }, { env: 'production', indexable: false }])('preserves site noindex when true is supplied', (site) => {
+  ;(event.context as any).siteConfig = { get: () => site }
+  expect(useRobotsRule(true).value).toBe(ROBOT_DIRECTIVE_VALUES.disabled)
+  delete (event.context as any).siteConfig
 })

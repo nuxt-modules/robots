@@ -21,7 +21,7 @@ export function getSiteRobotConfig(e: RequestEvent): { indexable: boolean, hints
     else if (!indexable && _context.indexable === 'nuxt-robots:config') {
       hints.push('You are blocking indexing with your Nuxt Robots config.')
     }
-    else if (!queryIndexableEnabled && (!_context.indexable)) {
+    else if (import.meta.dev && !queryIndexableEnabled && (!_context.indexable)) {
       hints.push(`Indexing is blocked in development. You can mock a production environment with ?mockProductionEnv query.`)
     }
     else if (!indexable && !queryIndexableEnabled) {

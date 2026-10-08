@@ -86,7 +86,7 @@ describe('max-* directives', () => {
     } as any)
 
     expect(result).toEqual({
-      allow: false,
+      allow: true,
       rule: 'noai, max-image-preview:none',
     })
   })

@@ -70,7 +70,7 @@ export default defineEventHandler(async (e) => {
     const routeRules = (useRuntimeConfig().nitro?.routeRules || {}) as Record<string, RobotsRouteRuleConfig | undefined>
     const catchAllRule = normaliseRobotsRouteRule(routeRules['/**'])
     const hasAllowRule = Object.values(routeRules).some(rules => normaliseRobotsRouteRule(rules)?.allow === true)
-    const siteIndexable = indexable && !(catchAllRule?.allow === false && isNoIndexRule(catchAllRule.rule || robotsDisabledValue) && !hasAllowRule)
+    const siteIndexable = indexable && !robotsTxtCtx.groups.some(group => group.userAgent.includes('*') && group.disallow.includes('/')) && !(catchAllRule?.allow === false && isNoIndexRule(catchAllRule.rule || robotsDisabledValue) && !hasAllowRule)
     robotsTxt = [
       `# START nuxt-robots (${siteIndexable ? 'indexable' : 'indexing disabled'})`,
       robotsTxt,
