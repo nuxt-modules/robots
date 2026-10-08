@@ -1,4 +1,5 @@
 import type { FileAfterParseHook } from '@nuxt/content'
+import type { NuxtPage } from 'nuxt/schema'
 import type { Arrayable, AutoI18nConfig, NuxtRobotsRuntimeConfig, RobotsGroupInput, RobotsGroupResolved } from './util'
 import fsp, { readFile } from 'node:fs/promises'
 import { relative } from 'node:path'
@@ -307,48 +308,50 @@ export default defineNuxtModule<ModuleOptions>({
     if (!nuxt.options.experimental.extraPageMetaExtractionKeys.includes('robots'))
       nuxt.options.experimental.extraPageMetaExtractionKeys.push('robots')
 
-    let pageMetaMatchers: { source: string, flags: string, robots?: unknown }[] = []
+    let pages: NuxtPage[] = []
+    nuxt.hook('pages:resolved', (resolved) => {
+      pages = resolved
+    })
     addServerTemplate({
       filename: '#nuxt-robots/page-meta.mjs',
-      getContents: () => `export const pageMetaMatchers = ${JSON.stringify(pageMetaMatchers)}.map(route => ({ ...route, re: new RegExp(route.source, route.flags) }))`,
-    })
-    nuxt.hook('pages:resolved', async (pages) => {
-      const hasRobots = (entries: typeof pages): boolean => entries.some(page => page.meta?.robots != null || (page.children && hasRobots(page.children)))
-      if (!hasRobots(pages)) {
-        pageMetaMatchers = []
-        return
-      }
-      // Compile with the app's router so custom, optional and repeatable params keep their semantics.
-      const nuxtEntry = resolveModule('nuxt', { url: pathToFileURL(`${nuxt.options.rootDir}/package.json`) })
-      interface RouteRecord { path: string, name: string, meta: Record<string, unknown>, children?: RouteRecord[], alias?: string | string[] }
-      interface Matcher { re: RegExp, record: RouteRecord, parent?: Matcher }
-      const { createRouterMatcher } = await importModule<{
-        createRouterMatcher: (routes: RouteRecord[], options: { sensitive?: boolean, strict?: boolean, end?: boolean }) => { getRoutes: () => Matcher[] }
-      }>('vue-router', { url: pathToFileURL(nuxtEntry) })
-      let nextName = 0
-      const records = (entries: typeof pages): RouteRecord[] => entries.map(page => ({
-        path: page.path,
-        name: String(nextName++),
-        meta: page.meta || {},
-        alias: page.alias || [],
-        children: page.children ? records(page.children) : undefined,
-      }))
-      const { sensitive, strict, end } = nuxt.options.router.options
-      const matcher = createRouterMatcher(records(pages), {
-        ...(sensitive === undefined ? {} : { sensitive }),
-        ...(strict === undefined ? {} : { strict }),
-        ...(end === undefined ? {} : { end }),
-      })
-      pageMetaMatchers = matcher.getRoutes().map((route) => {
-        let robots: unknown
-        for (let current: Matcher | undefined = route; current; current = current.parent) {
-          if (current.record.meta.robots != null) {
-            robots = current.record.meta.robots
-            break
+      getContents: async () => {
+        // Later route hooks can localize or replace records before the server template is read.
+        const hasRobots = (entries: typeof pages): boolean => entries.some(page => page.meta?.robots != null || (page.children && hasRobots(page.children)))
+        if (!hasRobots(pages))
+          return 'export const pageMetaMatchers = []'
+        // Compile with the app's router so custom, optional and repeatable params keep their semantics.
+        const nuxtEntry = resolveModule('nuxt', { url: pathToFileURL(`${nuxt.options.rootDir}/package.json`) })
+        interface RouteRecord { path: string, name: string, meta: Record<string, unknown>, children?: RouteRecord[], alias?: string | string[] }
+        interface Matcher { re: RegExp, record: RouteRecord, parent?: Matcher }
+        const { createRouterMatcher } = await importModule<{
+          createRouterMatcher: (routes: RouteRecord[], options: { sensitive?: boolean, strict?: boolean, end?: boolean }) => { getRoutes: () => Matcher[] }
+        }>('vue-router', { url: pathToFileURL(nuxtEntry) })
+        let nextName = 0
+        const records = (entries: typeof pages): RouteRecord[] => entries.map(page => ({
+          path: page.path,
+          name: String(nextName++),
+          meta: page.meta || {},
+          alias: page.alias || [],
+          children: page.children ? records(page.children) : undefined,
+        }))
+        const { sensitive, strict, end } = nuxt.options.router.options
+        const matcher = createRouterMatcher(records(pages), {
+          ...(sensitive === undefined ? {} : { sensitive }),
+          ...(strict === undefined ? {} : { strict }),
+          ...(end === undefined ? {} : { end }),
+        })
+        const pageMetaMatchers = matcher.getRoutes().map((route) => {
+          let robots: unknown
+          for (let current: Matcher | undefined = route; current; current = current.parent) {
+            if (current.record.meta.robots != null) {
+              robots = current.record.meta.robots
+              break
+            }
           }
-        }
-        return { source: route.re.source, flags: route.re.flags, robots }
-      })
+          return { source: route.re.source, flags: route.re.flags, robots }
+        })
+        return `export const pageMetaMatchers = ${JSON.stringify(pageMetaMatchers)}.map(route => ({ ...route, re: new RegExp(route.source, route.flags) }))`
+      },
     })
 
     if (nuxt.options.app.baseURL?.length > 1 && config.robotsTxt) {
