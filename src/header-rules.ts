@@ -8,6 +8,7 @@ export interface RobotsHeaderRulesInput {
   routeRules: Record<string, RobotsRouteRuleConfig | undefined>
   /** Whether the site is indexable at build time. */
   indexable: boolean
+  robotsEnabledValue: string
   robotsDisabledValue: string
   /** The build assets directory, such as `/_nuxt/`. */
   buildAssetsDir: string
@@ -29,10 +30,25 @@ export function resolveRobotsHeaderRules(input: RobotsHeaderRulesInput): Record<
     [`${input.buildAssetsDir}**`, `${input.buildAssetsDir}file.js`],
   ])
   const headerRules: Record<string, string> = {}
+  const allowRoutes: string[] = []
+  const noIndexRoutes: string[] = []
   for (const [route, rules] of Object.entries(input.routeRules)) {
     const robotRule = normaliseRobotsRouteRule(rules)
-    if (robotRule && (!robotRule.allow || robotRule.rule?.split(',').some(part => ['noai', 'noimageai'].includes(part.trim()))))
-      headerRules[route] = robotRule.rule || input.robotsDisabledValue
+    if (!robotRule)
+      continue
+    headerRules[route] = robotRule.rule || (robotRule.allow ? input.robotsEnabledValue : input.robotsDisabledValue)
+    ;(robotRule.allow ? allowRoutes : noIndexRoutes).push(route)
+  }
+
+  // A noindex rule covering an allowed route would send noindex to it: Nitro merges the more
+  // specific allow over the catch-all, but static hosts apply every matching rule. Drop the
+  // overlapping rule; the meta tag and the robots.txt crawling rules cover the denied paths.
+  for (const route of noIndexRoutes) {
+    if (!allowRoutes.length || !isNoIndexRule(headerRules[route]!))
+      continue
+    const matchNoIndexRule = createNitroRouteRuleMatcher<{ rule?: string }>({ nitro: { routeRules: { [route]: { rule: headerRules[route] } } } })
+    if (allowRoutes.some(allowRoute => matchNoIndexRule(allowRoute.replaceAll('**', 'x').replaceAll('*', 'x')).rule))
+      delete headerRules[route]
   }
 
   // If a user rule already sends noindex on build assets, drop the weaker built-in rule.

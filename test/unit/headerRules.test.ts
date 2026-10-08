@@ -7,10 +7,13 @@ const buildAssetRules = {
   '/_nuxt/**': { robots: 'noindex' },
 }
 
+const enabledValue = 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+
 function resolve(routeRules: Record<string, any>, indexable = true) {
   return resolveRobotsHeaderRules({
     routeRules: { ...routeRules, ...buildAssetRules },
     indexable,
+    robotsEnabledValue: enabledValue,
     robotsDisabledValue: 'noindex, nofollow',
     buildAssetsDir: '/_nuxt/',
   })
@@ -30,9 +33,31 @@ describe('resolveRobotsHeaderRules', () => {
     expect(resolve({ '/secret/**': { robots: false } })).toMatchObject({ '/secret/**': 'noindex, nofollow' })
   })
 
-  it('sends no header for an indexable rule', () => {
+  it('sends the rule or enabled value for indexable rules', () => {
     expect(resolve({ '/open/**': { robots: true }, '/custom': { robots: 'index, follow' } }))
-      .toEqual({ '/_nuxt': 'noindex', '/_nuxt/**': 'noindex' })
+      .toEqual({
+        '/open/**': enabledValue,
+        '/custom': 'index, follow',
+        '/_nuxt': 'noindex',
+        '/_nuxt/**': 'noindex',
+      })
+  })
+
+  it('stops a catch-all noindex rule from covering an allowed route', () => {
+    // Nitro merges the explicit allow over the catch-all, but static hosts apply every
+    // matching rule. The catch-all must drop out so the allowed route is indexable.
+    expect(resolve({ '/**': { robots: false }, '/': { robots: true } }))
+      .toEqual({ '/': enabledValue, '/_nuxt': 'noindex', '/_nuxt/**': 'noindex' })
+  })
+
+  it('keeps a noindex rule that does not cover an allowed route', () => {
+    expect(resolve({ '/admin/**': { robots: false }, '/': { robots: true } }))
+      .toEqual({
+        '/': enabledValue,
+        '/admin/**': 'noindex, nofollow',
+        '/_nuxt': 'noindex',
+        '/_nuxt/**': 'noindex',
+      })
   })
 
   it('drops the build asset rules when a catch-all rule already sends noindex', () => {

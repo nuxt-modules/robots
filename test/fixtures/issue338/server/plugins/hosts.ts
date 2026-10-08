@@ -10,4 +10,3 @@ export default defineNitroPlugin((nitroApp) => {
       ctx.groups[0]!.disallow = ['/']
   })
 })
-
