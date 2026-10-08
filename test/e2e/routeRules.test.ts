@@ -54,8 +54,6 @@ describe('route rule merging', () => {
       Disallow: /robots-rule/*
       Disallow: /secret/*
       Disallow: /excluded/*
-      Disallow: /_nuxt
-      Disallow: /_nuxt/*
 
       Sitemap: https://nuxtseo.com/sitemap.xml
       # END nuxt-robots"

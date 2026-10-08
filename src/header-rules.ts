@@ -31,7 +31,7 @@ export function resolveRobotsHeaderRules(input: RobotsHeaderRulesInput): Record<
   const headerRules: Record<string, string> = {}
   for (const [route, rules] of Object.entries(input.routeRules)) {
     const robotRule = normaliseRobotsRouteRule(rules)
-    if (robotRule && !robotRule.allow)
+    if (robotRule && (!robotRule.allow || robotRule.rule?.split(',').some(part => ['noai', 'noimageai'].includes(part.trim()))))
       headerRules[route] = robotRule.rule || input.robotsDisabledValue
   }
 

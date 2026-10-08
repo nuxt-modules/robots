@@ -5,6 +5,8 @@ import { matchPathToRule, normaliseRobotsRouteRule } from '@nuxtjs/robots/util'
 import { getRequestHeader, matchRouteRules, useRuntimeConfig } from 'nuxt/server'
 import { resolveLocaleFromRoute } from 'nuxtseo-shared/i18n-runtime'
 import { parseURL, withoutBase, withoutTrailingSlash } from 'ufo'
+// @ts-expect-error Virtual server template registered by the module.
+import { pageMetaMatchers } from '#nuxt-robots/page-meta.mjs'
 import { useNitroApp } from '#nuxtseo/nitro'
 import { getSiteRobotConfig } from './getSiteRobotConfig'
 import { useRuntimeConfigNuxtRobots } from './useRuntimeConfigNuxtRobots'
@@ -117,23 +119,7 @@ export function getPathRobotConfig(e: RequestEvent, options?: { userAgent?: stri
     }
   }
 
-  // 3. page meta robots
-  const { pageMetaRobots } = useRuntimeConfigNuxtRobots(e)
-  const pageMetaRule = pageMetaRobots?.[withoutTrailingSlash(path)]
-  if (typeof pageMetaRule !== 'undefined') {
-    const normalised = normaliseRobotsRouteRule({ robots: pageMetaRule })
-    if (normalised && (typeof normalised.allow !== 'undefined' || typeof normalised.rule !== 'undefined')) {
-      return {
-        indexable: normalised.allow ?? false,
-        rule: normalised.rule || (normalised.allow ? robotsEnabledValue : robotsDisabledValue),
-        debug: {
-          source: 'Page Meta',
-        },
-      }
-    }
-  }
-
-  // 4. nitro route rules
+  // 3. nitro route rules
   const baseURL = runtimeConfig.app.baseURL
   const matchRules = (pathOrUrl: string) => matchRouteRules(withoutBase(withoutTrailingSlash((pathOrUrl.startsWith('/') ? pathOrUrl : parseURL(pathOrUrl, baseURL).pathname).split('?')[0]!), baseURL))
   let robotRouteRules = matchRules(path)
@@ -159,6 +145,22 @@ export function getPathRobotConfig(e: RequestEvent, options?: { userAgent?: stri
       },
     }
   }
+  // 4. page meta robots
+  const pagePath = withoutBase(parseURL(path).pathname || '/', runtimeConfig.app.baseURL)
+  const pageMetaRule = pageMetaMatchers.find((page: { re: RegExp }) => page.re.test(pagePath))?.robots
+  if (typeof pageMetaRule !== 'undefined') {
+    const normalised = normaliseRobotsRouteRule({ robots: pageMetaRule })
+    if (normalised && (typeof normalised.allow !== 'undefined' || typeof normalised.rule !== 'undefined')) {
+      return {
+        indexable: normalised.allow ?? false,
+        rule: normalised.rule || (normalised.allow ? robotsEnabledValue : robotsDisabledValue),
+        debug: {
+          source: 'Page Meta',
+        },
+      }
+    }
+  }
+
   return {
     indexable: true,
     rule: robotsEnabledValue,

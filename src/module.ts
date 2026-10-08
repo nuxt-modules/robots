@@ -2,6 +2,7 @@ import type { FileAfterParseHook } from '@nuxt/content'
 import type { Arrayable, AutoI18nConfig, NuxtRobotsRuntimeConfig, RobotsGroupInput, RobotsGroupResolved } from './util'
 import fsp, { readFile } from 'node:fs/promises'
 import { relative } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import {
   addImports,
   addPlugin,
@@ -13,7 +14,8 @@ import {
   createResolver,
   defineNuxtModule,
   extendRouteRules,
-  hasNuxtModule,
+  importModule,
+  resolveModule,
 } from '@nuxt/kit'
 import { installNuxtSiteConfig, updateSiteConfig, useSiteConfig } from 'nuxt-site-config/kit'
 import { setupNitroRuntimeCompatibility, setupRuntimeAliases, useModuleLogger } from 'nuxtseo-shared/kit'
@@ -154,7 +156,7 @@ export interface ModuleOptions {
   /**
    * Whether the robots.txt file should be generated. Useful to disable when running your app with a base URL.
    *
-   * @default false
+   * @default true
    */
   robotsTxt?: boolean
   /**
@@ -305,12 +307,43 @@ export default defineNuxtModule<ModuleOptions>({
     if (!nuxt.options.experimental.extraPageMetaExtractionKeys.includes('robots'))
       nuxt.options.experimental.extraPageMetaExtractionKeys.push('robots')
 
-    const pageMetaRobots: Record<string, any> = {}
-    nuxt.hook('pages:resolved', (pages) => {
-      for (const page of pages) {
-        if (typeof page.meta?.robots !== 'undefined')
-          pageMetaRobots[page.path] = page.meta.robots
+    let pageMetaMatchers: { source: string, flags: string, robots?: unknown }[] = []
+    addServerTemplate({
+      filename: '#nuxt-robots/page-meta.mjs',
+      getContents: () => `export const pageMetaMatchers = ${JSON.stringify(pageMetaMatchers)}.map(route => ({ ...route, re: new RegExp(route.source, route.flags) }))`,
+    })
+    nuxt.hook('pages:resolved', async (pages) => {
+      const hasRobots = (entries: typeof pages): boolean => entries.some(page => page.meta?.robots != null || (page.children && hasRobots(page.children)))
+      if (!hasRobots(pages)) {
+        pageMetaMatchers = []
+        return
       }
+      // Compile with the app's router so custom, optional and repeatable params keep their semantics.
+      const nuxtEntry = resolveModule('nuxt', { url: pathToFileURL(`${nuxt.options.rootDir}/package.json`) })
+      interface RouteRecord { path: string, name: string, meta: Record<string, unknown>, children?: RouteRecord[], alias?: string | string[] }
+      interface Matcher { re: RegExp, record: RouteRecord, parent?: Matcher }
+      const { createRouterMatcher } = await importModule<{
+        createRouterMatcher: (routes: RouteRecord[], options: Record<string, never>) => { getRoutes: () => Matcher[] }
+      }>('vue-router', { url: pathToFileURL(nuxtEntry) })
+      let nextName = 0
+      const records = (entries: typeof pages): RouteRecord[] => entries.map(page => ({
+        path: page.path,
+        name: String(nextName++),
+        meta: page.meta || {},
+        alias: page.alias || [],
+        children: page.children ? records(page.children) : undefined,
+      }))
+      const matcher = createRouterMatcher(records(pages), {})
+      pageMetaMatchers = matcher.getRoutes().map((route) => {
+        let robots: unknown
+        for (let current: Matcher | undefined = route; current; current = current.parent) {
+          if (current.record.meta.robots != null) {
+            robots = current.record.meta.robots
+            break
+          }
+        }
+        return { source: route.re.source, flags: route.re.flags, robots }
+      })
     })
 
     if (nuxt.options.app.baseURL?.length > 1 && config.robotsTxt) {
@@ -350,17 +383,15 @@ export default defineNuxtModule<ModuleOptions>({
         // public/robots.txt - This is the default, we need to move this to avoid issues
         publicRobotsTxtPath,
         // assets/robots.txt
-        resolve(nuxt.options.rootDir, nuxt.options.dir.assets, 'robots.txt'),
-        // public/_robots.txt
-        resolve(nuxt.options.rootDir, nuxt.options.dir.public, '_robots.txt'),
+        resolve(nuxt.options.srcDir, nuxt.options.dir.assets, 'robots.txt'),
         // public/_robots.txt
         resolve(nuxt.options.rootDir, nuxt.options.dir.public, '_robots.txt'),
         // public/_dir/robots.txt
         resolve(nuxt.options.rootDir, nuxt.options.dir.public, '_dir', 'robots.txt'),
         // pages/_dir/robots.txt
-        resolve(nuxt.options.rootDir, nuxt.options.dir.pages, '_dir', 'robots.txt'),
+        resolve(nuxt.options.srcDir, nuxt.options.dir.pages, '_dir', 'robots.txt'),
         // pages/robots.txt
-        resolve(nuxt.options.rootDir, nuxt.options.dir.pages, 'robots.txt'),
+        resolve(nuxt.options.srcDir, nuxt.options.dir.pages, 'robots.txt'),
         // robots.txt
         resolve(nuxt.options.rootDir, 'robots.txt'),
       ]
@@ -429,17 +460,14 @@ export default defineNuxtModule<ModuleOptions>({
     const nitroPreset = resolveNitroPreset(nuxt.options.nitro)
     const contentProvider = await resolveContentProvider(nuxt)
     const isNuxtContentV3 = contentProvider._tag === 'NuxtContent' && contentProvider.version === 3
-    let isNuxtContentV2 = contentProvider._tag === 'NuxtContent' && contentProvider.version === 2
+    let isNuxtContentV2 = !config.disableNuxtContentIntegration && contentProvider._tag === 'NuxtContent' && contentProvider.version === 2
     const isComarkContent = contentProvider._tag === 'Comark'
     // comark-content fires the same build hook with the same context shape, so the
     // frontmatter mapping is identical. It reads Markdown into Nitro server assets
     // rather than a database, so unlike Nuxt Content v2 it needs no Cloudflare opt out.
-    if (isNuxtContentV3 || isComarkContent) {
-      if (isNuxtContentV3 && hasNuxtModule('Content', nuxt)) {
-        logger.warn('You have loaded `@nuxt/content` before `@nuxtjs/robots`, this may cause issues with the integration. Please ensure `@nuxtjs/robots` is loaded first.')
-      }
+    if (!config.disableNuxtContentIntegration && (isNuxtContentV3 || isComarkContent)) {
       nuxt.hooks.hook('content:file:afterParse' as any, (ctx: FileAfterParseHook) => {
-        if (typeof ctx.content.robots !== 'undefined') {
+        if (ctx.content.robots != null) {
           let rule = ctx.content.robots
           if (typeof rule === 'boolean') {
             rule = rule ? config.robotsEnabledValue : config.robotsDisabledValue
@@ -505,7 +533,7 @@ export default defineNuxtModule<ModuleOptions>({
         }
         const headerRules = resolveRobotsHeaderRules({
           routeRules: nuxt.options.routeRules || {},
-          indexable: useSiteConfig().indexable !== false
+          indexable: (typeof useSiteConfig().indexable !== 'undefined' ? String(useSiteConfig().indexable) === 'true' : useSiteConfig().env === 'production')
             && !config.groups.some(group => asArray(group.userAgent).includes('*') && asArray(group.disallow).includes('/')),
           robotsDisabledValue: config.robotsDisabledValue,
           buildAssetsDir: nuxt.options.app.buildAssetsDir,
@@ -523,7 +551,7 @@ export default defineNuxtModule<ModuleOptions>({
       if (config.disallowNonIndexableRoutes) {
         // iterate the route rules and add any non indexable rules to disallow
         Object.entries(nuxt.options.routeRules || {}).forEach(([route, rules]) => {
-          if (!rules)
+          if (!rules || route === withoutTrailingSlash(nuxt.options.app.buildAssetsDir) || route === `${nuxt.options.app.buildAssetsDir}**`)
             return
           const url = route.split('/').map(segment => segment.startsWith(':') ? '*' : segment).join('/')
           const robotsRule = normaliseRobotsRouteRule(rules)
@@ -579,7 +607,6 @@ export default defineNuxtModule<ModuleOptions>({
         robotsDisabledValue: config.robotsDisabledValue,
         cacheControl: config.cacheControl ?? 'max-age=14400, must-revalidate',
         botDetection: config.botDetection ?? true,
-        pageMetaRobots,
       }
       nuxt.options.runtimeConfig['nuxt-robots'] = robotsRuntimeConfig as any
       nuxt.options.runtimeConfig.public['nuxt-robots'] = robotsRuntimeConfig as any

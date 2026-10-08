@@ -19,6 +19,7 @@ export async function resolveRobotsTxtContext(e: RequestEvent | undefined, nitro
   }
   await nitro.hooks.callHook('robots:config', generateRobotsTxtCtx)
   generateRobotsTxtCtx.groups = generateRobotsTxtCtx.groups.map(normalizeGroup)
-  nitro._robots.ctx = generateRobotsTxtCtx
+  if (!e)
+    nitro._robots.ctx = generateRobotsTxtCtx
   return generateRobotsTxtCtx
 }

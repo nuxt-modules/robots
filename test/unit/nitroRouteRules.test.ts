@@ -8,7 +8,7 @@ describe('normaliseRobotsRouteRule with new directives', () => {
     } as any)
 
     expect(result).toEqual({
-      allow: false,
+      allow: true,
       rule: 'noai',
     })
   })
@@ -19,7 +19,7 @@ describe('normaliseRobotsRouteRule with new directives', () => {
     } as any)
 
     expect(result).toEqual({
-      allow: false,
+      allow: true,
       rule: 'noimageai',
     })
   })
@@ -41,7 +41,7 @@ describe('normaliseRobotsRouteRule with new directives', () => {
     })
 
     expect(result).toEqual({
-      allow: false,
+      allow: true,
       rule: 'noai',
     })
   })
