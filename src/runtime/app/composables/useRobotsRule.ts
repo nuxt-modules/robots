@@ -40,7 +40,7 @@ export function useRobotsRule(rule?: ReactiveRobotsValue) {
 
   function setRobotsRule(rule: ReactiveRobotsValue | undefined) {
     const _rule = toValue(rule)
-    if (!event || typeof _rule === 'undefined')
+    if (!event || _rule == null)
       return
 
     let finalRule: string
@@ -48,7 +48,9 @@ export function useRobotsRule(rule?: ReactiveRobotsValue) {
     // Handle boolean values
     if (typeof _rule === 'boolean') {
       const robotsConfig = config['nuxt-robots'] as any
-      finalRule = _rule ? robotsConfig.robotsEnabledValue : robotsConfig.robotsDisabledValue
+      const site = event.context.siteConfig?.get()
+      const siteIndexable = !site || (typeof site.indexable === 'undefined' ? site.env === 'production' : String(site.indexable) === 'true')
+      finalRule = _rule && siteIndexable ? robotsConfig.robotsEnabledValue : robotsConfig.robotsDisabledValue
     }
     // Handle object directive values
     else if (typeof _rule === 'object' && _rule !== null) {

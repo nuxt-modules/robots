@@ -397,6 +397,7 @@ export function normalizeGroup(group: RobotsGroupInput | RobotsGroupResolved): R
   const contentSignal = normalizeContentPreferences(group.contentSignal)
   return <RobotsGroupResolved> {
     ...group,
+    comment: asArray(group.comment),
     userAgent: group.userAgent ? asArray(group.userAgent) : ['*'],
     disallow,
     allow,
@@ -513,6 +514,13 @@ export function createPatternMap(): Map<string, PatternMapValue> {
   return patternMap
 }
 
+function readUserAgent(headers: Headers | Record<string, string | string[] | undefined>): string | undefined {
+  if (headers instanceof Headers)
+    return headers.get('user-agent') || undefined
+  const value = headers['user-agent'] ?? headers[Object.keys(headers).find(key => key.toLowerCase() === 'user-agent') || '']
+  return Array.isArray(value) ? value[0] : value
+}
+
 /**
  * Detects bots based on HTTP headers analysis
  * @param headers - HTTP headers object (similar to h3's getHeaders result)
@@ -520,7 +528,7 @@ export function createPatternMap(): Map<string, PatternMapValue> {
  * @returns Bot detection result with type, name, and trust level
  */
 export function isBotFromHeaders(
-  headers: Record<string, string | string[] | undefined>,
+  headers: Headers | Record<string, string | string[] | undefined>,
   patternMap?: Map<string, PatternMapValue>,
 ): {
   isBot: boolean
@@ -530,7 +538,7 @@ export function isBotFromHeaders(
     trusted: boolean
   }
 } {
-  const userAgent = Array.isArray(headers['user-agent']) ? headers['user-agent'][0] : headers['user-agent']
+  const userAgent = readUserAgent(headers)
 
   // Only detect known bots, not suspicious patterns
   if (!userAgent) {
@@ -580,10 +588,10 @@ export function isBotFromHeaders(
  * Pure bot detection function using headers
  */
 export function getBotDetection(
-  headers: Record<string, string | string[] | undefined>,
+  headers: Headers | Record<string, string | string[] | undefined>,
   patternMap?: Map<string, PatternMapValue>,
 ): BotDetectionContext {
-  const userAgent = Array.isArray(headers['user-agent']) ? headers['user-agent'][0] : headers['user-agent']
+  const userAgent = readUserAgent(headers)
   const detection = isBotFromHeaders(headers, patternMap)
 
   if (detection.isBot && detection.data) {
@@ -679,7 +687,7 @@ export function normaliseRobotsRouteRule(config: RobotsRouteRuleConfig | undefin
   let allow: boolean | undefined
   if (typeof config.robots === 'boolean')
     allow = config.robots
-  else if (typeof config.robots === 'object' && 'indexable' in config.robots && typeof config.robots.indexable !== 'undefined')
+  else if (typeof config.robots === 'object' && config.robots !== null && 'indexable' in config.robots && typeof config.robots.indexable !== 'undefined')
     allow = config.robots.indexable
   // parse rule
   let rule: string | undefined
@@ -701,7 +709,7 @@ export function normaliseRobotsRouteRule(config: RobotsRouteRuleConfig | undefin
   }
   if (rule && typeof allow === 'undefined') {
     // Check if any of the directives indicate disallow
-    const disallowIndicators = ['none', 'noindex', 'noai', 'noimageai']
+    const disallowIndicators = ['none', 'noindex']
     allow = !disallowIndicators.some(indicator =>
       rule === indicator || rule.split(',').some(part => part.trim() === indicator),
     )
