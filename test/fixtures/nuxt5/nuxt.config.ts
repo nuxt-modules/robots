@@ -13,7 +13,7 @@ for (const module of [NuxtRobots, NuxtSiteConfig, NuxtSeoShared]) {
 export default defineNuxtConfig({
   workspaceDir: import.meta.dirname,
   vite: { resolve: { dedupe: ['nuxt', 'vue', 'vue-router'] } },
-  modules: [NuxtRobots],
+  modules: [NuxtSiteConfig, NuxtRobots],
   site: {
     url: 'https://nuxt5.example.com',
   },

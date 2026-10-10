@@ -3,7 +3,7 @@ import type { NuxtPage } from 'nuxt/schema'
 import type { Arrayable, AutoI18nConfig, NuxtRobotsRuntimeConfig, RobotsGroupInput, RobotsGroupResolved } from './util'
 import fsp, { readFile } from 'node:fs/promises'
 import { relative } from 'node:path'
-import { pathToFileURL } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import {
   addImports,
   addPlugin,
@@ -18,7 +18,7 @@ import {
   importModule,
   resolveModule,
 } from '@nuxt/kit'
-import { installNuxtSiteConfig, updateSiteConfig, useSiteConfig } from 'nuxt-site-config/kit'
+import { updateSiteConfig, useSiteConfig } from 'nuxt-site-config/kit'
 import { setupNitroRuntimeCompatibility, setupRuntimeAliases, useModuleLogger } from 'nuxtseo-shared/kit'
 import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { AiBots, NonHelpfulBots } from './const'
@@ -211,7 +211,7 @@ export default defineNuxtModule<ModuleOptions>({
       version: '>=1',
       optional: true,
     },
-    'nuxt-site-config': {
+    [fileURLToPath(import.meta.resolve('nuxt-site-config'))]: {
       version: '>=5.0.0',
     },
     '@nuxt/content': {
@@ -377,8 +377,6 @@ export default defineNuxtModule<ModuleOptions>({
         disallow: ['/'],
       })
     }
-
-    await installNuxtSiteConfig()
 
     if (config.metaTag)
       addPlugin({ mode: 'server', src: resolve('./runtime/app/plugins/robot-meta.server') })
