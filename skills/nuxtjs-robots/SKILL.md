@@ -2,7 +2,7 @@
 name: nuxtjs-robots
 description: Controls crawling and indexing in Nuxt with @nuxtjs/robots, which generates robots.txt, the X-Robots-Tag header, and the robots meta tag. Use when a task mentions robots.txt, noindex, nofollow, keeping staging or preview sites out of Google, the robots config key, robots route rules, useRobotsRule, getPathRobotConfig, getSiteRobotConfig, useBotDetection, getBotDetection, blockAiBots, AI crawlers, or a page that is still indexed or wrongly blocked.
 license: MIT
-compatibility: "Requires a project using @nuxtjs/robots. Requires Node.js ^22.22.3 || ^24.15.0 || >=26.0.0. Requires Nuxt ^4.6.0 || ^5.0.0."
+compatibility: "Requires Node.js ^22.22.3 || ^24.15.0 || >=26.0.0. Requires Nuxt ^4.6.0 || ^5.0.0."
 ---
 
 # @nuxtjs/robots
