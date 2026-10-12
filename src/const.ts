@@ -74,6 +74,7 @@ export const AiBots = [
   'ImagesiftBot',
   'MistralAI-User',
   'MistralAI-Index',
+  'MistralAI-Training',
   'AI2Bot',
   'DuckAssistBot',
   'FirecrawlAgent',
@@ -96,6 +97,11 @@ export const AiTrainingBots = [
   'Google-Extended',
   // https://developers.facebook.com/docs/sharing/webmasters/web-crawlers/
   'meta-externalagent',
+  // https://developer.amazon.com/amazonbot
+  // Amazon search and answers use Amzn-SearchBot and Amzn-User, which Amazon says are not used for training.
+  'Amazonbot',
+  // https://docs.mistral.ai/robots
+  'MistralAI-Training',
   // https://support.apple.com/en-us/119829
   'Applebot-Extended',
   // https://commoncrawl.org/about
