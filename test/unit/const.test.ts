@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { AiBots } from '../../src/const'
+import { AiBots, AiTrainingBots } from '../../src/const'
 
 describe('aiBots', () => {
   it('contains unique user-agent tokens', () => {
@@ -19,5 +19,20 @@ describe('aiBots', () => {
     expect(AiBots).not.toContain('Omigili')
     expect(AiBots).not.toContain('OmigiliBot')
     expect(AiBots).not.toContain('GoogleOther')
+  })
+})
+
+describe('aiTrainingBots', () => {
+  it('is a subset of AiBots, so `true` blocks everything `training` blocks', () => {
+    expect(AiBots).toEqual(expect.arrayContaining(AiTrainingBots))
+  })
+
+  it('includes the documented training crawlers', () => {
+    expect(AiTrainingBots).toEqual(expect.arrayContaining(['Amazonbot', 'MistralAI-Training']))
+  })
+
+  it('leaves dedicated search and user-directed agents out', () => {
+    for (const bot of ['Amzn-SearchBot', 'Amzn-User', 'MistralAI-Index', 'MistralAI-User'])
+      expect(AiTrainingBots).not.toContain(bot)
   })
 })

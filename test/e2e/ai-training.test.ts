@@ -27,6 +27,8 @@ describe('training opt-out', () => {
       'Google-Extended',
       'Applebot-Extended',
       'meta-externalagent',
+      'Amazonbot',
+      'MistralAI-Training',
       'CCBot',
     ]))
     for (const bot of [
