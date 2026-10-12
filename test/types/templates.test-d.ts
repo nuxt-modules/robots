@@ -1,6 +1,7 @@
 import type {
   HookRobotsConfigContext,
   HookRobotsTxtContext,
+  ModuleOptions,
   RobotsContext,
   RobotsValue,
 } from '@nuxtjs/robots'
@@ -11,6 +12,14 @@ import type { PageMeta } from 'nuxt/app'
 import type { NuxtConfig } from 'nuxt/schema'
 import { extendRouteRules } from '@nuxt/kit'
 import { describe, expectTypeOf, it } from 'vitest'
+
+describe('AI bot configuration', () => {
+  it('accepts training mode and boolean modes in module options', () => {
+    expectTypeOf<{ blockAiBots: 'training' }>().toExtend<Partial<ModuleOptions>>()
+    expectTypeOf<{ blockAiBots: true }>().toExtend<Partial<ModuleOptions>>()
+    expectTypeOf<{ blockAiBots: false }>().toExtend<Partial<ModuleOptions>>()
+  })
+})
 
 // Tests the generated type augmentations from .nuxt/types/nuxt-robots-*.d.ts.
 // Requires `nuxi prepare` to have been run so .nuxt/ exists.

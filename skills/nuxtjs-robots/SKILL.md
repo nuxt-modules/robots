@@ -95,7 +95,7 @@ export default defineNuxtConfig({
     disallow: ['/admin'],
     allow: ['/admin/login'],
     sitemap: '/sitemap.xml', // made absolute with site.url
-    blockAiBots: true, // GPTBot, ClaudeBot, Google-Extended, and others
+    blockAiBots: 'training', // Training opt-out. Use true to also block AI search and user fetches.
     groups: [
       { userAgent: ['Googlebot'], disallow: ['/private'], comment: ['Google only'] },
     ],
@@ -148,6 +148,8 @@ Nuxt Content v3 frontmatter and Nuxt i18n path expansion: [references/integratio
 - An `app.baseURL` other than `/` turns off robots.txt and logs an error. Crawlers only read `/robots.txt` at the host root.
 - Nuxt Content frontmatter `robots` sets the meta tag but not the header, and it needs `zod` 4 in your dependencies. See [references/integrations.md](references/integrations.md).
 - The key is `blockAiBots`. Some docs prose spells it `blockAIBots`.
+- Use `blockAiBots: 'training'` to leave dedicated AI search and user fetch agents unblocked. Existing rules still apply.
+- Training mode includes Google-Extended, which also controls grounding in Gemini Apps and Vertex AI.
 
 ## Version limits
 
