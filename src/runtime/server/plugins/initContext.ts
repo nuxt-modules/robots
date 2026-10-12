@@ -1,11 +1,9 @@
 import { createPatternMap } from '@nuxtjs/robots/util'
 import { getRouteRules } from 'nuxt/server'
-import { withoutTrailingSlash } from 'ufo'
 // @ts-expect-error Virtual server template registered by the module.
 import { ROBOTS_SSR_DEFAULT } from '#nuxt-robots/ssr-default.mjs'
 import { defineNitroPlugin } from '#nuxtseo/nitro'
 import { useRuntimeConfigNuxtRobots } from '../composables/useRuntimeConfigNuxtRobots'
-import { logger } from '../logger'
 import { resolveRobotsTxtContext } from '../util'
 
 const PRERENDER_NO_SSR_ROUTES = new Set(['/index.html', '/200.html', '/404.html'])
@@ -13,7 +11,7 @@ const PRERENDER_NO_SSR_ROUTES = new Set(['/index.html', '/200.html', '/404.html'
 // we need to init our state using a nitro plugin so the user doesn't throttle the resolve context hook
 // important when we integrate with nuxt-simple-sitemap and we're checking thousands of URLs
 export default defineNitroPlugin(async (nitroApp) => {
-  const { isNuxtContentV2, robotsDisabledValue, botDetection } = useRuntimeConfigNuxtRobots()
+  const { robotsDisabledValue, botDetection } = useRuntimeConfigNuxtRobots()
 
   // Initialize bot detection pattern map if enabled
   if (botDetection !== false) {
@@ -22,22 +20,6 @@ export default defineNitroPlugin(async (nitroApp) => {
 
   nitroApp._robots = {} as typeof nitroApp._robots
   await resolveRobotsTxtContext(undefined, nitroApp)
-  const nuxtContentUrls = new Set<string>()
-  if (isNuxtContentV2) {
-    let urls: string[] | undefined
-    try {
-      urls = await (await nitroApp.localFetch('/__robots__/nuxt-content.json', {})).json()
-    }
-    catch (e) {
-      logger.error('Failed to read robot rules from content files.', e)
-    }
-    if (urls && Array.isArray(urls) && urls.length) {
-      urls.forEach((url: string) => nuxtContentUrls.add(withoutTrailingSlash(url)))
-    }
-  }
-  if (nuxtContentUrls.size) {
-    nitroApp._robots.nuxtContentUrls = nuxtContentUrls
-  }
 
   if (import.meta.prerender) {
     // need to inject HTML if we have an SPA route

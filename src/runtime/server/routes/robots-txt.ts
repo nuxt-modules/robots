@@ -1,17 +1,16 @@
 import type { HookRobotsConfigContext, HookRobotsTxtContext, RobotsRouteRuleConfig } from '../../types'
 import { asArray, generateRobotsTxt, isNoIndexRule, normaliseRobotsRouteRule } from '@nuxtjs/robots/util'
-import { createError, defineEventHandler, serverFetch, useRuntimeConfig } from 'nuxt/server'
+import { defineEventHandler, useRuntimeConfig } from 'nuxt/server'
 import { useNitroApp } from '#nuxtseo/nitro'
 import { withSiteUrl } from '#site-config/server'
 import { getSiteRobotConfig } from '../composables/getSiteRobotConfig'
 import { useRuntimeConfigNuxtRobots } from '../composables/useRuntimeConfigNuxtRobots'
-import { logger } from '../logger'
 import { resolveRobotsTxtContext } from '../util'
 
 export default defineEventHandler(async (e) => {
   const nitroApp = useNitroApp()
   const { indexable, hints } = getSiteRobotConfig(e)
-  const { credits, isNuxtContentV2, cacheControl, robotsDisabledValue } = useRuntimeConfigNuxtRobots(e)
+  const { credits, cacheControl, robotsDisabledValue } = useRuntimeConfigNuxtRobots(e)
   // move towards deprecating indexable
   let robotsTxtCtx: Omit<HookRobotsConfigContext, 'context' | 'event'> = {
     errors: [],
@@ -34,30 +33,6 @@ export default defineEventHandler(async (e) => {
         // validate sitemaps are absolute
         .map(s => !s.startsWith('http') ? withSiteUrl(e, s, { withBase: true, absolute: true }) : s),
     )]
-    if (isNuxtContentV2) {
-      const contentResponse = await serverFetch(e, '/__robots__/nuxt-content.json', {
-        headers: {
-          Accept: 'application/json',
-        },
-      })
-      if (!contentResponse.ok)
-        throw createError({ status: contentResponse.status, statusText: contentResponse.statusText })
-      const contentWithRobotRules = await contentResponse.json() as string[]
-      // ensure it's valid json
-      if (String(contentWithRobotRules).trim().startsWith('<!DOCTYPE')) {
-        logger.error('Invalid HTML returned from /__robots__/nuxt-content.json, skipping.')
-      }
-      else {
-        // add to first '*' group
-        for (const group of robotsTxtCtx.groups) {
-          if (group.userAgent.includes('*')) {
-            group.disallow.push(...contentWithRobotRules)
-            // need to filter out empty strings since we now have some content
-            group.disallow = group.disallow.filter(Boolean)
-          }
-        }
-      }
-    }
   }
   let robotsTxt: string = generateRobotsTxt(robotsTxtCtx)
   if (import.meta.dev && hints.length) {

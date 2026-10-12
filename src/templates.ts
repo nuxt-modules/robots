@@ -37,7 +37,6 @@ robotsProduction?: RobotsContext`,
     nitroInterfaces: {
       NitroApp: `_robots: {
   ctx: HookRobotsConfigContext
-  nuxtContentUrls?: Set<string>
 },
 _robotsPatternMap?: Map<string, PatternMapValue>`,
     },

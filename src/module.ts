@@ -219,7 +219,7 @@ export default defineNuxtModule<ModuleOptions>({
       version: '>=5.0.0',
     },
     '@nuxt/content': {
-      version: '>=2',
+      version: '>=3',
       optional: true,
     },
     '@harlan-zw/comark-content': {
@@ -470,11 +470,9 @@ export default defineNuxtModule<ModuleOptions>({
     const nitroPreset = resolveNitroPreset(nuxt.options.nitro)
     const contentProvider = await resolveContentProvider(nuxt)
     const isNuxtContentV3 = contentProvider._tag === 'NuxtContent' && contentProvider.version === 3
-    let isNuxtContentV2 = !config.disableNuxtContentIntegration && contentProvider._tag === 'NuxtContent' && contentProvider.version === 2
     const isComarkContent = contentProvider._tag === 'Comark'
     // comark-content fires the same build hook with the same context shape, so the
-    // frontmatter mapping is identical. It reads Markdown into Nitro server assets
-    // rather than a database, so unlike Nuxt Content v2 it needs no Cloudflare opt out.
+    // frontmatter mapping is identical.
     if (!config.disableNuxtContentIntegration && (isNuxtContentV3 || isComarkContent)) {
       nuxt.hooks.hook('content:file:afterParse' as any, (ctx: FileAfterParseHook) => {
         if (ctx.content.robots != null) {
@@ -490,10 +488,6 @@ export default defineNuxtModule<ModuleOptions>({
           ;(ctx.content as any).seo.robots = rule
         }
       })
-    }
-    else if (isNuxtContentV2 && nitroPreset.startsWith('cloudflare')) {
-      logger.warn('The Nuxt Robots, Nuxt Content integration does not work with CloudFlare yet, the integration will be disabled. Learn more at: https://nuxtseo.com/docs/robots/guides/content')
-      isNuxtContentV2 = false
     }
 
     nuxt.hook('nitro:build:public-assets', (nitro: any) => {
@@ -608,7 +602,6 @@ export default defineNuxtModule<ModuleOptions>({
 
       const robotsRuntimeConfig: NuxtRobotsRuntimeConfig = {
         version: version || '',
-        isNuxtContentV2,
         debug: config.debug,
         credits: config.credits,
         groups,
@@ -665,13 +658,6 @@ export default defineNitroPlugin((nitroApp) => {
 })
 `,
       }).filename)
-    }
-
-    if (isNuxtContentV2) {
-      addServerHandler({
-        route: '/__robots__/nuxt-content.json',
-        handler: resolve('./runtime/server/routes/__robots__/nuxt-content-v2'),
-      })
     }
 
     if (config.debug || nuxt.options.dev) {
