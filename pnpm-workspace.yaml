@@ -132,7 +132,7 @@ catalog:
   '@iconify-json/tabler': ^1.2.41
   '@nuxt/devtools-kit': 4.0.0-beta.4
   '@nuxt/devtools-ui-kit': 4.0.0-beta.4
-  '@nuxt/kit': ^4.6.0
+  '@nuxt/kit': ^4.6.1
   '@nuxtjs/i18n': ^10.6.0
   '@unocss/nuxt': ^66.10.5
   '@unocss/preset-icons': ^66.10.5
@@ -147,7 +147,7 @@ catalog:
   eslint-plugin-harlanzw: ^0.23.0
   firebase-functions: ^7.4.0
   happy-dom: ^20.14.5
-  nuxt: ^4.6.0
+  nuxt: ^4.6.1
   nuxt-site-config: ^5.0.0
   nuxtseo-layer-devtools: ^5.3.16
   nuxtseo-shared: ^6.0.0
