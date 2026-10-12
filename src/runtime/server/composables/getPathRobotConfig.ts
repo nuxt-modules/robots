@@ -39,7 +39,7 @@ function parseRuntimeI18nConfig(input: unknown): RuntimeI18nConfig | null {
 export function getPathRobotConfig(e: RequestEvent, options?: { userAgent?: string, skipSiteIndexable?: boolean, path?: string }): RobotsContext {
   const runtimeConfig = useRuntimeConfig()
   // has already been resolved
-  const { robotsDisabledValue, robotsEnabledValue, isNuxtContentV2 } = useRuntimeConfigNuxtRobots(e)
+  const { robotsDisabledValue, robotsEnabledValue } = useRuntimeConfigNuxtRobots(e)
   if (!options?.skipSiteIndexable) {
     if (!getSiteRobotConfig(e).indexable) {
       return {
@@ -108,18 +108,7 @@ export function getPathRobotConfig(e: RequestEvent, options?: { userAgent?: stri
     }
   }
 
-  // 2. nuxt content rules
-  if (isNuxtContentV2 && nitroApp._robots?.nuxtContentUrls?.has(withoutTrailingSlash(path))) {
-    return {
-      indexable: false,
-      rule: robotsDisabledValue,
-      debug: {
-        source: 'Nuxt Content',
-      },
-    }
-  }
-
-  // 3. nitro route rules
+  // 2. nitro route rules
   const baseURL = runtimeConfig.app.baseURL
   const matchRules = (pathOrUrl: string) => matchRouteRules(withoutBase(withoutTrailingSlash((pathOrUrl.startsWith('/') ? pathOrUrl : parseURL(pathOrUrl, baseURL).pathname).split('?')[0]!), baseURL))
   let robotRouteRules = matchRules(path)
@@ -145,7 +134,7 @@ export function getPathRobotConfig(e: RequestEvent, options?: { userAgent?: stri
       },
     }
   }
-  // 4. page meta robots
+  // 3. page meta robots
   const pagePath = withoutBase(parseURL(path).pathname || '/', runtimeConfig.app.baseURL)
   const pageMetaRule = pageMetaMatchers.find((page: { re: RegExp }) => page.re.test(pagePath))?.robots
   if (typeof pageMetaRule !== 'undefined') {

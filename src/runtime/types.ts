@@ -207,7 +207,6 @@ export interface RobotsContext {
 
 export interface NuxtRobotsRuntimeConfig {
   version: string
-  isNuxtContentV2: boolean
   debug: boolean
   credits: boolean
   groups: RobotsGroupResolved[]
