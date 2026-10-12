@@ -80,3 +80,24 @@ export const AiBots = [
   'ICC-Crawler',
   'SemrushBot-OCOB',
 ]
+
+/**
+ * Training crawlers and training opt-out tokens with documented operator support.
+ * Keep this curated subset local. Check operator documentation before changing it.
+ * Dedicated search and user-directed retrieval agents belong only in AiBots.
+ * Google-Extended also controls Gemini grounding. CCBot supplies a shared web archive.
+ */
+export const AiTrainingBots = [
+  // https://developers.openai.com/api/docs/bots
+  'GPTBot',
+  // https://privacy.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler
+  'ClaudeBot',
+  // https://developers.google.com/crawling/docs/crawlers-fetchers/google-common-crawlers#google-extended
+  'Google-Extended',
+  // https://developers.facebook.com/docs/sharing/webmasters/web-crawlers/
+  'meta-externalagent',
+  // https://support.apple.com/en-us/119829
+  'Applebot-Extended',
+  // https://commoncrawl.org/about
+  'CCBot',
+]

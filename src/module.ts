@@ -21,7 +21,7 @@ import {
 import { updateSiteConfig, useSiteConfig } from 'nuxt-site-config/kit'
 import { setupNitroRuntimeCompatibility, setupRuntimeAliases, useModuleLogger } from 'nuxtseo-shared/kit'
 import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
-import { AiBots, NonHelpfulBots } from './const'
+import { AiBots, AiTrainingBots, NonHelpfulBots } from './const'
 import { setupDevToolsUI } from './devtools'
 import { resolveRobotsHeaderRules } from './header-rules'
 import { mapPathForI18nPages, resolveI18nConfig, splitPathForI18nLocales } from './i18n'
@@ -135,11 +135,13 @@ export interface ModuleOptions {
    */
   blockNonSeoBots: boolean
   /**
-   * Blocks AI crawlers.
+   * Blocks all listed AI crawlers with true, or training tokens with 'training'.
+   * Dedicated AI search and user-directed retrieval agents are excluded from 'training'.
+   * Google-Extended also controls Gemini grounding.
    *
    * @default false
    */
-  blockAiBots: boolean
+  blockAiBots: boolean | 'training'
   /**
    * Override the auto i18n configuration.
    */
@@ -374,7 +376,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     if (config.blockAiBots) {
       config.groups.push({
-        userAgent: AiBots,
+        userAgent: config.blockAiBots === 'training' ? AiTrainingBots : AiBots,
         comment: ['Block AI Crawlers'],
         disallow: ['/'],
       })
