@@ -1,12 +1,11 @@
 name: CI
 
 on:
+  # No paths-ignore: reusable-ci.yml skips its jobs when only docs change, so
+  # their checks still report.
   push:
     branches:
       - main
-    paths-ignore:
-      - '**/README.md'
-      - 'docs/**'
   pull_request:
     branches:
       - main
