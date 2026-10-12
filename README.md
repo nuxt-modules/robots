@@ -40,8 +40,11 @@ need these features.
 Install `@nuxtjs/robots` dependency to your project:
 
 ```bash
-npx nuxi@latest module add robots
+npx nuxt module add robots
 ```
+
+> [!TIP]
+> Using an AI agent? Get the @nuxtjs/robots Skill on [skilld.dev/gh/nuxt-modules/robots](https://skilld.dev/gh/nuxt-modules/robots).
 
 💡 Configured your robots.txt? Verify what crawlers and AI bots can access with the free [Robots.txt Validator](https://nuxtseo.com/tools/robots-txt-validator), or monitor crawl & indexing status with [Nuxt SEO Pro](https://nuxtseo.com/pro).
 

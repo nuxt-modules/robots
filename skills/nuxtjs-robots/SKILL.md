@@ -7,7 +7,7 @@ compatibility: "Requires Node.js ^22.22.3 || ^24.15.0 || >=26.0.0. Requires Nuxt
 
 # @nuxtjs/robots
 
-Tested with `@nuxtjs/robots` 6.2.4 on Nuxt 4.6.0, with the Node server and `nuxt generate`.
+Covers `@nuxtjs/robots` 7. Runtime behaviour was tested with 6.2.4 on Nuxt 4.6.0; version 7 changes are listed under Version limits.
 The module serves `/robots.txt`, sends `X-Robots-Tag`, and adds `<meta name="robots">` to each SSR page.
 Site config decides if the whole site is indexable. Route rules decide per path.
 
@@ -23,6 +23,8 @@ export default defineNuxtConfig({
 })
 ```
 
+Included in `@nuxtjs/seo` v6. If the app uses `@nuxtjs/seo`, configure the `robots` key and do not add the module again.
+
 Site-wide indexing is a `site` key (nuxt-site-config), not a `robots` key.
 
 ## Automatic behaviour
@@ -31,7 +33,7 @@ Site-wide indexing is a `site` key (nuxt-site-config), not a `robots` key.
 - Indexable: robots.txt is `User-agent: *` and an empty `Disallow:`. Pages get `index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1`.
 - Not indexable: robots.txt is `Disallow: /`. Every response gets `X-Robots-Tag: noindex, nofollow`, including API routes, `/robots.txt`, and `/_nuxt/` files.
 - `/_nuxt/**` always gets `X-Robots-Tag: noindex`.
-- The module merges a hand-written robots.txt from `public/_robots.txt`, `assets/robots.txt`, `pages/robots.txt`, or `robots.txt`, all relative to the project root. It ignores `app/assets/` and `app/pages/` without a warning. Nuxt renames `public/robots.txt` to `public/_robots.txt` in your source tree each time it loads the module, `nuxt prepare` included.
+- The module merges a hand-written robots.txt from `public/_robots.txt` or `robots.txt` in the project root, or from `assets/robots.txt` or `pages/robots.txt` in `srcDir` (`app/` on Nuxt 4). Nuxt renames `public/robots.txt` to `public/_robots.txt` in your source tree each time it loads the module, `nuxt prepare` included.
 - `nuxt generate` prerenders `/robots.txt`. A static preset that reads `_headers`, such as Netlify, gets the header rules there.
 - To turn parts off, set `robots.robotsTxt`, `robots.header`, or `robots.metaTag` to `false`. `useRobotsRule()` still writes a meta tag when `metaTag` is `false`. `robots.enabled: false` turns off everything, and the composables do nothing.
 
@@ -64,7 +66,7 @@ Decide per request, during SSR. Route rules cannot match a query string:
 import { useRobotsRule, useRoute } from '#imports'
 
 const route = useRoute()
-// Call it only to noindex. useRobotsRule(true) would make a staging page indexable.
+// A string rule replaces the default rule for this response.
 if (route.query.q)
   useRobotsRule('noindex, follow')
 </script>
@@ -103,15 +105,18 @@ export default defineNuxtConfig({
 })
 ```
 
-Server examples use Nitro auto-imports. On Nuxt 4.6, importing them from `#imports` in a server file fails `nuxt typecheck`.
+Import server functions from `#robots/server` and app composables from `#robots/app`. Auto-imports also work.
+Do not import server functions from `#imports`. On Nuxt 4.6, that fails `nuxt typecheck`.
 
 Turn off indexing for one host of a multi-domain deployment. This is per request:
 
 ```ts
 // server/plugins/robots-host.ts
+import { getNitroOrigin } from '#site-config/server'
+
 export default defineNitroPlugin((nitroApp) => {
   nitroApp.hooks.hook('site-config:init', ({ event, siteConfig }) => {
-    if (getRequestHost(event).startsWith('staging.'))
+    if (new URL(getNitroOrigin(event)).hostname.startsWith('staging.'))
       siteConfig.push({ _context: 'staging-host', indexable: false })
   })
 })
@@ -123,17 +128,20 @@ Detect bots from the `User-Agent` header:
 
 ```ts
 // server/middleware/block-bots.ts
+import { createError, defineEventHandler } from 'nuxt/server'
+import { getBotDetection } from '#robots/server'
+
 export default defineEventHandler((event) => {
   const bot = getBotDetection(event) // { isBot, botName, botCategory, trusted }
   // Search engines and AI crawlers count as trusted. To block AI crawlers, test bot.botCategory === 'ai'.
-  if (event.path.startsWith('/api/') && bot.isBot && !bot.trusted)
-    throw createError({ statusCode: 403 })
+  if (event.url.pathname.startsWith('/api/') && bot.isBot && !bot.trusted)
+    throw createError({ status: 403 })
 })
 ```
 
 In the app, `useBotDetection()` returns the same fields as computed refs.
 `useBotDetection({ fingerprint: true })` also runs BotD in the browser. Its result arrives later, so watch `isBot`.
-Outside Nuxt, `getBotDetection(headers)` from `@nuxtjs/robots/util` reads only a lowercase `user-agent` key. Pass `Object.fromEntries(request.headers)`. A `Headers` instance returns `isBot: false`.
+Outside Nuxt, `getBotDetection(headers)` from `@nuxtjs/robots/util` accepts a `Headers` instance or a plain header object.
 
 ## Integrations
 
@@ -142,25 +150,29 @@ Nuxt Content v3 frontmatter and Nuxt i18n path expansion: [references/integratio
 ## Traps
 
 - A path can be crawlable and noindex, or blocked in robots.txt. It cannot be both. Google never reads `noindex` on a disallowed URL and can still index it from links.
-- `useRobotsRule(true)` sends `robotsEnabledValue` even when the site is not indexable. Pass `true` only to override that.
+- `useRobotsRule(true)` keeps `noindex` when the site is not indexable. To force a rule, pass the string, such as `useRobotsRule('index, follow')`.
+- `useRobotsRule(null)` and `useRobotsRule(undefined)` keep the existing rule.
 - `useRobotsRule()` sets the rule only during SSR. In the browser it only reads the rendered value.
 - `noai` or `noimageai` makes a path non-indexable to the module, even with `index: true`. `getPathRobotConfig` returns `indexable: false`, and `disallowNonIndexableRoutes` disallows the path.
 - An `app.baseURL` other than `/` turns off robots.txt and logs an error. Crawlers only read `/robots.txt` at the host root.
 - Nuxt Content frontmatter `robots` sets the meta tag but not the header, and it needs `zod` 4 in your dependencies. See [references/integrations.md](references/integrations.md).
-- The key is `blockAiBots`. Some docs prose spells it `blockAIBots`.
+- The key is `blockAiBots`, not `blockAIBots`.
 - Use `blockAiBots: 'training'` to leave dedicated AI search and user fetch agents unblocked. Existing rules still apply.
 - Training mode includes Google-Extended, which also controls grounding in Gemini Apps and Vertex AI.
 
 ## Version limits
 
-These hold for 6.2.4:
+Version 7 breaks these 6.x patterns:
 
-- `definePageMeta({ robots })` has no effect on Nuxt 4.6. Use a route rule, `defineRouteRules()`, or `useRobotsRule()`.
-- A build that calls `useBotDetection()` fails with `Rolldown failed to resolve import "@vueuse/core"` unless the app installs `@vueuse/core`.
-- `robots.disableNuxtContentIntegration` has no effect.
-- The docs' `robots:config` Nitro hook that edits `ctx.groups` per host leaks. The result is shared, so other hosts get `noindex` until the next `/robots.txt` request. Use the `site-config:init` plugin above.
-- `groups[].comment` must be an array. A string prints one `#` line per character.
-- `disallowNonIndexableRoutes: true` (deprecated) also writes `Disallow: /_nuxt` and `Disallow: /_nuxt/*` into robots.txt.
+- Nuxt 3 and Node 20 are unsupported. Use Nuxt `^4.6.0 || ^5.0.0` and Node `^22.22.3 || ^24.15.0 || >=26.0.0`.
+- `#internal/nuxt-robots` is removed. Import from `#robots/server` or `#robots/app`.
+- Hook events are `RequestEvent` from `nuxt/server`. Read `ctx.event.req.headers.get('host')`, not `ctx.event.headers` or `event.node.req`.
+- A `robots:config` edit made with `ctx.event` changes only that `/robots.txt` response. For per host indexing, use the `site-config:init` plugin above.
+- A route rule beats `definePageMeta({ robots })` on the same path.
+- `assets/robots.txt` and `pages/robots.txt` load from `srcDir`. On Nuxt 4, move them into `app/`.
+- Nuxt Content v2 is unsupported, and Nuxt fails at startup with a version error. Upgrade to Nuxt Content v3.
+- `defineRobotsSchema()` needs `zod` `^4.6.5`.
+- The DevTools panel needs `nuxtseo-devtools-host` as a dev dependency: `pnpm add -D nuxtseo-devtools-host`.
 
 ## Config
 

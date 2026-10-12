@@ -33,7 +33,7 @@ const route = useRoute()
 const { data: page } = await useAsyncData(`page-${route.path}`, () => queryCollection('content').path(route.path).first())
 // The meta tag comes from page.seo. Only useRobotsRule() also sets the header.
 useSeoMeta(page.value?.seo || {})
-// Content returns null for an unset key. null sends X-Robots-Tag: null and drops the meta tag.
+// Content returns null for an unset key. Robots 7 ignores null and undefined, so the default rule stays.
 useRobotsRule(page.value?.robots ?? undefined)
 </script>
 
