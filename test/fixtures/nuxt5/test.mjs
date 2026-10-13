@@ -3,6 +3,7 @@ import { spawn } from 'node:child_process'
 import { once } from 'node:events'
 import { readFile } from 'node:fs/promises'
 import { createServer } from 'node:net'
+import { assertRouteRules } from './test-route-rules.ts'
 
 const portServer = createServer()
 portServer.listen(0, '127.0.0.1')
@@ -37,6 +38,7 @@ async function waitForServer() {
 
 try {
   const robots = await (await waitForServer()).text()
+  await assertRouteRules(origin)
   assert.match(robots, /User-agent: \*/)
   const response = await fetch(origin, { headers: { 'user-agent': 'Googlebot/2.1 (+http://www.google.com/bot.html)' } })
   assert.equal(response.status, 200)

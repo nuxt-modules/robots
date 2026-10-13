@@ -13,6 +13,9 @@ export default defineNuxtConfig({
     debug: true,
   },
   routeRules: {
+    '/api/route-rules': {
+      robots: { index: false, 'max-snippet': 120 },
+    },
     '/private': {
       robots: false,
     },
