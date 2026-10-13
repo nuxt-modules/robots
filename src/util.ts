@@ -20,6 +20,29 @@ import { matchDefaultBotTarget } from './generated-bot-matcher'
 export * from './const-bots'
 export { AiBots, NonHelpfulBots }
 
+/** A response header can express one site-wide policy, without user-agent exceptions. */
+export function resolveContentSignalHeader(groups: RobotsGroupInput[]): string | undefined {
+  const permissions = new Map<string, string>()
+  for (const input of groups) {
+    const group = normalizeGroup(input)
+    const signals = group.contentSignal || []
+    if (!signals.length)
+      continue
+    if (group.userAgent.length !== 1 || group.userAgent[0] !== '*')
+      return
+    for (const line of signals) {
+      for (const entry of line.split(',')) {
+        const pair = entry.trim().match(/^(ai-train|search|ai-input)=(yes|no)$/)
+        if (!pair || (permissions.has(pair[1]!) && permissions.get(pair[1]!) !== pair[2]))
+          return
+        permissions.set(pair[1]!, pair[2]!)
+      }
+    }
+  }
+  if (permissions.size)
+    return [...permissions].map(([name, value]) => `${name}=${value}`).join(', ')
+}
+
 /**
  * Predefined robot directive values map
  */

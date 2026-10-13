@@ -23,6 +23,7 @@ import { updateSiteConfig, useSiteConfig } from 'nuxt-site-config/kit'
 import { setupNitroRuntimeCompatibility, setupRuntimeAliases, useModuleLogger } from 'nuxtseo-shared/kit'
 import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { AiBots, AiTrainingBots, NonHelpfulBots } from './const'
+import { mergeContentSignalHeaders } from './content-signal-headers'
 import { setupDevToolsUI } from './devtools'
 import { applyRobotsHeaderRouteRules, findRobotsHeader, resolveRobotsHeaderRules } from './header-rules'
 import { mapPathForI18nPages, resolveI18nConfig, splitPathForI18nLocales } from './i18n'
@@ -33,6 +34,7 @@ import {
   normaliseRobotsRouteRule,
   normalizeGroup,
   parseRobotsTxt,
+  resolveContentSignalHeader,
   ROBOT_DIRECTIVE_VALUES,
   robotsDirectivesFromObject,
   validateRobots,
@@ -56,7 +58,7 @@ export interface ModuleOptions {
    */
   enabled: boolean
   /**
-   * Should a `X-Robots-Tag` header be added to the response.
+   * Add `X-Robots-Tag` and an eligible site-wide `Content-Signal` header.
    *
    * @default true
    */
@@ -622,6 +624,7 @@ export default defineNuxtModule<ModuleOptions>({
         groups,
         sitemap: config.sitemap,
         header: config.header,
+        contentSignalHeader: config.header ? resolveContentSignalHeader(groups) : undefined,
         robotsEnabledValue: config.robotsEnabledValue,
         robotsDisabledValue: config.robotsDisabledValue,
         cacheControl: config.cacheControl ?? 'max-age=14400, must-revalidate',
@@ -632,6 +635,37 @@ export default defineNuxtModule<ModuleOptions>({
     })
 
     registerTypeTemplates({ nitroCompatibility })
+
+    nuxt.hook('nitro:build:before', (nitro) => {
+      if (!String(nitro.options.preset).startsWith('cloudflare'))
+        return
+      nitro.hooks.hook('compiled', async () => {
+        const policy = (nitro.options.runtimeConfig['nuxt-robots'] as unknown as NuxtRobotsRuntimeConfig).contentSignalHeader
+        if (!policy)
+          return
+        const base = nitro.options.baseURL === '/' ? '' : withoutTrailingSlash(nitro.options.baseURL || '')
+        // Cloudflare reads headers at the asset root, above an application's base directory.
+        const assetRoot = String(nitro.options.preset).includes('pages')
+          ? nitro.options.output.dir
+          : resolve(nitro.options.output.publicDir, ...base.split('/').filter(Boolean).map(() => '..'))
+        const path = resolve(assetRoot, '_headers')
+        const publicPath = resolve(nitro.options.output.publicDir, '_headers')
+        const readHeaders = (file: string) => readFile(file, 'utf8').catch((error: NodeJS.ErrnoException) => {
+          if (error.code === 'ENOENT')
+            return ''
+          throw error
+        })
+        const original = await readHeaders(path)
+        const nested = publicPath === path ? '' : await readHeaders(publicPath)
+        const contents = [original, nested].filter(Boolean).join('\n\n')
+        const pattern = `${base}/*`
+        const merged = mergeContentSignalHeaders(contents, pattern, policy)
+        if (merged !== original)
+          await fsp.writeFile(path, merged)
+        if (nested)
+          await fsp.rm(publicPath)
+      })
+    })
 
     // only prerender for `nuxi generate`
     const isFirebase = nitroPreset === 'firebase'
@@ -657,6 +691,8 @@ export default defineNuxtModule<ModuleOptions>({
       handler: resolve('./runtime/server/middleware/injectContext'),
     })
     addServerPlugin(resolve('./runtime/server/plugins/initContext'))
+    if (!isNitro3)
+      addServerPlugin(resolve('./runtime/server/plugins/content-signal'))
     // Nitro 3 merges middleware headers after rendering. Apply the final rule after that merge.
     if (isNitro3) {
       addServerPlugin(addServerTemplate({
@@ -666,6 +702,9 @@ import { defineNitroPlugin } from '#nuxtseo/nitro'
 import { useRuntimeConfigNuxtRobots } from ${JSON.stringify(resolve('./runtime/server/composables/useRuntimeConfigNuxtRobots'))}
 export default defineNitroPlugin((nitroApp) => {
   nitroApp.hooks.hook('response', (response, event) => {
+    const { contentSignalHeader } = useRuntimeConfigNuxtRobots(event)
+    if (contentSignalHeader && !response.headers.has('content-signal'))
+      response.headers.set('Content-Signal', contentSignalHeader)
     const rule = event.context.robots?.rule
     if (rule && useRuntimeConfigNuxtRobots(event).header)
       response.headers.set('X-Robots-Tag', rule)
