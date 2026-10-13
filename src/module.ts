@@ -1,6 +1,7 @@
 import type { FileAfterParseHook } from '@nuxt/content'
 import type { NuxtPage } from 'nuxt/schema'
 import type { Arrayable, AutoI18nConfig, NuxtRobotsRuntimeConfig, RobotsGroupInput, RobotsGroupResolved } from './util'
+import { readFileSync } from 'node:fs'
 import fsp, { readFile } from 'node:fs/promises'
 import { relative } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
@@ -23,7 +24,7 @@ import { updateSiteConfig, useSiteConfig } from 'nuxt-site-config/kit'
 import { setupNitroRuntimeCompatibility, setupRuntimeAliases, useModuleLogger } from 'nuxtseo-shared/kit'
 import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { AiBots, AiTrainingBots, NonHelpfulBots } from './const'
-import { mergeContentSignalHeaders } from './content-signal-headers'
+import { assertContentSignalHeaderBudget, countStaticHeaderRules, mergeContentSignalHeaders } from './content-signal-headers'
 import { setupDevToolsUI } from './devtools'
 import { applyRobotsHeaderRouteRules, findRobotsHeader, resolveRobotsHeaderRules } from './header-rules'
 import { mapPathForI18nPages, resolveI18nConfig, splitPathForI18nLocales } from './i18n'
@@ -639,6 +640,12 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.hook('nitro:build:before', (nitro) => {
       if (!String(nitro.options.preset).startsWith('cloudflare'))
         return
+      let budget: { _tag: 'Unchanged' } | { _tag: 'Added', path: string } = { _tag: 'Unchanged' }
+      // Hook observers run after all compiled hooks. AI Ready can trim discovery rules first.
+      nitro.hooks.afterEach((hook) => {
+        if (hook.name === 'compiled' && budget._tag === 'Added')
+          assertContentSignalHeaderBudget(readFileSync(budget.path, 'utf8'))
+      })
       nitro.hooks.hook('compiled', async () => {
         const policy = (nitro.options.runtimeConfig['nuxt-robots'] as unknown as NuxtRobotsRuntimeConfig).contentSignalHeader
         if (!policy)
@@ -659,7 +666,9 @@ export default defineNuxtModule<ModuleOptions>({
         const nested = publicPath === path ? '' : await readHeaders(publicPath)
         const contents = [original, nested].filter(Boolean).join('\n\n')
         const pattern = `${base}/*`
-        const merged = mergeContentSignalHeaders(contents, pattern, policy)
+        const merged = mergeContentSignalHeaders(contents, pattern, policy, null)
+        if (countStaticHeaderRules(contents) <= 100 && countStaticHeaderRules(merged) > 100)
+          budget = { _tag: 'Added', path }
         if (merged !== original)
           await fsp.writeFile(path, merged)
         if (nested)
