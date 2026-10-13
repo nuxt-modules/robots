@@ -15,6 +15,7 @@ import {
   createResolver,
   defineNuxtModule,
   extendRouteRules,
+  hasNuxtModule,
   importModule,
   resolveModule,
 } from '@nuxt/kit'
@@ -306,6 +307,14 @@ export default defineNuxtModule<ModuleOptions>({
       })
       nuxt.hook('close', unregister)
     }
+
+    // Route rule matching strips locale prefixes. Apps without i18n get an identity function and no i18n runtime code.
+    addServerTemplate({
+      filename: '#nuxt-robots/i18n.mjs',
+      getContents: () => hasNuxtModule('@nuxtjs/i18n') || nuxt.options.runtimeConfig.public.i18n
+        ? `export { withoutLocalePrefix } from ${JSON.stringify(resolve('./runtime/server/util/withoutLocalePrefix'))}`
+        : 'export const withoutLocalePrefix = path => path',
+    })
 
     // Allow `definePageMeta({ robots: false })` to set per-page robots rules
     nuxt.options.experimental.extraPageMetaExtractionKeys = nuxt.options.experimental.extraPageMetaExtractionKeys || []
