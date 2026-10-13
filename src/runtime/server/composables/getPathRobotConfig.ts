@@ -1,40 +1,15 @@
 import type { RequestEvent } from 'nuxt/server'
-import type { RuntimeI18nConfig } from 'nuxtseo-shared/i18n-runtime'
 import type { RobotsContext } from '../../types'
 import { matchPathToRule, normaliseRobotsRouteRule } from '@nuxtjs/robots/util'
 import { getRequestHeader, matchRouteRules, useRuntimeConfig } from 'nuxt/server'
-import { resolveLocaleFromRoute } from 'nuxtseo-shared/i18n-runtime'
 import { parseURL, withoutBase, withoutTrailingSlash } from 'ufo'
+// @ts-expect-error Virtual server template registered by the module.
+import { withoutLocalePrefix } from '#nuxt-robots/i18n.mjs'
 // @ts-expect-error Virtual server template registered by the module.
 import { pageMetaMatchers } from '#nuxt-robots/page-meta.mjs'
 import { useNitroApp } from '#nuxtseo/nitro'
 import { getSiteRobotConfig } from './getSiteRobotConfig'
 import { useRuntimeConfigNuxtRobots } from './useRuntimeConfigNuxtRobots'
-
-const i18nStrategies = new Set<RuntimeI18nConfig['strategy']>(['no_prefix', 'prefix_except_default', 'prefix', 'prefix_and_default'])
-
-function parseRuntimeI18nConfig(input: unknown): RuntimeI18nConfig | null {
-  if (!input || typeof input !== 'object')
-    return null
-  const config = input as Record<string, unknown>
-  if (!Array.isArray(config.locales))
-    return null
-  const locales = config.locales.flatMap((locale) => {
-    const code = typeof locale === 'string'
-      ? locale
-      : locale && typeof locale === 'object' && typeof (locale as Record<string, unknown>).code === 'string'
-        ? (locale as Record<string, string>).code
-        : null
-    return code ? [{ code, hreflang: code }] : []
-  })
-  if (!locales.length)
-    return null
-  const defaultLocale = typeof config.defaultLocale === 'string' ? config.defaultLocale : locales[0]!.code
-  const strategy = typeof config.strategy === 'string' && i18nStrategies.has(config.strategy as RuntimeI18nConfig['strategy'])
-    ? config.strategy as RuntimeI18nConfig['strategy']
-    : 'prefix'
-  return { defaultLocale, locales, strategy }
-}
 
 export function getPathRobotConfig(e: RequestEvent, options?: { userAgent?: string, skipSiteIndexable?: boolean, path?: string }): RobotsContext {
   const runtimeConfig = useRuntimeConfig()
@@ -116,11 +91,10 @@ export function getPathRobotConfig(e: RequestEvent, options?: { userAgent?: stri
   // if we're using i18n we need to strip leading prefixes so the rule will match
   // note this is for < v10 i18n behavior as it now handles route rules itself
   // TODO we may consider checking the version explicitly rather than the presence of the rules
-  const i18nConfig = parseRuntimeI18nConfig((runtimeConfig.public as Record<string, unknown>)?.i18n)
-  if (i18nConfig && typeof robotRouteRules.robots === 'undefined') {
-    const resolvedRoute = resolveLocaleFromRoute(routeRulesPath, i18nConfig)
-    if (resolvedRoute.basePath !== routeRulesPath) {
-      routeRulesPath = resolvedRoute.basePath
+  if (typeof robotRouteRules.robots === 'undefined') {
+    const basePath: string = withoutLocalePrefix(routeRulesPath, runtimeConfig.public as Record<string, unknown>)
+    if (basePath !== routeRulesPath) {
+      routeRulesPath = basePath
       robotRouteRules = matchRules(routeRulesPath)
     }
   }
