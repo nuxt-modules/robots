@@ -25,11 +25,11 @@ export function resolveContentSignalHeader(groups: RobotsGroupInput[]): string |
   const permissions = new Map<string, string>()
   for (const input of groups) {
     const group = normalizeGroup(input)
+    if (group.userAgent.length !== 1 || group.userAgent[0] !== '*')
+      return
     const signals = group.contentSignal || []
     if (!signals.length)
       continue
-    if (group.userAgent.length !== 1 || group.userAgent[0] !== '*')
-      return
     for (const line of signals) {
       for (const entry of line.split(',')) {
         const pair = entry.trim().match(/^(ai-train|search|ai-input)=(yes|no)$/)

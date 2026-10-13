@@ -18,6 +18,7 @@ describe('site-wide Content-Signal headers', () => {
     [{ userAgent: 'GPTBot', contentSignal: 'ai-train=no' }],
     [{ userAgent: ['*', 'GPTBot'], contentSignal: 'ai-train=no' }],
     [{ userAgent: '*', contentSignal: 'ai-train=no' }, { userAgent: 'GPTBot', contentSignal: 'ai-train=yes' }],
+    [{ userAgent: '*', contentSignal: 'ai-train=yes' }, { userAgent: 'GPTBot', disallow: ['/'] }],
     [{ userAgent: '*', contentSignal: ['ai-train=no', 'ai-train=yes'] }],
     [{ userAgent: '*', contentSignal: 'search=maybe' }],
     [{ userAgent: '*', contentSignal: ['ai-train=no', '/docs/ ai-train=yes'] }],
