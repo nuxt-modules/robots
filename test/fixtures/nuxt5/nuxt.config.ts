@@ -16,6 +16,9 @@ export default defineNuxtConfig({
     '/private': {
       robots: false,
     },
+    '/explicit-header': {
+      headers: { 'x-robots-tag': 'noindex, noarchive' },
+    },
   },
   compatibilityDate: '2026-10-06',
 })

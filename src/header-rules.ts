@@ -15,6 +15,33 @@ export interface RobotsHeaderRulesInput {
 }
 
 /**
+ * Find the `X-Robots-Tag` header in a route rule's headers, in any casing.
+ */
+export function findRobotsHeader(headers: Record<string, unknown> | undefined): { key: string, value: string } | undefined {
+  for (const [key, value] of Object.entries(headers || {})) {
+    if (key.toLowerCase() === 'x-robots-tag' && typeof value === 'string' && value.trim())
+      return { key, value }
+  }
+}
+
+/**
+ * Use the `X-Robots-Tag` header of a route rule as its robots rule.
+ *
+ * The runtime sends the robots rule as the header and the meta tag. Without this, it would
+ * replace the configured header and the meta tag would disagree with it.
+ * A route rule that sets `robots` keeps it.
+ */
+export function applyRobotsHeaderRouteRules(routeRules: Record<string, (RobotsRouteRuleConfig & { headers?: Record<string, unknown> }) | undefined>): void {
+  for (const rules of Object.values(routeRules)) {
+    if (!rules || typeof rules.robots !== 'undefined')
+      continue
+    const header = findRobotsHeader(rules.headers)
+    if (header)
+      rules.robots = header.value
+  }
+}
+
+/**
  * Resolve the `X-Robots-Tag` header for each route rule.
  *
  * Static hosts such as Cloudflare and Netlify read these rules from `_headers`.
