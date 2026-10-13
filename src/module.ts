@@ -23,7 +23,7 @@ import { setupNitroRuntimeCompatibility, setupRuntimeAliases, useModuleLogger } 
 import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { AiBots, AiTrainingBots, NonHelpfulBots } from './const'
 import { setupDevToolsUI } from './devtools'
-import { resolveRobotsHeaderRules } from './header-rules'
+import { applyRobotsHeaderRouteRules, findRobotsHeader, resolveRobotsHeaderRules } from './header-rules'
 import { mapPathForI18nPages, resolveI18nConfig, splitPathForI18nLocales } from './i18n'
 import { isNuxtGenerate, resolveContentProvider, resolveNitroPreset } from './kit'
 import { registerTypeTemplates } from './templates'
@@ -529,6 +529,10 @@ export default defineNuxtModule<ModuleOptions>({
       // @ts-expect-error runtime type
       await nuxt.hooks.callHook('robots:config', config)
 
+      // a route rule that sets the header is that route's robots rule
+      applyRobotsHeaderRouteRules(nuxt.options.routeRules || {})
+      applyRobotsHeaderRouteRules(nuxt.options.nitro.routeRules || {})
+
       // convert robot routeRules to header routeRules for static hosting
       if (config.header) {
         const noIndexPaths = [withoutTrailingSlash(nuxt.options.app.buildAssetsDir), `${nuxt.options.app.buildAssetsDir}**`]
@@ -544,9 +548,11 @@ export default defineNuxtModule<ModuleOptions>({
           buildAssetsDir: nuxt.options.app.buildAssetsDir,
         })
         for (const [route, rule] of Object.entries(headerRules)) {
+          // Reuse the configured header name. A static host would send two differently cased headers.
+          const headerName = findRobotsHeader(nuxt.options.routeRules?.[route]?.headers)?.key || 'X-Robots-Tag'
           extendRouteRules(route, {
             headers: {
-              'X-Robots-Tag': rule,
+              [headerName]: rule,
             },
           }, { override: true })
         }

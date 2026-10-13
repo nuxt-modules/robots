@@ -48,6 +48,7 @@ try {
   assert.deepEqual(context.normalisedRouteRule, { allow: false })
   assert.equal(context.routeRule.robots, false)
   assert.equal(context.robots.indexable, false)
+  assert.equal(context.explicitHeader.rule, 'noindex, noarchive')
   const debugPath = await fetch(`${origin}/__robots__/debug-path.json?path=/private`).then(response => response.json())
   assert.equal(debugPath.path, '/private')
   assert.equal(debugPath.indexable, false)

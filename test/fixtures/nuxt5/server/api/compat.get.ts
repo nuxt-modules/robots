@@ -11,6 +11,7 @@ const routeRule = {
 export default defineEventHandler(event => ({
   trailingRule: getPathRobotConfig(event, { path: '/slash/', skipSiteIndexable: true }),
   lateRule: getPathRobotConfig(event, { path: '/late', skipSiteIndexable: true }),
+  explicitHeader: getPathRobotConfig(event, { path: '/explicit-header', skipSiteIndexable: true }),
   deepRobots: getDeepPathRobotConfig(event, { path: '/private' }),
   detectedBot: isBot(event),
   normalisedRouteRule: normaliseRobotsRouteRule(routeRule),
