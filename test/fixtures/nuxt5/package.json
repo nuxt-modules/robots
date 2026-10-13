@@ -4,7 +4,7 @@
   "type": "module",
   "packageManager": "pnpm@12.8.1",
   "scripts": {
-    "test": "nuxt cleanup && nuxt prepare && vue-tsc --noEmit -p .nuxt/tsconfig.app.json && vue-tsc --noEmit -p .nuxt/tsconfig.server.json && nuxt build && node test.mjs"
+    "test": "nuxt cleanup && nuxt prepare && vue-tsc --noEmit -p .nuxt/tsconfig.app.json && vue-tsc --noEmit -p .nuxt/tsconfig.node.json && vue-tsc --noEmit -p .nuxt/tsconfig.server.json && nuxt build && node test.mjs"
   },
   "dependencies": {
     "@nuxtjs/robots": "link:../../..",
@@ -15,6 +15,7 @@
     "vue-router": "^5.3.1"
   },
   "devDependencies": {
+    "@types/node": "^26.1.2",
     "typescript": "6.0.3",
     "vue-tsc": "^3.3.12"
   }
