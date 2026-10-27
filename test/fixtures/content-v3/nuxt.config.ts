@@ -5,6 +5,11 @@ const resolver = createResolver(import.meta.url)
 
 export default defineNuxtConfig({
   modules: [
+    (_options, nuxt) => {
+      // Content caches hook results, so builds with different Robots options need separate databases.
+      if (nuxt.options.content)
+        nuxt.options.content._localDatabase = { type: 'sqlite', filename: resolver.resolve(nuxt.options.buildDir, 'content.sqlite') }
+    },
     NuxtRobots,
     '@nuxt/content',
   ],
