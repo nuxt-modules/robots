@@ -11,6 +11,7 @@ export default defineNuxtConfig({
   robots: {
     credits: false,
     debug: true,
+    groups: [{ userAgent: '*', contentSignal: 'ai-train=no, search=yes' }],
   },
   routeRules: {
     '/api/route-rules': {
@@ -20,7 +21,7 @@ export default defineNuxtConfig({
       robots: false,
     },
     '/explicit-header': {
-      headers: { 'x-robots-tag': 'noindex, noarchive' },
+      headers: { 'x-robots-tag': 'noindex, noarchive', 'CONTENT-SIGNAL': 'search=no' },
     },
   },
   compatibilityDate: '2026-10-06',

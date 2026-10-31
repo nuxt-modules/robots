@@ -212,6 +212,7 @@ export interface NuxtRobotsRuntimeConfig {
   groups: RobotsGroupResolved[]
   sitemap: string[]
   header: boolean
+  contentSignalHeader?: string
   robotsEnabledValue: string
   robotsDisabledValue: string
   cacheControl: string | false
