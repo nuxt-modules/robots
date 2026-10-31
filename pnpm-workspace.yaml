@@ -7,14 +7,6 @@ minimumReleaseAgeExclude:
   - eslint-plugin-harlanzw
   - nuxtseo-layer-devtools
   - nuxtseo-shared
-  - '@nuxt/kit@4.6.0'
-  - '@nuxt/nitro-server@4.6.0'
-  - '@nuxt/schema@4.6.0'
-  - '@nuxt/vite-builder@4.6.0'
-  - nuxt@4.6.0
-  - '@harlan-zw/comark-content@0.2.0'
-  - '@nuxt/cli@4.0.0'
-  - '@nuxt/vite-server@4.6.0'
   - '@nuxt/devtools-kit@4.0.0-beta.4'
   - '@nuxt/devtools-ui-kit@4.0.0-beta.4'
   - '@nuxt/devtools@4.0.0-beta.4'
@@ -128,27 +120,27 @@ onlyBuiltDependencies:
 catalog:
   '@antfu/eslint-config': ^9.5.1
   '@fingerprintjs/botd': ^2.0.0
-  '@iconify-json/tabler': ^1.2.41
-  '@nuxt/devtools-kit': 4.0.0-beta.4
+  '@iconify-json/tabler': ^1.2.42
+  '@nuxt/devtools-kit': 4.0.0-beta.5
   '@nuxt/devtools-ui-kit': 4.0.0-beta.4
-  '@nuxt/kit': ^4.6.0
+  '@nuxt/kit': ^4.6.2
   '@nuxtjs/i18n': ^10.6.0
-  '@unocss/nuxt': ^66.10.5
-  '@unocss/preset-icons': ^66.10.5
-  '@unocss/preset-uno': ^66.10.5
-  '@unocss/runtime': ^66.10.5
+  '@unocss/nuxt': ^66.11.0
+  '@unocss/preset-icons': ^66.11.0
+  '@unocss/preset-uno': ^66.11.0
+  '@unocss/runtime': ^66.11.0
   '@vueuse/core': ^15.0.0
   better-sqlite3: ^13.0.3
   bumpp: ^12.3.0
   consola: ^3.4.2
   defu: ^6.1.7
-  eslint: ^10.12.0
+  eslint: ^10.13.0
   eslint-plugin-harlanzw: ^0.23.0
   firebase-functions: ^7.4.0
-  happy-dom: ^20.14.5
-  nuxt: ^4.6.0
+  happy-dom: ^21.0.3
+  nuxt: ^4.6.2
   nuxt-site-config: ^5.0.0
-  nuxtseo-layer-devtools: ^5.3.16
+  nuxtseo-layer-devtools: ^6.0.2
   nuxtseo-shared: ^6.0.3
   radix3: ^1.1.2
   sirv: ^3.0.2
@@ -156,23 +148,23 @@ catalog:
   typescript: 6.0.3
   ufo: ^1.6.4
   unbuild: ^3.6.1
-  unocss: ^66.10.5
-  vitest: ^5.0.3
-  vue: ^3.5.43
-  vue-router: ^5.3.1
-  vue-tsc: ^3.3.12
+  unocss: ^66.11.0
+  vitest: ^5.0.5
+  vue: ^3.5.44
+  vue-router: ^5.4.0
+  vue-tsc: ^3.3.13
 
 catalogs:
   dev:
     '@arethetypeswrong/cli': ^0.18.5
-    '@harlan-zw/comark-content': ^0.2.0
+    '@harlan-zw/comark-content': ^0.2.2
     '@headlessui/vue': ^1.7.23
-    '@iconify-json/logos': ^1.2.15
+    '@iconify-json/logos': ^1.2.17
     '@iconify-json/ri': ^1.2.10
-    '@nuxt/content': ^3.16.1
+    '@nuxt/content': ^3.16.2
     '@nuxt/module-builder': ^1.0.3
-    '@nuxt/test-utils': ^4.3.3
+    '@nuxt/test-utils': ^4.3.4
     '@nuxtjs/color-mode': ^4.0.1
     '@vueuse/nuxt': ^15.0.0
-    execa: ^10.0.1
-    playwright-core: ^1.63.0
+    execa: ^10.2.0
+    playwright-core: ^1.64.1
