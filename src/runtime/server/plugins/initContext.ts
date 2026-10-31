@@ -24,6 +24,9 @@ export default defineNitroPlugin(async (nitroApp) => {
   if (import.meta.prerender) {
     // need to inject HTML if we have an SPA route
     nitroApp.hooks.hook('render:html', async (ctx, { event }) => {
+      // The app owns SSR metadata. Only inject a tag for an empty SPA shell.
+      if (event.context.robotsMetaRendered)
+        return
       const routeOptions = getRouteRules(event)
       const isIsland = (process.env.NUXT_COMPONENT_ISLANDS && event.path.startsWith('/__nuxt_island'))
       const noSSR = !!(process.env.NUXT_NO_SSR)
