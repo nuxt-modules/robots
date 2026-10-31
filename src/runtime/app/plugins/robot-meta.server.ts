@@ -1,13 +1,32 @@
-import { defineNuxtPlugin, useHead, useRequestEvent } from 'nuxt/app'
+import type { NuxtRobotsRuntimeConfig } from '../../types'
+import { defineNuxtPlugin, useHead, useRequestEvent, useRuntimeConfig } from 'nuxt/app'
 
 export default defineNuxtPlugin({
-  setup() {
+  setup(nuxtApp) {
     const event = useRequestEvent()
     const ctx = event?.context?.robots
     const productionCtx = event?.context?.robotsProduction
     // set from nitro, not available for internal routes
-    if (!ctx)
+    if (!ctx || !event)
       return
+    const prerenderedNotFound = import.meta.prerender && event.path === '/404.html'
+    const { robotsDisabledValue } = useRuntimeConfig()['nuxt-robots'] as NuxtRobotsRuntimeConfig
+    if (prerenderedNotFound) {
+      ctx.rule = robotsDisabledValue
+      ctx.indexable = false
+    }
+    if (import.meta.prerender) {
+      nuxtApp.ssrContext?.head.hooks?.hook('tags:afterResolve', ({ tags }) => {
+        for (const tag of tags) {
+          if (tag.tag !== 'meta' || tag.props.name !== 'robots')
+            continue
+          // Error-page metadata must not make the static 404 fallback indexable.
+          if (prerenderedNotFound)
+            tag.props.content = robotsDisabledValue
+          event.context.robotsMetaRendered = true
+        }
+      })
+    }
     useHead({
       meta: [
         {
