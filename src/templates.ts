@@ -52,6 +52,9 @@ _robotsPatternMap?: Map<string, PatternMapValue>`,
 import type { HookRobotsConfigContext, HookRobotsTxtContext, RobotsValue, RobotsContext, PatternMapValue } from '@nuxtjs/robots'
 
 declare module '@nuxt/schema' {
+  interface RouteRuleConfigExtensions {
+    ${routeRules}
+  }
   interface AppRouteRulesExtensions {
     ${routeRules}
   }
