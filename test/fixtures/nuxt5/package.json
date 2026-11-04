@@ -4,7 +4,8 @@
   "type": "module",
   "packageManager": "pnpm@12.8.1",
   "scripts": {
-    "test": "nuxt cleanup && nuxt prepare && vue-tsc --noEmit -p .nuxt/tsconfig.app.json && vue-tsc --noEmit -p .nuxt/tsconfig.node.json && vue-tsc --noEmit -p .nuxt/tsconfig.server.json && nuxt build && node test.mjs"
+    "test": "nuxt cleanup && nuxt prepare && vue-tsc --noEmit -p .nuxt/tsconfig.app.json && vue-tsc --noEmit -p .nuxt/tsconfig.node.json && vue-tsc --noEmit -p .nuxt/tsconfig.server.json && pnpm test:types && nuxt build && node test.mjs",
+    "test:types": "vue-tsc --noEmit -p tsconfig.route-rules.json"
   },
   "dependencies": {
     "@nuxtjs/robots": "link:../../..",
