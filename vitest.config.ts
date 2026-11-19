@@ -26,6 +26,7 @@ export default defineConfig({
           typecheck: {
             enabled: true,
             tsconfig: './test/types/tsconfig.json',
+            include: ['./test/types/**/*.test-d.ts'],
           },
           include: [
             './test/types/**/*.test-d.ts',

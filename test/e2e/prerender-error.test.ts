@@ -21,7 +21,11 @@ for (const scenario of [
       dev: false,
       server: false,
       nuxtConfig: {
-        nitro: { static: true },
+        nitro: {
+          static: true,
+          // Exercise the root route without letting the SPA fallback replace its output.
+          prerender: scenario.ssr ? undefined : { routes: ['/'], ignore: ['/index.html'] },
+        },
         ssr: scenario.ssr,
         experimental: { prerenderErrorPages: scenario.prerenderErrorPages },
         robots: { robotsDisabledValue: scenario.disabledValue ?? 'noindex, nofollow' },
