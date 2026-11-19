@@ -1,25 +1,62 @@
-/** Add the fallback first, so explicit Cloudflare rules can detach it before setting their policy. */
+/** Add a fallback without changing authored rule order or combining it with explicit policies. */
 export function mergeContentSignalHeaders(contents: string, pattern: string, policy: string, limit: number | null = 100): string {
   const blocks = contents.split(/(?=^[^\s#])/m)
+  const pathOf = (block: string) => block.split(/\r?\n/, 1)[0]!
+  const setsPolicy = (block: string) => /^\s+content-signal\s*:/im.test(block)
+  const removesPolicy = (block: string) => /^\s+!\s*content-signal\s*$/im.test(block)
   // A site's own catch-all policy or removal is authoritative.
-  const isBroad = (block: string) => block.split(/\r?\n/, 1)[0] === pattern
-  const broad = blocks.filter(isBroad)
-  if (broad.some(block => /^\s+(?:content-signal\s*:|!\s*content-signal\s*$)/im.test(block)))
+  if (blocks.some(block => pathOf(block) === pattern && (setsPolicy(block) || removesPolicy(block))))
     return contents
-  // Multiple explicit policies can overlap. Per-rule removals would erase earlier policies.
-  // Cloudflare collapses duplicate paths, so separate removal rules cannot preserve their order.
-  // Leave the authored file intact rather than risk weakening an explicit policy.
-  if (blocks.filter(block => /^\s+content-signal\s*:/im.test(block)).length > 1)
-    return contents
-  const explicit = blocks.filter(block => !isBroad(block)).map((block) => {
-    if (!/^\s+content-signal\s*:/im.test(block) || /^\s+!\s*content-signal\s*$/im.test(block))
+
+  const fail = (): never => {
+    throw new Error('Content-Signal fallback cannot preserve these ordered header rules. Set Content-Signal explicitly in the catch-all rule.')
+  }
+  // Only reason about literal paths and one trailing splat. Other patterns may overlap.
+  const includes = (outer: string, inner: string) => outer === inner
+    || (outer.endsWith('/*') && inner.startsWith(outer.slice(0, -1)))
+  const simple = (path: string) => path.startsWith('/') && !path.startsWith('//') && !/[:?#\\\s]/.test(path)
+    && (!path.includes('*') || (path.endsWith('/*') && !path.slice(0, -1).includes('*')))
+    && new URL(path, 'https://example.com').pathname === path
+  const disjoint = (left: string, right: string) => simple(left) && simple(right)
+    && !includes(left, right) && !includes(right, left)
+  // Cloudflare collapses duplicate paths. Never reason about a policy that compilation may replace.
+  if (blocks.some((block, index) => (pathOf(block) === pattern || setsPolicy(block) || removesPolicy(block))
+    && blocks.some((other, otherIndex) => otherIndex !== index && pathOf(other) === pathOf(block)))) {
+    fail()
+  }
+  const prior: string[] = []
+  let fallbackAdded = false
+  const hasBroad = blocks.some(block => pathOf(block) === pattern)
+  const fallback = `${pattern}\n  Content-Signal: ${policy}\n\n`
+  if (!hasBroad)
+    fallbackAdded = true
+  const merged = (hasBroad ? '' : fallback) + blocks.map((block) => {
+    const path = pathOf(block)
+    if (path === pattern) {
+      fallbackAdded = true
+      return block.replace(/^([^\r\n]*)(?:\r?\n|$)/, `$1\n  Content-Signal: ${policy}\n`)
+    }
+    if (!setsPolicy(block) && !removesPolicy(block))
       return block
-    return block.replace(/^(\s+)(content-signal\s*:)/im, '$1! Content-Signal\n$1$2')
+    // A later fallback would append permissions to an already authoritative policy.
+    // Moving that catch-all could change unrelated security headers.
+    if (!fallbackAdded && !disjoint(pattern, path))
+      fail()
+    if (!setsPolicy(block) || removesPolicy(block)) {
+      prior.push(path)
+      return block
+    }
+    const covered = prior.some(previous => simple(previous) && simple(path) && includes(previous, path))
+    if (!covered && !disjoint(pattern, path)) {
+      // Reset once per disjoint region. Nested policies retain earlier explicit permissions.
+      // A partial overlap needs conditional resets, which _headers cannot express safely here.
+      if (!simple(path) || prior.some(previous => !disjoint(previous, path)))
+        fail()
+      block = block.replace(/^(\s+)(content-signal\s*:)/im, '$1! Content-Signal\n$1$2')
+    }
+    prior.push(path)
+    return block
   }).join('')
-  const fallback = broad.length
-    ? broad.map(block => `${block.replace(/^([^\r\n]*)(?:\r?\n|$)/, `$1\n  Content-Signal: ${policy}\n`).trimEnd()}\n\n`).join('')
-    : `${pattern}\n  Content-Signal: ${policy}\n\n`
-  const merged = `${fallback}${explicit}`
   if (limit !== null)
     assertContentSignalHeaderBudget(merged, limit)
   return merged

@@ -4,21 +4,22 @@ import { mergeContentSignalHeaders } from '../../src/content-signal-headers'
 
 // Cloudflare compiles paths into an ordered map, then unsets before setting each matching rule.
 function serveAsset(contents: string, path: string, body: string) {
-  const rules = new Map<string, { values: string[], remove: boolean }>()
-  let rule: { values: string[], remove: boolean } | undefined
+  const rules = new Map<string, { values: [string, string][], remove: string[] }>()
+  let rule: { values: [string, string][], remove: string[] } | undefined
   for (const line of contents.split(/\r?\n/)) {
     if (!line.trim() || line.trim().startsWith('#'))
       continue
     if (!/^\s/.test(line)) {
-      rule = { values: [], remove: false }
+      rule = { values: [], remove: [] }
       rules.set(line, rule)
     }
     else if (rule) {
-      if (/^\s*!\s*content-signal\s*$/i.test(line))
-        rule.remove = true
-      const value = line.trim().match(/^content-signal:(.*)$/i)
+      const removal = line.trim().match(/^!\s*(\S.*)$/)
+      if (removal)
+        rule.remove.push(removal[1]!)
+      const value = line.trim().match(/^([^:]+):(.*)$/)
       if (value)
-        rule.values.push(value[1]!.trim())
+        rule.values.push([value[1]!, value[2]!.trim()])
     }
   }
   const response = new Response(body)
@@ -26,10 +27,10 @@ function serveAsset(contents: string, path: string, body: string) {
     const matcher = new RegExp(`^${pattern.split('*').map(part => part.replace(/[.+?^${}()|[\]\\]/g, '\\$&')).join('.*')}$`)
     if (!matcher.test(path))
       continue
-    if (remove)
-      response.headers.delete('content-signal')
-    for (const value of values)
-      response.headers.append('content-signal', value)
+    for (const name of remove)
+      response.headers.delete(name)
+    for (const [name, value] of values)
+      response.headers.append(name, value)
   }
   return response
 }
@@ -56,5 +57,56 @@ describe('overlapping static Content-Signal policies', () => {
     const merged = mergeContentSignalHeaders(contents, '/*', 'ai-input=yes')
     expect(serveAsset(merged, '/docs/policy.md', '').headers.get('content-signal')).toBe('ai-train=no')
     expect(serveAsset(merged, '/other/policy.md', '').headers.get('content-signal')).toBe('ai-input=yes')
+  })
+})
+
+describe('static fallback coverage and authored security headers', () => {
+  it('preserves framing protection after an authored narrow removal', () => {
+    const contents = '/embed/*\n  ! X-Frame-Options\n\n/*\n  X-Frame-Options: DENY\n'
+    const merged = mergeContentSignalHeaders(contents, '/*', 'ai-train=no')
+    for (const path of ['/embed/page', '/index.html']) {
+      expect(serveAsset(merged, path, '').headers.get('x-frame-options')).toBe('DENY')
+      expect(serveAsset(merged, path, '').headers.get('content-signal')).toBe('ai-train=no')
+    }
+  })
+
+  it('keeps disjoint overrides and supplies the denial on uncovered assets', () => {
+    const contents = '/docs/*\n  Content-Signal: search=yes\n\n/media/*\n  Content-Signal: ai-input=yes\n'
+    const merged = mergeContentSignalHeaders(contents, '/*', 'ai-train=no')
+    expect(serveAsset(merged, '/docs/page', '').headers.get('content-signal')).toBe('search=yes')
+    expect(serveAsset(merged, '/media/image.jpg', '').headers.get('content-signal')).toBe('ai-input=yes')
+    expect(serveAsset(merged, '/index.html', '').headers.get('content-signal')).toBe('ai-train=no')
+  })
+})
+
+describe('unsafe static policy combinations', () => {
+  it('rejects a later wider policy instead of erasing an earlier denial', () => {
+    const contents = '/docs/private/*\n  Content-Signal: ai-train=no\n\n/docs/*\n  Content-Signal: search=yes\n'
+    expect(() => mergeContentSignalHeaders(contents, '/*', 'ai-input=yes')).toThrow('Content-Signal fallback cannot preserve')
+  })
+
+  it('rejects a fallback after an explicit policy without moving security headers', () => {
+    const contents = '/docs/*\n  Content-Signal: ai-train=no\n  ! X-Frame-Options\n\n/*\n  X-Frame-Options: DENY\n'
+    expect(() => mergeContentSignalHeaders(contents, '/*', 'ai-input=yes')).toThrow('Content-Signal fallback cannot preserve')
+  })
+
+  it('keeps explicit removals and security headers across nested and uncovered assets', () => {
+    const contents = '/*\n  X-Frame-Options: DENY\n\n/docs/*\n  Content-Signal: ai-train=no\n\n/docs/private/*\n  ! X-Frame-Options\n  ! Content-Signal\n  Content-Signal: search=yes\n'
+    const merged = mergeContentSignalHeaders(contents, '/*', 'ai-input=yes')
+    expect(serveAsset(merged, '/docs/page', '').headers.get('content-signal')).toBe('ai-train=no')
+    expect(serveAsset(merged, '/docs/private/page', '').headers.get('content-signal')).toBe('search=yes')
+    expect(serveAsset(merged, '/docs/private/page', '').headers.get('x-frame-options')).toBeNull()
+    expect(serveAsset(merged, '/index.html', '').headers.get('x-frame-options')).toBe('DENY')
+    expect(serveAsset(merged, '/index.html', '').headers.get('content-signal')).toBe('ai-input=yes')
+  })
+})
+
+describe('cloudflare path compilation boundaries', () => {
+  it.each([
+    '/docs/*\n  Content-Signal: ai-train=no\n\n/docs/*\n  Content-Signal: search=yes\n',
+    '/docs*\n  Content-Signal: ai-train=no\n\n/docs/page\n  Content-Signal: search=yes\n',
+    '/docs/../media/*\n  Content-Signal: ai-train=no\n\n/media/*\n  Content-Signal: search=yes\n',
+  ])('rejects ambiguous paths instead of silently combining the fallback', (contents) => {
+    expect(() => mergeContentSignalHeaders(contents, '/*', 'ai-input=yes')).toThrow('Content-Signal fallback cannot preserve')
   })
 })
