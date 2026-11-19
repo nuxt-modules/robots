@@ -155,7 +155,7 @@ Nuxt Content v3 frontmatter and Nuxt i18n path expansion: [references/integratio
 - `useRobotsRule()` sets the rule only during SSR. In the browser it only reads the rendered value.
 - `noai` or `noimageai` makes a path non-indexable to the module, even with `index: true`. `getPathRobotConfig` returns `indexable: false`, and `disallowNonIndexableRoutes` disallows the path.
 - An `app.baseURL` other than `/` turns off robots.txt and logs an error. Crawlers only read `/robots.txt` at the host root.
-- Nuxt Content frontmatter `robots` sets the meta tag but not the header, and it needs `zod` 4 in your dependencies. See [references/integrations.md](references/integrations.md).
+- Nuxt Content frontmatter `robots` sets the meta tag. Call `useRobotsRule()` to send the same rule in the header. See [references/integrations.md](references/integrations.md).
 - The key is `blockAiBots`, not `blockAIBots`.
 - Use `blockAiBots: 'training'` to leave dedicated AI search and user fetch agents unblocked. Existing rules still apply.
 - Training mode includes Google-Extended, which also controls grounding in Gemini Apps and Vertex AI.
@@ -171,7 +171,7 @@ Version 7 breaks these 6.x patterns:
 - A route rule beats `definePageMeta({ robots })` on the same path.
 - `assets/robots.txt` and `pages/robots.txt` load from `srcDir`. On Nuxt 4, move them into `app/`.
 - Nuxt Content v2 is unsupported, and Nuxt fails at startup with a version error. Upgrade to Nuxt Content v3.
-- `defineRobotsSchema()` needs `zod` `^4.6.5`.
+- For Zod collections, import `defineRobotsSchema()` from `@nuxtjs/robots/content` and install `zod` `^4.6.5`.
 - The DevTools panel needs `nuxtseo-devtools-host` as a dev dependency: `pnpm add -D nuxtseo-devtools-host`.
 
 ## Config

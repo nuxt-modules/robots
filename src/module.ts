@@ -275,7 +275,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     addServerTemplate({
       filename: '#nuxt-robots/ssr-default.mjs',
-      getContents: () => `export const ROBOTS_SSR_DEFAULT = ${!isNitro3}`,
+      getContents: () => `export const ROBOTS_SSR_DEFAULT = ${!isNitro3 && nuxt.options.ssr !== false}`,
     })
     if (!isNitro3) {
       nuxt.options.nitro.externals ||= {}

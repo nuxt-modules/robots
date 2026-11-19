@@ -120,38 +120,39 @@ onlyBuiltDependencies:
 catalog:
   '@antfu/eslint-config': ^10.0.0
   '@fingerprintjs/botd': ^2.0.0
-  '@iconify-json/tabler': ^1.2.43
-  '@nuxt/devtools-kit': 4.0.0-beta.7
-  '@nuxt/devtools-ui-kit': 4.0.0-beta.7
+  '@iconify-json/tabler': ^1.2.46
+  '@nuxt/devtools-kit': 4.2.0
+  '@nuxt/devtools-ui-kit': 4.2.0
   '@nuxt/kit': ^4.6.4
   '@nuxtjs/i18n': ^10.6.0
-  '@unocss/nuxt': ^66.12.0
-  '@unocss/preset-icons': ^66.12.0
-  '@unocss/preset-uno': ^66.12.0
-  '@unocss/runtime': ^66.12.0
+  '@unocss/nuxt': ^66.13.0
+  '@unocss/preset-icons': ^66.13.0
+  '@unocss/preset-uno': ^66.13.0
+  '@unocss/runtime': ^66.13.0
   '@vueuse/core': ^15.0.0
-  better-sqlite3: ^13.0.3
+  better-sqlite3: ^13.2.0
   bumpp: ^12.3.0
   consola: ^3.4.2
   defu: ^6.1.7
-  eslint: ^10.14.0
+  eslint: ^10.15.0
   eslint-plugin-harlanzw: ^0.23.0
   firebase-functions: ^7.4.0
   happy-dom: ^21.0.4
   nuxt: ^4.6.4
   nuxt-site-config: ^5.0.0
   nuxtseo-layer-devtools: ^6.0.2
-  nuxtseo-shared: ^6.0.3
+  nuxtseo-shared: ^6.0.4
   radix3: ^1.1.2
   sirv: ^3.0.2
   std-env: ^4.3.0
   typescript: 6.0.3
   ufo: ^1.6.4
   unbuild: ^3.6.1
-  unocss: ^66.12.0
+  unocss: ^66.13.0
+  valibot: ^1.4.2
   vitest: ^5.1.0
-  vue: ^3.5.44
-  vue-router: ^5.4.0
+  vue: ^3.5.45
+  vue-router: ^5.5.1
   vue-tsc: ^3.3.14
 
 catalogs:
@@ -159,12 +160,12 @@ catalogs:
     '@arethetypeswrong/cli': ^0.18.5
     '@harlan-zw/comark-content': ^0.2.2
     '@headlessui/vue': ^1.7.23
-    '@iconify-json/logos': 1.2.18
+    '@iconify-json/logos': 1.2.20
     '@iconify-json/ri': ^1.2.10
-    '@nuxt/content': ^3.16.2
-    '@nuxt/module-builder': ^1.0.3
-    '@nuxt/test-utils': ^4.3.4
+    '@nuxt/content': ^3.17.0
+    '@nuxt/module-builder': ^1.0.4
+    '@nuxt/test-utils': ^4.4.0
     '@nuxtjs/color-mode': ^4.1.0
     '@vueuse/nuxt': ^15.0.0
     execa: ^10.2.1
-    playwright-core: ^1.64.1
+    playwright-core: ^1.65.1

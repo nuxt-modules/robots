@@ -33,7 +33,8 @@ export {}
 'robots:robots-txt': (ctx: HookRobotsTxtContext) => void | Promise<void>`
   const nitroTypes = renderNitroTypeAugmentations(nitroCompatibility, {
     eventContext: `robots?: RobotsContext
-robotsProduction?: RobotsContext`,
+robotsProduction?: RobotsContext
+robotsMetaRendered?: true`,
     nitroInterfaces: {
       NitroApp: `_robots: {
   ctx: HookRobotsConfigContext
