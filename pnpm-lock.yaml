@@ -164,6 +164,9 @@ settings:
 
 catalogs:
   default:
+    valibot:
+      specifier: ^1.4.2
+      version: 1.4.2
     '@antfu/eslint-config':
       specifier: ^9.5.1
       version: 9.5.1
@@ -478,6 +481,9 @@ importers:
       unocss:
         specifier: 'catalog:'
         version: 66.11.0(@devframes/agentic@1.2.0)(@oxc-project/types@0.142.0)(@unocss/webpack@66.11.0(esbuild@0.28.1)(rolldown@1.2.12)(rollup@4.62.4)(vite@8.3.3)(webpack@5.109.2(cssnano@8.0.2(postcss@8.5.25))(csso@5.0.5)(esbuild@0.28.1)(lightningcss@1.33.0)(postcss@8.5.25)))(cac@7.0.0)(rolldown@1.2.12)(rollup@4.62.4)(srvx@0.11.22)(vite@8.3.3)
+      valibot:
+        specifier: 'catalog:'
+        version: 1.4.2(typescript@6.0.3)
       vitest:
         specifier: 'catalog:'
         version: 5.0.5(@opentelemetry/api@1.9.1)(@types/node@26.1.2)(happy-dom@21.0.3)(vite@8.3.3)

@@ -19,6 +19,7 @@ export default defineBuildConfig({
   },
   entries: [
     { input: 'src/content', name: 'content' },
+    { input: 'src/content-valibot', name: 'content-valibot' },
     { input: 'src/util', name: 'util' },
   ],
   externals: [
@@ -27,6 +28,7 @@ export default defineBuildConfig({
     'nitropack',
     'consola',
     '@nuxt/content',
+    'valibot',
     'zod',
   ],
 })
