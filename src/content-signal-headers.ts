@@ -4,13 +4,24 @@ export function mergeContentSignalHeaders(contents: string, pattern: string, pol
   const pathOf = (block: string) => block.split(/\r?\n/, 1)[0]!
   const setsPolicy = (block: string) => /^\s+content-signal\s*:/im.test(block)
   const removesPolicy = (block: string) => /^\s+!\s*content-signal\s*$/im.test(block)
+  const fail = (advice = 'Set Content-Signal explicitly in the catch-all rule.'): never => {
+    throw new Error(`Content-Signal fallback cannot preserve these ordered header rules. ${advice}`)
+  }
+  // Importing nested files must not replace any active root rule in Cloudflare's path map.
+  // Check every directive before the catch-all shortcut, including unrelated security headers.
+  const paths = new Set<string>()
+  for (const block of blocks) {
+    const path = pathOf(block).trim()
+    if (!path || path.startsWith('#'))
+      continue
+    if (paths.has(path))
+      fail('Combine duplicate paths in one rule.')
+    paths.add(path)
+  }
   // A site's own catch-all policy or removal is authoritative.
   if (blocks.some(block => pathOf(block) === pattern && (setsPolicy(block) || removesPolicy(block))))
     return contents
 
-  const fail = (): never => {
-    throw new Error('Content-Signal fallback cannot preserve these ordered header rules. Set Content-Signal explicitly in the catch-all rule.')
-  }
   // Only reason about literal paths and one trailing splat. Other patterns may overlap.
   const includes = (outer: string, inner: string) => outer === inner
     || (outer.endsWith('/*') && inner.startsWith(outer.slice(0, -1)))
@@ -19,11 +30,6 @@ export function mergeContentSignalHeaders(contents: string, pattern: string, pol
     && new URL(path, 'https://example.com').pathname === path
   const disjoint = (left: string, right: string) => simple(left) && simple(right)
     && !includes(left, right) && !includes(right, left)
-  // Cloudflare collapses duplicate paths. Never reason about a policy that compilation may replace.
-  if (blocks.some((block, index) => (pathOf(block) === pattern || setsPolicy(block) || removesPolicy(block))
-    && blocks.some((other, otherIndex) => otherIndex !== index && pathOf(other) === pathOf(block)))) {
-    fail()
-  }
   const prior: string[] = []
   let fallbackAdded = false
   const hasBroad = blocks.some(block => pathOf(block) === pattern)

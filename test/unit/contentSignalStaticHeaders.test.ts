@@ -103,6 +103,18 @@ describe('unsafe static policy combinations', () => {
 
 describe('cloudflare path compilation boundaries', () => {
   it.each([
+    '',
+    '/docs/*\n  Content-Signal: ai-train=no\n\n',
+    '/docs/*\n  ! Content-Signal\n\n',
+  ])('rejects nested collisions before replacing active root security headers, catch-all %j', (broad) => {
+    const root = `${broad}/docs/private/*\n  X-Frame-Options: DENY\n  Content-Security-Policy: frame-ancestors 'none'\n`
+    const nested = '/docs/private/*\n  Cache-Control: public, max-age=60\n'
+    expect(serveAsset(root, '/docs/private/page.html', '').headers.get('x-frame-options')).toBe('DENY')
+    expect(() => mergeContentSignalHeaders(`${root}\n${nested}`, '/docs/*', 'ai-train=no'))
+      .toThrow('Content-Signal fallback cannot preserve')
+  })
+
+  it.each([
     '/docs/*\n  Content-Signal: ai-train=no\n\n/docs/*\n  Content-Signal: search=yes\n',
     '/docs*\n  Content-Signal: ai-train=no\n\n/docs/page\n  Content-Signal: search=yes\n',
     '/docs/../media/*\n  Content-Signal: ai-train=no\n\n/media/*\n  Content-Signal: search=yes\n',
