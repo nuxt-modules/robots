@@ -24,7 +24,7 @@ import { updateSiteConfig, useSiteConfig } from 'nuxt-site-config/kit'
 import { setupNitroRuntimeCompatibility, setupRuntimeAliases, useModuleLogger } from 'nuxtseo-shared/kit'
 import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
 import { AiBots, AiTrainingBots, NonHelpfulBots } from './const'
-import { assertContentSignalHeaderBudget, countStaticHeaderRules, mergeContentSignalHeaders } from './content-signal-headers'
+import { assertContentSignalHeaderBudget, countStaticHeaderRules, mergeContentSignalHeaders, pickContentSignalHeaderRules } from './content-signal-headers'
 import { setupDevToolsUI } from './devtools'
 import { applyRobotsHeaderRouteRules, findRobotsHeader, resolveRobotsHeaderRules } from './header-rules'
 import { mapPathForI18nPages, resolveI18nConfig, splitPathForI18nLocales } from './i18n'
@@ -664,7 +664,8 @@ export default defineNuxtModule<ModuleOptions>({
         })
         const original = await readHeaders(path)
         const nested = publicPath === path ? '' : await readHeaders(publicPath)
-        const contents = [original, nested].filter(Boolean).join('\n\n')
+        // Only import policy directives from outside the asset root.
+        const contents = [original, pickContentSignalHeaderRules(nested)].filter(Boolean).join('\n\n')
         const pattern = `${base}/*`
         const merged = mergeContentSignalHeaders(contents, pattern, policy, null)
         if (countStaticHeaderRules(contents) <= 100 && countStaticHeaderRules(merged) > 100)

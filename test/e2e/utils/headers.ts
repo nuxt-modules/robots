@@ -34,9 +34,34 @@ export function findBuildAsset(): string {
   return `/_nuxt/${file}`
 }
 
-/** The `_headers` file that the preset wrote to the public output directory. */
-export function readHeadersFile(): string {
-  return readFileSync(join(publicDir(), '_headers'), 'utf8')
+/** The `_headers` file at the preset's asset root. */
+export function readHeadersFile(assetDirectory = 'public'): string {
+  return readFileSync(join(useTestContext().nuxt!.options.nitro.output!.dir!, assetDirectory, '_headers'), 'utf8')
+}
+
+/** Apply the matching Cloudflare rules in order, including header removals. */
+export function staticAssetHeaders(contents: string, path: string): Headers {
+  const headers = new Headers()
+  let matches = false
+  for (const line of contents.split('\n')) {
+    if (!line.trim() || line.trimStart().startsWith('#'))
+      continue
+    if (!/^\s/.test(line)) {
+      matches = line.endsWith('*') ? path.startsWith(line.slice(0, -1)) : path === line
+      continue
+    }
+    if (!matches)
+      continue
+    const directive = line.trim()
+    if (directive.startsWith('!')) {
+      headers.delete(directive.slice(1).trim())
+      continue
+    }
+    const [name, ...value] = directive.split(':')
+    if (name && value.length)
+      headers.append(name.trim(), value.join(':').trim())
+  }
+  return headers
 }
 
 /**

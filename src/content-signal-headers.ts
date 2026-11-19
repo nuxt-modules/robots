@@ -1,6 +1,21 @@
+const STATIC_HEADER_RULE_BOUNDARY = /(?=^[^\s#])/m
+
+export function pickContentSignalHeaderRules(contents: string): string {
+  const rules: string[] = []
+  for (const block of contents.split(STATIC_HEADER_RULE_BOUNDARY)) {
+    if (!/^[^\s#]/.test(block))
+      continue
+    const [path, ...lines] = block.split(/\r?\n/)
+    const directives = lines.filter(line => /^\s+(?:content-signal\s*:|!\s*content-signal\s*$)/i.test(line))
+    if (directives.length)
+      rules.push([path, ...directives].join('\n'))
+  }
+  return rules.join('\n\n')
+}
+
 /** Add a fallback without changing authored rule order or combining it with explicit policies. */
 export function mergeContentSignalHeaders(contents: string, pattern: string, policy: string, limit: number | null = 100): string {
-  const blocks = contents.split(/(?=^[^\s#])/m)
+  const blocks = contents.split(STATIC_HEADER_RULE_BOUNDARY)
   const pathOf = (block: string) => block.split(/\r?\n/, 1)[0]!
   const setsPolicy = (block: string) => /^\s+content-signal\s*:/im.test(block)
   const removesPolicy = (block: string) => /^\s+!\s*content-signal\s*$/im.test(block)
