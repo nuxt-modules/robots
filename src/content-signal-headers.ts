@@ -6,6 +6,11 @@ export function mergeContentSignalHeaders(contents: string, pattern: string, pol
   const broad = blocks.filter(isBroad)
   if (broad.some(block => /^\s+(?:content-signal\s*:|!\s*content-signal\s*$)/im.test(block)))
     return contents
+  // Multiple explicit policies can overlap. Per-rule removals would erase earlier policies.
+  // Cloudflare collapses duplicate paths, so separate removal rules cannot preserve their order.
+  // Leave the authored file intact rather than risk weakening an explicit policy.
+  if (blocks.filter(block => /^\s+content-signal\s*:/im.test(block)).length > 1)
+    return contents
   const explicit = blocks.filter(block => !isBroad(block)).map((block) => {
     if (!/^\s+content-signal\s*:/im.test(block) || /^\s+!\s*content-signal\s*$/im.test(block))
       return block
