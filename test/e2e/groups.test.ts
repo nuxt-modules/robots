@@ -69,6 +69,10 @@ describe('stack', async () => {
     })
     expect(headers.get('x-robots-tag')).toMatchInlineSnapshot(`"noindex, nofollow"`)
   })
+  it('keeps group directives out of the page payload', async () => {
+    const html = await $fetch<string>('/')
+    expect(html.includes('/test3')).toBe(false)
+  })
   it('blocks the real GoogleBot product string from /test3', async () => {
     // Crawlers send a product string, never the bare token above — the group has to match a user
     // agent that CONTAINS `Googlebot`.

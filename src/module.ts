@@ -205,7 +205,7 @@ export interface ModuleHooks {
 }
 
 export interface ModulePublicRuntimeConfig {
-  ['nuxt-robots']: ResolvedModuleOptions
+  ['nuxt-robots']: Omit<ResolvedModuleOptions, 'groups'>
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -627,11 +627,10 @@ export default defineNuxtModule<ModuleOptions>({
         }
       }
 
-      const robotsRuntimeConfig: NuxtRobotsRuntimeConfig = {
+      const publicRobotsConfig: Omit<NuxtRobotsRuntimeConfig, 'groups'> = {
         version: version || '',
         debug: config.debug,
         credits: config.credits,
-        groups,
         sitemap: config.sitemap,
         header: config.header,
         contentSignalHeader: config.header && config.contentSignalHeader === true ? resolveContentSignalHeader(groups) : undefined,
@@ -640,8 +639,8 @@ export default defineNuxtModule<ModuleOptions>({
         cacheControl: config.cacheControl ?? 'max-age=14400, must-revalidate',
         botDetection: config.botDetection ?? true,
       }
-      nuxt.options.runtimeConfig['nuxt-robots'] = robotsRuntimeConfig as any
-      nuxt.options.runtimeConfig.public['nuxt-robots'] = robotsRuntimeConfig as any
+      nuxt.options.runtimeConfig['nuxt-robots'] = { ...publicRobotsConfig, groups } as any
+      nuxt.options.runtimeConfig.public['nuxt-robots'] = publicRobotsConfig as any
     })
 
     registerTypeTemplates({ nitroCompatibility })
