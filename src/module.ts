@@ -71,7 +71,7 @@ export interface ModuleOptions {
    *
    * @default false
    */
-  contentSignalHeader: boolean
+  contentSignalHeader?: boolean
   /**
    * Should a `<meta name="robots" content="<>">` tag be added to the head.
    *
