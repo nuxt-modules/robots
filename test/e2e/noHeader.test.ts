@@ -12,6 +12,8 @@ await setup({
     robots: {
       debug: true,
       header: false,
+      contentSignalHeader: true,
+      groups: [{ userAgent: '*', contentSignal: 'ai-train=no' }],
     },
   },
 })
@@ -20,5 +22,6 @@ describe('noHeader', () => {
   it('basic', async () => {
     const { headers, _data } = await $fetch.raw('/')
     expect(headers.get('X-Robots-Tag')).toBe(null)
+    expect(headers.get('Content-Signal')).toBe(null)
   })
 })

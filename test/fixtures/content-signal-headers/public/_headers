@@ -1,0 +1,6 @@
+/docs/policy.md
+  ! X-Frame-Options
+
+/docs/removed/*
+  ! Content-Signal
+  ! X-Frame-Options
