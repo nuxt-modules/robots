@@ -4,7 +4,10 @@ Tested with `@nuxtjs/robots` 6.2.4, Nuxt 4.6.0, `@nuxt/content` 3.16.1, `zod` 4.
 
 ## Nuxt Content v3
 
-Add the `robots` frontmatter key to a collection. Add `zod` 4 to your own dependencies.
+Add the `robots` frontmatter key to a collection. If you use Valibot, install `valibot` and `@valibot/to-json-schema`.
+Import `defineRobotsSchema()` from `@nuxtjs/robots/content/valibot` and use it in `v.object()`.
+
+For the Zod example below, add `zod` 4 to your own dependencies.
 Without it the schema resolves Content's zod 3. Then `robots: false` arrives as the string `"false"`, and the page sends `X-Robots-Tag: false` and `content="false"`. Nothing warns.
 
 ```ts
