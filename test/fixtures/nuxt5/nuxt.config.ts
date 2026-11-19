@@ -11,6 +11,7 @@ export default defineNuxtConfig({
   robots: {
     credits: false,
     debug: true,
+    contentSignalHeader: true,
     groups: [{ userAgent: '*', contentSignal: 'ai-train=no, search=yes' }],
   },
   routeRules: {

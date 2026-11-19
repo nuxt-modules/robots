@@ -10,6 +10,7 @@ await setup({
   server: true,
   nuxtConfig: {
     robots: {
+      contentSignalHeader: true,
       groups: [
         { userAgent: '*', contentSignal: 'ai-train=no' },
         { userAgent: 'GPTBot', contentSignal: 'ai-train=yes' },

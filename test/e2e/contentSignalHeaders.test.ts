@@ -9,7 +9,10 @@ await setup({
   build: true,
   server: true,
   nuxtConfig: {
-    robots: { groups: [{ userAgent: '*', contentSignal: 'ai-train=no, search=yes, ai-input=yes' }] },
+    robots: {
+      contentSignalHeader: true,
+      groups: [{ userAgent: '*', contentSignal: 'ai-train=no, search=yes, ai-input=yes' }],
+    },
     routeRules: { '/about': { headers: { 'CONTENT-SIGNAL': 'search=no' } } },
   },
 })

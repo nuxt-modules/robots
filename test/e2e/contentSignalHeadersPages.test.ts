@@ -9,7 +9,10 @@ await setup({
   rootDir: resolve('../fixtures/content-signal-headers'),
   build: true,
   server: false,
-  nuxtConfig: { nitro: { preset: 'cloudflare-pages' } },
+  nuxtConfig: {
+    nitro: { preset: 'cloudflare-pages' },
+    robots: { contentSignalHeader: true },
+  },
 })
 
 it('preserves the asset-root headers and policy on Cloudflare Pages', () => {

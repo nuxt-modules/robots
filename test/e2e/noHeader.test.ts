@@ -12,6 +12,7 @@ await setup({
     robots: {
       debug: true,
       header: false,
+      contentSignalHeader: true,
       groups: [{ userAgent: '*', contentSignal: 'ai-train=no' }],
     },
   },

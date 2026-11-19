@@ -59,11 +59,19 @@ export interface ModuleOptions {
    */
   enabled: boolean
   /**
-   * Add `X-Robots-Tag` and an eligible site-wide `Content-Signal` header.
+   * Add the `X-Robots-Tag` header.
+   * Set to `false` to disable both automatic headers.
    *
    * @default true
    */
   header: boolean
+  /**
+   * Publish an eligible site-wide policy as a `Content-Signal` header.
+   * Requires `header` to be enabled.
+   *
+   * @default false
+   */
+  contentSignalHeader: boolean
   /**
    * Should a `<meta name="robots" content="<>">` tag be added to the head.
    *
@@ -242,6 +250,7 @@ export default defineNuxtModule<ModuleOptions>({
     blockNonSeoBots: false,
     mergeWithRobotsTxtPath: true,
     header: true,
+    contentSignalHeader: false,
     metaTag: true,
     cacheControl: 'max-age=14400, must-revalidate',
     robotsEnabledValue: ROBOT_DIRECTIVE_VALUES.enabled,
@@ -625,7 +634,7 @@ export default defineNuxtModule<ModuleOptions>({
         groups,
         sitemap: config.sitemap,
         header: config.header,
-        contentSignalHeader: config.header ? resolveContentSignalHeader(groups) : undefined,
+        contentSignalHeader: config.header && config.contentSignalHeader === true ? resolveContentSignalHeader(groups) : undefined,
         robotsEnabledValue: config.robotsEnabledValue,
         robotsDisabledValue: config.robotsDisabledValue,
         cacheControl: config.cacheControl ?? 'max-age=14400, must-revalidate',

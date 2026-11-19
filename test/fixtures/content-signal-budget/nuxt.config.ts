@@ -6,7 +6,7 @@ import { useNuxt } from '@nuxt/kit'
 export default defineNuxtConfig({
   extends: ['../static-headers'],
   alias: { '@nuxtjs/robots/util': fileURLToPath(new URL('../../../src/util.ts', import.meta.url)) },
-  robots: { robotsTxt: false, groups: [{ userAgent: '*', contentSignal: 'ai-train=no' }] },
+  robots: { robotsTxt: false, contentSignalHeader: true, groups: [{ userAgent: '*', contentSignal: 'ai-train=no' }] },
   nitro: { preset: 'cloudflare-module', cloudflare: { deployConfig: true } },
   hooks: {
     'nitro:build:before': (nitro) => {

@@ -9,6 +9,7 @@ await setup({
   rootDir: resolve('../fixtures/content-signal-headers'),
   build: true,
   server: false,
+  nuxtConfig: { robots: { contentSignalHeader: true } },
 })
 
 function headersFor(path: string) {
