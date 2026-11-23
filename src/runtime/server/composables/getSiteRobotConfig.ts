@@ -13,22 +13,26 @@ export function getSiteRobotConfig(e: RequestEvent): { indexable: boolean, hints
   // allow previewing with ?mockProductionEnv
   const queryIndexableEnabled = String(query.mockProductionEnv) === 'true' || query.mockProductionEnv === ''
   if ((debug || import.meta.dev)) {
-    const { _context } = getSiteConfig(e, { debug: debug || import.meta.dev })
+    const indexableSource = getSiteConfig(e, { debug: true })._context?.indexable
     if (queryIndexableEnabled) {
       indexable = true
       hints.push('You are mocking a production enviroment with ?mockProductionEnv query.')
     }
-    else if (!indexable && _context.indexable === 'nuxt-robots:config') {
+    else if (!indexable && indexableSource === 'nuxt-robots:config') {
       hints.push('You are blocking indexing with your Nuxt Robots config.')
     }
-    else if (import.meta.dev && !queryIndexableEnabled && (!_context.indexable)) {
+    else if (import.meta.dev && !queryIndexableEnabled && !indexableSource) {
       hints.push(`Indexing is blocked in development. You can mock a production environment with ?mockProductionEnv query.`)
     }
     else if (!indexable && !queryIndexableEnabled) {
-      hints.push(`Indexing is blocked by site config set by ${_context.indexable}.`)
+      hints.push(indexableSource
+        ? `Indexing is blocked by site config set by ${indexableSource}.`
+        : 'Indexing is blocked by site config.')
     }
     else if (indexable && !queryIndexableEnabled) {
-      hints.push(`Indexing is enabled from ${_context.indexable}.`)
+      hints.push(indexableSource
+        ? `Indexing is enabled from ${indexableSource}.`
+        : 'Indexing is enabled.')
     }
   }
   // get wildcard groups and which if they include an exclude for `/`
