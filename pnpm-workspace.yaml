@@ -145,9 +145,9 @@ catalog:
   radix3: ^1.1.2
   sirv: ^3.0.2
   std-env: ^4.3.0
+  tsdown: ^0.23.7
   typescript: 6.0.3
   ufo: ^1.6.4
-  unbuild: ^3.6.1
   unocss: ^66.13.0
   valibot: ^1.4.2
   vitest: ^5.1.0
@@ -163,7 +163,7 @@ catalogs:
     '@iconify-json/logos': 1.2.20
     '@iconify-json/ri': ^1.2.10
     '@nuxt/content': ^3.17.0
-    '@nuxt/module-builder': ^1.0.4
+    '@nuxt/module-builder': 2.0.0-alpha.1
     '@nuxt/test-utils': ^4.4.0
     '@nuxtjs/color-mode': ^4.1.0
     '@vueuse/nuxt': ^15.0.0

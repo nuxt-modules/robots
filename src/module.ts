@@ -23,13 +23,13 @@ import {
 import { updateSiteConfig, useSiteConfig } from 'nuxt-site-config/kit'
 import { setupNitroRuntimeCompatibility, setupRuntimeAliases, useModuleLogger } from 'nuxtseo-shared/kit'
 import { withoutTrailingSlash, withTrailingSlash } from 'ufo'
-import { AiBots, AiTrainingBots, NonHelpfulBots } from './const'
-import { assertContentSignalHeaderBudget, countStaticHeaderRules, mergeContentSignalHeaders, pickContentSignalHeaderRules } from './content-signal-headers'
-import { setupDevToolsUI } from './devtools'
-import { applyRobotsHeaderRouteRules, findRobotsHeader, resolveRobotsHeaderRules } from './header-rules'
-import { mapPathForI18nPages, resolveI18nConfig, splitPathForI18nLocales } from './i18n'
-import { isNuxtGenerate, resolveContentProvider, resolveNitroPreset } from './kit'
-import { registerTypeTemplates } from './templates'
+import { AiBots, AiTrainingBots, NonHelpfulBots } from './const.ts'
+import { assertContentSignalHeaderBudget, countStaticHeaderRules, mergeContentSignalHeaders, pickContentSignalHeaderRules } from './content-signal-headers.ts'
+import { setupDevToolsUI } from './devtools.ts'
+import { applyRobotsHeaderRouteRules, findRobotsHeader, resolveRobotsHeaderRules } from './header-rules.ts'
+import { mapPathForI18nPages, resolveI18nConfig, splitPathForI18nLocales } from './i18n.ts'
+import { isNuxtGenerate, resolveContentProvider, resolveNitroPreset } from './kit.ts'
+import { registerTypeTemplates } from './templates.ts'
 import {
   asArray,
   normaliseRobotsRouteRule,
@@ -39,7 +39,7 @@ import {
   ROBOT_DIRECTIVE_VALUES,
   robotsDirectivesFromObject,
   validateRobots,
-} from './util'
+} from './util.ts'
 
 // Re-export runtime types used in type augmentation templates
 export type {
@@ -540,11 +540,11 @@ export default defineNuxtModule<ModuleOptions>({
       }
       else {
         // otherwise make a new stack
-        config.groups.unshift(<RobotsGroupResolved>{
-          userAgent: ['*'],
-          disallow: config.disallow.length > 0 ? config.disallow : [''],
-          allow: config.allow,
-        })
+        config.groups.unshift({
+    userAgent: ['*'],
+    disallow: config.disallow.length > 0 ? config.disallow : [''],
+    allow: config.allow,
+} as RobotsGroupResolved)
       }
 
       // @ts-expect-error runtime type

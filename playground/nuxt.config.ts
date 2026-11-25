@@ -1,7 +1,12 @@
+import { fileURLToPath } from 'node:url'
 import { defineNuxtConfig } from 'nuxt/config'
 import NuxtRobots from '../src/module'
 
 export default defineNuxtConfig({
+  alias: {
+    '@nuxtjs/robots/util': fileURLToPath(new URL('../src/util.ts', import.meta.url)),
+  },
+
   modules: [
     NuxtRobots,
     // To develop the devtools client UI, run `pnpm client:dev` in a separate terminal
