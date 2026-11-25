@@ -135,7 +135,6 @@
     "std-env": "catalog:",
     "tsdown": "catalog:",
     "typescript": "catalog:",
-    "unbuild": "catalog:",
     "unocss": "catalog:",
     "valibot": "catalog:",
     "vitest": "catalog:",

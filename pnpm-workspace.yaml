@@ -148,7 +148,6 @@ catalog:
   tsdown: ^0.23.7
   typescript: 6.0.3
   ufo: ^1.6.4
-  unbuild: ^3.6.1
   unocss: ^66.13.0
   valibot: ^1.4.2
   vitest: ^5.1.0
