@@ -28,8 +28,14 @@
       "types": "./dist/types.d.mts",
       "import": "./dist/module.mjs"
     },
-    "./util": "./dist/util.mjs",
-    "./content": "./dist/content.mjs",
+    "./util": {
+      "types": "./dist/util.d.mts",
+      "default": "./dist/util.mjs"
+    },
+    "./content": {
+      "types": "./dist/content.d.mts",
+      "default": "./dist/content.mjs"
+    },
     "./content/valibot": {
       "types": "./dist/content-valibot.d.mts",
       "default": "./dist/content-valibot.mjs"
@@ -39,10 +45,10 @@
   "typesVersions": {
     "*": {
       "content": [
-        "dist/content"
+        "./dist/content.d.mts"
       ],
       "util": [
-        "dist/util"
+        "./dist/util.d.mts"
       ],
       "content/valibot": [
         "dist/content-valibot.d.mts"
@@ -59,11 +65,11 @@
   "scripts": {
     "lint": "eslint . --fix",
     "client:build": "node -e \"require('fs').cpSync('devtools','dist/devtools',{recursive:true})\"",
-    "build": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && npm run client:build",
+    "build": "nuxt-module-build prepare && tsdown && npm run client:build",
     "dev": "nuxt dev playground",
     "prepare:fixtures": "nuxt prepare playground && nuxt prepare test/fixtures/basic && nuxt prepare test/fixtures/i18n && nuxt prepare test/fixtures/content-v3 && nuxt prepare test/fixtures/static-headers",
     "dev:build": "nuxt build playground",
-    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt-module-build build && nuxt prepare playground && pnpm run client:build",
+    "dev:prepare": "nuxt-module-build prepare && tsdown && nuxt prepare playground && pnpm run client:build",
     "release": "pnpm build && bumpp -x \"npx changelogen --output=CHANGELOG.md\"",
     "prepack": "pnpm run build",
     "test": "pnpm run prepare:fixtures && vitest run && pnpm run test:attw && pnpm run test:nuxt5",
@@ -127,6 +133,7 @@
     "radix3": "catalog:",
     "sirv": "catalog:",
     "std-env": "catalog:",
+    "tsdown": "catalog:",
     "typescript": "catalog:",
     "unbuild": "catalog:",
     "unocss": "catalog:",
@@ -135,10 +142,5 @@
     "vue": "catalog:",
     "vue-router": "catalog:",
     "vue-tsc": "catalog:"
-  },
-  "build": {
-    "externals": [
-      "nuxt/server"
-    ]
   }
 }

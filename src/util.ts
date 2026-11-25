@@ -2,7 +2,7 @@ import type { BotCategory, BotName } from './const-bots'
 import type { BotDetectionContext, ParsedRobotsTxt, PatternMapValue, RobotsGroupInput, RobotsGroupResolved, RobotsRouteRuleConfig } from './runtime/types'
 import { createDefu } from 'defu'
 import { withoutLeadingSlash } from 'ufo'
-import { AiBots, NonHelpfulBots } from './const'
+import { AiBots, NonHelpfulBots } from './const.ts'
 import {
   AI_BOTS,
   AUTOMATION_BOTS,
@@ -14,10 +14,10 @@ import {
   SECURITY_SCANNING_BOTS,
   SEO_BOTS,
   SOCIAL_BOTS,
-} from './const-bots'
-import { matchDefaultBotTarget } from './generated-bot-matcher'
+} from './const-bots.ts'
+import { matchDefaultBotTarget } from './generated-bot-matcher.ts'
 
-export * from './const-bots'
+export * from './const-bots.ts'
 export { AiBots, NonHelpfulBots }
 
 /** A response header can express one site-wide policy, without user-agent exceptions. */
@@ -125,14 +125,14 @@ export function parseRobotsTxt(s: string): ParsedRobotsTxt {
           groups.push({
             ...currentGroup,
           })
-          currentGroup = <RobotsGroupResolved> {
-            comment: [],
-            disallow: [],
-            allow: [],
-            userAgent: [],
-            contentUsage: [],
-            contentSignal: [],
-          }
+          currentGroup = {
+    comment: [],
+    disallow: [],
+    allow: [],
+    userAgent: [],
+    contentUsage: [],
+    contentSignal: [],
+} as RobotsGroupResolved
           createNewGroup = false
         }
         currentGroup.userAgent.push(val)
@@ -418,7 +418,7 @@ export function normalizeGroup(group: RobotsGroupInput | RobotsGroupResolved): R
   const allow = asArray(group.allow).filter(rule => Boolean(rule))
   const contentUsage = normalizeContentPreferences(group.contentUsage)
   const contentSignal = normalizeContentPreferences(group.contentSignal)
-  return <RobotsGroupResolved> {
+  return {
     ...group,
     comment: asArray(group.comment),
     userAgent: group.userAgent ? asArray(group.userAgent) : ['*'],
@@ -428,11 +428,11 @@ export function normalizeGroup(group: RobotsGroupInput | RobotsGroupResolved): R
     contentSignal,
     _indexable: !disallow.includes('/'),
     _rules: [
-      ...disallow.filter(Boolean).map(r => ({ pattern: r, allow: false })),
-      ...allow.map(r => ({ pattern: r, allow: true })),
+        ...disallow.filter(Boolean).map(r => ({ pattern: r, allow: false })),
+        ...allow.map(r => ({ pattern: r, allow: true })),
     ],
     _normalized: true,
-  }
+} as RobotsGroupResolved
 }
 
 export function generateRobotsTxt({ groups, sitemaps }: { groups: RobotsGroupResolved[], sitemaps: string[] }): string {

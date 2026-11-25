@@ -1,7 +1,7 @@
 import type { RobotsRouteRuleConfig } from './runtime/types'
 import { createNitroRouteRuleMatcher } from 'nuxtseo-shared/server'
 import { withoutTrailingSlash } from 'ufo'
-import { isNoIndexRule, normaliseRobotsRouteRule } from './util'
+import { isNoIndexRule, normaliseRobotsRouteRule } from './util.ts'
 
 export interface RobotsHeaderRulesInput {
   /** The route rules from the Nuxt config, including the module's own build asset rules. */
